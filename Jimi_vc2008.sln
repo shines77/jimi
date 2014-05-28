@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jimi_static", "projects\jimi\proj.win32\vc2008\Jimi_static.vcproj", "{6CC87659-079A-4DF7-852E-8AF52192504D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jimi_shared", "projects\jimi\proj.win32\vc2008\Jimi_shared.vcproj", "{7AE39F1A-493B-4A38-AC5C-137C2A394933}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6CC87659-079A-4DF7-852E-8AF52192504D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6CC87659-079A-4DF7-852E-8AF52192504D}.Debug|Win32.Build.0 = Debug|Win32
+		{6CC87659-079A-4DF7-852E-8AF52192504D}.Release|Win32.ActiveCfg = Release|Win32
+		{6CC87659-079A-4DF7-852E-8AF52192504D}.Release|Win32.Build.0 = Release|Win32
+		{7AE39F1A-493B-4A38-AC5C-137C2A394933}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7AE39F1A-493B-4A38-AC5C-137C2A394933}.Debug|Win32.Build.0 = Debug|Win32
+		{7AE39F1A-493B-4A38-AC5C-137C2A394933}.Release|Win32.ActiveCfg = Release|Win32
+		{7AE39F1A-493B-4A38-AC5C-137C2A394933}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

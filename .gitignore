@@ -1,3 +1,5 @@
+### These files should get ignored no matter where they appear.
+
 # Compiled Object files
 *.slo
 *.lo
@@ -19,3 +21,74 @@
 *.exe
 *.out
 *.app
+
+# Editors leave these lying around
+\#*\#
+.#*
+*~
+*.swp
+
+# For Visual Studio files on Windows
+*.user
+*.ncb
+*.aps
+*.idb
+*.pdb
+*.dep
+*.obj
+*.ilk
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.rsp
+*.pgc
+*.pgd
+*.meta
+*.manifest
+*.intermediate.manifest
+*.suo
+*.sdf
+*.opensdf
+*.layout
+*.depend
+*.sln.old
+*.sln_old
+# *.vcxproj.user
+/Debug
+/Release
+/x86-Debug
+/x86-Release
+/x64-Debug
+/x64-Release
+
+# For Intel C++ Compiler Log File
+IcUpdateLog.htm
+
+# tmp and obj files
+/obj
+/gen
+/tmp
+/temp
+
+# For Visual Studio C# files on Windows
+.cache
+
+# Some files on Windows
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Other files
+/.metadata
+/169.254.0.1
+/ipch
+/cmake
+/Simulator
+/Simulator-Coverage
+/Simulator-Profile
+/Device-Debug
+/Device-Coverage
+/Device-Profile
+/Device-Release
