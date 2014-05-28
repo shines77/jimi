@@ -62,6 +62,9 @@
 /x64-Debug
 /x64-Release
 
+# For log file
+*.log
+
 # For Intel C++ Compiler Log File
 IcUpdateLog.htm
 
