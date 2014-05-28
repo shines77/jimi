@@ -155,16 +155,16 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath="..\..\..\..\include\jimi\jimi_all.h"
-				>
-			</File>
 			<Filter
 				Name="jimi"
 				>
 				<Filter
 					Name="core"
 					>
+					<File
+						RelativePath="..\..\..\..\include\jimi\jimi_all.h"
+						>
+					</File>
 					<File
 						RelativePath="..\..\..\..\include\jimi\core\jimi_def.h"
 						>
@@ -221,6 +221,30 @@
 				<Filter
 					Name="system"
 					>
+					<File
+						RelativePath="..\..\..\..\src\jimi\system\mutex.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\include\jimi\system\mutex.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\system\scoped_lock.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\include\jimi\system\scoped_lock.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\system\WinService.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\include\jimi\system\WinService.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="internal"
@@ -241,6 +265,10 @@
 				<Filter
 					Name="machine"
 					>
+					<File
+						RelativePath="..\..\..\..\include\jimi\machine\windows_api.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="log"

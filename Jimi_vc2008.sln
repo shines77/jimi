@@ -5,6 +5,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jimi_static", "projects\jim
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jimi_shared", "projects\jimi\proj.win32\vc2008\Jimi_shared.vcproj", "{7AE39F1A-493B-4A38-AC5C-137C2A394933}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IocpServd", "apps\IocpServd\proj.win32\vc2008\IocpServd.vcproj", "{32E6D992-7397-400C-A12F-61EC3018B9FF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6CC87659-079A-4DF7-852E-8AF52192504D} = {6CC87659-079A-4DF7-852E-8AF52192504D}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "apps", "apps", "{C158E1EA-DFE6-4327-8AEA-CC021B7430DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,8 +26,15 @@ Global
 		{7AE39F1A-493B-4A38-AC5C-137C2A394933}.Debug|Win32.Build.0 = Debug|Win32
 		{7AE39F1A-493B-4A38-AC5C-137C2A394933}.Release|Win32.ActiveCfg = Release|Win32
 		{7AE39F1A-493B-4A38-AC5C-137C2A394933}.Release|Win32.Build.0 = Release|Win32
+		{32E6D992-7397-400C-A12F-61EC3018B9FF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{32E6D992-7397-400C-A12F-61EC3018B9FF}.Debug|Win32.Build.0 = Debug|Win32
+		{32E6D992-7397-400C-A12F-61EC3018B9FF}.Release|Win32.ActiveCfg = Release|Win32
+		{32E6D992-7397-400C-A12F-61EC3018B9FF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{32E6D992-7397-400C-A12F-61EC3018B9FF} = {C158E1EA-DFE6-4327-8AEA-CC021B7430DB}
 	EndGlobalSection
 EndGlobal

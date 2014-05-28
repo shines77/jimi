@@ -45,6 +45,7 @@ using namespace std;
 #define USING_NS_JIMI           using namespace jimi;
 #define USING_NS_JIMI_CORE      using namespace jimi::core;
 #define USING_NS_JIMI_SYSTEM    using namespace jimi::system;
+#define USING_NS_JIMI_IOCP      using namespace jimi::iocp;
 
 #define USING_NS_JIMI_SUB(NS)   using namespace jimi::##NS##;
 
@@ -67,6 +68,10 @@ using namespace std;
 // namespace jimi::util
 #define NS_JIMI_UTIL_BEGIN      namespace util {
 #define NS_JIMI_UTIL_END        }
+
+// namespace jimi::iocp
+#define NS_JIMI_JIMI_BEGIN      namespace iocp {
+#define NS_JIMI_JIMI_END        }
 
 #define JIMI_MIN(a, b)          ((a) < (b) ? (a) : (b))
 #define JIMI_MAX(a, b)          ((a) > (b) ? (a) : (b))

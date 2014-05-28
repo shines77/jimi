@@ -57,6 +57,11 @@ std::string cmd_line::get_cmdline()
     return str_cmdline;
 }
 
+std::string cmd_line::getCmdLine()
+{
+    return get_cmdline();
+}
+
 bool cmd_line::hasArgument(const string &strArgument)
 {
     cmd_param_map::iterator it;

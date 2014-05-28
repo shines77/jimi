@@ -197,6 +197,7 @@ public:
     int addToken(const char *_token);
 
     string get_cmdline();
+    string getCmdLine();
 
     int parse(int _argc, char **_argv);
 
@@ -212,6 +213,8 @@ public:
     bool            caseSensitive;
     cmd_param_map   params;
 };
+
+typedef cmd_line CCmdLine;
 
 NS_JIMI_UTIL_END
 
