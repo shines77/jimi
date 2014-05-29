@@ -27,8 +27,8 @@ USING_NS_IOCPSERVD;
 
 NS_IOCPSERVD_BEGIN
 
-TCHAR g_ServiceName[]        = _T("IocpServd");
-TCHAR g_ServiceDisplayName[] = _T("Iocp Server Daemon Service");
+TCHAR g_ServiceName[]        = _T("IocpServd2");
+TCHAR g_ServiceDisplayName[] = _T("Iocp Server Daemon Service2");
 TCHAR g_ServiceDescription[] = _T("Windows IOCP Server Daemon2");
 /*
  * -2 - unknown status

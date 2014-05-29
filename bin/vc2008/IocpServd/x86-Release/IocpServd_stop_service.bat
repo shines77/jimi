@@ -1,3 +1,3 @@
 
-net stop IocpServd
+net stop IocpServd2
 pause

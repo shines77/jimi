@@ -287,8 +287,10 @@ bool WinServiceBase<T>::UninstallService()
 
     SERVICE_STATUS serviceStatus2;
     if (::QueryServiceStatus(schService, &serviceStatus2)) {
-        if (serviceStatus2.dwCurrentState == SERVICE_STOPPED)
-            ::DeleteService(schService);
+        if (serviceStatus2.dwCurrentState == SERVICE_STOPPED) {
+            if (::DeleteService(schService))
+                sLog.info("Service uninstalled successfully.");
+        }
     }
 
     ::CloseServiceHandle(schService);
