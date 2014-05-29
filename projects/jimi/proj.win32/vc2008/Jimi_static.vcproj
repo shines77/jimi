@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;JIMI_LIB;LOG4CC_LIB;LOG4CC_USE_STATIC"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;JIMI_LIB;JIMI_USE_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -110,7 +110,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;JIMI_LIB;LOG4CC_LIB;LOG4CC_USE_STATIC"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;JIMI_LIB;JIMI_USE_STATIC"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -310,6 +310,58 @@
 			<Filter
 				Name="jimic"
 				>
+				<Filter
+					Name="string"
+					>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\strings.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\strings.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="core"
+					>
+					<File
+						RelativePath="..\..\..\..\src\jimic\jimic_all.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\core\jimic_def.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\core\jimic_export.h"
+						>
+					</File>
+					<Filter
+						Name="win32"
+						>
+						<File
+							RelativePath="..\..\..\..\src\jimic\core\win32\jimic_config.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="vs"
+						>
+						<File
+							RelativePath="..\..\..\..\src\jimic\core\vs\stdint.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
+				<Filter
+					Name="platform"
+					>
+					<File
+						RelativePath="..\..\..\..\src\jimic\platform\jimic_targetver.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

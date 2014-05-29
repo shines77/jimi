@@ -195,13 +195,6 @@
 #define JIMI_IS_MAC                     (JIMI_CHECK_PLATFORM(MAC))
 #endif
 
-// for DOXYGEN
-#if defined(DOXYGEN)
-  #ifndef JIMI_IS_DOXYGEN
-    #define JIMI_IS_DOXYGEN
-  #endif
-#endif
-
 //////////////////////////////////////////////////////////////////////////
 // post configure
 //////////////////////////////////////////////////////////////////////////

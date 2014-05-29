@@ -2,7 +2,7 @@
 #ifndef _JIMI_SYSTEM_MUTEX_H_
 #define _JIMI_SYSTEM_MUTEX_H_
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
@@ -64,6 +64,12 @@ public:
 
 private:
 
+    //! All checks from mutex constructor using mutex.state were moved here
+    void JIMI_EXPORTED_METHOD internal_construct();
+
+    //! All checks from mutex destructor using mutex.state were moved here
+    void JIMI_EXPORTED_METHOD internal_destroy();
+
 #if JIMI_IS_WINDOWS
     CRITICAL_SECTION impl;
 #else
@@ -71,12 +77,6 @@ private:
 #endif /* JIMI_IS_WINDOWS */
 
     bool m_bLocked;
-
-    //! All checks from mutex constructor using mutex.state were moved here
-    void JIMI_EXPORTED_METHOD internal_construct();
-
-    //! All checks from mutex destructor using mutex.state were moved here
-    void JIMI_EXPORTED_METHOD internal_destroy();
 
 #if JIMI_IS_WINDOWS
   #if JIMI_USE_THREADING_TOOLS

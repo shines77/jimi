@@ -6,16 +6,9 @@
 #pragma once
 #endif
 
-#include <assert.h>
-
-#include <iostream>
-#include <string>
-using namespace std;
-
 #include <jimi/platform/jimi_platform_config.h>
 #include <jimi/platform/jimi_compiler_config.h>
 
-//#if defined(JIMI_IS_WINDOWS) && (JIMI_IS_WINDOWS != 0)
 #if JIMI_IS_WINDOWS
     #include <jimi/platform/jimi_targetver.h>
 #endif
@@ -30,6 +23,8 @@ using namespace std;
     #include <stdint.h>
 #endif
 
+#include <assert.h>
+
 #define JIMI_ASSERT_TRUE(predicate)                   assert(!(predicate))
 #define JIMI_ASSERT_FALSE(predicate)                  assert(!!(predicate))
 #define JIMI_ASSERT(predicate)                        JIMI_ASSERT_FALSE
@@ -37,6 +32,10 @@ using namespace std;
 #define JIMI_ASSERT_EX_TRUE(predicate, comment)       assert(!(predicate))
 #define JIMI_ASSERT_EX_FALSE(predicate, comment)      assert(!!(predicate))
 #define JIMI_ASSERT_EX(predicate, comment)            JIMI_ASSERT_EX_FALSE
+
+#include <iostream>
+#include <string>
+using namespace std;
 
 // namespace jimi
 #define NS_JIMI_BEGIN           namespace jimi {
@@ -106,6 +105,50 @@ typedef struct JIMI_MACRO_T
 #endif
 
 #include <cstddef>      /* Need size_t and ptrdiff_t */
+
+/**
+ * for jm_countof helper
+ */
+#if defined(_M_MRX000) || defined(_M_ALPHA) || defined(_M_PPC) || defined(_M_IA64) || defined(_M_AMD64)
+#define ALIGNMENT_MACHINE
+#define UNALIGNED   __unaligned
+#if defined(_WIN64)
+#define UNALIGNED64 __unaligned
+#else
+#define UNALIGNED64
+#endif
+#else
+#undef ALIGNMENT_MACHINE
+#ifndef UNALIGNED
+#define UNALIGNED
+#endif
+#ifndef UNALIGNED64
+#define UNALIGNED64
+#endif
+#endif
+
+/**
+ * jm_countof helper
+ */
+#if !defined(jm_countof)
+
+#if !defined(__cplusplus)
+
+#define jm_countof(_Array)      (sizeof(_Array) / sizeof(_Array[0]))
+
+#else
+
+extern "C++"
+{
+template <typename _CountofType, size_t _SizeOfArray>
+char (*__jm_countof_helper(UNALIGNED _CountofType (&_Array)[_SizeOfArray]))[_SizeOfArray];
+
+#define jm_countof(_Array)      sizeof(*__jm_countof_helper(_Array))
+}
+
+#endif  /* !defined(__cplusplus) */
+
+#endif  /* !defined(jm_countof) */
 
 #define ITT_SYNC_CREATE(obj, type, name)
 

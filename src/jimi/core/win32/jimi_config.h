@@ -6,6 +6,7 @@
 #pragma once
 #endif
 
-#define JIMI_USE_ASSERT     0
+#define JIMI_USE_ASSERT             0
+#define JIMI_USE_THREADING_TOOLS    0
 
 #endif  /* _JIMI_CONFIG_H_ */

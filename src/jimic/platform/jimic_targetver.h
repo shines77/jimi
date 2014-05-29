@@ -1,12 +1,14 @@
 
-#ifndef _TARGETVER_H_
-#define _TARGETVER_H_
+#ifndef _JIMIC_TARGETVER_H_
+#define _JIMIC_TARGETVER_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
-#if (_WIN32 || _WIN64)
+#include <jimic/platform/jimi_platform_config.h>
+
+#if JIMI_IS_WINDOWS
 
 // 以下宏定义要求的最低平台。要求的最低平台
 // 是具有运行应用程序所需功能的 Windows、Internet Explorer 等产品的
@@ -31,6 +33,6 @@
 #define _WIN32_IE 0x0600        // 将此值更改为相应的值，以适用于 IE 的其他版本。
 #endif
 
-#endif  /* (_WIN32 || _WIN64) */
+#endif  /* JIMI_IS_WINDOWS */
 
-#endif  /* _TARGETVER_H_ */
+#endif  /* _JIMIC_TARGETVER_H_ */

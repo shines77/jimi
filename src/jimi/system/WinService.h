@@ -2,7 +2,7 @@
 #ifndef _JIMI_SYSTEM_WIN_SERVICE_H_
 #define _JIMI_SYSTEM_WIN_SERVICE_H_
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
@@ -23,6 +23,8 @@
 
 #include <jimi/log/log_all.h>
 //#include <jimi/iocp/IocpServd.h>
+
+#include <jimic/string/strings.h>
 
 using namespace std;
 
@@ -184,7 +186,7 @@ template <class T>
 TCHAR * WinServiceBase<T>::SetServiceName(TCHAR *szServiceName)
 {
     if (szServiceName)
-        ::_tcscpy_s(m_ServiceName, szServiceName);
+        ::jm_tcscpy(m_ServiceName, jm_countof(m_ServiceName), szServiceName);
     return m_ServiceName;
 }
 
@@ -192,7 +194,7 @@ template <class T>
 TCHAR * WinServiceBase<T>::SetServiceDisplayName(TCHAR *szServiceDisplayName)
 {
     if (szServiceDisplayName)
-        ::_tcscpy_s(m_ServiceDisplayName, szServiceDisplayName);
+        ::jm_tcscpy(m_ServiceDisplayName, jm_countof(m_ServiceDisplayName), szServiceDisplayName);
     return m_ServiceDisplayName;
 }
 
@@ -200,7 +202,7 @@ template <class T>
 TCHAR * WinServiceBase<T>::SetServiceDescription(TCHAR *szServiceDescription)
 {
     if (szServiceDescription)
-        ::_tcscpy_s(m_ServiceDescription, szServiceDescription);
+        ::jm_tcscpy(m_ServiceDescription, jm_countof(m_ServiceDescription), szServiceDescription);
     return m_ServiceDescription;
 }
 
@@ -225,13 +227,13 @@ bool WinServiceBase<T>::InstallService()
     }
 
     // Quote the FilePath before calling CreateService
-    size_t dwLen = ::_tcslen(szPath + 1);
+    size_t dwLen = ::jm_tcslen(szPath + 1);
     szPath[0] = _T('\"');
     szPath[dwLen + 1] = _T('\"');
     szPath[dwLen + 2] = _T('\0');
 #endif
 
-    ::_tcscat_s(szPath, _countof(szPath), _T(" -run"));
+    ::jm_tcscat(szPath, jm_countof(szPath), _T(" -run"));
 
     // Get a handle to the SCM database.
     SC_HANDLE schSCManager = ::OpenSCManager(
@@ -688,7 +690,7 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
             return;
         }
 
-        size_t nLen = ::_tcslen(szPath);
+        size_t nLen = ::jm_tcslen(szPath);
         for (i = 0; i < nLen; ++i) {
             if (szPath[i] == _T('\\'))
                 last_slash = i;

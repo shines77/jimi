@@ -16,7 +16,7 @@ mutex::mutex() : m_bLocked(false)
   #else
     int error_code = pthread_mutex_init(&impl, NULL);
     if (error_code)
-        iocp::internal::handle_perror(error_code, "mutex: pthread_mutex_init() failed.");
+        jimi::internal::handle_perror(error_code, "mutex: pthread_mutex_init() failed.");
   #endif /* JIMI_IS_WINDOWS */
 #endif /* JIMI_USE_THREADING_TOOLS */
 }
@@ -42,9 +42,9 @@ void mutex::internal_construct() {
   #else
     int error_code = pthread_mutex_init(&impl, NULL);
     if (error_code)
-        iocp::internal::handle_perror(error_code, "mutex: pthread_mutex_init() failed.");
+        jimi::internal::handle_perror(error_code, "mutex: pthread_mutex_init() failed.");
   #endif /* JIMI_IS_WINDOWS */    
-    ITT_SYNC_CREATE(&impl, _T("iocp::mutex"), _T(""));
+    ITT_SYNC_CREATE(&impl, _T("jimi::mutex"), _T(""));
 #endif /* JIMI_USE_THREADING_TOOLS */
 }
 

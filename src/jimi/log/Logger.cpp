@@ -7,6 +7,7 @@
 #include <share.h>
 
 #include <jimi/log/Logger.h>
+#include <jimic/string/strings.h>
 
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
@@ -96,9 +97,9 @@ char *str_replace(const char *str_buf, const char *src_str, const char *dst_str,
         return NULL;
 
     dup_buf = (char *)str_buf;
-    src_len = strlen(src_str);
-    while (strstr(dup_buf, src_str) != NULL) {
-        dup_buf = strstr(dup_buf, src_str) + src_len;
+    src_len = ::jm_strlen(src_str);
+    while (::jm_strstr(dup_buf, src_str) != NULL) {
+        dup_buf = ::jm_strstr(dup_buf, src_str) + src_len;
         i++;
         if (!repeat)
             break;
@@ -106,35 +107,35 @@ char *str_replace(const char *str_buf, const char *src_str, const char *dst_str,
 
     if (i != 0) {
         dup_buf = (char *)str_buf;
-        str_len = strlen(str_buf);
-        dst_len = strlen(dst_str);
+        str_len = ::jm_strlen(str_buf);
+        dst_len = ::jm_strlen(dst_str);
         len = (str_len - (src_len - dst_len) * i + 1) * sizeof(char);
-        new_str = (char *)malloc(len);
+        new_str = (char *)::malloc(len);
         if (new_str != NULL) {
             new_str[0] = '\0';
             if (len > 1)
                 new_str[len - 1] = '\0';
             //memset(new_str, 0, len);
-            while ((next = strstr(dup_buf, src_str)) != NULL) {
-                new_str = strncat(new_str, dup_buf, (next - dup_buf));
-                //new_str = strcat(new_str, dst_str);
-                new_str = strncat(new_str, dst_str, dst_len);
+            while ((next = ::jm_strstr(dup_buf, src_str)) != NULL) {
+                new_str = ::jm_strncat(new_str, len, dup_buf, (next - dup_buf));
+                //new_str = ::jm_strncat(new_str, len, dst_str);
+                new_str = ::jm_strncat(new_str, len, dst_str, dst_len);
                 dup_buf = next + src_len;
                 if (!repeat)
                     break;
             }
-            new_str = strcat(new_str, dup_buf);
+            new_str = ::jm_strcat(new_str, len, dup_buf);
             return new_str;
         }
     }
     else {
-        str_len = strlen(str_buf);
+        str_len = ::jm_strlen(str_buf);
         len = (str_len + 1) * sizeof(char);
-        new_str = (char *)malloc(len);
+        new_str = (char *)::malloc(len);
         if (new_str != NULL) {
             new_str[0] = '\0';
             //memset(new_str, 0, len);
-            new_str = strcpy(new_str, str_buf);
+            new_str = ::jm_strcpy(new_str, len, str_buf);
             return new_str;
         }
     }
@@ -675,7 +676,7 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
             char *tag_format_ = (char *)tag_format;
             bool has_tag = false;
             int tag_case = 0;
-            if (strstr(tag_format_, "$datetime") != NULL) {
+            if (::jm_strstr(tag_format_, "$datetime") != NULL) {
                 char datetime[256];
                 n = get_datetime_str(datetime, _countof(datetime));
                 tag_format_new = str_replace(tag_format_, "$datetime", datetime);
@@ -684,7 +685,7 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
                     free(tag_format_);
                 tag_format_ = tag_format_new;
             }
-            if (strstr(tag_format_, "$type") != NULL) {
+            if (::jm_strstr(tag_format_, "$type") != NULL) {
                 if (tag_name != NULL) {
                     char tag_fmt[64];
                     // "[% 7s]" or "[%-7s]"
@@ -700,7 +701,7 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
                     free(tag_format_);
                 tag_format_ = tag_format_new;
             }
-            else if (strstr(tag_format_, "$TYPE") != NULL) {
+            else if (::jm_strstr(tag_format_, "$TYPE") != NULL) {
                 if (tag_name != NULL) {
                     char tag_fmt[64];
                     // "[% 7s]" or "[%-7s]"
@@ -717,7 +718,7 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
                     free(tag_format_);
                 tag_format_ = tag_format_new;
             }
-            else if (strstr(tag_format_, "$Type") != NULL) {
+            else if (::jm_strstr(tag_format_, "$Type") != NULL) {
                 if (tag_name != NULL) {
                     char tag_fmt[64];
                     // "[% 7s]" or "[%-7s]"
@@ -734,7 +735,7 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
                     free(tag_format_);
                 tag_format_ = tag_format_new;
             }
-            if (strstr(tag_format_, "$msg") != NULL) {
+            if (::jm_strstr(tag_format_, "$msg") != NULL) {
                 tag_format_new = str_replace(tag_format_, "$msg", "%s");
                 JIMI_LOG_ASSERT_TRUE(tag_format_new == NULL);
                 if (tag_format_ != tag_format)

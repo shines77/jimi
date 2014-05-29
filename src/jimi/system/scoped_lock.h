@@ -2,7 +2,7 @@
 #ifndef _JIMI_SCOPED_LOCK_H_
 #define _JIMI_SCOPED_LOCK_H_
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
@@ -92,8 +92,6 @@ public:
     }
 
 private:
-    //! The pointer to the current mutex to work
-    T* _pmutex;
 
     //! All checks from acquire using mutex.state were moved here
     void JIMI_EXPORTED_METHOD internal_acquire(T& mutex)
@@ -121,6 +119,9 @@ private:
     {
         //
     }
+
+    //! The pointer to the current mutex to work
+    T* _pmutex;
 };
 
 NS_JIMI_SYSTEM_END
