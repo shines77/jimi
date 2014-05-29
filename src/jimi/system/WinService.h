@@ -124,6 +124,9 @@ public:
     TCHAR *SetServiceDisplayName(TCHAR *szServiceDisplayName);
     TCHAR *SetServiceDescription(TCHAR *szServiceDescription);
 
+    unsigned int GetSleepTime() { return m_nSleepTime; }
+    void SetSleepTime(unsigned int millsecs) { m_nSleepTime = millsecs; }
+
     static int RunService(WinServiceBase *pInstance);
 
     static WinServiceBase *GetInstance();

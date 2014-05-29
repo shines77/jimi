@@ -10,7 +10,11 @@
 #include <string>
 #include <cstring>
 /* tchar.h 必须放在strsafe.h前面, stl的string等声明最好也放在strsafe.h前面 */
+#pragma warning(disable : 4995)         // 禁止不带_s函数的废弃warning信息
+#pragma warning(disable : 4996)
 #include <strsafe.h>
+#pragma warning(default : 4995)         // 恢复默认的warning
+#pragma warning(default : 4996)
 #include <string.h>
 
 #include <jimi/system/WinService.h>
