@@ -19,8 +19,7 @@
 #include "IocpServdService.h"
 
 USING_NS_JIMI;
-//USING_NS_JIMI_IOCP;
-USING_NS_JIMI_LOG;
+//USING_NS_JIMI_LOG;
 USING_NS_JIMI_SYSTEM;
 
 USING_NS_IOCPSERVD;
@@ -60,35 +59,39 @@ int IocpServd_main(int argc, char *argv[])
         sLog.info(strCmdLine.c_str());
     }
 
-    //system::WinService *service = new CWinService();
-    IocpServdService *service = &iocpServdService;
+    IocpServdService *service = new IocpServdService();
+    //IocpServdService *service = &iocpServdService;
     if (service) {
-        IocpServdService::SetInstance(service);
-    }
+        IocpServdService::SetInstance(service, true);
 
-    sLog.info("cmdLine.parse(argc, argv): argc_cnt = %d", cnt);
+        service->SetServiceName(g_ServiceName);
+        service->SetServiceDisplayName(g_ServiceDisplayName);
+        service->SetServiceDescription(g_ServiceDescription);
 
-    if (cmdLine.hasArgument("-run") || cmdLine.hasArgument("/run")
-        || cmdLine.hasArgument("-r") || cmdLine.hasArgument("/r")) {
-        service->RunService(argc, argv);
-    }
-    else if (cmdLine.hasArgument("-install") || cmdLine.hasArgument("/install")
-        || cmdLine.hasArgument("-i") || cmdLine.hasArgument("/i")) {
-        service->InstallService();
-    }
-    else if (cmdLine.hasArgument("-uninstall") || cmdLine.hasArgument("/uninstall")
-        || cmdLine.hasArgument("-u") || cmdLine.hasArgument("/u")
-        || cmdLine.hasArgument("-uninst") || cmdLine.hasArgument("/uninst")) {
-        service->UninstallService();
-    }
-    else {
-        // is not a windows service
-        isService = false;
-    }
+        sLog.info("cmdLine.parse(argc, argv): argc_cnt = %d", cnt);
 
-    if (service) {
-        service->OnStopService();
-        //delete service;
+        if (cmdLine.hasArgument("-run") || cmdLine.hasArgument("/run")
+            || cmdLine.hasArgument("-r") || cmdLine.hasArgument("/r")) {
+            service->RunService();
+        }
+        else if (cmdLine.hasArgument("-install") || cmdLine.hasArgument("/install")
+            || cmdLine.hasArgument("-i") || cmdLine.hasArgument("/i")) {
+            service->InstallService();
+        }
+        else if (cmdLine.hasArgument("-uninstall") || cmdLine.hasArgument("/uninstall")
+            || cmdLine.hasArgument("-u") || cmdLine.hasArgument("/u")
+            || cmdLine.hasArgument("-uninst") || cmdLine.hasArgument("/uninst")) {
+            service->UninstallService();
+        }
+        else {
+            // is not a windows service
+            isService = false;
+        }
+
+        if (service) {
+            service->OnStopService();
+            //delete service;
+        }
     }
 
     ///*
@@ -110,7 +113,17 @@ int IocpServd_main(int argc, char *argv[])
 
 NS_IOCPSERVD_END
 
+class JimiProgram
+{
+public:
+    int Run(int argc, char *argv[])    { return 0; };
+    int Run(int argc, wchar_t *argv[]) { return 0; };
+};
+
 int main(int argc, char *argv[])
 {
+    JimiProgram program;
+    int nResult = program.Run(argc, argv);
+
     return IocpServd_main(argc, argv);
 }

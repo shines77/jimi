@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)include&quot;;&quot;$(SolutionDir)src&quot;;.\include;.\src;.\test;.\deps;&quot;$(ProjectDir)include&quot;;&quot;$(ProjectDir)src&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;JIMI_LIB;LOG4CC_LIB;LOG4CC_USE_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -109,7 +109,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)include&quot;;&quot;$(SolutionDir)src&quot;;.\include;.\src;.\test;.\deps;&quot;$(ProjectDir)include&quot;;&quot;$(ProjectDir)src&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;JIMI_LIB;LOG4CC_LIB;LOG4CC_USE_STATIC"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -162,22 +162,22 @@
 					Name="core"
 					>
 					<File
-						RelativePath="..\..\..\..\include\jimi\jimi_all.h"
+						RelativePath="..\..\..\..\src\jimi\jimi_all.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\include\jimi\core\jimi_def.h"
+						RelativePath="..\..\..\..\src\jimi\core\jimi_def.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\include\jimi\core\jimi_export.h"
+						RelativePath="..\..\..\..\src\jimi\core\jimi_export.h"
 						>
 					</File>
 					<Filter
 						Name="vs"
 						>
 						<File
-							RelativePath="..\..\..\..\include\jimi\core\vs\stdint.h"
+							RelativePath="..\..\..\..\src\jimi\core\vs\stdint.h"
 							>
 						</File>
 					</Filter>
@@ -185,7 +185,7 @@
 						Name="win32"
 						>
 						<File
-							RelativePath="..\..\..\..\include\jimi\core\win32\jimi_config.h"
+							RelativePath="..\..\..\..\src\jimi\core\win32\jimi_config.h"
 							>
 						</File>
 					</Filter>
@@ -194,15 +194,15 @@
 					Name="platform"
 					>
 					<File
-						RelativePath="..\..\..\..\include\jimi\platform\jimi_compiler_config.h"
+						RelativePath="..\..\..\..\src\jimi\platform\jimi_compiler_config.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\include\jimi\platform\jimi_platform_config.h"
+						RelativePath="..\..\..\..\src\jimi\platform\jimi_platform_config.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\include\jimi\platform\jimi_targetver.h"
+						RelativePath="..\..\..\..\src\jimi\platform\jimi_targetver.h"
 						>
 					</File>
 				</Filter>
@@ -226,7 +226,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\include\jimi\system\CWinService.h"
+						RelativePath="..\..\..\..\src\jimi\system\CWinService.h"
 						>
 					</File>
 					<File
@@ -234,7 +234,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\include\jimi\system\mutex.h"
+						RelativePath="..\..\..\..\src\jimi\system\mutex.h"
 						>
 					</File>
 					<File
@@ -242,7 +242,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\include\jimi\system\scoped_lock.h"
+						RelativePath="..\..\..\..\src\jimi\system\scoped_lock.h"
 						>
 					</File>
 					<File
@@ -250,7 +250,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\include\jimi\system\WinService.h"
+						RelativePath="..\..\..\..\src\jimi\system\WinService.h"
 						>
 					</File>
 				</Filter>
@@ -262,11 +262,11 @@
 					Name="util"
 					>
 					<File
-						RelativePath="..\..\..\..\include\jimi\util\cmd_line.cpp"
+						RelativePath="..\..\..\..\src\jimi\util\cmd_line.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\include\jimi\util\cmd_line.h"
+						RelativePath="..\..\..\..\src\jimi\util\cmd_line.h"
 						>
 					</File>
 				</Filter>
@@ -274,7 +274,7 @@
 					Name="machine"
 					>
 					<File
-						RelativePath="..\..\..\..\include\jimi\machine\windows_api.h"
+						RelativePath="..\..\..\..\src\jimi\machine\windows_api.h"
 						>
 					</File>
 				</Filter>
@@ -282,15 +282,15 @@
 					Name="log"
 					>
 					<File
-						RelativePath="..\..\..\..\include\jimi\log\log_all.h"
+						RelativePath="..\..\..\..\src\jimi\log\log_all.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\include\jimi\log\log_config.h"
+						RelativePath="..\..\..\..\src\jimi\log\log_config.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\include\jimi\log\log_def.h"
+						RelativePath="..\..\..\..\src\jimi\log\log_def.h"
 						>
 					</File>
 					<File
@@ -298,7 +298,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\include\jimi\log\Logger.h"
+						RelativePath="..\..\..\..\src\jimi\log\Logger.h"
 						>
 					</File>
 				</Filter>

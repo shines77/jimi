@@ -24,6 +24,10 @@ public:
     IocpServdService(void);
     ~IocpServdService(void);
 
+    /**
+     * 注意: 切记!! 所有回调函数必须返回true, 除非你的处理出现了致命的错误(异常), 
+     *       则可以返回false, 程序会尝试处理该非正常事件, 比如中断处理并退出, 停止运行等.
+     **/
     bool OnInitService() {
         sLog.info("invoke IocpServdService::OnPauseService()");
         return true;
@@ -64,24 +68,14 @@ public:
         return true;
     }
 
-    bool OnServiceWorkerLoop(void *pvData) {
-        sLog.info("invoke IocpServdService::OnServiceWorkerLoop()");
+    bool ServiceWorkerMethod(void *pvData) {
+        static int s_nOnServiceLoopCnt = 0;
+        if (s_nOnServiceLoopCnt < 10) {
+            sLog.info("invoke IocpServdService::ServiceWorkerMethod(), cnt = %d", s_nOnServiceLoopCnt);
+            s_nOnServiceLoopCnt++;
+        }
         return true;
     }
-
-    /*
-    bool InstallService()   { return true; };
-    bool UninstallService() { return true; };
-
-    int RunService(int argc, TCHAR *argv[]) {
-        //
-        return 0;
-    }
-
-    static void SetInstance(WinServiceBase *pInstance) {
-        //
-    }
-    //*/
 };
 
 NS_IOCPSERVD_END

@@ -22,14 +22,17 @@ using namespace std;
 
 USING_NS_JIMI;
 USING_NS_JIMI_LOG;
-//USING_NS_JIMI_IOCP;
 USING_NS_JIMI_SYSTEM;
 
 #ifndef _ATL_QUOTES_SPACE
 #define _ATL_QUOTES_SPACE   2
 #endif
 
+#ifdef _UNICODE
 extern int _tmain(int argc, TCHAR *argv[]);
+#else
+extern int   main(int argc, char *argv[]);
+#endif
 
 extern TCHAR g_ServiceName[];
 extern TCHAR g_ServiceDisplayName[];

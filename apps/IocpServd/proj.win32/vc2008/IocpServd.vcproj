@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\apps\IocpServd\include;..\..\..\..\apps\IocpServd\src;..\..\..\..\apps\IocpServd;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)apps\IocpServd&quot;;&quot;$(SolutionDir)include&quot;;&quot;$(SolutionDir)src&quot;;.\include;.\src;.\test;.\deps;&quot;$(ProjectDir)include&quot;;&quot;$(ProjectDir)src&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\apps\IocpServd\src;..\..\..\..\apps\IocpServd\include;..\..\..\..\apps\IocpServd;..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)apps\IocpServd&quot;;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;JIMI_USE_LIB;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -118,7 +118,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\..\..\apps\IocpServd\include;..\..\..\..\apps\IocpServd\src;..\..\..\..\apps\IocpServd;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)apps\IocpServd&quot;;&quot;$(SolutionDir)include&quot;;&quot;$(SolutionDir)src&quot;;.\include;.\src;.\test;.\deps;&quot;$(ProjectDir)include&quot;;&quot;$(ProjectDir)src&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\apps\IocpServd\src;..\..\..\..\apps\IocpServd\include;..\..\..\..\apps\IocpServd;..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)apps\IocpServd&quot;;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;JIMI_USE_LIB;"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -192,12 +192,6 @@
 				RelativePath="..\..\src\IocpServdService.h"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="include"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
 			<File
 				RelativePath="..\..\src\targetver.h"
 				>

@@ -47,7 +47,7 @@ NS_JIMI_SYSTEM_BEGIN
 
 typedef WINADVAPI BOOL (WINAPI *CSD_T)(SC_HANDLE, DWORD, LPCVOID);
 
-enum eServiceStatus {
+typedef enum eServiceStatus {
     SVC_STATUS_UNKNOWN = -2,
     SVC_STATUS_NOTINSERVICE = -1,
     SVC_STATUS_STOPPED,
@@ -58,7 +58,7 @@ enum eServiceStatus {
     SVC_STATUS_PAUSE_PENDING,
     SVC_STATUS_RESUME_PENDING,
     SVC_STATUS_STOP_PENDING,
-};
+} eServiceStatus;
 
 //
 // 参考: MangOS 源码 以及
@@ -66,7 +66,7 @@ enum eServiceStatus {
 //       Writing Tools for Windows in C++
 //       http://sprogram.com.ua/en/articles/how-write-service-for-windows-with-cpp
 
-class IWinServiceBase
+class JIMI_DLL IWinServiceBase
 {
     virtual bool OnInitService() = 0;
 
@@ -81,15 +81,18 @@ class IWinServiceBase
     virtual bool OnCustomCommand(DWORD dwControlCode) = 0;
     virtual bool OnUnknownCommand(DWORD dwControlCode) = 0;
 
-    virtual bool OnServiceWorkerLoop(void *pvData) = 0;
+    virtual bool ServiceWorkerMethod(void *pvData) = 0;
 };
 
 template <class T>
-class WinServiceBase
+class JIMI_DLL WinServiceBase
 {
 public:
     WinServiceBase(void);
+    WinServiceBase(WinServiceBase *pInstance, bool bCreateByNew = true);
     ~WinServiceBase(void);
+
+    void Release();
 
     bool InstallService();
     bool UninstallService();
@@ -107,12 +110,24 @@ public:
     bool OnCustomCommand(DWORD dwControlCode);
     bool OnUnknownCommand(DWORD dwControlCode);
 
-    bool OnServiceWorkerLoop(void *pvData);
+    bool ServiceWorkerMethod(void *pvData);
+
+    bool SetCreateByNew(bool bCreateByNew);
+
+    int RunService();
+
+    TCHAR *GetServiceName()         { return m_ServiceName;        }
+    TCHAR *GetServiceDisplayName()  { return m_ServiceDisplayName; }
+    TCHAR *GetServiceDescription()  { return m_ServiceDescription; }
+
+    TCHAR *SetServiceName(TCHAR *szServiceName);
+    TCHAR *SetServiceDisplayName(TCHAR *szServiceDisplayName);
+    TCHAR *SetServiceDescription(TCHAR *szServiceDescription);
+
+    static int RunService(WinServiceBase *pInstance);
 
     static WinServiceBase *GetInstance();
-    static void SetInstance(WinServiceBase *pInstance);
-
-    static int RunService(int argc, TCHAR *argv[]);
+    static void SetInstance(WinServiceBase *pInstance, bool bCreateByNew);
 
     static void ServiceReportEvent(LPTSTR szFunction, int nEventId);
     static void WINAPI ServiceControlHandler(DWORD dwControlCode);
@@ -124,26 +139,66 @@ public:
     static WinServiceBase  *s_pServiceInstance;
 
 private:
-    int                     m_nServiceStatus;
+    bool                    m_bCreateByNew;
     unsigned int            m_nSleepTime;
+    int                     m_nServiceStatus;
 
     SERVICE_STATUS          m_ServiceStatus;
     SERVICE_STATUS_HANDLE   m_ServiceStatusHandle;
+
+    TCHAR                   m_ServiceName[32];
+    TCHAR                   m_ServiceDisplayName[128];
+    TCHAR                   m_ServiceDescription[512];
 };
 
 template <class T>
 WinServiceBase<T>::WinServiceBase(void)
-: m_nServiceStatus(SVC_STATUS_UNKNOWN)
+: m_bCreateByNew(false)
 , m_nSleepTime(SERVICE_SLEEP_TIME)
+, m_nServiceStatus(SVC_STATUS_UNKNOWN)
 , m_ServiceStatusHandle(NULL)
 {
+    ::ZeroMemory(&m_ServiceName, sizeof(m_ServiceName));
+    ::ZeroMemory(&m_ServiceDisplayName, sizeof(m_ServiceDisplayName));
+    ::ZeroMemory(&m_ServiceDescription, sizeof(m_ServiceDescription));
     ::ZeroMemory(&m_ServiceStatus, sizeof(m_ServiceStatus));
 }
 
 template <class T>
 WinServiceBase<T>::~WinServiceBase(void)
 {
+    // Do nothing!!
+    Release();
+}
 
+template <class T>
+void WinServiceBase<T>::Release()
+{
+    sLog.info("WinServiceBase<T> Release(), error = %d.", GetLastError());
+}
+
+template <class T>
+TCHAR * WinServiceBase<T>::SetServiceName(TCHAR *szServiceName)
+{
+    if (szServiceName)
+        ::_tcscpy_s(m_ServiceName, szServiceName);
+    return m_ServiceName;
+}
+
+template <class T>
+TCHAR * WinServiceBase<T>::SetServiceDisplayName(TCHAR *szServiceDisplayName)
+{
+    if (szServiceDisplayName)
+        ::_tcscpy_s(m_ServiceDisplayName, szServiceDisplayName);
+    return m_ServiceDisplayName;
+}
+
+template <class T>
+TCHAR * WinServiceBase<T>::SetServiceDescription(TCHAR *szServiceDescription)
+{
+    if (szServiceDescription)
+        ::_tcscpy_s(m_ServiceDescription, szServiceDescription);
+    return m_ServiceDescription;
 }
 
 template <class T>
@@ -167,13 +222,13 @@ bool WinServiceBase<T>::InstallService()
     }
 
     // Quote the FilePath before calling CreateService
-    size_t dwLen = _tcslen(szPath + 1);
+    size_t dwLen = ::_tcslen(szPath + 1);
     szPath[0] = _T('\"');
     szPath[dwLen + 1] = _T('\"');
     szPath[dwLen + 2] = _T('\0');
 #endif
 
-    ::strcat_s(szPath, _countof(szPath), " -run");
+    ::_tcscat_s(szPath, _countof(szPath), _T(" -run"));
 
     // Get a handle to the SCM database.
     SC_HANDLE schSCManager = ::OpenSCManager(
@@ -182,10 +237,10 @@ bool WinServiceBase<T>::InstallService()
         SC_MANAGER_ALL_ACCESS);  // full access rights
 
     if (NULL == schSCManager) {
-        int LastError = GetLastError();
-        sLog.error("OpenSCManager failed (%d).", LastError);
+        int nLastError = GetLastError();
+        sLog.error("OpenSCManager failed (%d).", nLastError);
         sLog.error("SERVICE: No access to service control manager.");
-        if (LastError == 5) {
+        if (nLastError == 5) {
             sLog.error("please, try run with admin rights.");
         }
         return false;
@@ -194,8 +249,8 @@ bool WinServiceBase<T>::InstallService()
     // Create the service
     SC_HANDLE schService = ::CreateService(
         schSCManager,                   // SCM database
-        g_ServiceName,                  // name of service
-        g_ServiceDisplayName,           // service name to display
+        m_ServiceName,                  // name of service
+        m_ServiceDisplayName,           // service name to display
         SERVICE_ALL_ACCESS,             // desired access
         SERVICE_WIN32_OWN_PROCESS,      // service type
         SERVICE_DEMAND_START,           // start type
@@ -276,7 +331,7 @@ bool WinServiceBase<T>::UninstallService()
 
     SC_HANDLE schService = ::OpenService(
         schSCManager,
-        g_ServiceName,                          // name of service
+        m_ServiceName,                          // name of service
         SERVICE_QUERY_STATUS | DELETE);         // desired access
 
     if (!schService) {
@@ -312,10 +367,19 @@ void WinServiceBase<T>::ServiceReportEvent(LPTSTR szFunction, int nEventId)
     if (NULL != hEventSource) {
         ::StringCchPrintf(buffer, 128, _T("%s failed with %d"), szFunction, nLastErr);
 
-        lpszStrings[0] = g_ServiceName;
+        WinServiceBase<T> *pInstance = s_pServiceInstance;
+        if (pInstance == NULL) {
+            sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+            //throw ERROR_SERVICE_INSTANCE_NOT_INITED;
+
+            lpszStrings[0] = _T("Unknown WinServiceBase<T>");
+        }
+        else {
+            lpszStrings[0] = pInstance->GetServiceName();
+        }
         lpszStrings[1] = buffer;
 
-        ::ReportEvent(hEventSource,        // event log handle
+        ::ReportEvent(hEventSource,      // event log handle
                     EVENTLOG_ERROR_TYPE, // event type
                     0,                   // event category
                     nEventId,            // event identifier
@@ -394,15 +458,23 @@ bool WinServiceBase<T>::OnUnknownCommand(DWORD dwControlCode)
 }
 
 template <class T>
-bool WinServiceBase<T>::OnServiceWorkerLoop(void *pvData)
+bool WinServiceBase<T>::ServiceWorkerMethod(void *pvData)
 {
     static int s_nOnServiceLoopCnt = 0;
     if (s_nOnServiceLoopCnt < 10) {
-        sLog.info("invoke WinServiceBase<T>::OnServiceWorkerLoop()");
+        sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod(), cnt = %d", s_nOnServiceLoopCnt);
         s_nOnServiceLoopCnt++;
     }
     T *pT = static_cast<T *>(this);
-    return pT->OnServiceWorkerLoop(pvData);
+    return pT->ServiceWorkerMethod(pvData);
+}
+
+template <class T>
+bool WinServiceBase<T>::SetCreateByNew(bool bCreateByNew)
+{
+    bool oldCreateByNew = m_bCreateByNew;
+    m_bCreateByNew = bCreateByNew;
+    return oldCreateByNew;
 }
 
 template <class T>
@@ -414,11 +486,16 @@ WinServiceBase<T> *WinServiceBase<T>::GetInstance()
 }
 
 template <class T>
-void WinServiceBase<T>::SetInstance(WinServiceBase<T> *pServiceInstance)
+void WinServiceBase<T>::SetInstance(WinServiceBase *pServiceInstance, bool bCreateByNew)
 {
     if (pServiceInstance == NULL) {
-        if (s_pServiceInstance != NULL)
+        if (s_pServiceInstance != NULL) {
+            s_pServiceInstance->Release();
             delete s_pServiceInstance;
+        }
+    }
+    else {
+        pServiceInstance->SetCreateByNew(bCreateByNew);
     }
     s_pServiceInstance = pServiceInstance;
 }
@@ -562,7 +639,7 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
     static int s_nServiceLoopCnt = 0;
     // The worker loop of a service
     while (pInstance->m_ServiceStatus.dwCurrentState == SERVICE_RUNNING) {
-        if (!pInstance->OnServiceWorkerLoop(NULL)) {
+        if (!pInstance->ServiceWorkerMethod(NULL)) {
             pInstance->m_ServiceStatus.dwCurrentState    = SERVICE_STOPPED;
             pInstance->m_ServiceStatus.dwWin32ExitCode   = -1;
             ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &(pInstance->m_ServiceStatus));
@@ -608,7 +685,7 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
             return;
         }
 
-        size_t nLen = std::_tcslen(szPath);
+        size_t nLen = ::_tcslen(szPath);
         for (i = 0; i < nLen; ++i) {
             if (szPath[i] == _T('\\'))
                 last_slash = i;
@@ -679,21 +756,28 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
     }
 }
 
+
 template <class T>
-int WinServiceBase<T>::RunService(int argc, TCHAR *argv[])
+int WinServiceBase<T>::RunService()
+{
+    return WinServiceBase<T>::RunService(this);
+}
+
+template <class T>
+int WinServiceBase<T>::RunService(WinServiceBase<T> *pServiceInstance)
 {
     // If command-line parameter is "install", install the service.
     // Otherwise, the service is probably being started by the SCM.
-
-    WinServiceBase<T> *pInstance = s_pServiceInstance;
-    if (pInstance == NULL) {
+    if (pServiceInstance == NULL)
+        pServiceInstance = s_pServiceInstance;
+    if (pServiceInstance == NULL) {
         sLog.error("%s%s", "WinServiceBase<T>::RunService(): ", ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
     // TO_DO: Add any additional services for the process to this table.
     SERVICE_TABLE_ENTRY serviceTable[] = {
-        { g_ServiceName, (LPSERVICE_MAIN_FUNCTION)WinServiceBase<T>::ServiceMain },
+        { pServiceInstance->GetServiceName(), (LPSERVICE_MAIN_FUNCTION)&WinServiceBase<T>::ServiceMain },
         { 0, 0 }
     };
 

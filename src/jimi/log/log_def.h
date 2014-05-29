@@ -28,6 +28,9 @@ using namespace std;
 #define NS_JIMI_LOG_BEGIN               namespace log {
 #define NS_JIMI_LOG_END                 }
 
+#define NS_JIMI_LOG_NAME                jimi::log
+#define NS_JIMI_LOG(XX)                 jimi::log::XX
+
 #define USING_NS_JIMI_LOG               using namespace jimi::log;
 
 #define USING_NS_JIMI_LOG_SUB(NS)       using namespace jimi::log::##NS##;

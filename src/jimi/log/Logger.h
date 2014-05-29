@@ -31,51 +31,51 @@ using namespace std;
 ////////////////////////////////////////////////////////////////
 
 #if defined(DO_JIMI_LOG) && (DO_JIMI_LOG != 0)
-#define JIMI_LOG(x)                 ((void)utils.log.print(x))
-#define JIMI_LOG0(x)                ((void)utils.log.print(x))
-#define JIMI_LOG1(x,a)              ((void)utils.log.print(x,(a)))
-#define JIMI_LOG2(x,a,b)            ((void)utils.log.print(x,(a),(b)))
-#define JIMI_LOG3(x,a,b,c)          ((void)utils.log.print(x,(a),(b),(c)))
-#define JIMI_LOG4(x,a,b,c,d)        ((void)utils.log.print(x,(a),(b),(c),(d)))
+#define JIMI_LOG(x)                     ((void)NS_JIMI_LOG(utils.log.print(x)))
+#define JIMI_LOG0(x)                    ((void)NS_JIMI_LOG(utils.log.print(x)))
+#define JIMI_LOG1(x,a)                  ((void)NS_JIMI_LOG(utils.log.print(x,(a))))
+#define JIMI_LOG2(x,a,b)                ((void)NS_JIMI_LOG(utils.log.print(x,(a),(b))))
+#define JIMI_LOG3(x,a,b,c)              ((void)NS_JIMI_LOG(utils.log.print(x,(a),(b),(c))))
+#define JIMI_LOG4(x,a,b,c,d)            ((void)NS_JIMI_LOG(utils.log.print(x,(a),(b),(c),(d))))
 #else
-#define JIMI_LOG(x)                 ((void)(0))
-#define JIMI_LOG0(x)                ((void)(0))
-#define JIMI_LOG1(x,a)              ((void)(0))
-#define JIMI_LOG2(x,a,b)            ((void)(0))
-#define JIMI_LOG3(x,a,b,c)          ((void)(0))
-#define JIMI_LOG4(x,a,b,c,d)        ((void)(0))
+#define JIMI_LOG(x)                     ((void)(0))
+#define JIMI_LOG0(x)                    ((void)(0))
+#define JIMI_LOG1(x,a)                  ((void)(0))
+#define JIMI_LOG2(x,a,b)                ((void)(0))
+#define JIMI_LOG3(x,a,b,c)              ((void)(0))
+#define JIMI_LOG4(x,a,b,c,d)            ((void)(0))
 #endif /* DO_JIMI_LOG */
 
-#define _JIMI_LOG                   utils.log.print
-#define sLog                        utils.log
+#define _JIMI_LOG                       NS_JIMI_LOG(utils.log.print)
+#define sLog                            NS_JIMI_LOG(utils.log)
 
 ////////////////////////////////////////////////////////////////
 
 #if defined(DO_JIMI_LOG_TRACE) && (DO_JIMI_LOG_TRACE != 0)
 /*
 #include <cstdio>
-#define JIMI_LOG_TRACE(x)             ((void)std::printf(x))
-#define JIMI_LOG_TRACE0(x)            ((void)std::printf(x))
-#define JIMI_LOG_TRACE1(x,a)          ((void)std::printf(x,a))
-#define JIMI_LOG_TRACE2(x,a,b)        ((void)std::printf(x,a,b))
-#define JIMI_LOG_TRACE3(x,a,b,c)      ((void)std::printf(x,a,b,c))
+#define JIMI_LOG_TRACE(x)               ((void)std::printf(x))
+#define JIMI_LOG_TRACE0(x)              ((void)std::printf(x))
+#define JIMI_LOG_TRACE1(x,a)            ((void)std::printf(x,a))
+#define JIMI_LOG_TRACE2(x,a,b)          ((void)std::printf(x,a,b))
+#define JIMI_LOG_TRACE3(x,a,b,c)        ((void)std::printf(x,a,b,c))
 //*/
-#define JIMI_LOG_TRACE(x)             ((void)utils.log.trace(x))
-#define JIMI_LOG_TRACE0(x)            ((void)utils.log.trace(x))
-#define JIMI_LOG_TRACE1(x,a)          ((void)utils.log.trace(x,(a)))
-#define JIMI_LOG_TRACE2(x,a,b)        ((void)utils.log.trace(x,(a),(b)))
-#define JIMI_LOG_TRACE3(x,a,b,c)      ((void)utils.log.trace(x,(a),(b),(c)))
-#define JIMI_LOG_TRACE4(x,a,b,c,d)    ((void)utils.log.trace(x,(a),(b),(c),(d)))
+#define JIMI_LOG_TRACE(x)               ((void)NS_JIMI_LOG(utils.log.trace(x)))
+#define JIMI_LOG_TRACE0(x)              ((void)NS_JIMI_LOG(utils.log.trace(x)))
+#define JIMI_LOG_TRACE1(x,a)            ((void)NS_JIMI_LOG(utils.log.trace(x,(a))))
+#define JIMI_LOG_TRACE2(x,a,b)          ((void)NS_JIMI_LOG(utils.log.trace(x,(a),(b)))
+#define JIMI_LOG_TRACE3(x,a,b,c)        ((void)NS_JIMI_LOG(utils.log.trace(x,(a),(b),(c))))
+#define JIMI_LOG_TRACE4(x,a,b,c,d)      ((void)NS_JIMI_LOG(utils.log.trace(x,(a),(b),(c),(d))))
 #else
-#define JIMI_LOG_TRACE(x)             ((void)(0))
-#define JIMI_LOG_TRACE0(x)            ((void)(0))
-#define JIMI_LOG_TRACE1(x,a)          ((void)(0))
-#define JIMI_LOG_TRACE2(x,a,b)        ((void)(0))
-#define JIMI_LOG_TRACE3(x,a,b,c)      ((void)(0))
-#define JIMI_LOG_TRACE4(x,a,b,c,d)    ((void)(0))
+#define JIMI_LOG_TRACE(x)               ((void)(0))
+#define JIMI_LOG_TRACE0(x)              ((void)(0))
+#define JIMI_LOG_TRACE1(x,a)            ((void)(0))
+#define JIMI_LOG_TRACE2(x,a,b)          ((void)(0))
+#define JIMI_LOG_TRACE3(x,a,b,c)        ((void)(0))
+#define JIMI_LOG_TRACE4(x,a,b,c,d)      ((void)(0))
 #endif /* DO_JIMI_LOG_TRACE */
 
-#define _JIMI_LOG_TRACE               utils.log.trace
+#define _JIMI_LOG_TRACE                 NS_JIMI_LOG(utils.log.trace)
 
 ////////////////////////////////////////////////////////////////
 
@@ -93,11 +93,11 @@ using namespace std;
 #define MAX_LOG_TEXT_LEN            1024
 
 #ifdef _WIN32
-#define DEFAULT_LOG_FILENAME        "iocp_server.log"
-#define DEFAULT_LOG_FILENAME_GLOBAL "iocp_global.log"
+#define DEFAULT_LOG_FILENAME        "jimi_server.log"
+#define DEFAULT_LOG_FILENAME_GLOBAL "jimi_global.log"
 #else
-#define DEFAULT_LOG_FILENAME        "iocp_server.log"
-#define DEFAULT_LOG_FILENAME_GLOBAL "iocp_global.log"
+#define DEFAULT_LOG_FILENAME        "jimi_server.log"
+#define DEFAULT_LOG_FILENAME_GLOBAL "jimi_global.log"
 #endif  /* _WIN32 */
 
 #define DEFAULT_LOG_FORMAT          "[$datetime] [$type] $msg"
