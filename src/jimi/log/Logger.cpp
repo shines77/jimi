@@ -653,7 +653,7 @@ void  Logger::vprintf(bool newline, const char *fmt, va_list arglist)
 void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
                   const char *fmt, va_list arglist)
 {
-#if defined(DO_JIMI_LOG_LOG) && (DO_JIMI_LOG_LOG != 0)
+#if defined(DO_JIMI_LOG) && (DO_JIMI_LOG != 0)
     int n;
     char msg_buf[MAX_LOG_TEXT_LEN];    
     n = _vsnprintf_s_l(msg_buf, _countof(msg_buf), MAX_LOG_TEXT_LEN - 1, fmt, 0, arglist);
@@ -766,7 +766,7 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
             ::_write((int)m_log_file, msg_buf, strlen(msg_buf));
     }
 #endif  /* JIMI_LOG_TO_FILE */
-#endif  /* DO_JIMI_LOG_LOG */
+#endif  /* DO_JIMI_LOG */
 }
 
 void Logger::write(const char *fmt, ...)

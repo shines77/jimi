@@ -222,6 +222,14 @@
 					Name="system"
 					>
 					<File
+						RelativePath="..\..\..\..\src\jimi\system\CWinService.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\include\jimi\system\CWinService.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimi\system\mutex.cpp"
 						>
 					</File>

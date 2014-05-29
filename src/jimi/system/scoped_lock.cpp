@@ -5,7 +5,8 @@ NS_JIMI_BEGIN
 
 NS_JIMI_SYSTEM_BEGIN
 
-#if 0
+#if JIMI_USE_ASSERT
+
 template<class T>
 void scoped_lock::internal_acquire(T& mutex)
 {
@@ -23,6 +24,7 @@ void scoped_lock::internal_release(T& mutex)
 {
     //
 }
+
 #endif
 
 NS_JIMI_SYSTEM_END

@@ -1,18 +1,10 @@
 
-#ifndef _JIMI_SYSTEM_WIN_SERVICE_H_
-#define _JIMI_SYSTEM_WIN_SERVICE_H_
-
-#if defined(_MSC_VER) && (_MSC_VER >= 1200)
-#pragma once
-#endif
-
-#include <jimi/core/jimi_def.h>
+#include <jimi/platform/jimi_platform_config.h>
 
 #if JIMI_IS_WINDOWS
 
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
-#include <winsvc.h>
 
 #include <tchar.h>
 #include <string>
@@ -21,118 +13,42 @@
 #include <strsafe.h>
 #include <string.h>
 
+#include <jimi/system/CWinService.h>
 #include <jimi/log/log_all.h>
-//#include <jimi/iocp/IocpServd.h>
+
+#pragma comment(lib, "Advapi32.lib")
 
 using namespace std;
 
 USING_NS_JIMI;
 USING_NS_JIMI_LOG;
+//USING_NS_JIMI_IOCP;
 
-#if !defined(WINADVAPI)
-#if !defined(_ADVAPI32_)
-    #define WINADVAPI   DECLSPEC_IMPORT
-#else
-    #define WINADVAPI
-#endif
+#ifndef _ATL_QUOTES_SPACE
+#define _ATL_QUOTES_SPACE   2
 #endif
 
-#define SERVICE_SLEEP_TIME                  5000
+extern int _tmain(int argc, TCHAR *argv[]);
 
-#define ERROR_SERVICE_INSTANCE_NOT_INITED   "Service Instance is not initialized."
+extern TCHAR g_ServiceName[];
+extern TCHAR g_ServiceDisplayName[];
+extern TCHAR g_ServiceDescription[];
+
+extern int g_nServiceStatus;
+
+//SERVICE_STATUS gServiceStatus = {0};
+
+//SERVICE_STATUS_HANDLE gServiceStatusHandle = NULL;
+
+typedef WINADVAPI BOOL (WINAPI *CSD_T)(SC_HANDLE, DWORD, LPCVOID);
 
 NS_JIMI_BEGIN
 
 NS_JIMI_SYSTEM_BEGIN
 
-typedef WINADVAPI BOOL (WINAPI *CSD_T)(SC_HANDLE, DWORD, LPCVOID);
+CWinService *CWinService::s_pServiceInstance = NULL;
 
-enum eServiceStatus {
-    SVC_STATUS_UNKNOWN = -2,
-    SVC_STATUS_NOTINSERVICE = -1,
-    SVC_STATUS_STOPPED,
-    SVC_STATUS_RUNNING,
-    SVC_STATUS_PAUSED,
-
-    SVC_STATUS_START_PENDING,
-    SVC_STATUS_PAUSE_PENDING,
-    SVC_STATUS_RESUME_PENDING,
-    SVC_STATUS_STOP_PENDING,
-};
-
-//
-// 参考: MangOS 源码 以及
-//
-//       Writing Tools for Windows in C++
-//       http://sprogram.com.ua/en/articles/how-write-service-for-windows-with-cpp
-
-class IWinServiceBase
-{
-    virtual bool OnInitService() = 0;
-
-    virtual bool OnStartService(int argc, TCHAR *argv[]) = 0;
-    virtual bool OnStopService() = 0;
-
-    virtual bool OnPauseService() = 0;
-    virtual bool OnResumeService() = 0;
-
-    virtual bool OnShutdownService() = 0;
-
-    virtual bool OnCustomCommand(DWORD dwControlCode) = 0;
-    virtual bool OnUnknownCommand(DWORD dwControlCode) = 0;
-
-    virtual bool OnServiceWorkerLoop(void *pvData) = 0;
-};
-
-template <class T>
-class WinServiceBase
-{
-public:
-    WinServiceBase(void);
-    ~WinServiceBase(void);
-
-    bool InstallService();
-    bool UninstallService();
-
-    bool OnInitService();
-
-    bool OnStartService(int argc, TCHAR *argv[]);
-    bool OnStopService();
-
-    bool OnPauseService();
-    bool OnResumeService();
-
-    bool OnShutdownService();
-
-    bool OnCustomCommand(DWORD dwControlCode);
-    bool OnUnknownCommand(DWORD dwControlCode);
-
-    bool OnServiceWorkerLoop(void *pvData);
-
-    static WinServiceBase *GetInstance();
-    static void SetInstance(WinServiceBase *pInstance);
-
-    static int RunService(int argc, TCHAR *argv[]);
-
-    static void ServiceReportEvent(LPTSTR szFunction, int nEventId);
-    static void WINAPI ServiceControlHandler(DWORD dwControlCode);
-    static void WINAPI ServiceMain(int argc, TCHAR *argv[]);
-    static void WINAPI ServiceWorkerLoop(int argc, TCHAR *argv[]);
-
-    void ReportServiceStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwWaitHint);
-
-    static WinServiceBase  *s_pServiceInstance;
-
-private:
-    int                     m_nServiceStatus;
-    unsigned int            m_nSleepTime;
-
-    SERVICE_STATUS          m_ServiceStatus;
-    SERVICE_STATUS_HANDLE   m_ServiceStatusHandle;
-};
-
-template <class T>
-WinServiceBase<T>::WinServiceBase(void)
+CWinService::CWinService( void )
 : m_nServiceStatus(SVC_STATUS_UNKNOWN)
 , m_nSleepTime(SERVICE_SLEEP_TIME)
 , m_ServiceStatusHandle(NULL)
@@ -140,14 +56,12 @@ WinServiceBase<T>::WinServiceBase(void)
     ::ZeroMemory(&m_ServiceStatus, sizeof(m_ServiceStatus));
 }
 
-template <class T>
-WinServiceBase<T>::~WinServiceBase(void)
+CWinService::~CWinService()
 {
 
 }
 
-template <class T>
-bool WinServiceBase<T>::InstallService()
+bool CWinService::InstallService()
 {
     TCHAR szPath[MAX_PATH + 10];
     size_t nLen = sizeof(szPath) / sizeof(szPath[0]);
@@ -261,8 +175,7 @@ bool WinServiceBase<T>::InstallService()
     return true;
 }
 
-template <class T>
-bool WinServiceBase<T>::UninstallService()
+bool CWinService::UninstallService()
 {
     SC_HANDLE schSCManager = ::OpenSCManager(
         NULL,                    // local computer
@@ -296,8 +209,7 @@ bool WinServiceBase<T>::UninstallService()
     return true;
 }
 
-template <class T>
-void WinServiceBase<T>::ServiceReportEvent(LPTSTR szFunction, int nEventId)
+void CWinService::ServiceReportEvent(LPTSTR szFunction, int nEventId)
 {
     int nLastErr = GetLastError();
 
@@ -327,106 +239,61 @@ void WinServiceBase<T>::ServiceReportEvent(LPTSTR szFunction, int nEventId)
     }
 }
 
-template <class T>
-bool WinServiceBase<T>::OnInitService()
+bool CWinService::OnInitService()
 {
-    sLog.info("invoke WinServiceBase<T>::OnInitService()");
-    T *pT = static_cast<T *>(this);
-    return pT->OnInitService();
+    sLog.info("invoke CWinService::OnInitService()");
+    return true;
 }
 
-template <class T>
-bool WinServiceBase<T>::OnStartService(int argc, TCHAR *argv[])
+bool CWinService::OnStartService()
 {
-    sLog.info("invoke WinServiceBase<T>::OnStartService()");
-    T *pT = static_cast<T *>(this);
-    return pT->OnStartService(argc, argv);
+    sLog.info("invoke CWinService::OnStartService()");
+    return true;
 }
 
-template <class T>
-bool WinServiceBase<T>::OnStopService()
+bool CWinService::OnStopService()
 {
-    sLog.info("invoke WinServiceBase<T>::OnStopService()");
-    T *pT = static_cast<T *>(this);
-    return pT->OnStopService();
+    sLog.info("invoke CWinService::OnStopService()");
+    return true;
 }
 
-template <class T>
-bool WinServiceBase<T>::OnPauseService()
+bool CWinService::OnPauseService()
 {
-    sLog.info("invoke WinServiceBase<T>::OnPauseService()");
-    T *pT = static_cast<T *>(this);
-    return pT->OnPauseService();
+    sLog.info("invoke CWinService::OnPauseService()");
+    return true;
 }
 
-template <class T>
-bool WinServiceBase<T>::OnResumeService()
+bool CWinService::OnResumeService()
 {
-    sLog.info("invoke WinServiceBase<T>::OnResumeService()");
-    T *pT = static_cast<T *>(this);
-    return pT->OnResumeService();
+    sLog.info("invoke CWinService::OnResumeService()");
+    return true;
 }
 
-template <class T>
-bool WinServiceBase<T>::OnShutdownService()
-{
-    sLog.info("invoke WinServiceBase<T>::OnShutdownService()");
-    T *pT = static_cast<T *>(this);
-    return pT->OnShutdownService();
-}
-
-template <class T>
-bool WinServiceBase<T>::OnCustomCommand(DWORD dwControlCode)
-{
-    sLog.info("invoke WinServiceBase<T>::OnCustomCommand(), dwControlCode = %d.", dwControlCode);
-    T *pT = static_cast<T *>(this);
-    return pT->OnCustomCommand(dwControlCode);
-}
-
-template <class T>
-bool WinServiceBase<T>::OnUnknownCommand(DWORD dwControlCode)
-{
-    sLog.info("invoke WinServiceBase<T>::OnUnknownCommand(), dwControlCode = %d.", dwControlCode);
-    T *pT = static_cast<T *>(this);
-    return pT->OnUnknownCommand(dwControlCode);
-}
-
-template <class T>
-bool WinServiceBase<T>::OnServiceWorkerLoop(void *pvData)
+bool CWinService::OnServiceLoop()
 {
     static int s_nOnServiceLoopCnt = 0;
     if (s_nOnServiceLoopCnt < 10) {
-        sLog.info("invoke WinServiceBase<T>::OnServiceWorkerLoop()");
+        sLog.info("invoke CWinService::OnServiceLoop()");
         s_nOnServiceLoopCnt++;
     }
-    T *pT = static_cast<T *>(this);
-    return pT->OnServiceWorkerLoop(pvData);
+    return true;
 }
 
-template <class T>
-WinServiceBase<T> *WinServiceBase<T>::GetInstance()
+CWinService *CWinService::GetInstance()
 {
-    if (s_pServiceInstance == NULL)
-        s_pServiceInstance = new WinServiceBase<T>();
     return s_pServiceInstance;
 }
 
-template <class T>
-void WinServiceBase<T>::SetInstance(WinServiceBase<T> *pServiceInstance)
+void CWinService::SetInstance(CWinService *pServiceInstance)
 {
-    if (pServiceInstance == NULL) {
-        if (s_pServiceInstance != NULL)
-            delete s_pServiceInstance;
-    }
     s_pServiceInstance = pServiceInstance;
 }
 
-template <class T>
-void WinServiceBase<T>::ReportServiceStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwWaitHint)
+void CWinService::ReportServiceStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwWaitHint)
 {
-    sLog.info("invoke WinServiceBase<T>::ReportServiceStatus() enter.");
+    sLog.info("invoke CWinService::ReportServiceStatus() enter.");
 
-    WinServiceBase<T> *pInstance = s_pServiceInstance;
+    CWinService *pInstance = s_pServiceInstance;
     if (pInstance == NULL) {
         sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
@@ -456,13 +323,12 @@ void WinServiceBase<T>::ReportServiceStatus(DWORD dwCurrentState, DWORD dwWin32E
     // Report the status of the service to the SCM.
     ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &pInstance->m_ServiceStatus);
 
-    sLog.info("invoke WinServiceBase<T>::ReportServiceStatus() over.");
+    sLog.info("invoke CWinService::ReportServiceStatus() over.");
 }
 
-template <class T>
-void WinServiceBase<T>::ServiceControlHandler(DWORD dwControlCode)
+void CWinService::ServiceControlHandler(DWORD dwControlCode)
 {
-    WinServiceBase<T> *pInstance = s_pServiceInstance;
+    CWinService *pInstance = s_pServiceInstance;
     if (pInstance == NULL) {
         sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
@@ -477,10 +343,6 @@ void WinServiceBase<T>::ServiceControlHandler(DWORD dwControlCode)
             // Signal that service try stop
             pInstance->ReportServiceStatus(SERVICE_STOP_PENDING, NO_ERROR, 0);
             pInstance->m_nServiceStatus = SVC_STATUS_STOP_PENDING;
-
-            if (dwControlCode == SERVICE_CONTROL_SHUTDOWN) {
-                pInstance->OnShutdownService();
-            }
 
             // Signal the service to stop.
             if (pInstance->OnStopService()) {
@@ -531,27 +393,21 @@ void WinServiceBase<T>::ServiceControlHandler(DWORD dwControlCode)
         default:
             if (dwControlCode >= 128 && dwControlCode <= 255) {
                 // user defined control code
-                if (pInstance->OnCustomCommand(dwControlCode)) {
-                    //
-                }
+                break;
             }
             else {
                 // unrecognized control code
-                if (pInstance->OnUnknownCommand(dwControlCode)) {
-                    //
-                }
+                break;
             }
-            break;
     }
 
     pInstance->ReportServiceStatus(pInstance->m_ServiceStatus.dwCurrentState, NO_ERROR, 0);
     //SetServiceStatus(pInstance->gServiceStatusHandle, &pInstance->gServiceStatus);
 }
 
-template <class T>
-void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
+void WINAPI CWinService::ServiceLoop(DWORD argc, TCHAR *argv[])
 {
-    WinServiceBase<T> *pInstance = s_pServiceInstance;
+    CWinService *pInstance = s_pServiceInstance;
     if (pInstance == NULL) {
         sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
@@ -560,7 +416,7 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
     static int s_nServiceLoopCnt = 0;
     // The worker loop of a service
     while (pInstance->m_ServiceStatus.dwCurrentState == SERVICE_RUNNING) {
-        if (!pInstance->OnServiceWorkerLoop(NULL)) {
+        if (!pInstance->OnServiceLoop()) {
             pInstance->m_ServiceStatus.dwCurrentState    = SERVICE_STOPPED;
             pInstance->m_ServiceStatus.dwWin32ExitCode   = -1;
             ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &(pInstance->m_ServiceStatus));
@@ -568,17 +424,16 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
         }
 
         if (s_nServiceLoopCnt < 10) {
-            sLog.info("WinServiceBase<T>::ServiceLoop(): time = %d", GetTickCount());;
+            sLog.info("CWinService::ServiceLoop(): time = %d", GetTickCount());;
             s_nServiceLoopCnt++;
         }
         ::Sleep(pInstance->m_nSleepTime);
     }
 }
 
-template <class T>
-void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
+void WINAPI CWinService::ServiceMain(DWORD argc, TCHAR *argv[])
 {
-    WinServiceBase<T> *pInstance = s_pServiceInstance;
+    CWinService *pInstance = s_pServiceInstance;
     if (pInstance == NULL) {
         sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
@@ -593,7 +448,7 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
     pInstance->m_ServiceStatus.dwCheckPoint              = 0;
     pInstance->m_ServiceStatus.dwWaitHint                = 0;
 
-    pInstance->m_ServiceStatusHandle = ::RegisterServiceCtrlHandler(g_ServiceName, WinServiceBase<T>::ServiceControlHandler);
+    pInstance->m_ServiceStatusHandle = ::RegisterServiceCtrlHandler(g_ServiceName, CWinService::ServiceControlHandler);
 
     if (pInstance->m_ServiceStatusHandle) {
         TCHAR szPath[_MAX_PATH + 1];
@@ -602,7 +457,7 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
 
         if (::GetModuleFileName(NULL, szPath, nBufLen) <= 0) {
             // can't get the app's exe name
-            sLog.error("WinServiceBase<T>::ServiceMain: GetModuleFileName() call failed.");
+            sLog.error("CWinService::ServiceMain: GetModuleFileName() call failed.");
             return;
         }
 
@@ -622,10 +477,9 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
 
         // Initialize Service
         if (!pInstance->OnInitService()) {
-            sLog.error("WinServiceBase<T>::ServiceMain: Initialization failed.");
-            pInstance->m_ServiceStatus.dwControlsAccepted  &= ~(SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN);
-            pInstance->m_ServiceStatus.dwCurrentState       = SERVICE_STOPPED;
-            pInstance->m_ServiceStatus.dwWin32ExitCode      = -1;
+            sLog.error("CWinService::ServiceMain: Initialization failed.");
+            pInstance->m_ServiceStatus.dwCurrentState    = SERVICE_STOPPED;
+            pInstance->m_ServiceStatus.dwWin32ExitCode   = -1;
             SetServiceStatus(pInstance->m_ServiceStatusHandle, &(pInstance->m_ServiceStatus));
             return;
         }
@@ -642,18 +496,9 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
         pInstance->m_nServiceStatus = SVC_STATUS_RUNNING;
         argc = 1;
 
-        if (!pInstance->OnStartService(argc, argv)) {
-            sLog.error("WinServiceBase<T>::ServiceMain: Initialization failed.");
-            pInstance->m_ServiceStatus.dwControlsAccepted  &= ~(SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN);
-            pInstance->m_ServiceStatus.dwCurrentState       = SERVICE_STOPPED;
-            pInstance->m_ServiceStatus.dwWin32ExitCode      = -1;
-            SetServiceStatus(pInstance->m_ServiceStatusHandle, &(pInstance->m_ServiceStatus));
-            return;
-        }
-
-        // The worker loop of a service, or invoke WinServiceBase<T>::OnServiceLoop()
+        // The worker loop of a service, or invoke CWinService::OnServiceLoop()
         //_tmain(argc, argv);
-        WinServiceBase<T>::ServiceWorkerLoop(argc, argv);
+        CWinService::ServiceLoop(argc, argv);
 
         // service was stopped
         pInstance->m_ServiceStatus.dwCurrentState = SERVICE_STOP_PENDING;
@@ -668,7 +513,6 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
         // service is now stopped
         pInstance->m_ServiceStatus.dwControlsAccepted  &= ~(SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN);
         pInstance->m_ServiceStatus.dwCurrentState       = SERVICE_STOPPED;
-        pInstance->m_ServiceStatus.dwWin32ExitCode      = 0;
         ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &pInstance->m_ServiceStatus);
     }
     else {
@@ -677,21 +521,20 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
     }
 }
 
-template <class T>
-int WinServiceBase<T>::RunService(int argc, TCHAR *argv[])
+int CWinService::RunService(int argc, TCHAR *argv[])
 {
     // If command-line parameter is "install", install the service.
     // Otherwise, the service is probably being started by the SCM.
 
-    WinServiceBase<T> *pInstance = s_pServiceInstance;
+    CWinService *pInstance = s_pServiceInstance;
     if (pInstance == NULL) {
-        sLog.error("%s%s", "WinServiceBase<T>::RunService(): ", ERROR_SERVICE_INSTANCE_NOT_INITED);
+        sLog.error("%s%s", "CWinService::RunService(): ", ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
     // TO_DO: Add any additional services for the process to this table.
     SERVICE_TABLE_ENTRY serviceTable[] = {
-        { g_ServiceName, (LPSERVICE_MAIN_FUNCTION)WinServiceBase<T>::ServiceMain },
+        { g_ServiceName, (LPSERVICE_MAIN_FUNCTION)CWinService::ServiceMain },
         { 0, 0 }
     };
 
@@ -699,7 +542,7 @@ int WinServiceBase<T>::RunService(int argc, TCHAR *argv[])
     // The process should simply terminate when the call returns.
     if (!::StartServiceCtrlDispatcher(serviceTable)) {
         sLog.error("StartService Failed. Error [%u].", ::GetLastError());
-        WinServiceBase<T>::ServiceReportEvent(_T("WinServiceBase<T>::RunService(): StartServiceCtrlDispatcher() error."), ::GetLastError());
+        CWinService::ServiceReportEvent(_T("CWinService::RunService(): StartServiceCtrlDispatcher() error."), ::GetLastError());
         return 0;
     }
 
@@ -712,5 +555,3 @@ NS_JIMI_SYSTEM_END
 NS_JIMI_END
 
 #endif  /* JIMI_IS_WINDOWS */
-
-#endif  /* _JIMI_SYSTEM_WIN_SERVICE_H_ */

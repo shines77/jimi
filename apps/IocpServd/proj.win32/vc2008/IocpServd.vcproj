@@ -184,6 +184,14 @@
 				RelativePath="..\..\src\IocpServd.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\IocpServdService.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\IocpServdService.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="include"

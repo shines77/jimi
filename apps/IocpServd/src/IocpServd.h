@@ -8,9 +8,20 @@
 
 #include <jimi/core/jimi_def.h>
 
+#if 1
+
 #define NS_IOCPSERVD_BEGIN  namespace IocpServd {
 #define NS_IOCPSERVD_END    }
 
 #define USING_NS_IOCPSERVD  using namespace IocpServd
+
+#else
+
+#define NS_IOCPSERVD_BEGIN
+#define NS_IOCPSERVD_END
+
+#define USING_NS_IOCPSERVD
+
+#endif
 
 #endif  /* _IOCPSERVD_H_ */

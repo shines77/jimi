@@ -15,14 +15,21 @@
 #include <jimi/system/mutex.h>
 #include <jimi/system/scoped_lock.h>
 
+#include "IocpServd.h"
+#include "IocpServdService.h"
+
 USING_NS_JIMI;
 //USING_NS_JIMI_IOCP;
 USING_NS_JIMI_LOG;
 USING_NS_JIMI_SYSTEM;
 
+USING_NS_IOCPSERVD;
+
+NS_IOCPSERVD_BEGIN
+
 TCHAR g_ServiceName[]        = _T("IocpServd");
 TCHAR g_ServiceDisplayName[] = _T("Iocp Server Daemon Service");
-TCHAR g_ServiceDescription[] = _T("Windows IOCP Server Daemon");
+TCHAR g_ServiceDescription[] = _T("Windows IOCP Server Daemon2");
 /*
  * -2 - unknown status
  * -1 - not in service mode
@@ -39,9 +46,9 @@ int g_nServiceStatus = jimi::system::SVC_STATUS_UNKNOWN;
 
 #endif  /* JIMI_IS_WINDOWS */
 
-system::CWinService iocpServd_Service;
+IocpServdService iocpServdService;
 
-int main(int argc, char *argv[])
+int IocpServd_main(int argc, char *argv[])
 {
     sLog.log_begin();
 
@@ -53,10 +60,10 @@ int main(int argc, char *argv[])
         sLog.info(strCmdLine.c_str());
     }
 
-    //system::CWinService *service = new CWinService();
-    system::CWinService *service = &iocpServd_Service;
+    //system::WinService *service = new CWinService();
+    IocpServdService *service = &iocpServdService;
     if (service) {
-        system::CWinService::SetInstance(service);
+        IocpServdService::SetInstance(service);
     }
 
     sLog.info("cmdLine.parse(argc, argv): argc_cnt = %d", cnt);
@@ -98,5 +105,12 @@ int main(int argc, char *argv[])
         ::system("pause");
 
     sLog.log_end();
-	return 0;
+    return 0;
+}
+
+NS_IOCPSERVD_END
+
+int main(int argc, char *argv[])
+{
+    return IocpServd_main(argc, argv);
 }
