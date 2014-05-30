@@ -7,7 +7,7 @@
 #include <share.h>
 
 #include <jimi/log/Logger.h>
-#include <jimic/string/strings.h>
+#include <jimic/string/jm_strings.h>
 
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
@@ -109,13 +109,13 @@ char *str_replace(const char *str_buf, const char *src_str, const char *dst_str,
         dup_buf = (char *)str_buf;
         str_len = ::jm_strlen(str_buf);
         dst_len = ::jm_strlen(dst_str);
-        len = (str_len - (src_len - dst_len) * i + 1) * sizeof(char);
-        new_str = (char *)::malloc(len);
+        len = (str_len - (src_len - dst_len) * i + 1);
+        new_str = (char *)::malloc(len * sizeof(char));
         if (new_str != NULL) {
             new_str[0] = '\0';
             if (len > 1)
                 new_str[len - 1] = '\0';
-            //memset(new_str, 0, len);
+            //memset(new_str, 0, len * sizeof(char));
             while ((next = ::jm_strstr(dup_buf, src_str)) != NULL) {
                 new_str = ::jm_strncat(new_str, len, dup_buf, (next - dup_buf));
                 //new_str = ::jm_strncat(new_str, len, dst_str);
@@ -130,11 +130,11 @@ char *str_replace(const char *str_buf, const char *src_str, const char *dst_str,
     }
     else {
         str_len = ::jm_strlen(str_buf);
-        len = (str_len + 1) * sizeof(char);
-        new_str = (char *)::malloc(len);
+        len = (str_len + 1);
+        new_str = (char *)::malloc(len * sizeof(char));
         if (new_str != NULL) {
             new_str[0] = '\0';
-            //memset(new_str, 0, len);
+            //memset(new_str, 0, len * sizeof(char));
             new_str = ::jm_strcpy(new_str, len, str_buf);
             return new_str;
         }
@@ -149,7 +149,7 @@ int get_datetime_str(char *datetime, int bufsize, bool use_millisec = true)
     GetLocalTime(&sysTime);
 
     if (use_millisec) {
-        n = _snprintf_s_l(datetime, bufsize, bufsize, "%04d-%02d-%02d %02d:%02d:%02d.%03d", 0,
+        n = jm_snprintf(datetime, bufsize, bufsize - 1, "%04d-%02d-%02d %02d:%02d:%02d.%03d",
             sysTime.wYear,
             sysTime.wMonth,
             sysTime.wDay,
@@ -159,7 +159,7 @@ int get_datetime_str(char *datetime, int bufsize, bool use_millisec = true)
             sysTime.wMilliseconds);
     }
     else {
-        n = _snprintf_s_l(datetime, bufsize, bufsize, "%04d-%02d-%02d %02d:%02d:%02d", 0,
+        n = jm_snprintf(datetime, bufsize, bufsize - 1, "%04d-%02d-%02d %02d:%02d:%02d",
             sysTime.wYear,
             sysTime.wMonth,
             sysTime.wDay,
@@ -204,9 +204,9 @@ void LogConfig::destroy()
 int LogConfig::get_max_tag_len()
 {
     int max_tag_len = 0;
-    int max_list_length = _countof(default_LogTypeList);
+    int max_list_length = jm_countof(default_LogTypeList);
     for (int i = 1; i < max_list_length; ++i) {
-        int len = strlen(default_LogTypeList[i].tag_name);
+        int len = jm_strlen(default_LogTypeList[i].tag_name);
         if (len > max_tag_len) {
             max_tag_len = len;
         }
@@ -220,14 +220,14 @@ int LogConfig::get_tags_info()
     int min_tag_id = INT_MAX;
     int max_tag_id = 0;
     int max_tag_len = 0;
-    int max_list_length = _countof(default_LogTypeList);
+    int max_list_length = jm_countof(default_LogTypeList);
     for (i = 0; i < max_list_length; ++i) {
         int tag_id = default_LogTypeList[i].tag_id;
         if (tag_id < min_tag_id)
             min_tag_id = tag_id;
         if (tag_id > max_tag_id)
             max_tag_id = tag_id;
-        int len = strlen(default_LogTypeList[i].tag_name);
+        int len = jm_strlen(default_LogTypeList[i].tag_name);
         if (len > max_tag_len) {
             max_tag_len = len;
         }
@@ -244,7 +244,7 @@ int LogConfig::get_tags_info()
             int tag_id = default_LogTypeList[i].tag_id;
             _pTypeInfoList[tag_id].tag_id = tag_id;
             _pTypeInfoList[tag_id].tag_index = i - 1;
-            strcpy_s(_pTypeInfoList[tag_id].tag_name, _countof(_pTypeInfoList[tag_id].tag_name),
+            jm_strcpy(_pTypeInfoList[tag_id].tag_name, jm_countof(_pTypeInfoList[tag_id].tag_name),
                 default_LogTypeList[i].tag_name);
             max_tag_cnt++;
         }
@@ -263,11 +263,11 @@ bool LogConfig::init(const char *filename)
     memset((void *)&global, 0, sizeof(global));
 
     // "iocp_global.log"
-    strcpy_s(global.node.filename, _countof(global.node.filename), DEFAULT_LOG_FILENAME_GLOBAL);
+    jm_strcpy(global.node.filename, jm_countof(global.node.filename), DEFAULT_LOG_FILENAME_GLOBAL);
     // "Global Log"
-    strcpy_s(global.node.title, _countof(global.node.title), DEFAULT_LOG_TITLE_GLOBAL);
+    jm_strcpy(global.node.title, jm_countof(global.node.title), DEFAULT_LOG_TITLE_GLOBAL);
     // "[$datetime] [$tag] $msg"
-    strcpy_s(global.node.format, _countof(global.node.format), DEFAULT_LOG_FORMAT);
+    jm_strcpy(global.node.format, jm_countof(global.node.format), DEFAULT_LOG_FORMAT);
 
     // tag_id
     global.node.tag_id    = _default->tag_id;
@@ -289,11 +289,11 @@ bool LogConfig::init(const char *filename)
     get_tags_info();
     global.max_tag_len = 0;
 
-    strcpy_s(global.remote_ip, _countof(global.remote_ip), "");
+    jm_strcpy(global.remote_ip, jm_countof(global.remote_ip), "");
     global.remote_port = 0;
 
     // Init Nodes
-    int max_list_length = _countof(default_LogTypeList);
+    int max_list_length = jm_countof(default_LogTypeList);
     typeList.clear();
     for (int i = 1; i < max_list_length; ++i) {
         LogConf_Node *node = new LogConf_Node();
@@ -355,18 +355,18 @@ Logger::Logger(const char *filename /*= NULL*/, const char *title /*= NULL*/, un
 //, m_format(NULL)
 {
     //memset(m_format, 0, sizeof(m_format));
-    strcpy(m_format, DEFAULT_LOG_FORMAT);
+    jm_strcpy(m_format, jm_countof(m_format), DEFAULT_LOG_FORMAT);
 
     if (!this->open(filename, title)) {
         memset(m_filename, 0, sizeof(m_filename));
         memset(m_title, 0, sizeof(m_title));
-        //strcpy(m_title, DEFAULT_LOG_TITLE);
+        //jm_strcpy(m_title, jm_countof(m_title), DEFAULT_LOG_TITLE);
     }
 }
 
 Logger::Logger(Logger &src)
 {
-    strcpy(this->m_filename, src.m_filename);
+    jm_strcpy(this->m_filename, jm_countof(this->m_filename), src.m_filename);
 }
 
 Logger::~Logger()
@@ -381,22 +381,22 @@ Logger *Logger::getInstance(const char *filename /*= NULL*/, const char *title /
             s_log_filename = (char *)malloc(MAX_LOG_PATH * sizeof(char));
         if (filename == NULL) {
             //s_log_filename = DEFAULT_LOG_FILENAME_GLOBAL;   // "iocp_global.log"
-            strcpy(s_log_filename, DEFAULT_LOG_FILENAME_GLOBAL);
+            jm_strcpy(s_log_filename, MAX_LOG_PATH, DEFAULT_LOG_FILENAME_GLOBAL);
         }
         else {
             //s_log_filename = (char *)filename;
-            strcpy(s_log_filename, filename);
+            jm_strcpy(s_log_filename, MAX_LOG_PATH, filename);
         }
 
         if (s_log_title == NULL)
-            s_log_title = (char *)malloc(64 * sizeof(char));
+            s_log_title = (char *)malloc(MAX_LOG_TITLE * sizeof(char));
         if (title == NULL) {
             //s_log_title = DEFAULT_LOG_TITLE_GLOBAL;         // "Global Log"
-            strcpy(s_log_title, DEFAULT_LOG_TITLE_GLOBAL);
+            jm_strcpy(s_log_title, MAX_LOG_TITLE, DEFAULT_LOG_TITLE_GLOBAL);
         }
         else {
             //s_log_title = (char *)title;
-            strcpy(s_log_title, title);
+            jm_strcpy(s_log_title, MAX_LOG_TITLE, title);
         }
 
         s_Log = new Logger(s_log_filename, s_log_title, attrib);
@@ -433,7 +433,7 @@ size_t Logger::get_app_path(char *app_path, size_t buf_len)
     }
 
     int token_cnt = 0;
-    size_t len = strlen(app_path);
+    size_t len = jm_strlen(app_path);
     char *start = app_path;
     char *end = app_path + len;
     char *cur = end - 1;
@@ -449,7 +449,7 @@ size_t Logger::get_app_path(char *app_path, size_t buf_len)
     }
 
     // check app path's tail, last char must be '\' or '/'
-    len = strlen(app_path);
+    len = jm_strlen(app_path);
     if (len > 0 && (app_path[len - 1] != '\\' && app_path[len - 1] != '/')) {
         app_path[len - 1] = '\\';
         len++;
@@ -467,17 +467,17 @@ size_t Logger::make_app_filename(const char *filename, char **new_filename)
         return 0;
     }
 
-    size_t name_len = strlen(filename);
+    size_t name_len = jm_strlen(filename);
     size_t buf_len = MAX_LOG_PATH + name_len + 2;
     size_t len = 0;
     char *app_path = (char *)malloc(buf_len * sizeof(char));
     if (app_path != NULL) {
         size_t path_len = get_app_path(app_path, buf_len);
         if (path_len > 0) {
-            strcat(app_path, filename);
+            jm_strcat(app_path, buf_len, filename);
             if (new_filename != NULL)
                 *new_filename = app_path;
-            len = strlen(app_path);
+            len = jm_strlen(app_path);
         }
     }
     return len;
@@ -490,8 +490,8 @@ size_t Logger::get_app_filename(const char *filename, char *new_filename, size_t
         size_t path_len = get_app_path(new_filename, buf_len);
         if (path_len > 0) {
             if (filename != NULL)
-                strcat(new_filename, filename);
-            len = strlen(new_filename);
+                jm_strcat(new_filename, buf_len, filename);
+            len = jm_strlen(new_filename);
         }
         else {
             new_filename[0] = '\0';
@@ -533,7 +533,7 @@ size_t Logger::get_log_filename(const char *filename, char **new_filename)
     }
 
     if (!isRootPath) {
-        size_t name_len = strlen(filename);
+        size_t name_len = jm_strlen(filename);
         size_t buf_len = MAX_LOG_PATH + name_len + 2;
         char *app_filename = (char *)malloc(buf_len * sizeof(char));
         if (get_app_filename(filename, app_filename, buf_len) <= 0) {
@@ -547,14 +547,14 @@ size_t Logger::get_log_filename(const char *filename, char **new_filename)
             if (new_filename != NULL)
                 *new_filename = app_filename;
 
-            len = strlen(app_filename);
+            len = jm_strlen(app_filename);
         }
     }
     else {
         if (new_filename != NULL)
             *new_filename = (char *)filename;
 
-        len = strlen(filename);
+        len = jm_strlen(filename);
     }
     return len;
 }
@@ -568,14 +568,14 @@ bool Logger::open(const char *filename, const char *title /*= NULL*/)
     if (log_file != NULL) {
         m_log_file = log_file;
         //m_filename = (char *)new_filename;
-        strcpy(m_filename, new_filename);
+        jm_strcpy(m_filename, jm_countof(m_filename), new_filename);
         if (title == NULL) {
             //m_title = DEFAULT_LOG_TITLE;        // "Noname Log"
-            strcpy(m_title, DEFAULT_LOG_TITLE);
+            jm_strcpy(m_title, jm_countof(m_title), DEFAULT_LOG_TITLE);
         }
         else {
             //m_title = (char *)title;
-            strcpy(m_title, title);
+            jm_strcpy(m_title, jm_countof(m_title), title);
         }
     }
     if (new_filename != filename && new_filename != NULL) {
@@ -648,16 +648,16 @@ void Logger::vprintf(const char *fmt, va_list arglist)
 
 void  Logger::vprintf(bool newline, const char *fmt, va_list arglist)
 {
-    vprintf(newline, NULL, NULL, fmt, arglist);
+    vprintf(newline, NULL, NULL, 0, fmt, arglist);
 }
 
 void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
-                  const char *fmt, va_list arglist)
+                     size_t tag_len, const char *fmt, va_list arglist)
 {
 #if defined(DO_JIMI_LOG) && (DO_JIMI_LOG != 0)
     int n;
     char msg_buf[MAX_LOG_TEXT_LEN];    
-    n = _vsnprintf_s_l(msg_buf, _countof(msg_buf), MAX_LOG_TEXT_LEN - 1, fmt, 0, arglist);
+    n = jm_vsnprintf(msg_buf, jm_countof(msg_buf), MAX_LOG_TEXT_LEN - 1, fmt, arglist);
 
 #if defined(JIMI_LOG_TO_SCREEN) && (JIMI_LOG_TO_SCREEN != 0)
     ::printf(msg_buf);
@@ -668,7 +668,7 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
 #if defined(JIMI_LOG_TO_FILE) && (JIMI_LOG_TO_FILE != 0)
     {
         if (tag_format == NULL) {
-            n = _vsnprintf_s_l(msg_buf, _countof(msg_buf), MAX_LOG_TEXT_LEN - 1, fmt, 0, arglist);
+            n = jm_vsnprintf(msg_buf, jm_countof(msg_buf), MAX_LOG_TEXT_LEN - 1, fmt, arglist);
         }
         else {
             char fmt_buf[512];
@@ -678,7 +678,7 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
             int tag_case = 0;
             if (::jm_strstr(tag_format_, "$datetime") != NULL) {
                 char datetime[256];
-                n = get_datetime_str(datetime, _countof(datetime));
+                n = get_datetime_str(datetime, jm_countof(datetime));
                 tag_format_new = str_replace(tag_format_, "$datetime", datetime);
                 JIMI_LOG_ASSERT_TRUE(tag_format_new == NULL);
                 if (tag_format_ != tag_format)
@@ -689,7 +689,7 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
                 if (tag_name != NULL) {
                     char tag_fmt[64];
                     // "[% 7s]" or "[%-7s]"
-                    sprintf_s(tag_fmt, _countof(tag_fmt), "%% %ds", m_config.global.max_tag_len);
+                    jm_sprintf(tag_fmt, jm_countof(tag_fmt), "%% %ds", m_config.global.max_tag_len);
                     tag_format_new = str_replace(tag_format_, "$type", tag_fmt);
                     has_tag = true;
                     tag_case = 1;
@@ -705,7 +705,7 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
                 if (tag_name != NULL) {
                     char tag_fmt[64];
                     // "[% 7s]" or "[%-7s]"
-                    sprintf_s(tag_fmt, _countof(tag_fmt), "%% %ds", m_config.global.max_tag_len);
+                    jm_sprintf(tag_fmt, jm_countof(tag_fmt), "%% %ds", m_config.global.max_tag_len);
                     tag_format_new = str_replace(tag_format_, "$TYPE", tag_fmt);
                     has_tag = true;
                     tag_case = 2;
@@ -722,7 +722,7 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
                 if (tag_name != NULL) {
                     char tag_fmt[64];
                     // "[% 7s]" or "[%-7s]"
-                    sprintf_s(tag_fmt, _countof(tag_fmt), "%% %ds", m_config.global.max_tag_len);
+                    jm_sprintf(tag_fmt, jm_countof(tag_fmt), "%% %ds", m_config.global.max_tag_len);
                     tag_format_new = str_replace(tag_format_, "$Type", tag_fmt);
                     has_tag = true;
                     tag_case = 0;
@@ -744,15 +744,15 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
             }
             if (has_tag) {
                 if (tag_case == 2)
-                    n = _snprintf_s_l(fmt_buf, _countof(fmt_buf), _countof(fmt_buf) - 1, tag_format_, 0, _strupr((char *)tag_name), fmt);
+                    n = jm_snprintf(fmt_buf, jm_countof(fmt_buf), jm_countof(fmt_buf) - 1, tag_format_, jm_strupr((char *)tag_name, tag_len), fmt);
                 else if (tag_case == 1)
-                    n = _snprintf_s_l(fmt_buf, _countof(fmt_buf), _countof(fmt_buf) - 1, tag_format_, 0, _strlwr((char *)tag_name), fmt);
+                    n = jm_snprintf(fmt_buf, jm_countof(fmt_buf), jm_countof(fmt_buf) - 1, tag_format_, jm_strlwr((char *)tag_name, tag_len), fmt);
                 else
-                    n = _snprintf_s_l(fmt_buf, _countof(fmt_buf), _countof(fmt_buf) - 1, tag_format_, 0, tag_name, fmt);
+                    n = jm_snprintf(fmt_buf, jm_countof(fmt_buf), jm_countof(fmt_buf) - 1, tag_format_, tag_name, fmt);
             }
             else
-                n = _snprintf_s_l(fmt_buf, _countof(fmt_buf), _countof(fmt_buf) - 1, tag_format_, 0, fmt);
-            n = _vsnprintf_s_l(msg_buf, _countof(msg_buf), MAX_LOG_TEXT_LEN - 1, fmt_buf, 0, arglist);
+                n = jm_snprintf(fmt_buf, jm_countof(fmt_buf), jm_countof(fmt_buf) - 1, tag_format_, fmt);
+            n = jm_vsnprintf(msg_buf, jm_countof(msg_buf), MAX_LOG_TEXT_LEN - 1, fmt_buf, arglist);
             if (tag_format_ != tag_format) {
                 free(tag_format_);
                 tag_format_ = NULL;
@@ -760,11 +760,11 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
             tag_format_new = NULL;
         }
         if (newline)
-            strcat_s(msg_buf, _countof(msg_buf), STRING_CRLF);
+            jm_strcat(msg_buf, jm_countof(msg_buf), STRING_CRLF);
         if (m_log_file == NULL || m_log_file == INVALID_HANDLE_VALUE)
             this->open(DEFAULT_LOG_FILENAME);
         if (m_log_file)
-            ::_write((int)m_log_file, msg_buf, strlen(msg_buf));
+            ::_write((int)m_log_file, msg_buf, jm_strlen(msg_buf));
     }
 #endif  /* JIMI_LOG_TO_FILE */
 #endif  /* DO_JIMI_LOG */
@@ -918,7 +918,9 @@ void Logger::outv(int tag, bool newline, const char *fmt, va_list arglist)
             && tag >= m_config.global.min_tag_id && tag <= m_config.global.max_tag_id) {
             index = m_config.infoList[tag].tag_index;
             this->vprintf(true, (const char *)m_config.typeList[index]->format,
-                (const char *)m_config.infoList[tag].tag_name, fmt, arglist);
+                (const char *)m_config.infoList[tag].tag_name,
+                jm_countof(m_config.infoList[tag].tag_name),
+                fmt, arglist);
             return;
         }
         else {
@@ -983,7 +985,7 @@ void Logger::outv(int tag, bool newline, const char *fmt, va_list arglist)
 void Logger::log_title_line(const char *title, int line_length)
 {
     int i, n, r;
-    size_t str_len = strlen(title);
+    size_t str_len = jm_strlen(title);
     // printf("==             %s            ==\r\n", title);
     for (i=0; i<LOG_TITLE_EDGE_LENGTH; ++i)
         this->printf(LOG_TITLE_STR_REPEAT);
@@ -1020,11 +1022,11 @@ void Logger::log_title_section(const char *title, bool isBegin)
     this->printf(STRING_CRLF);
 
     int i, n, r;
-    size_t str_len = strlen(log_title);
-    static const int title_begin_len    = strlen(LOG_TITLE_STR_BEGIN);
-    static const int title_end_len      = strlen(LOG_TITLE_STR_END);
-    static const int title_max_add_len  = JIMI_LOG_MAX(strlen(LOG_TITLE_STR_BEGIN), strlen(LOG_TITLE_STR_END));
-    static const int title_str_repeat_len = strlen(LOG_TITLE_STR_REPEAT_SEC);
+    size_t str_len = jm_strlen(log_title);
+    static const int title_begin_len    = jm_strlen(LOG_TITLE_STR_BEGIN);
+    static const int title_end_len      = jm_strlen(LOG_TITLE_STR_END);
+    static const int title_max_add_len  = JIMI_LOG_MAX(jm_strlen(LOG_TITLE_STR_BEGIN), jm_strlen(LOG_TITLE_STR_END));
+    static const int title_str_repeat_len = jm_strlen(LOG_TITLE_STR_REPEAT_SEC);
     int line_length = LOG_TITLE_LINE_LENGTH;
 
     if (line_length < ((int)str_len + title_max_add_len + LOG_TITLE_MIN_LENGTH))
@@ -1051,7 +1053,7 @@ void Logger::log_title_section(const char *title, bool isBegin)
         main_title = new char[main_title_len];
         if (main_title) {
             main_title[0] = '\0';
-            n = sprintf_s(main_title, main_title_len, "%s %s", log_title, LOG_TITLE_STR_BEGIN);
+            n = jm_sprintf(main_title, main_title_len, "%s %s", log_title, LOG_TITLE_STR_BEGIN);
             if (n >= 0)
                 log_title_line(main_title, line_length);
         }
@@ -1062,7 +1064,7 @@ void Logger::log_title_section(const char *title, bool isBegin)
         main_title = new char[main_title_len];
         if (main_title) {
             main_title[0] = '\0';
-            n = sprintf_s(main_title, main_title_len, "%s %s", log_title, LOG_TITLE_STR_END);
+            n = jm_sprintf(main_title, main_title_len, "%s %s", log_title, LOG_TITLE_STR_END);
             if (n >= 0)
                 log_title_line(main_title, line_length);
         }
@@ -1081,9 +1083,9 @@ void Logger::log_title_section(const char *title, bool isBegin)
     if (timestamp_str) {
         timestamp_str[0] = '\0';
         char timestamp[256];
-        n = get_datetime_str(timestamp, _countof(timestamp));
+        n = get_datetime_str(timestamp, jm_countof(timestamp));
         if (n >= 0) {
-            n = sprintf_s(timestamp_str, timestamp_len, "TimeStamp: %s", timestamp);
+            n = jm_sprintf(timestamp_str, timestamp_len, "TimeStamp: %s", timestamp);
             if (n >= 0)
                 log_title_line(timestamp_str, line_length);
         }

@@ -29,7 +29,7 @@ public:
      *       则可以返回false, 程序会尝试处理该非正常事件, 比如中断处理并退出, 停止运行等.
      **/
     bool OnInitService() {
-        sLog.info("invoke IocpServdService::OnPauseService()");
+        sLog.info("invoke IocpServdService::OnInitService()");
         return true;
     }
 
@@ -48,13 +48,43 @@ public:
         return true;
     }
 
-    bool OnResumeService() {
-        sLog.info("invoke IocpServdService::OnResumeService()");
+    bool OnContinueService() {
+        sLog.info("invoke IocpServdService::OnContinueService()");
         return true;
     }
 
     bool OnShutdownService() {
         sLog.info("invoke IocpServdService::OnShutdownService()");
+        return true;
+    }
+
+    bool OnServiceInterrogate() {
+        sLog.info("invoke IocpServdService::OnServiceInterrogate()");
+        return true;
+    }
+
+    bool OnServiceParamChange() {
+        sLog.info("invoke IocpServdService::OnServiceParamChange()");
+        return true;
+    }
+
+    bool OnServiceDeviceEvent() {
+        sLog.info("invoke IocpServdService::OnServiceDeviceEvent()");
+        return true;
+    }
+
+    bool OnServiceSessionChange() {
+        sLog.info("invoke IocpServdService::OnServiceSessionChange()");
+        return true;
+    }
+
+    bool OnServicePowerEvent() {
+        sLog.info("invoke IocpServdService::OnServicePowerEvent()");
+        return true;
+    }
+
+    bool OnServicePreShutdown() {
+        sLog.info("invoke IocpServdService::OnServicePreShutdown()");
         return true;
     }
 
@@ -70,9 +100,26 @@ public:
 
     bool ServiceWorkerMethod(void *pvData) {
         static int s_nOnServiceLoopCnt = 0;
-        if (s_nOnServiceLoopCnt < 10) {
-            sLog.info("invoke IocpServdService::ServiceWorkerMethod(), cnt = %d", s_nOnServiceLoopCnt);
-            s_nOnServiceLoopCnt++;
+        static int s_nServiceLoopPauseCnt = 0;
+        unsigned int nSleepTime = GetSleepTime();
+        unsigned int nPauseSleepTime = GetPauseSleepTime();
+        while (IsRunning()) {
+            if (!IsPausing()) {
+                if (s_nOnServiceLoopCnt < 10) {
+                    sLog.info("invoke IocpServdService::ServiceWorkerMethod(), cnt = %d", s_nOnServiceLoopCnt);
+                    s_nOnServiceLoopCnt++;
+                }
+                s_nServiceLoopPauseCnt = 0;
+                ::Sleep(nSleepTime);
+            }
+            else {
+                if (s_nServiceLoopPauseCnt < 10) {
+                    sLog.info("invoke IocpServdService::ServiceWorkerLoop(): Pause, cnt = %d, time = %d",
+                        s_nServiceLoopPauseCnt, GetTickCount());
+                    s_nServiceLoopPauseCnt++;
+                }
+                ::Sleep(nPauseSleepTime);
+            }
         }
         return true;
     }

@@ -42,7 +42,7 @@ enum eServiceStatus {
 
     SVC_STATUS_START_PENDING,
     SVC_STATUS_PAUSE_PENDING,
-    SVC_STATUS_RESUME_PENDING,
+    SVC_STATUS_CONTINUE_PENDING,
     SVC_STATUS_STOP_PENDING,
 };
 
@@ -60,7 +60,7 @@ class IWinService
     virtual bool OnStopService() = 0;
 
     virtual bool OnPauseService() = 0;
-    virtual bool OnResumeService() = 0;
+    virtual bool OnContinueService() = 0;
 
     virtual bool OnServiceLoop() = 0;
 };
@@ -80,7 +80,7 @@ public:
     virtual bool OnStopService();
 
     virtual bool OnPauseService();
-    virtual bool OnResumeService();
+    virtual bool OnContinueService();
 
     virtual bool OnServiceLoop();
 

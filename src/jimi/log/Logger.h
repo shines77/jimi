@@ -103,6 +103,7 @@ using namespace std;
 #define DEFAULT_LOG_FORMAT          "[$datetime] [$type] $msg"
 
 #define MAX_LOG_PATH                MAX_PATH        // 260
+#define MAX_LOG_TITLE               64
 #define STRING_CRLF                 "\r\n"
 
 #define DEFAULT_LOG_TITLE           "Noname Log"
@@ -289,7 +290,7 @@ protected:
     void  vprintf(const char *fmt, va_list arglist);
     void  vprintf(bool newline, const char *fmt, va_list arglist);
     void  vprintf(bool newline, const char *tag_format, const char *tag_name,
-        const char *fmt, va_list arglist);
+        size_t tag_len, const char *fmt, va_list arglist);
 
     void  outv(int tag, bool newline, const char *fmt, va_list arglist);
 

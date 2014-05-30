@@ -152,7 +152,7 @@
 	<Files>
 		<Filter
 			Name="src"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<Filter
@@ -314,12 +314,30 @@
 					Name="string"
 					>
 					<File
-						RelativePath="..\..\..\..\src\jimic\string\strings.c"
+						RelativePath="..\..\..\..\src\jimic\string\jm_strings.h"
+						FileType="0"
 						>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\string\strings.h"
+						RelativePath="..\..\..\..\src\jimic\string\jm_strings.inl.h"
+						FileType="0"
 						>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
 					</File>
 				</Filter>
 				<Filter

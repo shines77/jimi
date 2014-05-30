@@ -49,16 +49,16 @@
  *   C4244: int to char/short - precision loss
  *   C4514: unreferenced inline function removed
  */
-#pragma warning(disable: 4100 4127 4163 4201 4514; once: 4057 4075 4244)
+//#pragma warning(disable: 4100 4127 4163 4201 4514; once: 4057 4075 4244)
 
 /* Ignore Microsoft's interpretation of secure development
  * and the POSIX string handling API
  */
 #if defined(_MSC_VER) && _MSC_VER >= 1400
 #ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE
+//#define _CRT_SECURE_NO_DEPRECATE
 #endif
-#pragma warning(disable: 4996)
+//#pragma warning(disable: 4996)
 #endif  /* _MSC_VER */
 
 /* Has windows.h already been included?  If so, our preferences don't matter,
@@ -170,6 +170,7 @@ typedef struct JIMIC_MACRO_T
 #define JMC_DECLARE(type)           type
 #define JMC_DECLARE_NONSTD(type)    type
 #define JMC_INLINE_DECLARE(type)    type
+#define JMC_INLINE_NONSTD(type)     type
 #define JMC_DECLARE_DATA
 
 #elif defined(JIMI_DECLARE_IMPORT)
@@ -177,13 +178,15 @@ typedef struct JIMIC_MACRO_T
 #define JMC_DECLARE(type)           __declspec(dllimport) type __stdcall
 #define JMC_INLINE_DECLARE(type)    JMC_INLINE __declspec(dllimport) type __stdcall
 #define JMC_DECLARE_NONSTD(type)    __declspec(dllimport) type __cdecl
+#define JMC_INLINE_NONSTD(type)     JMC_INLINE __declspec(dllimport) type __cdecl
 #define JMC_DECLARE_DATA            __declspec(dllimport)
 
 #elif defined(JIMI_DECLARE_EXPORT)
 
 #define JMC_DECLARE(type)           __declspec(dllexport) type __stdcall
-#define JMC_DECLARE_NONSTD(type)    __declspec(dllexport) type __cdecl
 #define JMC_INLINE_DECLARE(type)    JMC_INLINE __declspec(dllexport) type __stdcall
+#define JMC_DECLARE_NONSTD(type)    __declspec(dllexport) type __cdecl
+#define JMC_INLINE_NONSTD(type)     JMC_INLINE __declspec(dllexport) type __cdecl
 #define JMC_DECLARE_DATA            __declspec(dllexport)
 
 #else
@@ -191,6 +194,7 @@ typedef struct JIMIC_MACRO_T
 #define JMC_DECLARE(type)           type __stdcall
 #define JMC_INLINE_DECLARE(type)    JMC_INLINE type __stdcall
 #define JMC_DECLARE_NONSTD(type)    type __cdecl
+#define JMC_INLINE_NONSTD(type)     JMC_INLINE type __cdecl
 #define JMC_DECLARE_DATA
 
 #endif  /* (!defined(JIMI_IS_WINDOWS)) || defined(JIMI_IS_DOXYGEN) */
@@ -275,7 +279,7 @@ char (*__jmc_countof_helper(UNALIGNED _CountofType (&_Array)[_SizeOfArray]))[_Si
  */
 #if defined(_MSC_VER) && _MSC_VER >= 1200
 #pragma warning(pop)
-#pragma warning(disable: 4996)
+//#pragma warning(disable: 4996)
 #endif
 
 #endif  /* _JIMIC_DEF_H_ */

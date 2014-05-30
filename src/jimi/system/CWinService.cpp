@@ -263,9 +263,9 @@ bool CWinService::OnPauseService()
     return true;
 }
 
-bool CWinService::OnResumeService()
+bool CWinService::OnContinueService()
 {
-    sLog.info("invoke CWinService::OnResumeService()");
+    sLog.info("invoke CWinService::OnContinueService()");
     return true;
 }
 
@@ -376,10 +376,10 @@ void CWinService::ServiceControlHandler(DWORD dwControlCode)
         case SERVICE_CONTROL_CONTINUE:
             // Signal that service try continue(resume)
             pInstance->ReportServiceStatus(SERVICE_CONTINUE_PENDING, NO_ERROR, 0);
-            pInstance->m_nServiceStatus = SVC_STATUS_RESUME_PENDING;
+            pInstance->m_nServiceStatus = SVC_STATUS_CONTINUE_PENDING;
 
             // Signal the service to continue(resume)
-            if (pInstance->OnResumeService()) {
+            if (pInstance->OnContinueService()) {
                 pInstance->m_ServiceStatus.dwWin32ExitCode = 0;
                 pInstance->m_ServiceStatus.dwCurrentState  = SERVICE_RUNNING;
                 pInstance->m_nServiceStatus = SVC_STATUS_RUNNING;

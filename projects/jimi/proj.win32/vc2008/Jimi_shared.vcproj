@@ -149,7 +149,7 @@
 	<Files>
 		<Filter
 			Name="src"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{169CCC3D-4A90-459B-B350-BD44794F768E}"
 			>
 		</Filter>

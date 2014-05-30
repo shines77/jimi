@@ -26,9 +26,9 @@ USING_NS_IOCPSERVD;
 
 NS_IOCPSERVD_BEGIN
 
-TCHAR g_ServiceName[]        = _T("IocpServd2");
-TCHAR g_ServiceDisplayName[] = _T("Iocp Server Daemon Service2");
-TCHAR g_ServiceDescription[] = _T("Windows IOCP Server Daemon2");
+TCHAR g_ServiceName[]        = _T("IocpServd");
+TCHAR g_ServiceDisplayName[] = _T("Iocp Server Daemon Service");
+TCHAR g_ServiceDescription[] = _T("Windows IOCP Server Daemon");
 /*
  * -2 - unknown status
  * -1 - not in service mode
@@ -45,7 +45,7 @@ int g_nServiceStatus = jimi::system::SVC_STATUS_UNKNOWN;
 
 #endif  /* JIMI_IS_WINDOWS */
 
-IocpServdService iocpServdService;
+//IocpServdService iocpServdService;
 
 int IocpServd_main(int argc, char *argv[])
 {
@@ -89,8 +89,8 @@ int IocpServd_main(int argc, char *argv[])
         }
 
         if (service) {
-            service->OnStopService();
-            //delete service;
+            service->Release();
+            delete service;
         }
     }
 

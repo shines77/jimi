@@ -48,7 +48,7 @@ extern int g_nServiceStatus;
 
 //SERVICE_STATUS_HANDLE gServiceStatusHandle = NULL;
 
-///*
+/*
 template <class T>
 WinServiceBase<T> *WinServiceBase<T>::s_pServiceInstance = NULL;
 //*/
