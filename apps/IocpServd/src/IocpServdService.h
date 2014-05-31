@@ -30,7 +30,7 @@ public:
     }
 #endif
 
-#if 0
+#if 1
     /**
      * 注意: 切记!! 所有回调函数必须返回true, 如果返回false, 则表示不调用WinService的默认行为,
      *       此时, 你必须正确的处理该回调应该完成的事情, 否则程序可能不能正常工作.
@@ -110,8 +110,8 @@ public:
     bool ServiceWorkerMethod(void *pvData) {
         static int s_nOnServiceLoopCnt = 0;
         static int s_nServiceLoopPauseCnt = 0;
-        unsigned int nSleepTime = GetSleepTime();
-        unsigned int nPauseSleepTime = GetPauseSleepTime();
+        DWORD dwSleepTime = GetSleepTime();
+        DWORD dwPauseSleepTime = GetPauseSleepTime();
         while (IsRunning()) {
             if (!IsPausing()) {
                 if (s_nOnServiceLoopCnt < 10) {
@@ -119,7 +119,7 @@ public:
                     s_nOnServiceLoopCnt++;
                 }
                 s_nServiceLoopPauseCnt = 0;
-                ::Sleep(nSleepTime);
+                ::Sleep(dwSleepTime);
             }
             else {
                 if (s_nServiceLoopPauseCnt < 10) {
@@ -127,7 +127,7 @@ public:
                         s_nServiceLoopPauseCnt, GetTickCount());
                     s_nServiceLoopPauseCnt++;
                 }
-                ::Sleep(nPauseSleepTime);
+                ::Sleep(dwPauseSleepTime);
             }
         }
         return true;

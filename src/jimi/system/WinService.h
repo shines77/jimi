@@ -39,8 +39,13 @@ USING_NS_JIMI_LOG;
 #endif
 #endif
 
+/* ServiceWorkerMethod 默认的休眠时间, 单位为毫秒 */
 #define SERVICE_SLEEP_TIME                  5000
+/* ServiceWorkerMethod 暂停时的休眠时间, 单位为毫秒 */
 #define SERVICE_PAUSE_SLEEP_TIME            100
+
+/* 默认的执行一个命令的等待时间dwWaitHint, 单位为毫秒 */
+#define SERVICE_DEFAULT_WAIT_HINT           10000
 
 #define ERROR_SERVICE_INSTANCE_NOT_INITED   "Service Instance is not initialized."
 
@@ -202,11 +207,11 @@ public:
     TCHAR *SetServiceDisplayName(TCHAR *szServiceDisplayName);
     TCHAR *SetServiceDescription(TCHAR *szServiceDescription);
 
-    unsigned int GetSleepTime() { return m_nSleepTime; }
-    void SetSleepTime(unsigned int nMillsecs) { m_nSleepTime = nMillsecs; }
+    DWORD GetSleepTime() { return m_dwSleepTime; }
+    void SetSleepTime(DWORD dwMillsecs) { m_dwSleepTime = dwMillsecs; }
 
-    unsigned int GetPauseSleepTime() { return m_nPauseSleepTime; }
-    void SetPauseSleepTime(unsigned int nMillsecs) { m_nPauseSleepTime = nMillsecs; }
+    DWORD GetPauseSleepTime() { return m_dwPauseSleepTime; }
+    void SetPauseSleepTime(DWORD dwMillsecs) { m_dwPauseSleepTime = dwMillsecs; }
 
     DWORD GetCurrentState() { return m_ServiceStatus.dwCurrentState; }
 
@@ -233,8 +238,9 @@ public:
 
 private:
     bool                    m_bCreateByNew;
-    unsigned int            m_nSleepTime;
-    unsigned int            m_nPauseSleepTime;
+    DWORD                   m_dwSleepTime;
+    DWORD                   m_dwPauseSleepTime;
+    DWORD                   m_dwWaitHint;
     int                     m_nServiceStatus;
 
     SERVICE_STATUS          m_ServiceStatus;
@@ -248,8 +254,9 @@ private:
 template <class T>
 WinServiceBase<T>::WinServiceBase(void)
 : m_bCreateByNew(false)
-, m_nSleepTime(SERVICE_SLEEP_TIME)
-, m_nPauseSleepTime(SERVICE_PAUSE_SLEEP_TIME)
+, m_dwSleepTime(SERVICE_SLEEP_TIME)
+, m_dwPauseSleepTime(SERVICE_PAUSE_SLEEP_TIME)
+, m_dwWaitHint(SERVICE_DEFAULT_WAIT_HINT)
 , m_nServiceStatus(SVC_STATUS_UNKNOWN)
 , m_ServiceStatusHandle(NULL)
 {
@@ -782,7 +789,7 @@ bool WinServiceBase<T>::Fire_OnStopService()
     sLog.info("invoke WinServiceBase<T>::Fire_OnStopService() Enter.");
 
     // Signal that service try stop
-    SetServiceStatus(SERVICE_STOP_PENDING, NO_ERROR, 10000);
+    SetServiceStatus(SERVICE_STOP_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
 
     // Signal the service to stop
     T *pT = static_cast<T *>(this);
@@ -800,7 +807,7 @@ bool WinServiceBase<T>::Fire_OnPauseService()
     sLog.info("invoke WinServiceBase<T>::Fire_OnPauseService() Enter.");
 
     // Signal that service try pause
-    SetServiceStatus(SERVICE_PAUSE_PENDING, NO_ERROR, 10000);
+    SetServiceStatus(SERVICE_PAUSE_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
 
     // Signal the service to pause
     T *pT = static_cast<T *>(this);
@@ -818,7 +825,7 @@ bool WinServiceBase<T>::Fire_OnContinueService()
     sLog.info("invoke WinServiceBase<T>::Fire_OnContinueService() Enter.");
 
     // Signal that service try continue
-    SetServiceStatus(SERVICE_CONTINUE_PENDING, NO_ERROR, 10000);
+    SetServiceStatus(SERVICE_CONTINUE_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
 
     // Signal the service to continue
     T *pT = static_cast<T *>(this);
@@ -850,7 +857,7 @@ bool WinServiceBase<T>::Fire_OnShutdownService()
     sLog.info("invoke WinServiceBase<T>::Fire_OnShutdownService() Enter.");
 
     // Signal that service try stop (shutdown)
-    SetServiceStatus(SVC_STATUS_STOP_PENDING, NO_ERROR, 20000);
+    SetServiceStatus(SVC_STATUS_STOP_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT * 2);
 
     // Signal the service to stop (shutdown)
     T *pT = static_cast<T *>(this);
@@ -1040,7 +1047,7 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
                 s_nServiceLoopCnt++;
             }
             s_nServiceLoopPauseCnt = 0;
-            ::Sleep(pInstance->m_nSleepTime);
+            ::Sleep(pInstance->m_dwSleepTime);
         }
         else {
             if (s_nServiceLoopPauseCnt < 10) {
@@ -1048,7 +1055,7 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
                     s_nServiceLoopPauseCnt, GetTickCount());
                 s_nServiceLoopPauseCnt++;
             }
-            ::Sleep(pInstance->m_nPauseSleepTime);
+            ::Sleep(pInstance->m_dwPauseSleepTime);
         }
     }
 }
