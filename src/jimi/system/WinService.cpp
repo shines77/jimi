@@ -20,7 +20,8 @@
 #include <jimi/system/WinService.h>
 #include <jimi/log/log_all.h>
 
-#pragma comment(lib, "Advapi32.lib")
+//#pragma comment(lib, "Advapi32.lib")
+//#pragma comment(lib, "Wtsapi32.lib")
 
 using namespace std;
 

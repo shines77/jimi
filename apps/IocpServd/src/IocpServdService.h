@@ -54,8 +54,7 @@ public:
         return true;
     }
 
-#if 0
-
+#if 1
     bool OnPause() {
         sLog.info("invoke IocpServdService::OnPause().");
         return true;
@@ -76,22 +75,22 @@ public:
         return true;
     }
 
-    bool OnParamChange() {
+    bool OnParamChange(DWORD dwParamChangeReason) {
         sLog.info("invoke IocpServdService::OnParamChange().");
         return true;
     }
 
-    bool OnDeviceEvent() {
+    bool OnDeviceEvent(DWORD dwDeviceEvent) {
         sLog.info("invoke IocpServdService::OnDeviceEvent().");
         return true;
     }
 
-    bool OnSessionChange() {
+    bool OnSessionChange(SessionChangeDescription *changeDescription) {
         sLog.info("invoke IocpServdService::OnSessionChange().");
         return true;
     }
 
-    bool OnPowerEvent() {
+    bool OnPowerEvent(PowerBroadcastStatus *powerStatus) {
         sLog.info("invoke IocpServdService::OnPowerEvent().");
         return true;
     }

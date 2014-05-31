@@ -13,6 +13,7 @@
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 #include <winsvc.h>
+#include <wtsapi32.h>
 
 #include <tchar.h>
 #include <string>
@@ -25,6 +26,9 @@
 //#include <jimi/iocp/IocpServd.h>
 
 #include <jimic/string/jm_strings.h>
+
+#pragma comment(lib, "Advapi32.lib")
+#pragma comment(lib, "Wtsapi32.lib")
 
 using namespace std;
 
@@ -100,6 +104,110 @@ typedef enum eServiceErrorId {
 } eServiceErrorId;
 
 //
+// Summary:
+//     Specifies the reason for a Terminal Services session change notice.
+typedef enum Session_Change_Reason {
+    //
+    // Summary:
+    //     A unknown reason.
+    kReasonUnknown = 0,
+    //
+    // Summary:
+    //     A console session has connected.
+    kConsoleConnect = 1,
+    //
+    // Summary:
+    //     A console session has disconnected.
+    kConsoleDisconnect = 2,
+    //
+    // Summary:
+    //     A remote session has connected.
+    kRemoteConnect = 3,
+    //
+    // Summary:
+    //     A remote session has disconnected.
+    kRemoteDisconnect = 4,
+    //
+    // Summary:
+    //     A user has logged on to a session.
+    kSessionLogon = 5,
+    //
+    // Summary:
+    //     A user has logged off from a session.
+    kSessionLogoff = 6,
+    //
+    // Summary:
+    //     A session has been locked.
+    kSessionLock = 7,
+    //
+    // Summary:
+    //     A session has been unlocked.
+    kSessionUnlock = 8,
+    //
+    // Summary:
+    //     The remote control status of a session has changed.
+    kSessionRemoteControl = 9
+
+} Session_Change_Reason;
+
+typedef struct SessionChangeReason
+{
+    //
+    // Summary:
+    //     A unknown reason.
+    static const DWORD ReasonUnknown = kReasonUnknown;
+    //
+    // Summary:
+    //     A console session has connected.
+    static const DWORD ConsoleConnect = kConsoleConnect;
+    //
+    // Summary:
+    //     A console session has disconnected.
+    static const DWORD ConsoleDisconnect = kConsoleDisconnect;
+    //
+    // Summary:
+    //     A remote session has connected.
+    static const DWORD RemoteConnect = kRemoteConnect;
+    //
+    // Summary:
+    //     A remote session has disconnected.
+    static const DWORD RemoteDisconnect = kRemoteDisconnect;
+    //
+    // Summary:
+    //     A user has logged on to a session.
+    static const DWORD SessionLogon = kSessionLogon;
+    //
+    // Summary:
+    //     A user has logged off from a session.
+    static const DWORD SessionLogoff = kSessionLogoff;
+    //
+    // Summary:
+    //     A session has been locked.
+    static const DWORD SessionLock = kSessionLock;
+    //
+    // Summary:
+    //     A session has been unlocked.
+    static const DWORD SessionUnlock = kSessionUnlock;
+    //
+    // Summary:
+    //     The remote control status of a session has changed.
+    static const DWORD SessionRemoteControl = kSessionRemoteControl;
+
+} SessionChangeReason;
+
+typedef struct SessionChangeDescription
+{
+    DWORD dwReason;
+    DWORD dwSessionId;
+    LPVOID lpEventData;
+} SessionChangeDescription;
+
+typedef struct PowerBroadcastStatus
+{
+    DWORD dwStatus;
+} PowerBroadcastStatus;
+
+//
 // 参考: MangOS 源码 以及
 //
 //       Writing Tools for Windows in C++
@@ -121,8 +229,8 @@ class JIMI_DLL IWinServiceBase
     virtual bool OnInterrogate() = 0;
     virtual bool OnParamChange() = 0;
     virtual bool OnDeviceEvent() = 0;
-    virtual bool OnSessionChange() = 0;
-    virtual bool OnPowerEvent() = 0;
+    virtual bool OnSessionChange(SessionChangeDescription *changeDescription) = 0;
+    virtual bool OnPowerEvent(PowerBroadcastStatus *powerStatus) = 0;
     virtual bool OnPreShutdown() = 0;
 
     virtual bool OnCustomCommand(DWORD dwControlCode) = 0;
@@ -164,10 +272,10 @@ public:
     bool OnShutdown();
 
     bool OnInterrogate();
-    bool OnParamChange();
-    bool OnDeviceEvent();
-    bool OnSessionChange();
-    bool OnPowerEvent();
+    bool OnParamChange(DWORD dwParamChangeReason);
+    bool OnDeviceEvent(DWORD dwDeviceEvent);
+    bool OnSessionChange(SessionChangeDescription *changeDescription);
+    bool OnPowerEvent(PowerBroadcastStatus *powerStatus);
     bool OnPreShutdown();
 
     bool OnCustomCommand(DWORD dwControlCode);
@@ -187,10 +295,10 @@ public:
     virtual bool OnShutdown();
 
     virtual bool OnInterrogate();
-    virtual bool OnParamChange();
-    virtual bool OnDeviceEvent();
-    virtual bool OnSessionChange();
-    virtual bool OnPowerEvent();
+    virtual bool OnParamChange(DWORD dwParamChangeReason);
+    virtual bool OnDeviceEvent(DWORD dwDeviceEvent);
+    virtual bool OnSessionChange(SessionChangeDescription *changeDescription);
+    virtual bool OnPowerEvent(PowerBroadcastStatus *powerStatus);
     virtual bool OnPreShutdown();
 
     virtual bool OnCustomCommand(DWORD dwControlCode);
@@ -207,15 +315,15 @@ public:
     bool FireEvent_OnPause();
     bool FireEvent_OnContinue();
 
-    bool FireEvent_OnInterrogate();
-
     bool FireEvent_OnShutdown();
 
-    bool FireEvent_OnParamChange();
-    bool FireEvent_OnDeviceEvent();
-    bool FireEvent_OnSessionChange();
-    bool FireEvent_OnPowerEvent();
-    bool FireEvent_OnPreShutdown();
+    bool FireEvent_OnInterrogate();
+
+    bool FireEvent_OnParamChange(DWORD dwEventType, LPVOID lpEventData);
+    bool FireEvent_OnDeviceEvent(DWORD dwEventType, LPVOID lpEventData);
+    bool FireEvent_OnSessionChange(DWORD dwEventType, LPVOID lpEventData);
+    bool FireEvent_OnPowerEvent(DWORD dwEventType, LPVOID lpEventData);
+    bool FireEvent_OnPreShutdown(DWORD dwEventType, LPVOID lpEventData);
 
     bool FireEvent_OnCustomCommand(DWORD dwControlCode);
     bool FireEvent_OnUnknownCommand(DWORD dwControlCode);
@@ -258,7 +366,11 @@ public:
     static void SetInstance(WinServiceBase *pInstance, bool bCreateByNew);
 
     static void ServiceReportEvent(LPTSTR szFunction, int nEventId);
-    static void WINAPI ServiceControlHandler(DWORD dwControlCode);
+
+    static void  WINAPI ServiceControlHandler(DWORD dwControlCode);
+    static DWORD WINAPI ServiceControlHandlerEx(DWORD dwControlCode,
+        DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext);
+
     static void WINAPI ServiceMain(int argc, TCHAR *argv[]);
     static void WINAPI ServiceWorkerLoop(int argc, TCHAR *argv[]);
 
@@ -320,37 +432,6 @@ void WinServiceBase<T>::InitComponent()
 {
     // Initialize the operating properties for the service.
     sLog.info("WinServiceBase<T>::InitComponent().");
-}
-
-template <class T>
-bool WinServiceBase<T>::ServiceWorkerMethod(void *pvData)
-{
-    static int s_nOnServiceLoopCnt = 0;
-    static int s_nServiceLoopPauseCnt = 0;
-    unsigned int nSleepTime = GetSleepTime();
-    unsigned int nPauseSleepTime = GetPauseSleepTime();
-
-    sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod() Enter.");
-    while (IsRunning()) {
-        if (!IsPausing()) {
-            if (s_nOnServiceLoopCnt < 10) {
-                sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod(), cnt = %d", s_nOnServiceLoopCnt);
-                s_nOnServiceLoopCnt++;
-            }
-            s_nServiceLoopPauseCnt = 0;
-            ::Sleep(nSleepTime);
-        }
-        else {
-            if (s_nServiceLoopPauseCnt < 10) {
-                sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod(): Pause, cnt = %d, time = %d",
-                    s_nServiceLoopPauseCnt, GetTickCount());
-                s_nServiceLoopPauseCnt++;
-            }
-            ::Sleep(nPauseSleepTime);
-        }
-    }
-    sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod() Over.");
-    return true;
 }
 
 template <class T>
@@ -609,6 +690,11 @@ void WinServiceBase<T>::ServiceReportEvent(LPTSTR szFunction, int nEventId)
 
         ::DeregisterEventSource(hEventSource);
     }
+
+    DWORD dwExitCode = pInstance->m_ServiceStatus.dwWin32ExitCode;
+    if (dwExitCode != NO_ERROR) {
+        ::ExitProcess(dwExitCode);
+    }
 }
 
 template <class T>
@@ -744,28 +830,65 @@ bool WinServiceBase<T>::OnShutdown()
 }
 
 template <class T>
-bool WinServiceBase<T>::OnParamChange()
+bool WinServiceBase<T>::OnParamChange(DWORD dwParamChangeReason)
 {
     sLog.info("invoke WinServiceBase<T>::OnParamChange().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnDeviceEvent()
+bool WinServiceBase<T>::OnDeviceEvent(DWORD dwDeviceEvent)
 {
     sLog.info("invoke WinServiceBase<T>::OnDeviceEvent().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnSessionChange()
+bool WinServiceBase<T>::OnSessionChange(SessionChangeDescription *changeDescription)
 {
-    sLog.info("invoke WinServiceBase<T>::OnSessionChange().");
+    sLog.info("invoke WinServiceBase<T>::OnSessionChange() Enter.");
+
+    switch (changeDescription->dwReason) {
+        case Session_Change_Reason.kConsoleConnect:
+            break;
+
+        case Session_Change_Reason.kConsoleDisconnect:
+            break;
+
+        case Session_Change_Reason.kRemoteConnect:
+            break;
+
+        case Session_Change_Reason.kRemoteDisconnect:
+            break;
+
+        case Session_Change_Reason.kSessionLock:
+            break;
+
+        case Session_Change_Reason.kSessionLogon:
+            break;
+
+        case Session_Change_Reason.kSessionLogoff:
+            break;
+
+        case Session_Change_Reason.kSessionLock:
+            break;
+
+        case Session_Change_Reason.kSessionUnlock:
+            break;
+
+        case Session_Change_Reason.kSessionRemoteControl:
+            break;
+
+        default:
+            break;
+    }
+    sLog.info("invoke WinServiceBase<T>::OnSessionChange() Over.");
+
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnPowerEvent()
+bool WinServiceBase<T>::OnPowerEvent(PowerBroadcastStatus *powerStatus)
 {
     sLog.info("invoke WinServiceBase<T>::OnPowerEvent().");
     return true;
@@ -903,45 +1026,123 @@ bool WinServiceBase<T>::FireEvent_OnShutdown()
 }
 
 template <class T>
-bool WinServiceBase<T>::FireEvent_OnParamChange()
+bool WinServiceBase<T>::FireEvent_OnParamChange(DWORD dwEventType, LPVOID lpEventData)
 {
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnParamChange().");
+    DWORD dwParamChangeReason = 0;
+
     T *pT = static_cast<T *>(this);
-    return pT->OnParamChange();
+    return pT->OnParamChange(dwParamChangeReason);
 }
 
 template <class T>
-bool WinServiceBase<T>::FireEvent_OnDeviceEvent()
+bool WinServiceBase<T>::FireEvent_OnDeviceEvent(DWORD dwEventType, LPVOID lpEventData)
 {
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnDeviceEvent().");
+    DWORD dwDeviceEvent = 0;
+
     T *pT = static_cast<T *>(this);
-    return pT->OnDeviceEvent();
+    return pT->OnDeviceEvent(dwDeviceEvent);
 }
 
+/// <comment>
+///
+/// 参考: http://msdn.microsoft.com/en-us/library/ms683241.aspx
+///      http://stackoverflow.com/questions/4242776/how-to-monitor-windows-server-2003-2008-user-logins
+/// </comment>
+
 template <class T>
-bool WinServiceBase<T>::FireEvent_OnSessionChange()
+bool WinServiceBase<T>::FireEvent_OnSessionChange(DWORD dwEventType, LPVOID lpEventData)
 {
+    bool bSuccess = false;
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnSessionChange() Enter.");
 
-    T *pT = static_cast<T *>(this);
-    if (pT->OnSessionChange()) {
-        // Service Session Change
+    // Service Session Change
+    SessionChangeDescription changeDescription;
+    ::ZeroMemory((void *)&changeDescription, sizeof(changeDescription));
+
+    sLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() dwEventType = %d", dwEventType);
+
+    DWORD dwSessionId;
+    int nConnectState = 0;
+    DWORD dwReason = kReasonUnknown;
+    DWORD bytesReturned = 0;
+    LPTSTR pBuffer = NULL;
+    dwSessionId = ((WTSSESSION_NOTIFICATION *)lpEventData)->dwSessionId;
+    if (dwSessionId != (DWORD)(-2)) {
+        if (::WTSQuerySessionInformation(WTS_CURRENT_SERVER_HANDLE,
+            dwSessionId, WTSConnectState, &pBuffer, &bytesReturned)) {
+            // WTSActive
+            nConnectState = WTSActive;
+            nConnectState = *(reinterpret_cast<int*>(pBuffer));
+            sLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() nConnectState = %d", nConnectState);
+            changeDescription.dwReason    = dwEventType;
+            changeDescription.dwSessionId = dwSessionId;
+            changeDescription.lpEventData = lpEventData;
+            bSuccess = true;
+        }
+        else {
+            // this is not exceptional situation, the session may be closed at the moment, 
+            // or close operation is pending on the session
+            bSuccess = false;
+            sLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() - WTSQuerySessionInformation() error = %d", ::GetLastError());
+        }
+
+        if (pBuffer != NULL) {
+            ::WTSFreeMemory(pBuffer);
+        }
+
+        DWORD dwEventsFlag = WTS_EVENT_NONE;
+        // WTS_SESSION_LOGON, WTS_SESSION_LOGOFF
+        // WTS_EVENT_CONNECT | WTS_EVENT_DISCONNECT | WTS_EVENT_LOGON | WTS_EVENT_LOGOFF
+        if (::WTSWaitSystemEvent(WTS_CURRENT_SERVER_HANDLE, WTS_EVENT_ALL, &dwEventsFlag)) {
+            if ((dwEventsFlag & WTS_EVENT_CONNECT) == WTS_EVENT_CONNECT)
+                dwReason = kConsoleConnect;
+            else if ((dwEventsFlag & WTS_EVENT_DISCONNECT) == WTS_EVENT_DISCONNECT)
+                dwReason = kConsoleDisconnect;
+            else if ((dwEventsFlag & WTS_EVENT_LOGON) == WTS_EVENT_LOGON)
+                dwReason = kSessionLogon;
+            else if ((dwEventsFlag & WTS_EVENT_LOGOFF) == WTS_EVENT_LOGOFF)
+                dwReason = kSessionLogoff;
+            else if ((dwEventsFlag & WTS_EVENT_STATECHANGE) == WTS_EVENT_STATECHANGE) {
+                //
+            }
+            sLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() dwReason = %d", dwReason);
+            changeDescription.dwReason = dwReason;
+            bSuccess = true;
+        }
+        else {
+            if (::GetLastError() == ERROR_OPERATION_ABORTED)
+                bSuccess = false;
+            sLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() - WTSWaitSystemEvent() error = %d", ::GetLastError());
+        }
+    }
+    changeDescription.dwReason = dwEventType;
+
+    if (bSuccess) {
+        T *pT = static_cast<T *>(this);
+        if (pT->OnSessionChange(&changeDescription)) {
+            //
+        }
     }
 
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnSessionChange() Over.");
+    sLog.flush();
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::FireEvent_OnPowerEvent()
+bool WinServiceBase<T>::FireEvent_OnPowerEvent(DWORD dwEventType, LPVOID lpEventData)
 {
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnPowerEvent().");
+    PowerBroadcastStatus powerStatus = { 0 };
+
     T *pT = static_cast<T *>(this);
-    return pT->OnPowerEvent();
+    return pT->OnPowerEvent(&powerStatus);
 }
 
 template <class T>
-bool WinServiceBase<T>::FireEvent_OnPreShutdown()
+bool WinServiceBase<T>::FireEvent_OnPreShutdown(DWORD dwEventType, LPVOID lpEventData)
 {
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnPreShutdown().");
     T *pT = static_cast<T *>(this);
@@ -1025,6 +1226,7 @@ void WinServiceBase<T>::ServiceControlHandler(DWORD dwControlCode)
             break;
 
         case SERVICE_CONTROL_SESSIONCHANGE:
+            sessionid = ((PWTSSESSION_NOTIFICATION)lpEventData)->dwSessionId
             pInstance->FireEvent_OnSessionChange();
             break;
 
@@ -1119,6 +1321,106 @@ void WinServiceBase<T>::ServiceControlHandler(DWORD dwControlCode)
 }
 
 template <class T>
+DWORD WinServiceBase<T>::ServiceControlHandlerEx(DWORD dwControlCode, DWORD dwEventType,
+                                                LPVOID lpEventData, LPVOID lpContext)
+{
+    WinServiceBase<T> *pInstance = s_pServiceInstance;
+    if (pInstance == NULL) {
+        sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+        throw ERROR_SERVICE_INSTANCE_NOT_INITED;
+    }
+
+    switch (dwControlCode) {
+        case SERVICE_CONTROL_STOP:
+            pInstance->FireEvent_OnStop();
+            break;
+
+        case SERVICE_CONTROL_PAUSE:
+            pInstance->FireEvent_OnPause();
+            break;
+
+        case SERVICE_CONTROL_CONTINUE:
+            pInstance->FireEvent_OnContinue();
+            break;
+
+        case SERVICE_CONTROL_INTERROGATE:
+            pInstance->FireEvent_OnInterrogate();
+            break;
+
+        case SERVICE_CONTROL_SHUTDOWN:
+            pInstance->FireEvent_OnShutdown();
+            break;
+
+        case SERVICE_CONTROL_PARAMCHANGE:
+            pInstance->FireEvent_OnParamChange(dwEventType, lpEventData);
+            break;
+
+        case SERVICE_CONTROL_DEVICEEVENT:
+            pInstance->FireEvent_OnDeviceEvent(dwEventType, lpEventData);
+            break;
+
+        case SERVICE_CONTROL_SESSIONCHANGE:
+            pInstance->FireEvent_OnSessionChange(dwEventType, lpEventData);
+            break;
+
+        case SERVICE_CONTROL_POWEREVENT:
+            pInstance->FireEvent_OnPowerEvent(dwEventType, lpEventData);
+            break;
+
+        case SERVICE_CONTROL_PRESHUTDOWN:
+            pInstance->FireEvent_OnPreShutdown(dwEventType, lpEventData);
+            break;
+
+        default:
+            if (dwControlCode >= 128 && dwControlCode <= 255) {
+                // user defined control code
+                if (pInstance->FireEvent_OnCustomCommand(dwControlCode)) {
+                    //
+                }
+            }
+            else {
+                // unrecognized control code
+                if (pInstance->FireEvent_OnUnknownCommand(dwControlCode)) {
+                    //
+                }
+            }
+            break;
+    }
+    return 0;
+}
+
+template <class T>
+bool WinServiceBase<T>::ServiceWorkerMethod(void *pvData)
+{
+    static int s_nOnServiceLoopCnt = 0;
+    static int s_nServiceLoopPauseCnt = 0;
+    unsigned int nSleepTime = GetSleepTime();
+    unsigned int nPauseSleepTime = GetPauseSleepTime();
+
+    sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod() Enter.");
+    while (IsRunning()) {
+        if (!IsPausing()) {
+            if (s_nOnServiceLoopCnt < 10) {
+                sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod(), cnt = %d", s_nOnServiceLoopCnt);
+                s_nOnServiceLoopCnt++;
+            }
+            s_nServiceLoopPauseCnt = 0;
+            ::Sleep(nSleepTime);
+        }
+        else {
+            if (s_nServiceLoopPauseCnt < 10) {
+                sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod(): Pause, cnt = %d, time = %d",
+                    s_nServiceLoopPauseCnt, GetTickCount());
+                s_nServiceLoopPauseCnt++;
+            }
+            ::Sleep(nPauseSleepTime);
+        }
+    }
+    sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod() Over.");
+    return true;
+}
+
+template <class T>
 void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
 {
     T *pInstanceImpl = static_cast<T *>(s_pServiceInstance);
@@ -1185,7 +1487,7 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
     DWORD dwControlAcceptedBase;
     DWORD dwControlAcceptedRemove;
     dwControlAcceptedBase  = SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN | SERVICE_ACCEPT_PAUSE_CONTINUE;
-    dwControlAcceptedBase |= SERVICE_ACCEPT_SESSIONCHANGE | SERVICE_ACCEPT_POWEREVENT;
+    dwControlAcceptedBase |= SERVICE_ACCEPT_PARAMCHANGE | SERVICE_ACCEPT_SESSIONCHANGE | SERVICE_ACCEPT_POWEREVENT;
     dwControlAcceptedRemove = 0;
 
     // initialise service status
@@ -1197,7 +1499,8 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
     pInstance->m_ServiceStatus.dwCheckPoint              = 0;
     pInstance->m_ServiceStatus.dwWaitHint                = 0;
 
-    pInstance->m_ServiceStatusHandle = ::RegisterServiceCtrlHandler(pInstance->m_ServiceName, WinServiceBase<T>::ServiceControlHandler);
+    //pInstance->m_ServiceStatusHandle = ::RegisterServiceCtrlHandler(pInstance->m_ServiceName, WinServiceBase<T>::ServiceControlHandler);
+    pInstance->m_ServiceStatusHandle = ::RegisterServiceCtrlHandlerEx(pInstance->m_ServiceName, WinServiceBase<T>::ServiceControlHandlerEx, NULL);
 
     if (pInstance->m_ServiceStatusHandle) {
         TCHAR szPath[_MAX_PATH + 1];
