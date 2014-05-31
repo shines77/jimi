@@ -4,27 +4,17 @@
 
 #include <jimi/core/jimi_def.h>
 
-#if JIMI_IS_WINDOWS
-
 // Windows的Service支持类
-#include <jimi/system/WinService.h>
 //#include <jimi/log/log_all.h>
 #include <jimi/log/Logger.h>
 #include <jimi/util/cmd_line.h>
-
 #include <jimi/system/mutex.h>
 #include <jimi/system/scoped_lock.h>
 
-#include "IocpServd.h"
+#if JIMI_IS_WINDOWS
+
+#include <jimi/system/WinService.h>
 #include "IocpServdService.h"
-
-USING_NS_JIMI;
-//USING_NS_JIMI_LOG;
-USING_NS_JIMI_SYSTEM;
-
-USING_NS_IOCPSERVD;
-
-NS_IOCPSERVD_BEGIN
 
 TCHAR g_ServiceName[]        = _T("IocpServd");
 TCHAR g_ServiceDisplayName[] = _T("Iocp Server Daemon Service");
@@ -38,12 +28,27 @@ TCHAR g_ServiceDescription[] = _T("Windows IOCP Server Daemon");
  */
 int g_nServiceStatus = jimi::system::SVC_STATUS_UNKNOWN;
 
+SERVICE_TABLE_ENTRY g_ServiceTable[] = {
+    { _T("IocpServd"), (LPSERVICE_MAIN_FUNCTION)&(IocpServd::IocpServdService::ServiceMain) },
+    { NULL, NULL }
+};
+
 #else  /* !JIMI_IS_WINDOWS */
 
 // Linux下的Service支持类
 #include "PosixDaemon.h"
 
 #endif  /* JIMI_IS_WINDOWS */
+
+#include "IocpServd.h"
+
+USING_NS_JIMI;
+USING_NS_JIMI_LOG;
+USING_NS_JIMI_SYSTEM;
+
+USING_NS_IOCPSERVD;
+
+NS_IOCPSERVD_BEGIN
 
 //IocpServdService iocpServdService;
 
@@ -73,6 +78,7 @@ int IocpServd_main(int argc, char *argv[])
         if (cmdLine.hasArgument("-run") || cmdLine.hasArgument("/run")
             || cmdLine.hasArgument("-r") || cmdLine.hasArgument("/r")) {
             service->RunService();
+            //service->RunServiceEx(g_ServiceTable);
         }
         else if (cmdLine.hasArgument("-install") || cmdLine.hasArgument("/install")
             || cmdLine.hasArgument("-i") || cmdLine.hasArgument("/i")) {

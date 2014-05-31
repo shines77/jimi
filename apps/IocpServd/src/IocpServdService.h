@@ -24,80 +24,89 @@ public:
     IocpServdService(void);
     ~IocpServdService(void);
 
+#if 1
+    void InitComponent() {
+        sLog.info("IocpServdService::InitComponent().");
+    }
+#endif
+
+#if 0
     /**
-     * 注意: 切记!! 所有回调函数必须返回true, 除非你的处理出现了致命的错误(异常), 
-     *       则可以返回false, 程序会尝试处理该非正常事件, 比如中断处理并退出, 停止运行等.
+     * 注意: 切记!! 所有回调函数必须返回true, 如果返回false, 则表示不调用WinService的默认行为,
+     *       此时, 你必须正确的处理该回调应该完成的事情, 否则程序可能不能正常工作.
      **/
-    bool OnInitService() {
+    virtual bool OnInitService() {
         sLog.info("invoke IocpServdService::OnInitService()");
         return true;
     }
 
-    bool OnStartService(int argc, TCHAR *argv[]) {
+    virtual bool OnStartService(int argc, TCHAR *argv[]) {
         sLog.info("invoke IocpServdService::OnStartService()");
         return true;
     }
 
-    bool OnStopService() {
+    virtual bool OnStopService() {
         sLog.info("invoke IocpServdService::OnStopService()");
         return true;
     }
 
-    bool OnPauseService() {
+    virtual bool OnPauseService() {
         sLog.info("invoke IocpServdService::OnPauseService()");
         return true;
     }
 
-    bool OnContinueService() {
+    virtual bool OnContinueService() {
         sLog.info("invoke IocpServdService::OnContinueService()");
         return true;
     }
 
-    bool OnShutdownService() {
-        sLog.info("invoke IocpServdService::OnShutdownService()");
-        return true;
-    }
-
-    bool OnServiceInterrogate() {
+    virtual bool OnServiceInterrogate() {
         sLog.info("invoke IocpServdService::OnServiceInterrogate()");
         return true;
     }
 
-    bool OnServiceParamChange() {
+    virtual bool OnShutdownService() {
+        sLog.info("invoke IocpServdService::OnShutdownService()");
+        return true;
+    }
+
+    virtual bool OnServiceParamChange() {
         sLog.info("invoke IocpServdService::OnServiceParamChange()");
         return true;
     }
 
-    bool OnServiceDeviceEvent() {
+    virtual bool OnServiceDeviceEvent() {
         sLog.info("invoke IocpServdService::OnServiceDeviceEvent()");
         return true;
     }
 
-    bool OnServiceSessionChange() {
+    virtual bool OnServiceSessionChange() {
         sLog.info("invoke IocpServdService::OnServiceSessionChange()");
         return true;
     }
 
-    bool OnServicePowerEvent() {
+    virtual bool OnServicePowerEvent() {
         sLog.info("invoke IocpServdService::OnServicePowerEvent()");
         return true;
     }
 
-    bool OnServicePreShutdown() {
+    virtual bool OnServicePreShutdown() {
         sLog.info("invoke IocpServdService::OnServicePreShutdown()");
         return true;
     }
 
-    bool OnCustomCommand(DWORD dwControlCode) {
+    virtual bool OnCustomCommand(DWORD dwControlCode) {
         sLog.info("invoke IocpServdService::OnCustomCommand(), dwControlCode = %d", dwControlCode);
         return true;
     }
 
-    bool OnUnknownCommand(DWORD dwControlCode) {
+    virtual bool OnUnknownCommand(DWORD dwControlCode) {
         sLog.info("invoke IocpServdService::OnUnknownCommand(), dwControlCode = %d", dwControlCode);
         return true;
     }
+#endif
 
+#if 1
     bool ServiceWorkerMethod(void *pvData) {
         static int s_nOnServiceLoopCnt = 0;
         static int s_nServiceLoopPauseCnt = 0;
@@ -123,6 +132,7 @@ public:
         }
         return true;
     }
+#endif
 };
 
 NS_IOCPSERVD_END
