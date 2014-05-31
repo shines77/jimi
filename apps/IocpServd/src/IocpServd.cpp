@@ -95,7 +95,7 @@ int IocpServd_main(int argc, char *argv[])
         }
 
         if (service) {
-            service->Release();
+            //service->Release();
             delete service;
         }
     }

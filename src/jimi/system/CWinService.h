@@ -56,11 +56,11 @@ class IWinService
 {
     virtual bool OnInitService() = 0;
 
-    virtual bool OnStartService() = 0;
-    virtual bool OnStopService() = 0;
+    virtual bool OnStart() = 0;
+    virtual bool OnStop() = 0;
 
-    virtual bool OnPauseService() = 0;
-    virtual bool OnContinueService() = 0;
+    virtual bool OnPause() = 0;
+    virtual bool OnContinue() = 0;
 
     virtual bool OnServiceLoop() = 0;
 };
@@ -76,11 +76,11 @@ public:
 
     virtual bool OnInitService();
 
-    virtual bool OnStartService();
-    virtual bool OnStopService();
+    virtual bool OnStart();
+    virtual bool OnStop();
 
-    virtual bool OnPauseService();
-    virtual bool OnContinueService();
+    virtual bool OnPause();
+    virtual bool OnContinue();
 
     virtual bool OnServiceLoop();
 

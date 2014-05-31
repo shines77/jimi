@@ -245,27 +245,27 @@ bool CWinService::OnInitService()
     return true;
 }
 
-bool CWinService::OnStartService()
+bool CWinService::OnStart()
 {
-    sLog.info("invoke CWinService::OnStartService()");
+    sLog.info("invoke CWinService::OnStart()");
     return true;
 }
 
-bool CWinService::OnStopService()
+bool CWinService::OnStop()
 {
-    sLog.info("invoke CWinService::OnStopService()");
+    sLog.info("invoke CWinService::OnStop()");
     return true;
 }
 
-bool CWinService::OnPauseService()
+bool CWinService::OnPause()
 {
-    sLog.info("invoke CWinService::OnPauseService()");
+    sLog.info("invoke CWinService::OnPause()");
     return true;
 }
 
-bool CWinService::OnContinueService()
+bool CWinService::OnContinue()
 {
-    sLog.info("invoke CWinService::OnContinueService()");
+    sLog.info("invoke CWinService::OnContinue()");
     return true;
 }
 
@@ -345,7 +345,7 @@ void CWinService::ServiceControlHandler(DWORD dwControlCode)
             pInstance->m_nServiceStatus = SVC_STATUS_STOP_PENDING;
 
             // Signal the service to stop.
-            if (pInstance->OnStopService()) {
+            if (pInstance->OnStop()) {
                 pInstance->m_ServiceStatus.dwWin32ExitCode = 0;
                 pInstance->m_ServiceStatus.dwCurrentState  = SERVICE_STOPPED;
                 pInstance->m_nServiceStatus = SVC_STATUS_STOPPED;
@@ -362,7 +362,7 @@ void CWinService::ServiceControlHandler(DWORD dwControlCode)
             pInstance->m_nServiceStatus = SVC_STATUS_PAUSE_PENDING;
 
             // Signal the service to pause
-            if (pInstance->OnPauseService()) {
+            if (pInstance->OnPause()) {
                 pInstance->m_ServiceStatus.dwWin32ExitCode = 0;
                 pInstance->m_ServiceStatus.dwCurrentState  = SERVICE_PAUSED;
                 pInstance->m_nServiceStatus = SVC_STATUS_PAUSED;
@@ -379,7 +379,7 @@ void CWinService::ServiceControlHandler(DWORD dwControlCode)
             pInstance->m_nServiceStatus = SVC_STATUS_CONTINUE_PENDING;
 
             // Signal the service to continue(resume)
-            if (pInstance->OnContinueService()) {
+            if (pInstance->OnContinue()) {
                 pInstance->m_ServiceStatus.dwWin32ExitCode = 0;
                 pInstance->m_ServiceStatus.dwCurrentState  = SERVICE_RUNNING;
                 pInstance->m_nServiceStatus = SVC_STATUS_RUNNING;

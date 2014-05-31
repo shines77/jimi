@@ -42,10 +42,10 @@ USING_NS_JIMI_LOG;
 /* ServiceWorkerMethod 默认的休眠时间, 单位为毫秒 */
 #define SERVICE_SLEEP_TIME                  5000
 /* ServiceWorkerMethod 暂停时的休眠时间, 单位为毫秒 */
-#define SERVICE_PAUSE_SLEEP_TIME            100
+#define SERVICE_PAUSE_SLEEP_TIME            200
 
 /* 默认的执行一个命令的等待时间dwWaitHint, 单位为毫秒 */
-#define SERVICE_DEFAULT_WAIT_HINT           10000
+#define SERVICE_DEFAULT_WAIT_HINT           5000
 
 #define ERROR_SERVICE_INSTANCE_NOT_INITED   "Service Instance is not initialized."
 
@@ -95,6 +95,7 @@ typedef enum eServiceErrorId {
     ERR_SVC_INIT_SERVICE_FAILED = 101,
     ERR_SVC_START_SERVICE_FAILED = 102,
     ERR_SVC_STOP_SERVICE_FAILED = 103,
+    ERR_SVC_CLEANUP_SERVICE_FAILED = 109,
     ERR_SVC_MAXID
 } eServiceErrorId;
 
@@ -106,23 +107,23 @@ typedef enum eServiceErrorId {
 
 class JIMI_DLL IWinServiceBase
 {
-    virtual bool OnInitService() = 0;
+    virtual bool OnServiceInit() = 0;
+    virtual bool OnServiceCleanup() = 0;
 
-    virtual bool OnStartService(int argc, TCHAR *argv[]) = 0;
-    virtual bool OnStopService() = 0;
+    virtual bool OnStart(int argc, TCHAR *argv[]) = 0;
+    virtual bool OnStop() = 0;
 
-    virtual bool OnPauseService() = 0;
-    virtual bool OnContinueService() = 0;
+    virtual bool OnPause() = 0;
+    virtual bool OnContinue() = 0;
 
-    virtual bool OnServiceInterrogate() = 0;
+    virtual bool OnShutdown() = 0;
 
-    virtual bool OnShutdownService() = 0;
-
-    virtual bool OnServiceParamChange() = 0;
-    virtual bool OnServiceDeviceEvent() = 0;
-    virtual bool OnServiceSessionChange() = 0;
-    virtual bool OnServicePowerEvent() = 0;
-    virtual bool OnServicePreShutdown() = 0;
+    virtual bool OnInterrogate() = 0;
+    virtual bool OnParamChange() = 0;
+    virtual bool OnDeviceEvent() = 0;
+    virtual bool OnSessionChange() = 0;
+    virtual bool OnPowerEvent() = 0;
+    virtual bool OnPreShutdown() = 0;
 
     virtual bool OnCustomCommand(DWORD dwControlCode) = 0;
     virtual bool OnUnknownCommand(DWORD dwControlCode) = 0;
@@ -131,7 +132,7 @@ class JIMI_DLL IWinServiceBase
 };
 
 template <class T>
-class JIMI_DLL WinServiceBase : public IWinServiceBase
+class JIMI_DLL WinServiceBase /* : public IWinServiceBase */
 {
 public:
     WinServiceBase(void);
@@ -149,55 +150,87 @@ public:
     bool InstallService();
     bool UninstallService();
 
+#if 1
     // callback events
-    virtual bool OnInitService();
+    bool OnServiceInit();
+    bool OnServiceCleanup();
 
-    virtual bool OnStartService(int argc, TCHAR *argv[]);
-    virtual bool OnStopService();
+    bool OnStart(int argc, TCHAR *argv[]);
+    bool OnStop();
 
-    virtual bool OnPauseService();
-    virtual bool OnContinueService();
+    bool OnPause();
+    bool OnContinue();
 
-    virtual bool OnServiceInterrogate();
+    bool OnShutdown();
 
-    virtual bool OnShutdownService();
+    bool OnInterrogate();
+    bool OnParamChange();
+    bool OnDeviceEvent();
+    bool OnSessionChange();
+    bool OnPowerEvent();
+    bool OnPreShutdown();
 
-    virtual bool OnServiceParamChange();
-    virtual bool OnServiceDeviceEvent();
-    virtual bool OnServiceSessionChange();
-    virtual bool OnServicePowerEvent();
-    virtual bool OnServicePreShutdown();
+    bool OnCustomCommand(DWORD dwControlCode);
+    bool OnUnknownCommand(DWORD dwControlCode);
+
+#else
+    // callback events
+    virtual bool OnServiceInit();
+    virtual bool OnServiceCleanup();
+
+    virtual bool OnStart(int argc, TCHAR *argv[]);
+    virtual bool OnStop();
+
+    virtual bool OnPause();
+    virtual bool OnContinue();
+
+    virtual bool OnShutdown();
+
+    virtual bool OnInterrogate();
+    virtual bool OnParamChange();
+    virtual bool OnDeviceEvent();
+    virtual bool OnSessionChange();
+    virtual bool OnPowerEvent();
+    virtual bool OnPreShutdown();
 
     virtual bool OnCustomCommand(DWORD dwControlCode);
     virtual bool OnUnknownCommand(DWORD dwControlCode);
+#endif
 
     // fire callback events
-    bool Fire_OnInitService();
+    bool FireEvent_OnServiceInit();
+    bool FireEvent_OnServiceCleanup();
 
-    bool Fire_OnStartService(int argc, TCHAR *argv[]);
-    bool Fire_OnStopService();
+    bool FireEvent_OnStart(int argc, TCHAR *argv[]);
+    bool FireEvent_OnStop();
 
-    bool Fire_OnPauseService();
-    bool Fire_OnContinueService();
+    bool FireEvent_OnPause();
+    bool FireEvent_OnContinue();
 
-    bool Fire_OnServiceInterrogate();
+    bool FireEvent_OnInterrogate();
 
-    bool Fire_OnShutdownService();
+    bool FireEvent_OnShutdown();
 
-    bool Fire_OnServiceParamChange();
-    bool Fire_OnServiceDeviceEvent();
-    bool Fire_OnServiceSessionChange();
-    bool Fire_OnServicePowerEvent();
-    bool Fire_OnServicePreShutdown();
+    bool FireEvent_OnParamChange();
+    bool FireEvent_OnDeviceEvent();
+    bool FireEvent_OnSessionChange();
+    bool FireEvent_OnPowerEvent();
+    bool FireEvent_OnPreShutdown();
 
-    bool Fire_OnCustomCommand(DWORD dwControlCode);
-    bool Fire_OnUnknownCommand(DWORD dwControlCode);
+    bool FireEvent_OnCustomCommand(DWORD dwControlCode);
+    bool FireEvent_OnUnknownCommand(DWORD dwControlCode);
 
     // worker thread
     bool ServiceWorkerMethod(void *pvData);
-    bool ServiceWorkerMethodBase(void *pvData);
 
     bool SetCreateByNew(bool bCreateByNew);
+
+    SERVICE_STATUS_HANDLE GetServiceStatusHandle() {
+        return m_ServiceStatusHandle;
+    }
+    void SetServiceStatusHandle(SERVICE_STATUS_HANDLE hSvcStatusHandle) {
+        m_ServiceStatusHandle = hSvcStatusHandle;
+    }
 
     TCHAR *GetServiceName()         { return m_ServiceName;        }
     TCHAR *GetServiceDisplayName()  { return m_ServiceDisplayName; }
@@ -265,7 +298,8 @@ WinServiceBase<T>::WinServiceBase(void)
     ::ZeroMemory(&m_ServiceDescription, sizeof(m_ServiceDescription));
     ::ZeroMemory(&m_ServiceStatus, sizeof(m_ServiceStatus));
 
-    InitializeComponent();
+    T *pT = static_cast<T *>(this);
+    pT->InitComponent();
 }
 
 template <class T>
@@ -289,22 +323,14 @@ void WinServiceBase<T>::InitComponent()
 }
 
 template <class T>
-void WinServiceBase<T>::InitializeComponent()
-{
-    // Initialize the operating properties for the service.
-    sLog.info("WinServiceBase<T>::InitializeComponent() Enter.");
-    T *pT = static_cast<T *>(this);
-    pT->InitComponent();
-    sLog.info("WinServiceBase<T>::InitializeComponent() Over.");
-}
-
-template <class T>
 bool WinServiceBase<T>::ServiceWorkerMethod(void *pvData)
 {
     static int s_nOnServiceLoopCnt = 0;
     static int s_nServiceLoopPauseCnt = 0;
     unsigned int nSleepTime = GetSleepTime();
     unsigned int nPauseSleepTime = GetPauseSleepTime();
+
+    sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod() Enter.");
     while (IsRunning()) {
         if (!IsPausing()) {
             if (s_nOnServiceLoopCnt < 10) {
@@ -316,26 +342,15 @@ bool WinServiceBase<T>::ServiceWorkerMethod(void *pvData)
         }
         else {
             if (s_nServiceLoopPauseCnt < 10) {
-                sLog.info("invoke WinServiceBase<T>::ServiceWorkerLoop(): Pause, cnt = %d, time = %d",
+                sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod(): Pause, cnt = %d, time = %d",
                     s_nServiceLoopPauseCnt, GetTickCount());
                 s_nServiceLoopPauseCnt++;
             }
             ::Sleep(nPauseSleepTime);
         }
     }
+    sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod() Over.");
     return true;
-}
-
-template <class T>
-bool WinServiceBase<T>::ServiceWorkerMethodBase(void *pvData)
-{
-    static int s_nOnServiceLoopCnt = 0;
-    if (s_nOnServiceLoopCnt < 10) {
-        sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethodBase(), cnt = %d", s_nOnServiceLoopCnt);
-        s_nOnServiceLoopCnt++;
-    }
-    T *pT = static_cast<T *>(this);
-    return pT->ServiceWorkerMethod(pvData);
 }
 
 template <class T>
@@ -531,13 +546,16 @@ bool WinServiceBase<T>::UninstallService()
         }
 
         // 最多等待180秒, 如果服务还未停止, 则强制删除
-        const int nMaxWaitSeconds = 180;
-        DWORD dwStartTime = GetTickCount();
+        const DWORD dwTimeOutLimit = 180;
+        DWORD dwTimeOut = GetTickCount() + dwTimeOutLimit * 1000;
         while (serviceStatus2.dwCurrentState != SERVICE_STOPPED) {
-            ::QueryServiceStatus(schService, &serviceStatus2);
-            if ((GetTickCount() - dwStartTime) > nMaxWaitSeconds * 1000)
+            if (!::QueryServiceStatus(schService, &serviceStatus2))
                 break;
-            ::Sleep(100);
+            if (GetTickCount() > dwTimeOut) {
+                ::SetLastError(ERROR_TIMEOUT);
+                break;
+            }
+            ::Sleep(200);
         }
     }
 
@@ -670,86 +688,93 @@ BOOL WinServiceBase<T>::SetServiceStatus(DWORD dwCurrentState, DWORD dwWin32Exit
 }
 
 template <class T>
-bool WinServiceBase<T>::OnInitService()
+bool WinServiceBase<T>::OnServiceInit()
 {
-    sLog.info("invoke WinServiceBase<T>::OnInitService()");
+    sLog.info("invoke WinServiceBase<T>::OnServiceInit().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnStartService(int argc, TCHAR *argv[])
+bool WinServiceBase<T>::OnServiceCleanup()
 {
-    sLog.info("invoke WinServiceBase<T>::OnStartService()");
+    sLog.info("invoke WinServiceBase<T>::OnServiceCleanup().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnStopService()
+bool WinServiceBase<T>::OnStart(int argc, TCHAR *argv[])
 {
-    sLog.info("invoke WinServiceBase<T>::OnStopService().");
+    sLog.info("invoke WinServiceBase<T>::OnStart().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnPauseService()
+bool WinServiceBase<T>::OnStop()
 {
-    sLog.info("invoke WinServiceBase<T>::OnPauseService().");
+    sLog.info("invoke WinServiceBase<T>::OnStop().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnContinueService()
+bool WinServiceBase<T>::OnPause()
 {
-    sLog.info("invoke WinServiceBase<T>::OnContinueService().");
+    sLog.info("invoke WinServiceBase<T>::OnPause().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnServiceInterrogate()
+bool WinServiceBase<T>::OnContinue()
 {
-    sLog.info("invoke WinServiceBase<T>::OnServiceInterrogate().");
+    sLog.info("invoke WinServiceBase<T>::OnContinue().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnShutdownService()
+bool WinServiceBase<T>::OnInterrogate()
 {
-    sLog.info("invoke WinServiceBase<T>::OnShutdownService().");
+    sLog.info("invoke WinServiceBase<T>::OnInterrogate().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnServiceParamChange()
+bool WinServiceBase<T>::OnShutdown()
 {
-    sLog.info("invoke WinServiceBase<T>::OnServiceParamChange().");
+    sLog.info("invoke WinServiceBase<T>::OnShutdown().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnServiceDeviceEvent()
+bool WinServiceBase<T>::OnParamChange()
 {
-    sLog.info("invoke WinServiceBase<T>::OnServiceDeviceEvent().");
+    sLog.info("invoke WinServiceBase<T>::OnParamChange().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnServiceSessionChange()
+bool WinServiceBase<T>::OnDeviceEvent()
 {
-    sLog.info("invoke WinServiceBase<T>::OnServiceSessionChange().");
+    sLog.info("invoke WinServiceBase<T>::OnDeviceEvent().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnServicePowerEvent()
+bool WinServiceBase<T>::OnSessionChange()
 {
-    sLog.info("invoke WinServiceBase<T>::OnServicePowerEvent().");
+    sLog.info("invoke WinServiceBase<T>::OnSessionChange().");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::OnServicePreShutdown()
+bool WinServiceBase<T>::OnPowerEvent()
 {
-    sLog.info("invoke WinServiceBase<T>::OnServicePreShutdown().");
+    sLog.info("invoke WinServiceBase<T>::OnPowerEvent().");
+    return true;
+}
+
+template <class T>
+bool WinServiceBase<T>::OnPreShutdown()
+{
+    sLog.info("invoke WinServiceBase<T>::OnPreShutdown().");
     return true;
 }
 
@@ -768,165 +793,173 @@ bool WinServiceBase<T>::OnUnknownCommand(DWORD dwControlCode)
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnInitService()
+bool WinServiceBase<T>::FireEvent_OnServiceInit()
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnInitService()");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnServiceInit().");
     T *pT = static_cast<T *>(this);
-    return pT->OnInitService();
+    return pT->OnServiceInit();
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnStartService(int argc, TCHAR *argv[])
+bool WinServiceBase<T>::FireEvent_OnServiceCleanup()
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnStartService()");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnServiceCleanup().");
     T *pT = static_cast<T *>(this);
-    return pT->OnStartService(argc, argv);
+    return pT->OnServiceCleanup();
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnStopService()
+bool WinServiceBase<T>::FireEvent_OnStart(int argc, TCHAR *argv[])
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnStopService() Enter.");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnStart().");
+    T *pT = static_cast<T *>(this);
+    return pT->OnStart(argc, argv);
+}
+
+template <class T>
+bool WinServiceBase<T>::FireEvent_OnStop()
+{
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnStop() Enter.");
 
     // Signal that service try stop
     SetServiceStatus(SERVICE_STOP_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
 
     // Signal the service to stop
     T *pT = static_cast<T *>(this);
-    if (pT->OnStopService()) {
+    if (pT->OnStop()) {
         SetServiceStatus(SERVICE_STOPPED, NO_ERROR, 0);
     }
 
-    sLog.info("invoke WinServiceBase<T>::Fire_OnStopService() Over.");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnStop() Over.");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnPauseService()
+bool WinServiceBase<T>::FireEvent_OnPause()
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnPauseService() Enter.");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnPause() Enter.");
 
     // Signal that service try pause
     SetServiceStatus(SERVICE_PAUSE_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
 
     // Signal the service to pause
     T *pT = static_cast<T *>(this);
-    if (pT->OnPauseService()) {
+    if (pT->OnPause()) {
         SetServiceStatus(SERVICE_PAUSED, NO_ERROR, 0);
     }
 
-    sLog.info("invoke WinServiceBase<T>::Fire_OnPauseService() Over.");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnPause() Over.");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnContinueService()
+bool WinServiceBase<T>::FireEvent_OnContinue()
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnContinueService() Enter.");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnContinue() Enter.");
 
     // Signal that service try continue
     SetServiceStatus(SERVICE_CONTINUE_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
 
     // Signal the service to continue
     T *pT = static_cast<T *>(this);
-    if (pT->OnContinueService()) {
+    if (pT->OnContinue()) {
         SetServiceStatus(SERVICE_RUNNING, NO_ERROR, 0);
     }
 
-    sLog.info("invoke WinServiceBase<T>::Fire_OnContinueService() Over.");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnContinue() Over.");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnServiceInterrogate()
+bool WinServiceBase<T>::FireEvent_OnInterrogate()
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnServiceInterrogate() Enter.");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnInterrogate() Enter.");
 
     T *pT = static_cast<T *>(this);
-    if (pT->OnServiceInterrogate()) {
+    if (pT->OnInterrogate()) {
         // ServiceInterrogate
     }
 
-    sLog.info("invoke WinServiceBase<T>::Fire_OnServiceInterrogate() Over.");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnInterrogate() Over.");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnShutdownService()
+bool WinServiceBase<T>::FireEvent_OnShutdown()
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnShutdownService() Enter.");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnShutdown() Enter.");
 
     // Signal that service try stop (shutdown)
     SetServiceStatus(SVC_STATUS_STOP_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT * 2);
 
     // Signal the service to stop (shutdown)
     T *pT = static_cast<T *>(this);
-    if (pT->OnShutdownService()) {
+    if (pT->OnShutdown()) {
         SetServiceStatus(SERVICE_STOPPED, NO_ERROR, 0);
     }
 
-    sLog.info("invoke WinServiceBase<T>::Fire_OnShutdownService() Over.");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnShutdown() Over.");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnServiceParamChange()
+bool WinServiceBase<T>::FireEvent_OnParamChange()
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnServiceParamChange().");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnParamChange().");
     T *pT = static_cast<T *>(this);
-    return pT->OnServiceParamChange();
+    return pT->OnParamChange();
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnServiceDeviceEvent()
+bool WinServiceBase<T>::FireEvent_OnDeviceEvent()
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnServiceDeviceEvent().");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnDeviceEvent().");
     T *pT = static_cast<T *>(this);
-    return pT->OnServiceDeviceEvent();
+    return pT->OnDeviceEvent();
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnServiceSessionChange()
+bool WinServiceBase<T>::FireEvent_OnSessionChange()
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnServiceSessionChange() Enter.");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnSessionChange() Enter.");
 
     T *pT = static_cast<T *>(this);
-    if (pT->OnServiceSessionChange()) {
-        // ServiceSessionChange
+    if (pT->OnSessionChange()) {
+        // Service Session Change
     }
 
-    sLog.info("invoke WinServiceBase<T>::Fire_OnServiceSessionChange() Over.");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnSessionChange() Over.");
     return true;
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnServicePowerEvent()
+bool WinServiceBase<T>::FireEvent_OnPowerEvent()
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnServicePowerEvent().");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnPowerEvent().");
     T *pT = static_cast<T *>(this);
-    return pT->OnServicePowerEvent();
+    return pT->OnPowerEvent();
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnServicePreShutdown()
+bool WinServiceBase<T>::FireEvent_OnPreShutdown()
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnServicePreShutdown().");
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnPreShutdown().");
     T *pT = static_cast<T *>(this);
-    return pT->OnServicePreShutdown();
+    return pT->OnPreShutdown();
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnCustomCommand(DWORD dwControlCode)
+bool WinServiceBase<T>::FireEvent_OnCustomCommand(DWORD dwControlCode)
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnCustomCommand(), dwControlCode = %d.", dwControlCode);
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnCustomCommand(), dwControlCode = %d.", dwControlCode);
     T *pT = static_cast<T *>(this);
     return pT->OnCustomCommand(dwControlCode);
 }
 
 template <class T>
-bool WinServiceBase<T>::Fire_OnUnknownCommand(DWORD dwControlCode)
+bool WinServiceBase<T>::FireEvent_OnUnknownCommand(DWORD dwControlCode)
 {
-    sLog.info("invoke WinServiceBase<T>::Fire_OnUnknownCommand(), dwControlCode = %d.", dwControlCode);
+    sLog.info("invoke WinServiceBase<T>::FireEvent_OnUnknownCommand(), dwControlCode = %d.", dwControlCode);
     T *pT = static_cast<T *>(this);
     return pT->OnUnknownCommand(dwControlCode);
 }
@@ -955,7 +988,7 @@ bool WinServiceBase<T>::Fire_OnUnknownCommand(DWORD dwControlCode)
 template <class T>
 void WinServiceBase<T>::ServiceControlHandler(DWORD dwControlCode)
 {
-    bool bHandleCommand = false;
+#if 1
     WinServiceBase<T> *pInstance = s_pServiceInstance;
     if (pInstance == NULL) {
         sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
@@ -964,66 +997,136 @@ void WinServiceBase<T>::ServiceControlHandler(DWORD dwControlCode)
 
     switch (dwControlCode) {
         case SERVICE_CONTROL_STOP:
-            pInstance->Fire_OnStopService();
+            pInstance->FireEvent_OnStop();
             break;
 
         case SERVICE_CONTROL_PAUSE:
-            pInstance->Fire_OnPauseService();
+            pInstance->FireEvent_OnPause();
             break;
 
         case SERVICE_CONTROL_CONTINUE:
-            pInstance->Fire_OnContinueService();
+            pInstance->FireEvent_OnContinue();
             break;
 
         case SERVICE_CONTROL_INTERROGATE:
-            pInstance->Fire_OnServiceInterrogate();
-            bHandleCommand = true;
+            pInstance->FireEvent_OnInterrogate();
             break;
 
         case SERVICE_CONTROL_SHUTDOWN:
-            pInstance->Fire_OnShutdownService();
+            pInstance->FireEvent_OnShutdown();
             break;
 
         case SERVICE_CONTROL_PARAMCHANGE:
-            pInstance->Fire_OnServiceParamChange();
+            pInstance->FireEvent_OnParamChange();
             break;
 
         case SERVICE_CONTROL_DEVICEEVENT:
-            pInstance->Fire_OnServiceDeviceEvent();
+            pInstance->FireEvent_OnDeviceEvent();
             break;
 
         case SERVICE_CONTROL_SESSIONCHANGE:
-            pInstance->Fire_OnServiceSessionChange();
+            pInstance->FireEvent_OnSessionChange();
             break;
 
         case SERVICE_CONTROL_POWEREVENT:
-            pInstance->Fire_OnServicePowerEvent();
+            pInstance->FireEvent_OnPowerEvent();
             break;
 
         case SERVICE_CONTROL_PRESHUTDOWN:
-            pInstance->Fire_OnServicePreShutdown();
+            pInstance->FireEvent_OnPreShutdown();
             break;
 
         default:
             if (dwControlCode >= 128 && dwControlCode <= 255) {
                 // user defined control code
-                if (pInstance->Fire_OnCustomCommand(dwControlCode)) {
+                if (pInstance->FireEvent_OnCustomCommand(dwControlCode)) {
                     //
                 }
             }
             else {
                 // unrecognized control code
-                if (pInstance->Fire_OnUnknownCommand(dwControlCode)) {
+                if (pInstance->FireEvent_OnUnknownCommand(dwControlCode)) {
                     //
                 }
             }
             break;
     }
+
+#else
+    T *pInstanceImpl = static_cast<T *>(s_pServiceInstance);
+    if (pInstanceImpl == NULL) {
+        sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+        throw ERROR_SERVICE_INSTANCE_NOT_INITED;
+    }
+
+    switch (dwControlCode) {
+        case SERVICE_CONTROL_STOP:
+            pInstanceImpl->OnStop();
+            break;
+
+        case SERVICE_CONTROL_PAUSE:
+            pInstanceImpl->OnPause();
+            break;
+
+        case SERVICE_CONTROL_CONTINUE:
+            pInstanceImpl->OnContinue();
+            break;
+
+        case SERVICE_CONTROL_INTERROGATE:
+            pInstanceImpl->OnInterrogate();
+            break;
+
+        case SERVICE_CONTROL_SHUTDOWN:
+            pInstanceImpl->OnShutdown();
+            break;
+
+        case SERVICE_CONTROL_PARAMCHANGE:
+            pInstanceImpl->OnParamChange();
+            break;
+
+        case SERVICE_CONTROL_DEVICEEVENT:
+            pInstanceImpl->OnDeviceEvent();
+            break;
+
+        case SERVICE_CONTROL_SESSIONCHANGE:
+            pInstanceImpl->OnSessionChange();
+            break;
+
+        case SERVICE_CONTROL_POWEREVENT:
+            pInstanceImpl->OnPowerEvent();
+            break;
+
+        case SERVICE_CONTROL_PRESHUTDOWN:
+            pInstanceImpl->OnPreShutdown();
+            break;
+
+        default:
+            if (dwControlCode >= 128 && dwControlCode <= 255) {
+                // user defined control code
+                if (pInstanceImpl->OnCustomCommand(dwControlCode)) {
+                    //
+                }
+            }
+            else {
+                // unrecognized control code
+                if (pInstanceImpl->OnUnknownCommand(dwControlCode)) {
+                    //
+                }
+            }
+            break;
+    }
+#endif
 }
 
 template <class T>
 void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
 {
+    T *pInstanceImpl = static_cast<T *>(s_pServiceInstance);
+    if (pInstanceImpl == NULL) {
+        sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+        throw ERROR_SERVICE_INSTANCE_NOT_INITED;
+    }
+
     WinServiceBase<T> *pInstance = s_pServiceInstance;
     if (pInstance == NULL) {
         sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
@@ -1033,10 +1136,12 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
     static int s_nServiceLoopCnt = 0;
     static int s_nServiceLoopPauseCnt = 0;
 
+    sLog.info("WinServiceBase<T>::ServiceWorkerLoop() Enter.");
+
     // The worker loop of a service
     while (pInstance->IsRunning()) {
         if (!pInstance->IsPausing()) {
-            if (!pInstance->ServiceWorkerMethodBase(NULL)) {
+            if (!pInstanceImpl->ServiceWorkerMethod(NULL)) {
                 pInstance->m_ServiceStatus.dwCurrentState    = SERVICE_STOPPED;
                 pInstance->m_ServiceStatus.dwWin32ExitCode   = NO_ERROR;
                 ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &(pInstance->m_ServiceStatus));
@@ -1058,11 +1163,19 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
             ::Sleep(pInstance->m_dwPauseSleepTime);
         }
     }
+
+    sLog.info("WinServiceBase<T>::ServiceWorkerLoop() Over.");
 }
 
 template <class T>
 void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
 {
+    T *pInstanceImpl = static_cast<T *>(s_pServiceInstance);
+    if (pInstanceImpl == NULL) {
+        sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+        throw ERROR_SERVICE_INSTANCE_NOT_INITED;
+    }
+
     WinServiceBase<T> *pInstance = s_pServiceInstance;
     if (pInstance == NULL) {
         sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
@@ -1114,7 +1227,7 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
         // do initialisation here
 
         // Initialize Service
-        if (!pInstance->OnInitService()) {
+        if (!pInstanceImpl->OnServiceInit()) {
             sLog.error("WinServiceBase<T>::ServiceMain: Initialization failed.");
             pInstance->m_ServiceStatus.dwControlsAccepted  &= ~dwControlAcceptedRemove;
             pInstance->m_ServiceStatus.dwCurrentState       = SERVICE_STOPPED;
@@ -1129,15 +1242,12 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
         pInstance->m_ServiceStatus.dwCurrentState      = SERVICE_RUNNING;
         ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &pInstance->m_ServiceStatus);
 
-        ////////////////////////
-        // service main cycle //
-        ////////////////////////
-
         pInstance->m_nServiceStatus = SVC_STATUS_RUNNING;
         argc = 1;
 
-        if (!pInstance->OnStartService(argc, argv)) {
-            sLog.error("WinServiceBase<T>::ServiceMain: OnStartService() failed.");
+        // Start Service
+        if (!pInstanceImpl->OnStart(argc, argv)) {
+            sLog.error("WinServiceBase<T>::ServiceMain: OnStart() failed.");
             pInstance->m_ServiceStatus.dwControlsAccepted       &= ~dwControlAcceptedRemove;
             pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_STOPPED;
             pInstance->m_ServiceStatus.dwWin32ExitCode           = ERROR_SERVICE_SPECIFIC_ERROR;
@@ -1146,21 +1256,34 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
             return;
         }
 
+        ////////////////////////
+        // service main loop  //
+        ////////////////////////
+
         // The worker loop of a service, or invoke WinServiceBase<T>::OnServiceLoop()
         //_tmain(argc, argv);
         WinServiceBase<T>::ServiceWorkerLoop(argc, argv);
 
         // service was stopped
+        pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_STOP_PENDING;
         pInstance->m_ServiceStatus.dwWin32ExitCode           = NO_ERROR;
         pInstance->m_ServiceStatus.dwServiceSpecificExitCode = NO_ERROR;
-        pInstance->m_ServiceStatus.dwCurrentState = SERVICE_STOP_PENDING;
         ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &pInstance->m_ServiceStatus);
 
         ////////////////////////
-        // do cleanup here
+        // do cleanup here    //
         ////////////////////////
 
-        // do cleanup
+        // Do Cleanup Callback
+        if (!pInstanceImpl->OnServiceCleanup()) {
+            sLog.error("WinServiceBase<T>::ServiceMain: OnServiceCleanup() failed.");
+            pInstance->m_ServiceStatus.dwControlsAccepted       &= ~dwControlAcceptedRemove;
+            pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_STOPPED;
+            pInstance->m_ServiceStatus.dwWin32ExitCode           = ERROR_SERVICE_SPECIFIC_ERROR;
+            pInstance->m_ServiceStatus.dwServiceSpecificExitCode = ERR_SVC_CLEANUP_SERVICE_FAILED;
+            ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &(pInstance->m_ServiceStatus));
+            return;
+        }
 
         // service is now stopped
         pInstance->m_ServiceStatus.dwControlsAccepted       &= ~dwControlAcceptedRemove;
@@ -1175,7 +1298,6 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
     }
 }
 
-
 template <class T>
 int WinServiceBase<T>::RunService()
 {
@@ -1185,13 +1307,15 @@ int WinServiceBase<T>::RunService()
 template <class T>
 int WinServiceBase<T>::RunService(WinServiceBase<T> *pServiceInstance)
 {
-    sLog.info("RunService() Enter.");
+    sLog.info("WinServiceBase<T>::RunService() Enter.");
+
+    T *pInstance = static_cast<T *>(pServiceInstance);
 
     // If command-line parameter is "install", install the service.
     // Otherwise, the service is probably being started by the SCM.
-    if (pServiceInstance == NULL)
-        pServiceInstance = s_pServiceInstance;
-    if (pServiceInstance == NULL) {
+    if (pInstance == NULL)
+        pInstance = static_cast<T *>(s_pServiceInstance);
+    if (pInstance == NULL) {
         sLog.error("%s%s", "WinServiceBase<T>::RunService(): ", ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
@@ -1199,7 +1323,7 @@ int WinServiceBase<T>::RunService(WinServiceBase<T> *pServiceInstance)
     // TO_DO: Add any additional services for the process to this table.
     // 一个Service进程可以有多个线程，这是每个线程的入口表
     SERVICE_TABLE_ENTRY serviceTable[] = {
-        { pServiceInstance->GetServiceName(), (LPSERVICE_MAIN_FUNCTION)&(WinServiceBase<T>::ServiceMain) },
+        { pInstance->GetServiceName(), (LPSERVICE_MAIN_FUNCTION)&(WinServiceBase<T>::ServiceMain) },
         { NULL, NULL }
     };
 
@@ -1211,7 +1335,7 @@ int WinServiceBase<T>::RunService(WinServiceBase<T> *pServiceInstance)
         return 0;
     }
 
-    sLog.info("RunService() Over.");
+    sLog.info("WinServiceBase<T>::RunService() Over.");
     return 1;
 }
 
@@ -1224,13 +1348,14 @@ int WinServiceBase<T>::RunServiceEx(SERVICE_TABLE_ENTRY serviceTable[])
 template <class T>
 int WinServiceBase<T>::RunServiceEx(WinServiceBase<T> *pServiceInstance, SERVICE_TABLE_ENTRY serviceTable[])
 {
-    sLog.info("RunServiceEx() Enter.");
+    sLog.info("WinServiceBase<T>::RunServiceEx() Enter.");
+    T *pInstance = static_cast<T *>(pServiceInstance);
 
     // If command-line parameter is "install", install the service.
     // Otherwise, the service is probably being started by the SCM.
-    if (pServiceInstance == NULL)
-        pServiceInstance = s_pServiceInstance;
-    if (pServiceInstance == NULL) {
+    if (pInstance == NULL)
+        pInstance = static_cast<T *>(s_pServiceInstance);
+    if (pInstance == NULL) {
         sLog.error("%s%s", "WinServiceBase<T>::RunServiceEx(): ", ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
@@ -1252,7 +1377,7 @@ int WinServiceBase<T>::RunServiceEx(WinServiceBase<T> *pServiceInstance, SERVICE
         return 0;
     }
 
-    sLog.info("RunServiceEx() Over.");
+    sLog.info("WinServiceBase<T>::RunServiceEx() Over.");
     return 1;
 }
 
