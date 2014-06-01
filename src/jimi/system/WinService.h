@@ -1105,7 +1105,7 @@ bool WinServiceBase<T>::FireEvent_OnSessionChange(DWORD dwEventType, LPVOID lpEv
             else if ((dwEventsFlag & WTS_EVENT_LOGOFF) == WTS_EVENT_LOGOFF)
                 dwReason = kSessionLogoff;
             else if ((dwEventsFlag & WTS_EVENT_STATECHANGE) == WTS_EVENT_STATECHANGE) {
-                //
+                dwReason = kSessionRemoteControl;
             }
             sLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() dwReason = %d", dwReason);
             changeDescription.dwReason = dwReason;
