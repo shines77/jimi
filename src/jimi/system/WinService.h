@@ -245,9 +245,10 @@ class JIMI_DLL WinServiceBase /* : public IWinServiceBase */
 public:
     WinServiceBase(void);
     WinServiceBase(WinServiceBase *pInstance, bool bCreateByNew = true);
-    virtual ~WinServiceBase(void);
+    ~WinServiceBase(void);
 
     void Release();
+    void OnDestroy();
 
     void InitComponent();
     void InitializeComponent();
@@ -256,7 +257,7 @@ public:
     bool IsPausing();
 
     bool InstallService();
-    bool UninstallService();
+    bool UninstallService();    
 
 #if 1
     // callback events
@@ -374,9 +375,9 @@ public:
     static void WINAPI ServiceMain(int argc, TCHAR *argv[]);
     static void WINAPI ServiceWorkerLoop(int argc, TCHAR *argv[]);
 
-    BOOL SetServiceStatus(DWORD dwCurrentState);
-    BOOL SetServiceStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwWaitHint);
-    BOOL SetServiceStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode,
+    BOOL UpdateServiceStatus(DWORD dwCurrentState);
+    BOOL UpdateServiceStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwWaitHint);
+    BOOL UpdateServiceStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode,
         DWORD dwServiceSpecificExitCode, DWORD dwCheckPoint, DWORD dwWaitHint);
 
     static WinServiceBase  *s_pServiceInstance;
@@ -391,7 +392,7 @@ private:
     SERVICE_STATUS          m_ServiceStatus;
     SERVICE_STATUS_HANDLE   m_ServiceStatusHandle;
 
-    TCHAR                   m_ServiceName[32];
+    TCHAR                   m_ServiceName[64];
     TCHAR                   m_ServiceDisplayName[128];
     TCHAR                   m_ServiceDescription[512];
 };
@@ -418,13 +419,20 @@ template <class T>
 WinServiceBase<T>::~WinServiceBase(void)
 {
     // Do nothing!!
-    Release();
+    T *pT = static_cast<T *>(this);
+    pT->OnDestroy();
 }
 
 template <class T>
 void WinServiceBase<T>::Release()
 {
     sLog.info("WinServiceBase<T>::Release(), error = %d.", GetLastError());
+}
+
+template <class T>
+void WinServiceBase<T>::OnDestroy()
+{
+    sLog.info("WinServiceBase<T>::OnDestroy(), error = %d.", GetLastError());
 }
 
 template <class T>
@@ -729,24 +737,24 @@ void WinServiceBase<T>::SetInstance(WinServiceBase *pServiceInstance, bool bCrea
 }
 
 template <class T>
-BOOL WinServiceBase<T>::SetServiceStatus(DWORD dwCurrentState)
+BOOL WinServiceBase<T>::UpdateServiceStatus(DWORD dwCurrentState)
 {
-    return SetServiceStatus(dwCurrentState, NO_ERROR, NO_ERROR, 0, 0);
+    return UpdateServiceStatus(dwCurrentState, NO_ERROR, NO_ERROR, 0, 0);
 }
 
 template <class T>
-BOOL WinServiceBase<T>::SetServiceStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwWaitHint)
+BOOL WinServiceBase<T>::UpdateServiceStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwWaitHint)
 {
-    return SetServiceStatus(dwCurrentState, dwWin32ExitCode, NO_ERROR, 0, dwWaitHint);
+    return UpdateServiceStatus(dwCurrentState, dwWin32ExitCode, NO_ERROR, 0, dwWaitHint);
 }
 
 template <class T>
-BOOL WinServiceBase<T>::SetServiceStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode,
+BOOL WinServiceBase<T>::UpdateServiceStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode,
                                             DWORD dwServiceSpecificExitCode, DWORD dwCheckPoint,
                                             DWORD dwWaitHint)
 {
     BOOL bResult = FALSE;
-    sLog.info("invoke WinServiceBase<T>::SetServiceStatus() enter.");
+    sLog.info("invoke WinServiceBase<T>::UpdateServiceStatus() enter.");
 
     this->m_nServiceStatus = dwCurrentState;
 
@@ -760,16 +768,16 @@ BOOL WinServiceBase<T>::SetServiceStatus(DWORD dwCurrentState, DWORD dwWin32Exit
         this->m_ServiceStatus.dwServiceSpecificExitCode = dwServiceSpecificExitCode;
         this->m_ServiceStatus.dwControlsAccepted |= SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_PAUSE_CONTINUE | SERVICE_ACCEPT_SHUTDOWN;
 
-        sLog.info("SetServiceStatus(): dwCurrentState = %s (%d)", s_szServiceStatusString[dwCurrentState], dwCurrentState);
+        sLog.info("UpdateServiceStatus(): dwCurrentState = %s (%d)", s_szServiceStatusString[dwCurrentState], dwCurrentState);
 
         // Report the status of the service to the SCM.
         bResult = ::SetServiceStatus(this->m_ServiceStatusHandle, &this->m_ServiceStatus);
     }
     else {
-        sLog.info("SetServiceStatus(): dwCurrentState = Unknown Status (%d)", dwCurrentState);
+        sLog.info("UpdateServiceStatus(): dwCurrentState = Unknown Status (%d)", dwCurrentState);
     }
 
-    sLog.info("invoke WinServiceBase<T>::SetServiceStatus() over.");
+    sLog.info("invoke WinServiceBase<T>::UpdateServiceStatus() over.");
     return bResult;
 }
 
@@ -882,8 +890,8 @@ bool WinServiceBase<T>::OnSessionChange(SessionChangeDescription *changeDescript
         default:
             break;
     }
-    sLog.info("invoke WinServiceBase<T>::OnSessionChange() Over.");
 
+    sLog.info("invoke WinServiceBase<T>::OnSessionChange() Over.");
     return true;
 }
 
@@ -945,12 +953,12 @@ bool WinServiceBase<T>::FireEvent_OnStop()
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnStop() Enter.");
 
     // Signal that service try stop
-    SetServiceStatus(SERVICE_STOP_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
+    UpdateServiceStatus(SERVICE_STOP_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
 
     // Signal the service to stop
     T *pT = static_cast<T *>(this);
     if (pT->OnStop()) {
-        SetServiceStatus(SERVICE_STOPPED, NO_ERROR, 0);
+        UpdateServiceStatus(SERVICE_STOPPED, NO_ERROR, 0);
     }
 
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnStop() Over.");
@@ -963,12 +971,12 @@ bool WinServiceBase<T>::FireEvent_OnPause()
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnPause() Enter.");
 
     // Signal that service try pause
-    SetServiceStatus(SERVICE_PAUSE_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
+    UpdateServiceStatus(SERVICE_PAUSE_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
 
     // Signal the service to pause
     T *pT = static_cast<T *>(this);
     if (pT->OnPause()) {
-        SetServiceStatus(SERVICE_PAUSED, NO_ERROR, 0);
+        UpdateServiceStatus(SERVICE_PAUSED, NO_ERROR, 0);
     }
 
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnPause() Over.");
@@ -981,12 +989,12 @@ bool WinServiceBase<T>::FireEvent_OnContinue()
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnContinue() Enter.");
 
     // Signal that service try continue
-    SetServiceStatus(SERVICE_CONTINUE_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
+    UpdateServiceStatus(SERVICE_CONTINUE_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
 
     // Signal the service to continue
     T *pT = static_cast<T *>(this);
     if (pT->OnContinue()) {
-        SetServiceStatus(SERVICE_RUNNING, NO_ERROR, 0);
+        UpdateServiceStatus(SERVICE_RUNNING, NO_ERROR, 0);
     }
 
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnContinue() Over.");
@@ -1013,12 +1021,12 @@ bool WinServiceBase<T>::FireEvent_OnShutdown()
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnShutdown() Enter.");
 
     // Signal that service try stop (shutdown)
-    SetServiceStatus(SVC_STATUS_STOP_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT * 2);
+    UpdateServiceStatus(SVC_STATUS_STOP_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT * 2);
 
     // Signal the service to stop (shutdown)
     T *pT = static_cast<T *>(this);
     if (pT->OnShutdown()) {
-        SetServiceStatus(SERVICE_STOPPED, NO_ERROR, 0);
+        UpdateServiceStatus(SERVICE_STOPPED, NO_ERROR, 0);
     }
 
     sLog.info("invoke WinServiceBase<T>::FireEvent_OnShutdown() Over.");
