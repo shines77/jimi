@@ -27,7 +27,8 @@
     #ifndef JIMI_DECLARE_IMPORT
         #define JIMI_DECLARE_IMPORT
     #endif
-#else /* defined(_LIB) || defined(JIMI_LIB) || defined(JIMI_IS_LIB) \
+#else /* defined(_LIB) || defined(USE_LIB) || defined(BUILD_LIB) \
+         || defined(JIMI_LIB) || defined(JIMI_IS_LIB) \
          || defined(JIMI_USE_LIB) || defined(JIMI_USE_STATIC) \
          || defined(JIMI_STATIC) || defined(JIMI_DECLARE_STATIC) || defined(DECLARE_STATIC) \
          || defined(JIMI_ENABLED_STATIC) || defined(ENABLED_STATIC) */
@@ -44,32 +45,29 @@
    (Define JIMI_DECLARE_EXPORT to export symbols, else they are imported or static)
 **************************************************************************************/
 
-#ifdef JIMI_DLL
-    #undef JIMI_DLL
+#ifdef JIMI_API
+    #undef JIMI_API
 #endif
 
-#if defined(JIMI_IS_WINDOWS) && (JIMI_IS_WINDOWS != 0)  /* is windows os? */
+#if defined(JIMI_MSVC)  /* is microsoft visual studio ? */
     #if defined(JIMI_DECLARE_EXPORT)              /* is a dll library */
-        #define JIMI_DLL                __declspec(dllexport)
         #define JIMI_API                __declspec(dllexport)
         #define JIMI_API_TPL            __declspec(dllexport)
         #define JIMI_PRIVATE
         #define JIMI_EXPIMP_TEMPLATE
     #elif defined(JIMI_DECLARE_IMPORT)            /* use a dll library */
-        #define JIMI_DLL                __declspec(dllimport)
         #define JIMI_API                __declspec(dllimport)
         #define JIMI_API_TPL            __declspec(dllimport)   // or don't defined it!
         #define JIMI_PRIVATE
         #define JIMI_EXPIMP_TEMPLATE    extern
     #else /* defined(JIMI_DECLARE_STATIC) */      /* is a static library or use static library */
-        #define JIMI_DLL
         #define JIMI_API
         #define JIMI_API_TPL
         #define JIMI_PRIVATE
         #define JIMI_EXPIMP_TEMPLATE
     #endif
-#elif defined(JIMI_GNUC_)   
-    #define JIMI_DLL                    __attribute__ ((visibility ("default")))
+#elif defined(JIMI_GNUC)   
+    #define JIMI_API                    __attribute__ ((visibility ("default")))
     #define JIMI_API                    __attribute__ ((visibility ("default")))
     #define JIMI_API_TPL                __attribute__ ((visibility ("default")))
     #define JIMI_PRIVATE                __attribute__ ((visibility ("default")))
@@ -78,8 +76,7 @@
     #else
         #define JIMI_EXPIMP_TEMPLATE
     #endif
-#else  /* not is windows os or gunc! */
-    #define JIMI_DLL
+#else  /* not is msvc and not is gunc! */
     #define JIMI_API
     #define JIMI_API_TPL
     #define JIMI_PRIVATE

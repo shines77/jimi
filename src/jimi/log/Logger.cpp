@@ -646,9 +646,9 @@ void Logger::vprintf(const char *fmt, va_list arglist)
     return this->vprintf(false, fmt, arglist);
 }
 
-void  Logger::vprintf(bool newline, const char *fmt, va_list arglist)
+void Logger::vprintf(bool newline, const char *fmt, va_list arglist)
 {
-    vprintf(newline, NULL, NULL, 0, fmt, arglist);
+    return this->vprintf(newline, NULL, NULL, 0, fmt, arglist);
 }
 
 void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,

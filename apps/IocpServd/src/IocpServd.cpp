@@ -61,7 +61,7 @@ int IocpServd_main(int argc, char *argv[])
     sLog.log_begin();
 
     bool isService = true;
-    util::CCmdLine cmdLine;
+    util::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
         string &strCmdLine = cmdLine.getCmdLine();

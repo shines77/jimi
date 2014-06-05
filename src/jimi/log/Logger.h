@@ -103,7 +103,7 @@ using namespace std;
 #define DEFAULT_LOG_FORMAT          "[$datetime] [$type] $msg"
 
 #define MAX_LOG_PATH                MAX_PATH        // 260
-#define MAX_LOG_TITLE               64
+#define MAX_LOG_TITLE               128
 #define STRING_CRLF                 "\r\n"
 
 #define DEFAULT_LOG_TITLE           "Noname Log"
@@ -154,14 +154,14 @@ typedef enum Log_Type
     LOG_LAST
 } Log_Type_t;
 
-typedef struct JIMI_DLL LogType_NodeInfo
+typedef struct JIMI_API LogType_NodeInfo
 {
     int     tag_id;
     int     tag_index;
     char    tag_name[32];
 } LogType_NodeInfo;
 
-typedef struct JIMI_DLL LogType_Node
+typedef struct JIMI_API LogType_Node
 {
     int     tag_id;
     char    tag_name[32];
@@ -172,7 +172,7 @@ typedef struct JIMI_DLL LogType_Node
     bool    to_remote;          // Whether or not to write logs to remote server or gdb
 } LogType_Node;
 
-typedef struct JIMI_DLL LogConf_Node
+typedef struct JIMI_API LogConf_Node
 {
     int             tag_id;
     char            tag_name[32];
@@ -190,7 +190,7 @@ typedef struct JIMI_DLL LogConf_Node
     int             log_flush_threshold;
 } LogConf_Node;
 
-typedef struct JIMI_DLL LogConf_Global
+typedef struct JIMI_API LogConf_Global
 {
     LogConf_Node    node;
     int             tag_mask;
@@ -205,7 +205,7 @@ typedef struct JIMI_DLL LogConf_Global
 JIMI_EXPIMP_TEMPLATE template class JIMI_API_TPL std::allocator<LogConf_Node *>;
 JIMI_EXPIMP_TEMPLATE template class JIMI_API_TPL std::vector<LogConf_Node *, std::allocator<LogConf_Node *>>;
 
-class JIMI_DLL LogConfig
+class JIMI_API LogConfig
 {
 public:
     typedef std::vector<LogConf_Node *>     LogConf_NodeVec;
@@ -233,7 +233,7 @@ public:
     LogType_NodeInfo       *infoList;
 };
 
-class JIMI_DLL Logger
+class JIMI_API Logger
 {
 public:
     Logger(const char *filename = NULL, const char *title = NULL, unsigned int attrib = 0);
@@ -300,13 +300,13 @@ protected:
 private:
     FILE *m_log_file;
     char m_filename[MAX_LOG_PATH + 64];
-    char m_title[64];
+    char m_title[MAX_LOG_TITLE];
     char m_format[128];
 
     LogConfig m_config;
 };
 
-class JIMI_DLL _Utils
+class JIMI_API _Utils
 {
 public:
     _Utils() : log(DEFAULT_LOG_FILENAME_GLOBAL, DEFAULT_LOG_TITLE_GLOBAL) {};
@@ -318,7 +318,7 @@ public:
 
 extern _Utils   utils;
 
-class JIMI_DLL _System
+class JIMI_API _System
 {
 public:
     _System() : out(utils.log) {};

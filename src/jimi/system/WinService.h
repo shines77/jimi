@@ -212,7 +212,7 @@ typedef struct PowerBroadcastStatus
 //       Writing Tools for Windows in C++
 //       http://sprogram.com.ua/en/articles/how-write-service-for-windows-with-cpp
 
-class JIMI_DLL IWinServiceBase
+class JIMI_API IWinServiceBase
 {
     virtual bool OnServiceInit() = 0;
     virtual bool OnServiceCleanup() = 0;
@@ -239,7 +239,7 @@ class JIMI_DLL IWinServiceBase
 };
 
 template <class T>
-class JIMI_DLL WinServiceBase /* : public IWinServiceBase */
+class JIMI_API WinServiceBase /* : public IWinServiceBase */
 {
 public:
     typedef bool (__thiscall *handle_fcn2)(void);
@@ -248,7 +248,7 @@ public:
     WinServiceBase(WinServiceBase *pInstance, bool bCreateByNew = true);
     ~WinServiceBase(void);
 
-    void Release();
+    void Destroy();
     void OnDestroy();
 
     void InitComponent();
@@ -384,14 +384,14 @@ public:
     static WinServiceBase  *s_pServiceInstance;
 
 private:
+    SERVICE_STATUS          m_ServiceStatus;
+    SERVICE_STATUS_HANDLE   m_ServiceStatusHandle;
+
+    int                     m_nServiceStatus;
     bool                    m_bCreateByNew;
     DWORD                   m_dwSleepTime;
     DWORD                   m_dwPauseSleepTime;
     DWORD                   m_dwWaitHint;
-    int                     m_nServiceStatus;
-
-    SERVICE_STATUS          m_ServiceStatus;
-    SERVICE_STATUS_HANDLE   m_ServiceStatusHandle;
 
     TCHAR                   m_ServiceName[64];
     TCHAR                   m_ServiceDisplayName[128];
@@ -400,12 +400,12 @@ private:
 
 template <class T>
 WinServiceBase<T>::WinServiceBase(void)
-: m_bCreateByNew(false)
+: m_ServiceStatusHandle(NULL)
+, m_nServiceStatus(SVC_STATUS_UNKNOWN)
+, m_bCreateByNew(false)
 , m_dwSleepTime(SERVICE_SLEEP_TIME)
 , m_dwPauseSleepTime(SERVICE_PAUSE_SLEEP_TIME)
 , m_dwWaitHint(SERVICE_DEFAULT_WAIT_HINT)
-, m_nServiceStatus(SVC_STATUS_UNKNOWN)
-, m_ServiceStatusHandle(NULL)
 {
     ::ZeroMemory(&m_ServiceName, sizeof(m_ServiceName));
     ::ZeroMemory(&m_ServiceDisplayName, sizeof(m_ServiceDisplayName));
@@ -420,14 +420,15 @@ template <class T>
 WinServiceBase<T>::~WinServiceBase(void)
 {
     // Do nothing!!
-    T *pT = static_cast<T *>(this);
-    pT->OnDestroy();
+    Destroy();
 }
 
 template <class T>
-void WinServiceBase<T>::Release()
+void WinServiceBase<T>::Destroy()
 {
-    sLog.info("WinServiceBase<T>::Release(), error = %d.", GetLastError());
+    sLog.info("WinServiceBase<T>::Destroy(), error = %d.", GetLastError());
+    T *pT = static_cast<T *>(this);
+    pT->OnDestroy();
 }
 
 template <class T>
@@ -727,7 +728,7 @@ void WinServiceBase<T>::SetInstance(WinServiceBase *pServiceInstance, bool bCrea
 {
     if (pServiceInstance == NULL) {
         if (s_pServiceInstance != NULL) {
-            s_pServiceInstance->Release();
+            s_pServiceInstance->Destroy();
             delete s_pServiceInstance;
         }
     }

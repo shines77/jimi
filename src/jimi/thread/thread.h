@@ -9,6 +9,7 @@
 #include <jimi/core/jimi_def.h>
 #include <jimi/log/log.h>
 
+#define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 #include <process.h>
 

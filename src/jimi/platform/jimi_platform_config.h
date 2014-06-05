@@ -124,7 +124,7 @@
 #endif
 
 // linux
-#if defined(LINUX)
+#if defined(LINUX) || defined(__linux__)
     #undef  JIMI_TARGET_PLATFORM
     #define JIMI_TARGET_PLATFORM        JIMI_PLATFORM_LINUX
     // JIMI_IS_LINUX has defined

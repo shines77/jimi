@@ -141,8 +141,8 @@
     #undef  JIMI_TARGET_COMPILER
     #define JIMI_TARGET_COMPILER            JIMI_COMPILER_CYGWIN
 
-    #ifndef JIMI_CYGWIN_
-    #define JIMI_CYGWIN_
+    #ifndef JIMI_CYGWIN
+    #define JIMI_CYGWIN
     #endif
 #endif
 
@@ -153,8 +153,8 @@
     #undef  JIMI_TARGET_COMPILER
     #define JIMI_TARGET_COMPILER            JIMI_COMPILER_MINGW
 
-    #ifndef JIMI_MINGW_
-    #define JIMI_MINGW_
+    #ifndef JIMI_MINGW
+    #define JIMI_MINGW
     #endif
 #endif
 
@@ -176,8 +176,8 @@
         #define JIMI_TARGET_COMPILER        JIMI_COMPILER_GCC
     #endif
 
-    #ifndef JIMI_GNUC_
-    #define JIMI_GNUC_
+    #ifndef JIMI_GNUC
+    #define JIMI_GNUC
     #endif
 
     #ifndef JIMI_GCC
@@ -192,8 +192,8 @@
     #undef  JIMI_TARGET_COMPILER
     #define JIMI_TARGET_COMPILER            JIMI_COMPILER_GPP
 
-    #ifndef JIMI_GNUCPP_
-    #define JIMI_GNUCPP_
+    #ifndef JIMI_GNUCPP
+    #define JIMI_GNUCPP
     #endif
 #endif
 
