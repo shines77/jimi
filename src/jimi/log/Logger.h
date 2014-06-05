@@ -148,7 +148,7 @@ typedef enum Log_Type
     LOG_WARN,       // 警告
     LOG_ERROR,      // 错误
     LOG_FATAL,      // 致命的
-    LOG_UNKNOWN,    // 致命的
+    LOG_UNKNOWN,    // 未知
     LOG_ALL,        // 全打开
     LOG_OFF,        // 全关闭
     LOG_LAST

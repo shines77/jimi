@@ -209,6 +209,38 @@
 				<Filter
 					Name="lang"
 					>
+					<File
+						RelativePath="..\..\..\..\src\jimi\lang\AutoCloseable.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\lang\Cloneable.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\lang\CloneNotSupportedException.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\lang\Exception.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\lang\Object.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\lang\ObjectBase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\lang\String.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\lang\Throwable.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="thread"
@@ -329,6 +361,18 @@
 				<Filter
 					Name="io"
 					>
+					<File
+						RelativePath="..\..\..\..\src\jimi\io\Closeable.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\io\IOException.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\io\Serializable.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter

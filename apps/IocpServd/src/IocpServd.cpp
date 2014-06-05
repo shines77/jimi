@@ -2,7 +2,9 @@
 // IocpServd.cpp : 定义控制台应用程序的入口点。
 //
 
-#include <vld.h>
+#ifdef _DEBUG
+//#include <vld.h>
+#endif
 
 #include <jimi/core/jimi_def.h>
 
@@ -13,6 +15,8 @@
 #include <jimi/thread/thread.h>
 #include <jimi/system/mutex.h>
 #include <jimi/system/scoped_lock.h>
+
+#include <jimi/lang/Object.h>
 
 #include "IocpServd.h"
 #include "SampleThread.h"
@@ -106,10 +110,11 @@ int IocpServd_main(int argc, char *argv[])
 
     printf("\n");
 
+#if 0
     SampleThread *thread = new SampleThread();
     thread->Start();
     thread->Join();
-    thread->Abort(5000);
+    thread->Abort(1000);
     if (thread) {
         delete thread;
     }
@@ -120,6 +125,19 @@ int IocpServd_main(int argc, char *argv[])
     if (workerThread) {
         delete workerThread;
     }
+
+    printf("\n");
+#endif
+
+     do {
+        jimi::Object *object = new jimi::Object();
+        jimi::Object &newObject = object->Clone();
+        printf("newObject.Equals(object) = %d\n\n", newObject.Equals(object));
+        object->Close();
+        newObject.Close();
+        if (object)
+            delete object;
+    } while (0);
 
     printf("\n");
 

@@ -126,6 +126,9 @@ typedef struct JIMI_MACRO_T
 
 #include <cstddef>      /* Need size_t and ptrdiff_t */
 
+// warning C4290: 忽略 C++ 异常规范，但指示函数不是 __declspec(nothrow)
+#pragma warning(disable : 4290)
+
 /**
  * for jm_countof helper
  */
