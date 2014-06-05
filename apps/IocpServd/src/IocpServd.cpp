@@ -9,7 +9,6 @@
 #include <jimi/core/jimi_def.h>
 
 // Windows的Service支持类
-//#include <jimi/log/log_all.h>
 #include <jimi/log/Logger.h>
 #include <jimi/util/cmd_line.h>
 #include <jimi/thread/thread.h>
