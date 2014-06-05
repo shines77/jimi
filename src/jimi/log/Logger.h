@@ -30,7 +30,7 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////
 
-#if defined(DO_JIMI_LOG) && (DO_JIMI_LOG != 0)
+#if defined(JIMI_LOG_ENABLE) && (JIMI_LOG_ENABLE != 0)
 #define JIMI_LOG(x)                     ((void)NS_JIMI_LOG(utils.log.print(x)))
 #define JIMI_LOG0(x)                    ((void)NS_JIMI_LOG(utils.log.print(x)))
 #define JIMI_LOG1(x,a)                  ((void)NS_JIMI_LOG(utils.log.print(x,(a))))
@@ -44,14 +44,14 @@ using namespace std;
 #define JIMI_LOG2(x,a,b)                ((void)(0))
 #define JIMI_LOG3(x,a,b,c)              ((void)(0))
 #define JIMI_LOG4(x,a,b,c,d)            ((void)(0))
-#endif /* DO_JIMI_LOG */
+#endif /* JIMI_LOG_ENABLE */
 
 #define _JIMI_LOG                       NS_JIMI_LOG(utils.log.print)
 #define sLog                            NS_JIMI_LOG(utils.log)
 
 ////////////////////////////////////////////////////////////////
 
-#if defined(DO_JIMI_LOG_TRACE) && (DO_JIMI_LOG_TRACE != 0)
+#if defined(JIMI_LOG_TRACE_ENABLE) && (JIMI_LOG_TRACE_ENABLE != 0)
 /*
 #include <cstdio>
 #define JIMI_LOG_TRACE(x)               ((void)std::printf(x))
@@ -73,7 +73,7 @@ using namespace std;
 #define JIMI_LOG_TRACE2(x,a,b)          ((void)(0))
 #define JIMI_LOG_TRACE3(x,a,b,c)        ((void)(0))
 #define JIMI_LOG_TRACE4(x,a,b,c,d)      ((void)(0))
-#endif /* DO_JIMI_LOG_TRACE */
+#endif /* JIMI_LOG_TRACE_ENABLE */
 
 #define _JIMI_LOG_TRACE                 NS_JIMI_LOG(utils.log.trace)
 

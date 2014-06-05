@@ -7,8 +7,8 @@
 #endif
 
 // LOG config
-#ifndef DO_JIMI_LOG
-#define DO_JIMI_LOG                 1
+#ifndef JIMI_LOG_ENABLE
+#define JIMI_LOG_ENABLE             1
 #endif
 
 #ifndef JIMI_LOG_TO_FILE
@@ -35,12 +35,12 @@
 #endif
 
 #if (!defined(JIMI_LOG_TO_FILE) || (JIMI_LOG_TO_FILE == 0)) && (!defined(JIMI_LOG_TO_SCREEN) || (JIMI_LOG_TO_SCREEN == 0))
-    #undef  DO_JIMI_LOG
-    #define DO_JIMI_LOG                 0
+    #undef  JIMI_LOG_ENABLE
+    #define JIMI_LOG_ENABLE             0
 #endif
 
 // TRACE config
-#define DO_JIMI_LOG_TRACE               1
+#define JIMI_LOG_TRACE_ENABLE           1
 
 #define JIMI_LOG_TRACE_ON_SCREEN        1
 #ifdef _WIN32
@@ -50,8 +50,8 @@
 #endif
 
 #if (!defined(JIMI_LOG_TRACE_ON_SCREEN) || (JIMI_LOG_TRACE_ON_SCREEN == 0)) && (!defined(JIMI_LOG_TRACE_IN_DEVENV) || (JIMI_LOG_TRACE_IN_DEVENV == 0))
-    #undef  DO_JIMI_LOG_TRACE
-    #define DO_JIMI_LOG_TRACE           0
+    #undef  JIMI_LOG_TRACE_ENABLE
+    #define JIMI_LOG_TRACE_ENABLE           0
 #endif
 
 #endif  /* _JIMI_LOG_CONFIG_H_ */

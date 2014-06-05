@@ -314,6 +314,22 @@
 					Name="iocp"
 					>
 				</Filter>
+				<Filter
+					Name="fs"
+					>
+					<File
+						RelativePath="..\..\..\..\src\jimi\fs\FileSystem.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\fs\FileSystem.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="io"
+					>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="jimic"

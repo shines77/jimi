@@ -47,16 +47,18 @@
 #include <string>
 using namespace std;
 
-// namespace jimi
-#define NS_JIMI_BEGIN           namespace jimi {
-#define NS_JIMI_END             }
-
 #define USING_NS_JIMI           using namespace jimi;
 #define USING_NS_JIMI_CORE      using namespace jimi::core;
 #define USING_NS_JIMI_SYSTEM    using namespace jimi::system;
 #define USING_NS_JIMI_IOCP      using namespace jimi::iocp;
+#define USING_NS_JIMI_FS        using namespace jimi::fs;
+#define USING_NS_JIMI_IO        using namespace jimi::io;
 
 #define USING_NS_JIMI_SUB(NS)   using namespace jimi::##NS##;
+
+// namespace jimi
+#define NS_JIMI_BEGIN           namespace jimi {
+#define NS_JIMI_END             }
 
 // namespace jimi::internal
 #define NS_JIMI_INTERNAL_BEGIN  namespace internal {
@@ -79,8 +81,16 @@ using namespace std;
 #define NS_JIMI_UTIL_END        }
 
 // namespace jimi::iocp
-#define NS_JIMI_JIMI_BEGIN      namespace iocp {
-#define NS_JIMI_JIMI_END        }
+#define NS_JIMI_IOCP_BEGIN      namespace iocp {
+#define NS_JIMI_IOCP_END        }
+
+// namespace jimi::fs
+#define NS_JIMI_FS_BEGIN        namespace fs {
+#define NS_JIMI_FS_END          }
+
+// namespace jimi::io
+#define NS_JIMI_IO_BEGIN        namespace io {
+#define NS_JIMI_IO_END          }
 
 #define JIMI_MIN(a, b)          ((a) < (b) ? (a) : (b))
 #define JIMI_MAX(a, b)          ((a) > (b) ? (a) : (b))
