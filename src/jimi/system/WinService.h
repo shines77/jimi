@@ -22,8 +22,7 @@
 #include <strsafe.h>
 #include <string.h>
 
-#include <jimi/log/log_all.h>
-//#include <jimi/iocp/IocpServd.h>
+#include <jimi/log/log.h>
 
 #include <jimic/string/jm_strings.h>
 

@@ -213,22 +213,6 @@
 				<Filter
 					Name="thread"
 					>
-				</Filter>
-				<Filter
-					Name="math"
-					>
-				</Filter>
-				<Filter
-					Name="system"
-					>
-					<File
-						RelativePath="..\..\..\..\src\jimi\system\CWinService.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimi\system\CWinService.h"
-						>
-					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimi\system\mutex.cpp"
 						>
@@ -243,6 +227,30 @@
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimi\system\scoped_lock.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\thread\thread.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\thread\thread.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="math"
+					>
+				</Filter>
+				<Filter
+					Name="system"
+					>
+					<File
+						RelativePath="..\..\..\..\src\jimi\system\CWinService.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\system\CWinService.h"
 						>
 					</File>
 					<File
@@ -282,7 +290,7 @@
 					Name="log"
 					>
 					<File
-						RelativePath="..\..\..\..\src\jimi\log\log_all.h"
+						RelativePath="..\..\..\..\src\jimi\log\log.h"
 						>
 					</File>
 					<File

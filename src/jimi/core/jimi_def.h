@@ -33,6 +33,16 @@
 #define JIMI_ASSERT_EX_FALSE(predicate, comment)      assert(!!(predicate))
 #define JIMI_ASSERT_EX(predicate, comment)            JIMI_ASSERT_EX_FALSE
 
+#ifndef __CLR_OR_STD_CALL
+#if defined (_M_CEE) || defined (MRTDLL)
+#define __CLR_OR_STD_CALL   __clrcall
+#else  /* defined (_M_CEE) || defined (MRTDLL) */
+#define __CLR_OR_STD_CALL   __stdcall
+#endif  /* defined (_M_CEE) || defined (MRTDLL) */
+#endif  /* __CLR_OR_STD_CALL */
+
+#define JIMI_WINAPI             __CLR_OR_STD_CALL
+
 #include <iostream>
 #include <string>
 using namespace std;

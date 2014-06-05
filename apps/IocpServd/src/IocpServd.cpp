@@ -8,8 +8,12 @@
 //#include <jimi/log/log_all.h>
 #include <jimi/log/Logger.h>
 #include <jimi/util/cmd_line.h>
+#include <jimi/thread/thread.h>
 #include <jimi/system/mutex.h>
 #include <jimi/system/scoped_lock.h>
+
+#include "IocpServd.h"
+#include "SampleThread.h"
 
 #if JIMI_IS_WINDOWS
 
@@ -39,8 +43,6 @@ SERVICE_TABLE_ENTRY g_ServiceTable[] = {
 #include "PosixDaemon.h"
 
 #endif  /* JIMI_IS_WINDOWS */
-
-#include "IocpServd.h"
 
 USING_NS_JIMI;
 USING_NS_JIMI_LOG;
@@ -99,6 +101,18 @@ int IocpServd_main(int argc, char *argv[])
             delete service;
         }
     }
+
+    printf("\n");
+
+    SampleThread *thread = new SampleThread();
+    thread->Start();
+    thread->Join();
+    thread->Abort(5000);
+    if (thread) {
+        delete thread;
+    }
+
+    printf("\n");
 
     ///*
     //system::mutex read_mutex;

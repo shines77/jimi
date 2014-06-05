@@ -193,6 +193,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\SampleThread.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\targetver.h"
 				>
 			</File>

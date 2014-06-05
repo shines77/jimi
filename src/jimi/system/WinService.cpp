@@ -18,7 +18,7 @@
 #include <string.h>
 
 #include <jimi/system/WinService.h>
-#include <jimi/log/log_all.h>
+#include <jimi/log/log.h>
 
 //#pragma comment(lib, "Advapi32.lib")
 //#pragma comment(lib, "Wtsapi32.lib")

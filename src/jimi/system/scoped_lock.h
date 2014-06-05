@@ -7,7 +7,7 @@
 #endif
 
 #include <jimi/core/jimi_def.h>
-#include <jimi/log/log_all.h>
+#include <jimi/log/log.h>
 
 NS_JIMI_BEGIN
 

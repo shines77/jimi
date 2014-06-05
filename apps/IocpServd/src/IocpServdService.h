@@ -7,7 +7,7 @@
 #endif
 
 #include <jimi/core/jimi_def.h>
-#include <jimi/log/log_all.h>
+#include <jimi/log/log.h>
 #include <jimi/system/WinService.h>
 
 #include "IocpServd.h"
@@ -30,6 +30,7 @@ public:
     }
 #endif
 
+#if 1
     /**
      * 注意: 切记!! 所有回调函数必须返回true, 如果返回false, 则表示不调用WinService的默认行为,
      *       此时, 你必须正确的处理该回调应该完成的事情, 否则程序可能不能正常工作.
@@ -54,7 +55,6 @@ public:
         return true;
     }
 
-#if 1
     bool OnPause() {
         sLog.info("invoke IocpServdService::OnPause().");
         return true;
@@ -187,7 +187,7 @@ public:
     }
 #endif
 
-#if 0
+#if 1
     bool ServiceWorkerMethod(void *pvData) {
         static int s_nOnServiceLoopCnt = 0;
         static int s_nServiceLoopPauseCnt = 0;

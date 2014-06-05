@@ -7,7 +7,7 @@
 #endif
 
 #include <jimi/core/jimi_def.h>
-#include <jimi/log/log_all.h>
+#include <jimi/log/log.h>
 
 #if JIMI_IS_WINDOWS
 /* InitializeCriticalSectionAndSpinCount() ±ÿ–Î∂®“Â #define _WIN32_WINNT 0x0403 */
