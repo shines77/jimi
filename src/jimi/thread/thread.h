@@ -102,6 +102,11 @@ public:
     static const uint32_t kNoError      = NO_ERROR;
 };
 
+//template <class T>
+//typedef void (__thiscall <T>::*thread_proc_t)(void);
+
+typedef void (*thread_proc_t)(void *lpParam);
+
 template <class T>
 class ThreadBase
 {
@@ -112,6 +117,8 @@ public:
     typedef unsigned  thread_id_t;
     typedef uint32_t  affinity_t;
 
+    //typedef void (__thiscall Ty::*thread_proc_t)(void);
+
     // 工作者线程的线程参数
     typedef struct Thread_Params
     {
@@ -121,11 +128,18 @@ public:
     } THREAD_PARAMS, *PTHREAD_PARAMS;
 
     ThreadBase(void);
+    ThreadBase(thread_proc_t thread_proc, int i) : ThreadBase() { pThreadProc = thread_proc; }
     ~ThreadBase(void);
+
+private:
+    explicit ThreadBase(const ThreadBase &) { }
+    void operator = (const ThreadBase &) { }
 
 public:
     void Destroy();
     void OnDestroy();
+
+    thread_proc_t GetThreadProc() { return pThreadProc; }
 
     operator thread_handle_t     ()     { return hThread;  }
     thread_handle_t * operator & ()     { return &hThread; }
@@ -184,13 +198,16 @@ public:
 
     static void Sleep(uint32_t uMilliSecs);
 
-    static void JIMI_WINAPI ThreadProc(void *lpParam);
+    void JIMI_WINAPI ThreadProc(void *lpParam);
+
     static unsigned JIMI_WINAPI ThreadProcBase(void *lpParam);
 
 private:
     thread_handle_t hThread;
     thread_status_t nStatus;
     thread_id_t     nThreadId;
+protected:
+    thread_proc_t   pThreadProc;
 };
 
 template <class T>
@@ -198,6 +215,7 @@ ThreadBase<T>::ThreadBase(void)
 : hThread(NULL)
 , nStatus(THREAD_STATUS_UNSTARTED)
 , nThreadId(0)
+, pThreadProc(NULL)
 {
 }
 
@@ -471,13 +489,19 @@ unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
     if (pParam) {
         pThread = pParam->pThread;
         pObject = pParam->pObject;
-        delete pParam;
 
         if (pThread && pThread->IsValid())
             pThread->SetThreadState(THREAD_STATUS_RUNNING);
 
         T *pThis = static_cast<T *>(pThread);
-        pThis->ThreadProc(lpParam);
+        thread_proc_t pThreadProc = pThis->GetThreadProc();
+        if (pThreadProc != NULL)
+            pThreadProc(lpParam);
+        else
+            pThis->ThreadProc(lpParam);
+
+        if (pParam)
+            delete pParam;
 
         //ThreadBase<T>::Sleep(3000);
     }
@@ -501,7 +525,14 @@ void ThreadBase<T>::Sleep(uint32_t uMilliSecs)
  */
 class Thread : public ThreadBase<Thread>
 {
-    // Do nothing !!
+public:
+    Thread(void) : ThreadBase<Thread>() { };
+    Thread(thread_proc_t thread_proc) : ThreadBase<Thread>() { pThreadProc = thread_proc; }
+    ~Thread(void) { };
+
+private:
+    explicit Thread(const Thread &) { }
+    void operator = (const Thread &) { }
 };
 
 NS_JIMI_SYSTEM_END

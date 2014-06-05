@@ -242,6 +242,8 @@ template <class T>
 class JIMI_DLL WinServiceBase /* : public IWinServiceBase */
 {
 public:
+    typedef bool (__thiscall *handle_fcn2)(void);
+
     WinServiceBase(void);
     WinServiceBase(WinServiceBase *pInstance, bool bCreateByNew = true);
     ~WinServiceBase(void);
@@ -1506,8 +1508,12 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
     pInstance->m_ServiceStatus.dwCheckPoint              = 0;
     pInstance->m_ServiceStatus.dwWaitHint                = 0;
 
-    //pInstance->m_ServiceStatusHandle = ::RegisterServiceCtrlHandler(pInstance->m_ServiceName, WinServiceBase<T>::ServiceControlHandler);
-    pInstance->m_ServiceStatusHandle = ::RegisterServiceCtrlHandlerEx(pInstance->m_ServiceName, WinServiceBase<T>::ServiceControlHandlerEx, NULL);
+    //pInstance->m_ServiceStatusHandle = ::RegisterServiceCtrlHandler(pInstance->m_ServiceName, &WinServiceBase<T>::ServiceControlHandler);
+    pInstance->m_ServiceStatusHandle = ::RegisterServiceCtrlHandlerEx(pInstance->m_ServiceName, &WinServiceBase<T>::ServiceControlHandlerEx, NULL);
+
+    typedef bool (WinServiceBase<T>::*handle_fcn)(void);
+    //handle_fcn aaa = (handle_fcn)&WinServiceBase<T>::FireEvent_OnPause;
+    handle_fcn aaa = &WinServiceBase<T>::FireEvent_OnPause;
 
     if (pInstance->m_ServiceStatusHandle) {
         TCHAR szPath[_MAX_PATH + 1];

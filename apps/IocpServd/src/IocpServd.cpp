@@ -2,6 +2,8 @@
 // IocpServd.cpp : 定义控制台应用程序的入口点。
 //
 
+#include <vld.h>
+
 #include <jimi/core/jimi_def.h>
 
 // Windows的Service支持类
@@ -110,6 +112,13 @@ int IocpServd_main(int argc, char *argv[])
     thread->Abort(5000);
     if (thread) {
         delete thread;
+    }
+
+    WorkerThread *workerThread = new WorkerThread();
+    workerThread->Start();
+    workerThread->Join();
+    if (workerThread) {
+        delete workerThread;
     }
 
     printf("\n");

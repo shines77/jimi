@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include <jimi/system/CWinService.h>
-#include <jimi/log/log_all.h>
+#include <jimi/log/log.h>
 
 #pragma comment(lib, "Advapi32.lib")
 

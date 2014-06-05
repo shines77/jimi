@@ -32,6 +32,65 @@ public:
     }
 };
 
+class Worker
+{
+public:
+    Worker() { };
+    ~Worker() { };
+
+    static void DoWork(void *lpParam) {
+        while (!_shouldStop) {
+            sLog.info("worker thread: working...");
+        }
+        sLog.info("worker thread: terminating gracefully.");
+    }
+
+    void RequestStop() {
+        _shouldStop = true;
+    }
+
+    volatile static bool _shouldStop;
+};
+
+volatile bool Worker::_shouldStop = false;
+
+class WorkerThread : public ThreadBase<WorkerThread>
+{
+public:
+    WorkerThread(void) { };
+    WorkerThread(thread_proc_t thread_proc) { pThreadProc = thread_proc; }
+    ~WorkerThread(void) { };
+
+    static void JIMI_WINAPI ThreadProc(void *lpParam) {
+        Worker *workerObject = new Worker();
+        WorkerThread *workerThread = new WorkerThread((thread_proc_t)&Worker::DoWork);
+
+        // Start the worker thread.
+        workerThread->Start();
+        sLog.info("main thread: Starting worker thread...");
+
+        // Loop until worker thread activates.
+        while (!workerThread->IsAlive());
+
+        // Put the main thread to sleep for 1 millisecond to
+        // allow the worker thread to do some work:
+        Thread::Sleep(10);
+
+        // Request that the worker thread stop itself:
+        workerObject->RequestStop();
+
+        // Use the Join method to block the current thread 
+        // until the object's thread terminates.
+        workerThread->Join();
+        sLog.info("main thread: Worker thread has terminated.");
+
+        if (workerThread)
+            delete workerThread;
+        if (workerObject)
+            delete workerObject;
+    }
+};
+
 NS_IOCPSERVD_END
 
 #endif  /* _IOCPSERVD_SAMPLE_THREAD_H_ */
