@@ -141,6 +141,16 @@ int IocpServd_main(int argc, char *argv[])
 
     printf("\n");
 
+    ManualResetEvent *event = new ManualResetEvent(false);
+    event->Set();
+    event->Reset();
+    if (event) {
+        delete event;
+        event = NULL;
+    }
+
+    printf("\n");
+
     ///*
     //system::mutex read_mutex;
     //system::scoped_lock<system::mutex> lock(read_mutex);

@@ -58,8 +58,8 @@ struct SignalState
 struct EventResetMode
 {
     static const uint32_t kUndefined    = (uint32_t)-1;
-    static const uint32_t kAutoReset    = TRUE;
-    static const uint32_t kManualReset  = FALSE;
+    static const uint32_t kAutoReset    = FALSE;
+    static const uint32_t kManualReset  = TRUE;
 };
 
 NS_JIMI_SYSTEM_END

@@ -19,6 +19,10 @@ NS_JIMI_BEGIN
 
 NS_JIMI_SYSTEM_BEGIN
 
+/**************************************************************************
+ ** EventWaitHandle
+ **************************************************************************/
+
 class EventWaitHandle : public WaitHandle<EventWaitHandle>
 {
 public:
@@ -29,11 +33,26 @@ public:
 
     void Close();
 
+    handle_t Create(bool bInitialState, bool bManualReset, const char *lpEventName = NULL,
+        bool *bCreatedNew = NULL, LPSECURITY_ATTRIBUTES lpEventAttributes = NULL);
+
+    bool Reset();
+    bool Set();
+
+    bool Pulse();
+
+    uint32_t GetAccessControl() { return m_dwDesiredAccess; }
+    void SetAccessControl(uint32_t dwDesiredAccess);
+
+    static handle_t OpenExisting(const char *lpEventName = NULL, bool bInheritHandle = false,
+        uint32_t dwDesiredAccess = EVENT_ALL_ACCESS);
+
 private:
-    char   *m_pEventName;
-    int     m_nManualReset;
-    bool    m_bInitialState;
-    bool    m_bCreatedNew;
+    char    *m_pEventName;
+    int      m_nManualReset;
+    bool     m_bInitialState;
+    bool     m_bCreatedNew;
+    uint32_t m_dwDesiredAccess;
 
     LPSECURITY_ATTRIBUTES m_pEventAttributes;
 };
@@ -43,12 +62,13 @@ EventWaitHandle::EventWaitHandle()
 , m_pEventName(NULL)
 , m_nManualReset(EventResetMode::kUndefined)
 , m_bInitialState(SignalState::kNoSignalled)
+, m_dwDesiredAccess(EVENT_ALL_ACCESS)
 , m_bCreatedNew(false)
 , m_pEventAttributes(NULL)
 {
 }
 
-/**  
+/**
  * The name can have a "Global\" or "Local\" prefix to explicitly create the object
  *   in the global or session namespace. The remainder of the name can contain any
  *   character except the backslash character (\).
@@ -57,8 +77,44 @@ EventWaitHandle::EventWaitHandle(bool bInitialState, bool bManualReset,
                                  const char *lpEventName /* = NULL */,
                                  bool *bCreatedNew /* = NULL */,
                                  LPSECURITY_ATTRIBUTES lpEventAttributes /* = NULL */)
-{   
+{
+    Create(bInitialState, bManualReset, lpEventName, bCreatedNew, lpEventAttributes);
+}
+
+EventWaitHandle::~EventWaitHandle()
+{
+    sLog.info("EventWaitHandle::~EventWaitHandle() Enter.");
+    Close();
+    sLog.info("EventWaitHandle::~EventWaitHandle() Over.");
+}
+
+void EventWaitHandle::Close()
+{
+    sLog.info("EventWaitHandle::Close() Enter.");
+    if (m_pEventName) {
+        delete m_pEventName;
+        m_pEventName = NULL;
+    }
+    if (IsValid()) {
+        ::CloseHandle(m_hHandle);
+        m_hHandle = NULL;
+    }
+    sLog.info("EventWaitHandle::Close() Over.");
+}
+
+EventWaitHandle::handle_t
+EventWaitHandle::Create(bool bInitialState, bool bManualReset,
+                        const char *lpEventName /* = NULL */,
+                        bool *bCreatedNew /* = NULL */,
+                        LPSECURITY_ATTRIBUTES lpEventAttributes /* = NULL */)
+{
+    if (IsValid())
+        return NULL;
+
     if (lpEventName != NULL) {
+        if (m_pEventName)
+            delete m_pEventName;
+
         size_t lenName = jm_strlen(lpEventName);
         lenName = JIMI_MIN(lenName + 1, MAX_PATH);
         m_pEventName = new char[lenName];
@@ -68,8 +124,10 @@ EventWaitHandle::EventWaitHandle(bool bInitialState, bool bManualReset,
         }
         m_bCreatedNew = false;
     }
-    else
+    else {
+        m_pEventName = NULL;
         m_bCreatedNew = true;
+    }
 
     m_nManualReset  = bManualReset;
     m_bInitialState = bInitialState;
@@ -82,37 +140,74 @@ EventWaitHandle::EventWaitHandle(bool bInitialState, bool bManualReset,
 
     if (bCreatedNew != NULL)
         *bCreatedNew = m_bCreatedNew;
+
+    return m_hHandle;
 }
 
-EventWaitHandle::~EventWaitHandle()
+EventWaitHandle::handle_t
+EventWaitHandle::OpenExisting(const char *lpEventName /* = NULL */,
+                              bool bInheritHandle/* = false */,
+                              uint32_t dwDesiredAccess /* = EVENT_ALL_ACCESS */)
 {
-    Close();
+    return (handle_t)::OpenEvent(dwDesiredAccess, bInheritHandle, lpEventName);
 }
 
-void EventWaitHandle::Close()
+bool EventWaitHandle::Reset()
 {
-    if (m_pEventName) {
-        delete m_pEventName;
-        m_pEventName = NULL;
-    }
-    if (IsValid()) {
-        ::CloseHandle(m_hHandle);
-        m_hHandle = NULL;
-    }
+    BOOL bSuccess = FALSE;
+    if (IsValid())
+        bSuccess = ::ResetEvent(m_hHandle);
+    return (bSuccess != FALSE);
 }
 
-class ManualResetEvent : EventWaitHandle
+bool EventWaitHandle::Set()
+{
+    BOOL bSuccess = FALSE;
+    if (IsValid())
+        bSuccess = ::SetEvent(m_hHandle);
+    return (bSuccess != FALSE);
+}
+
+/**
+ * SetEvent与PulseEvent的区别
+ *
+ * Reference:
+ *   http://blog.sina.com.cn/s/blog_6163bdeb0100qlw1.html
+ *
+ * 在自动重置模式下PulseEvent和SetEvent的作用没有什么区别, 但在手动模式下
+ *   PulseEvent就有明显的不同, 可以比较容易的控制程序是单步走, 还是连续走.
+ *
+ **/
+bool EventWaitHandle::Pulse()
+{
+    BOOL bSuccess = FALSE;
+    if (IsValid())
+        bSuccess = ::PulseEvent(m_hHandle);
+    return (bSuccess != FALSE);
+}
+
+/**************************************************************************
+ ** ManualResetEvent
+ **************************************************************************/
+
+class ManualResetEvent : public EventWaitHandle
 {
 public:
-    ManualResetEvent();
-    ~ManualResetEvent();
+    ManualResetEvent(bool bInitialState, const char *lpEventName = NULL)
+        : EventWaitHandle(bInitialState, EventResetMode::kManualReset, lpEventName) { };
+    ~ManualResetEvent() { };
 };
 
-class AutoResetEvent : EventWaitHandle
+/**************************************************************************
+ ** AutoResetEvent
+ **************************************************************************/
+
+class AutoResetEvent : public EventWaitHandle
 {
 public:
-    AutoResetEvent();
-    ~AutoResetEvent();
+    AutoResetEvent(bool bInitialState, const char *lpEventName = NULL)
+        : EventWaitHandle(bInitialState, EventResetMode::kAutoReset, lpEventName) { };
+    ~AutoResetEvent() { };
 };
 
 NS_JIMI_SYSTEM_END

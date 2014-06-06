@@ -81,17 +81,22 @@ WaitHandle<T>::WaitHandle()
 template <class T>
 WaitHandle<T>::~WaitHandle()
 {
-    T *pThis = static_cast<T *>(this);
-    pThis->Close();
+    sLog.info("WaitHandle<T>::~WaitHandle() Enter.");
+    //T *pThis = static_cast<T *>(this);
+    //pThis->Close();
+    Close();
+    sLog.info("WaitHandle<T>::~WaitHandle() Over.");
 }
 
 template <class T>
 void WaitHandle<T>::Close()
 {
+    sLog.info("WaitHandle<T>::Close() Enter.");
     if (IsValid()) {
         ::CloseHandle(m_hHandle);
         m_hHandle = NULL;
     }
+    sLog.info("WaitHandle<T>::Close() Over.");
 }
 
 template <class T>
