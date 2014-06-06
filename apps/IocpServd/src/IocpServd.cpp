@@ -16,6 +16,7 @@
 #include <jimi/system/scoped_lock.h>
 
 #include <jimi/lang/Object.h>
+#include <jimi/thread/Event.h>
 
 #include "IocpServd.h"
 #include "SampleThread.h"

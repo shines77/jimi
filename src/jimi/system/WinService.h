@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include <jimi/log/log.h>
+#include <jimi/thread/thread.h>
 
 #include <jimic/string/jm_strings.h>
 
@@ -242,7 +243,12 @@ template <class T>
 class JIMI_API WinServiceBase /* : public IWinServiceBase */
 {
 public:
-    typedef bool (__thiscall *handle_fcn2)(void);
+    typedef struct ExecInfo_t
+    {
+        int                 argc;
+        TCHAR             **argv;
+        WinServiceBase<T>  *owner;
+    } ExecInfo_t;
 
     WinServiceBase(void);
     WinServiceBase(WinServiceBase *pInstance, bool bCreateByNew = true);
@@ -374,6 +380,9 @@ public:
         DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext);
 
     static void WINAPI ServiceMain(int argc, TCHAR *argv[]);
+
+    // worker thread proc
+    static void WorkerThreadProc(void *pvData);
     static void WINAPI ServiceWorkerLoop(int argc, TCHAR *argv[]);
 
     BOOL UpdateServiceStatus(DWORD dwCurrentState);
@@ -1400,6 +1409,26 @@ DWORD WinServiceBase<T>::ServiceControlHandlerEx(DWORD dwControlCode, DWORD dwEv
 }
 
 template <class T>
+void WinServiceBase<T>::WorkerThreadProc(void *pvData)
+{
+    sLog.info("WinServiceBase<T>::WorkerThreadProc() Enter.");
+
+    Thread::THREAD_PARAMS *pParams = (Thread::THREAD_PARAMS *)pvData;
+    Thread *pThread = NULL;
+    ExecInfo_t *pExecInfo = NULL;
+    if (pParams != NULL) {
+        pThread = (Thread *)pParams->pThread;
+        pExecInfo = (ExecInfo_t *)pParams->pObject;
+    }
+    if (pExecInfo == NULL)
+        return;
+
+    WinServiceBase<T>::ServiceWorkerLoop(pExecInfo->argc, pExecInfo->argv);
+
+    sLog.info("WinServiceBase<T>::WorkerThreadProc() Over.");
+}
+
+template <class T>
 bool WinServiceBase<T>::ServiceWorkerMethod(void *pvData)
 {
     static int s_nOnServiceLoopCnt = 0;
@@ -1495,15 +1524,13 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
     }
 
     DWORD dwControlAcceptedBase;
-    DWORD dwControlAcceptedRemove;
     dwControlAcceptedBase  = SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN | SERVICE_ACCEPT_PAUSE_CONTINUE;
     dwControlAcceptedBase |= SERVICE_ACCEPT_PARAMCHANGE | SERVICE_ACCEPT_SESSIONCHANGE | SERVICE_ACCEPT_POWEREVENT;
-    dwControlAcceptedRemove = 0;
 
     // initialise service status
     pInstance->m_ServiceStatus.dwServiceType             = SERVICE_WIN32;
     pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_START_PENDING;
-    pInstance->m_ServiceStatus.dwControlsAccepted        = dwControlAcceptedBase | dwControlAcceptedRemove;
+    pInstance->m_ServiceStatus.dwControlsAccepted        = dwControlAcceptedBase;
     pInstance->m_ServiceStatus.dwWin32ExitCode           = NO_ERROR;
     pInstance->m_ServiceStatus.dwServiceSpecificExitCode = NO_ERROR;
     pInstance->m_ServiceStatus.dwCheckPoint              = 0;
@@ -1511,10 +1538,6 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
 
     //pInstance->m_ServiceStatusHandle = ::RegisterServiceCtrlHandler(pInstance->m_ServiceName, &WinServiceBase<T>::ServiceControlHandler);
     pInstance->m_ServiceStatusHandle = ::RegisterServiceCtrlHandlerEx(pInstance->m_ServiceName, &WinServiceBase<T>::ServiceControlHandlerEx, NULL);
-
-    typedef bool (WinServiceBase<T>::*handle_fcn)(void);
-    //handle_fcn aaa = (handle_fcn)&WinServiceBase<T>::FireEvent_OnPause;
-    handle_fcn aaa = &WinServiceBase<T>::FireEvent_OnPause;
 
     if (pInstance->m_ServiceStatusHandle) {
         TCHAR szPath[_MAX_PATH + 1];
@@ -1546,7 +1569,6 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
         // Initialize Service
         if (!pInstanceImpl->OnServiceInit()) {
             sLog.error("WinServiceBase<T>::ServiceMain: Initialization failed.");
-            pInstance->m_ServiceStatus.dwControlsAccepted  &= ~dwControlAcceptedRemove;
             pInstance->m_ServiceStatus.dwCurrentState       = SERVICE_STOPPED;
             pInstance->m_ServiceStatus.dwWin32ExitCode      = ERROR_SERVICE_SPECIFIC_ERROR;
             pInstance->m_ServiceStatus.dwServiceSpecificExitCode = ERR_SVC_INIT_SERVICE_FAILED;
@@ -1555,17 +1577,16 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
         }
 
         // It's running, we report the running status to SCM.
-        pInstance->m_ServiceStatus.dwControlsAccepted |= dwControlAcceptedRemove;
-        pInstance->m_ServiceStatus.dwCurrentState      = SERVICE_RUNNING;
+        pInstance->m_ServiceStatus.dwCurrentState       = SERVICE_RUNNING;
+        pInstance->m_ServiceStatus.dwWin32ExitCode      = NO_ERROR;
+        pInstance->m_ServiceStatus.dwServiceSpecificExitCode = NO_ERROR;
         ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &pInstance->m_ServiceStatus);
 
-        pInstance->m_nServiceStatus = SVC_STATUS_RUNNING;
         argc = 1;
 
         // Start Service
-        if (!pInstanceImpl->OnStart(argc, argv)) {
+        if (pInstanceImpl && (!pInstanceImpl->OnStart(argc, argv))) {
             sLog.error("WinServiceBase<T>::ServiceMain: OnStart() failed.");
-            pInstance->m_ServiceStatus.dwControlsAccepted       &= ~dwControlAcceptedRemove;
             pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_STOPPED;
             pInstance->m_ServiceStatus.dwWin32ExitCode           = ERROR_SERVICE_SPECIFIC_ERROR;
             pInstance->m_ServiceStatus.dwServiceSpecificExitCode = ERR_SVC_START_SERVICE_FAILED;
@@ -1579,35 +1600,60 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
 
         // The worker loop of a service, or invoke WinServiceBase<T>::OnServiceLoop()
         //_tmain(argc, argv);
-        WinServiceBase<T>::ServiceWorkerLoop(argc, argv);
+        //WinServiceBase<T>::ServiceWorkerLoop(argc, argv);
 
-        // service was stopped
-        pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_STOP_PENDING;
-        pInstance->m_ServiceStatus.dwWin32ExitCode           = NO_ERROR;
-        pInstance->m_ServiceStatus.dwServiceSpecificExitCode = NO_ERROR;
-        ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &pInstance->m_ServiceStatus);
+        ExecInfo_t *execInfo = new ExecInfo_t();
+        execInfo->argc = argc;
+        execInfo->argv = (TCHAR **)argv;
+        execInfo->owner = pInstance;
+
+        Thread *thread = new Thread();
+        if (thread != NULL) {
+            thread->SetThreadProc(&WinServiceBase<T>::WorkerThreadProc);
+            thread->Start(execInfo);
+            thread->Join();
+            if (thread) {
+                thread->SetThreadProc(NULL);
+                delete thread;
+                thread = NULL;
+            }
+        }
+        if (execInfo) {
+            delete execInfo;
+            execInfo = NULL;
+        }
+
+        if (pInstance != NULL) {
+            // service was stopped
+            pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_STOP_PENDING;
+            pInstance->m_ServiceStatus.dwWin32ExitCode           = NO_ERROR;
+            pInstance->m_ServiceStatus.dwServiceSpecificExitCode = NO_ERROR;
+            ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &pInstance->m_ServiceStatus);
+        }
 
         ////////////////////////
         // do cleanup here    //
         ////////////////////////
 
         // Do Cleanup Callback
-        if (!pInstanceImpl->OnServiceCleanup()) {
+        if (pInstanceImpl && (!pInstanceImpl->OnServiceCleanup())) {
             sLog.error("WinServiceBase<T>::ServiceMain: OnServiceCleanup() failed.");
-            pInstance->m_ServiceStatus.dwControlsAccepted       &= ~dwControlAcceptedRemove;
-            pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_STOPPED;
-            pInstance->m_ServiceStatus.dwWin32ExitCode           = ERROR_SERVICE_SPECIFIC_ERROR;
-            pInstance->m_ServiceStatus.dwServiceSpecificExitCode = ERR_SVC_CLEANUP_SERVICE_FAILED;
-            ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &(pInstance->m_ServiceStatus));
+            if (pInstance != NULL) {
+                pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_STOPPED;
+                pInstance->m_ServiceStatus.dwWin32ExitCode           = ERROR_SERVICE_SPECIFIC_ERROR;
+                pInstance->m_ServiceStatus.dwServiceSpecificExitCode = ERR_SVC_CLEANUP_SERVICE_FAILED;
+                ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &(pInstance->m_ServiceStatus));
+            }
             return;
         }
 
         // service is now stopped
-        pInstance->m_ServiceStatus.dwControlsAccepted       &= ~dwControlAcceptedRemove;
-        pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_STOPPED;
-        pInstance->m_ServiceStatus.dwWin32ExitCode           = NO_ERROR;
-        pInstance->m_ServiceStatus.dwServiceSpecificExitCode = NO_ERROR;
-        ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &pInstance->m_ServiceStatus);
+        if (pInstance != NULL) {
+            pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_STOPPED;
+            pInstance->m_ServiceStatus.dwWin32ExitCode           = NO_ERROR;
+            pInstance->m_ServiceStatus.dwServiceSpecificExitCode = NO_ERROR;
+            ::SetServiceStatus(pInstance->m_ServiceStatusHandle, &pInstance->m_ServiceStatus);
+        }
     }
     else {
         // Registering service failed

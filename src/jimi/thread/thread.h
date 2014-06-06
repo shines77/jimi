@@ -7,6 +7,7 @@
 #endif
 
 #include <jimi/core/jimi_def.h>
+#include <jimi/thread/thread_def.h>
 #include <jimi/log/log.h>
 
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
@@ -14,8 +15,6 @@
 #include <process.h>
 
 #define TERMINATE_WAIT_TIME     5000
-
-#define HANDLE_IS_VALID(X)      ((X) != NULL && (X) != INVALID_HANDLE_VALUE)
 
 #define THREAD_STATUS_MASK              0x00FFFFFFUL
 
@@ -74,37 +73,12 @@ typedef enum THREAD_INITFLAG
     THREAD_INITFLAG_SUSPENDED = CREATE_SUSPENDED,
 } THREAD_INITFLAG;
 
-typedef enum THREAD_WAIT_FOR_OBJECT
-{
-    WAIT_FOR_IGNORE = IGNORE,
-    WAIT_FOR_INFINITE = INFINITE,
-} THREAD_WAIT_FOR_OBJECT;
-
-typedef HANDLE jm_handle;
-
-class Timeout
-{
-public:
-    static const uint32_t kInfinite = INFINITE;
-    static const uint32_t kIgnore   = IGNORE;
-};
-
 class ThreadInitFlag
 {
 public:
     static const uint32_t kCreateDefault    = 0;
     static const uint32_t kCreateSuspended  = CREATE_SUSPENDED;
 };
-
-class ErrorCode
-{
-public:
-    static const uint32_t kErrorSuccess = ERROR_SUCCESS;
-    static const uint32_t kNoError      = NO_ERROR;
-};
-
-//template <class T>
-//typedef void (__thiscall <T>::*thread_proc_t)(void);
 
 typedef void (*thread_proc_t)(void *lpParam);
 
@@ -118,8 +92,6 @@ public:
     typedef unsigned  thread_id_t;
     typedef uint32_t  affinity_t;
 
-    //typedef void (__thiscall Ty::*thread_proc_t)(void);
-
     // 工作者线程的线程参数
     typedef struct Thread_Params
     {
@@ -129,7 +101,7 @@ public:
     } THREAD_PARAMS, *PTHREAD_PARAMS;
 
     ThreadBase(void);
-    ThreadBase(thread_proc_t thread_proc, int i) : ThreadBase() { pThreadProc = thread_proc; }
+    ThreadBase(thread_proc_t thread_proc) { pThreadProc = thread_proc; }
     ~ThreadBase(void);
 
 private:
@@ -141,6 +113,7 @@ public:
     void OnDestroy();
 
     thread_proc_t GetThreadProc() { return pThreadProc; }
+    bool SetThreadProc(thread_proc_t thread_proc);
 
     operator thread_handle_t     ()     { return hThread;  }
     thread_handle_t * operator & ()     { return &hThread; }
@@ -172,7 +145,7 @@ public:
         nStatus &= GET_THREAD_STATUS_MASK(~nRemoveStatus);
     }
 
-    thread_status_t Start(unsigned uInitflag = ThreadInitFlag::kCreateDefault, void *pObject = NULL);
+    thread_status_t Start(void *pObject = NULL, unsigned uInitflag = ThreadInitFlag::kCreateDefault);
     thread_status_t Stop();
 
     static int32_t SpinWait(int32_t iterations);
@@ -281,8 +254,62 @@ bool ThreadBase<T>::IsBackground()
 }
 
 template <class T>
-typename ThreadBase<T>::thread_status_t ThreadBase<T>::Start(unsigned uInitflag /* = ThreadInitFlag::kCreateDefault */,
-                                                             void *pObject /* = NULL */)
+bool ThreadBase<T>::SetThreadProc(thread_proc_t thread_proc)
+{
+    if ((!IsAlive()) && (!IsRuning())) {
+        pThreadProc = thread_proc;
+        return true;
+    }
+    return false;
+}
+
+template <class T>
+void JIMI_WINAPI ThreadBase<T>::ThreadProc(void *lpParam)
+{
+    // Do nothing !!
+    sLog.info("Thread<T>::ThreadProc().");
+}
+
+template <class T>
+unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
+{
+    sLog.info("Thread<T>::ThreadProcBase() Enter.");
+    sLog.info("Thread<T>::ThreadProcBase(), lpParam = 0x%08X.", lpParam);
+
+    THREAD_PARAMS *pParam = (THREAD_PARAMS *)lpParam;
+    ThreadBase<T> *pThread = NULL;
+    void *pObject= NULL;
+    if (pParam) {
+        pThread = pParam->pThread;
+        pObject = pParam->pObject;
+
+        if (pThread && pThread->IsValid())
+            pThread->SetThreadState(THREAD_STATUS_RUNNING);
+
+        T *pThis = static_cast<T *>(pThread);
+        thread_proc_t pThreadProc = pThis->GetThreadProc();
+        if (pThreadProc != NULL)
+            pThreadProc(lpParam);
+        else
+            pThis->ThreadProc(lpParam);
+
+        if (pParam)
+            delete pParam;
+
+        //ThreadBase<T>::Sleep(3000);
+    }
+    sLog.info("Thread<T>::ThreadProcBase() Over.");
+
+    if (pThread && pThread->IsValid()) {
+        //pThread->SetThreadState(THREAD_STATUS_THREADPROC_OVER);
+        pThread->SetThreadState(THREAD_STATUS_STOPPED);
+    }
+    return 0;
+}
+
+template <class T>
+typename ThreadBase<T>::thread_status_t ThreadBase<T>::Start(void *pObject /* = NULL */,
+                                                             unsigned uInitflag /* = ThreadInitFlag::kCreateDefault */)
 {
     sLog.info("Thread<T>::Start() Enter.");
 
@@ -472,50 +499,6 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Terminate(uint32_t uWaitT
 }
 
 template <class T>
-void JIMI_WINAPI ThreadBase<T>::ThreadProc(void *lpParam)
-{
-    // Do nothing !!
-    sLog.info("Thread<T>::ThreadProc().");
-}
-
-template <class T>
-unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
-{
-    sLog.info("Thread<T>::ThreadProcBase() Enter.");
-    sLog.info("Thread<T>::ThreadProcBase(), lpParam = 0x%08X.", lpParam);
-
-    THREAD_PARAMS *pParam = (THREAD_PARAMS *)lpParam;
-    ThreadBase<T> *pThread = NULL;
-    void *pObject= NULL;
-    if (pParam) {
-        pThread = pParam->pThread;
-        pObject = pParam->pObject;
-
-        if (pThread && pThread->IsValid())
-            pThread->SetThreadState(THREAD_STATUS_RUNNING);
-
-        T *pThis = static_cast<T *>(pThread);
-        thread_proc_t pThreadProc = pThis->GetThreadProc();
-        if (pThreadProc != NULL)
-            pThreadProc(lpParam);
-        else
-            pThis->ThreadProc(lpParam);
-
-        if (pParam)
-            delete pParam;
-
-        //ThreadBase<T>::Sleep(3000);
-    }
-    sLog.info("Thread<T>::ThreadProcBase() Over.");
-
-    if (pThread && pThread->IsValid()) {
-        //pThread->SetThreadState(THREAD_STATUS_THREADPROC_OVER);
-        pThread->SetThreadState(THREAD_STATUS_STOPPED);
-    }
-    return 0;
-}
-
-template <class T>
 void ThreadBase<T>::Sleep(uint32_t uMilliSecs)
 {
     ::Sleep(uMilliSecs);
@@ -528,7 +511,7 @@ class Thread : public ThreadBase<Thread>
 {
 public:
     Thread(void) : ThreadBase<Thread>() { };
-    Thread(thread_proc_t thread_proc) : ThreadBase<Thread>() { pThreadProc = thread_proc; }
+    Thread(thread_proc_t thread_proc) { pThreadProc = thread_proc; }
     ~Thread(void) { };
 
 private:

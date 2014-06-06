@@ -246,6 +246,10 @@
 					Name="thread"
 					>
 					<File
+						RelativePath="..\..\..\..\src\jimi\thread\event.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimi\system\mutex.cpp"
 						>
 					</File>
@@ -267,6 +271,14 @@
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimi\thread\thread.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\thread\thread_def.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\thread\WaitHandle.h"
 						>
 					</File>
 				</Filter>
