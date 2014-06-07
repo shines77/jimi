@@ -34,47 +34,47 @@
 /**
  * strlen()
  */
-JMC_INLINE_NONSTD(size_t) jm_strlen(const char *_Src)
+JMC_INLINE_NONSTD(size_t) jm_strlen(const char *_Str)
 {
-    return strlen(_Src);
+    return strlen(_Str);
 }
 
-JMC_INLINE_NONSTD(size_t) jm_wcslen(const wchar_t *_Src)
+JMC_INLINE_NONSTD(size_t) jm_wcslen(const wchar_t *_Str)
 {
-    return wcslen(_Src);
+    return wcslen(_Str);
 }
 
-JMC_INLINE_NONSTD(size_t) jm_tcslen(const TCHAR *_Src)
+JMC_INLINE_NONSTD(size_t) jm_tcslen(const TCHAR *_Str)
 {
-    return _tcslen(_Src);
+    return _tcslen(_Str);
 }
 
-JMC_INLINE_NONSTD(size_t) jm_mbslen(const unsigned char *_Src)
+JMC_INLINE_NONSTD(size_t) jm_mbslen(const unsigned char *_Str)
 {
-    return _mbslen(_Src);
+    return _mbslen(_Str);
 }
 
 /**
  * strnlen()
  */
-JMC_INLINE_NONSTD(size_t) jm_strnlen(const char *_Src, size_t _MaxCount)
+JMC_INLINE_NONSTD(size_t) jm_strnlen(const char *_Str, size_t _MaxCount)
 {
-    return strnlen_s(_Src, _MaxCount);
+    return strnlen_s(_Str, _MaxCount);
 }
 
-JMC_INLINE_NONSTD(size_t) jm_wcsnlen(const wchar_t *_Src, size_t _MaxCount)
+JMC_INLINE_NONSTD(size_t) jm_wcsnlen(const wchar_t *_Str, size_t _MaxCount)
 {
-    return wcsnlen_s(_Src, _MaxCount);
+    return wcsnlen_s(_Str, _MaxCount);
 }
 
-JMC_INLINE_NONSTD(size_t) jm_tcsnlen(const TCHAR *_Src, size_t _MaxCount)
+JMC_INLINE_NONSTD(size_t) jm_tcsnlen(const TCHAR *_Str, size_t _MaxCount)
 {
-    return _tcsnlen(_Src, _MaxCount);
+    return _tcsnlen(_Str, _MaxCount);
 }
 
-JMC_INLINE_NONSTD(size_t) jm_mbsnlen(const unsigned char *_Src, size_t _MaxCount)
+JMC_INLINE_NONSTD(size_t) jm_mbsnlen(const unsigned char *_Str, size_t _MaxCount)
 {
-    return _mbsnlen(_Src, _MaxCount);
+    return _mbsnlen(_Str, _MaxCount);
 }
 
 /**
@@ -229,6 +229,29 @@ JMC_INLINE_NONSTD(int) jm_tcscmp(const TCHAR *_Str1, const TCHAR *_Str2)
 JMC_INLINE_NONSTD(int) jm_mbscmp(const unsigned char *_Str1, const unsigned char *_Str2)
 {
     return _mbscmp(_Str1, _Str2);
+}
+
+/**
+ * strncmp()
+ */
+JMC_INLINE_NONSTD(int) jm_strncmp(const char *_Str1, const char *_Str2, size_t _MaxCount)
+{
+    return strncmp(_Str1, _Str2, _MaxCount);
+}
+
+JMC_INLINE_NONSTD(int) jm_wcsncmp(const wchar_t *_Str1, const wchar_t *_Str2, size_t _MaxCount)
+{
+    return wcsncmp(_Str1, _Str2, _MaxCount);
+}
+
+JMC_INLINE_NONSTD(int) jm_tcsncmp(const TCHAR *_Str1, const TCHAR *_Str2, size_t _MaxCount)
+{
+    return _tcsncmp(_Str1, _Str2, _MaxCount);
+}
+
+JMC_INLINE_NONSTD(int) jm_mbsncmp(const unsigned char *_Str1, const unsigned char *_Str2, size_t _MaxCount)
+{
+    return _mbsncmp(_Str1, _Str2, _MaxCount);
 }
 
 /**

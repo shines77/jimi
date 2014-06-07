@@ -21,6 +21,9 @@
 #include "IocpServd.h"
 #include "SampleThread.h"
 
+#include <string>
+using namespace std;
+
 #if JIMI_IS_WINDOWS
 
 #include <jimi/system/WinService.h>
@@ -58,8 +61,6 @@ USING_NS_IOCPSERVD;
 
 NS_IOCPSERVD_BEGIN
 
-//IocpServdService iocpServdService;
-
 int IocpServd_main(int argc, char *argv[])
 {
     sLog.log_begin();
@@ -73,7 +74,6 @@ int IocpServd_main(int argc, char *argv[])
     }
 
     IocpServdService *service = new IocpServdService();
-    //IocpServdService *service = &iocpServdService;
     if (service) {
         IocpServdService::SetInstance(service, true);
 
@@ -103,10 +103,31 @@ int IocpServd_main(int argc, char *argv[])
         }
 
         if (service) {
-            //service->Release();
+            //service->Destroy();
             delete service;
         }
     }
+
+    printf("\n");
+
+    std::string str1 = "hello world";
+    std::string str2 = str1;
+
+    printf ("Sharing the memory:\n");
+    printf ("\tstr1's address: %x\n", str1.c_str() );
+    printf ("\tstr2's address: %x\n", str2.c_str() );
+
+    str1[1] = 'q';
+    str2[1] = 'w';
+
+    printf ("After Copy-On-Write:\n");
+    printf ("\tstr1's address: %x\n", str1.c_str() );
+    printf ("\tstr2's address: %x\n", str2.c_str() );
+
+    printf("\n");
+
+    String str = "abcdefg";
+    printf("str.c_str() = %s\n", str.c_str());
 
     printf("\n");
 
@@ -141,13 +162,25 @@ int IocpServd_main(int argc, char *argv[])
 
     printf("\n");
 
-    ManualResetEvent *event = new ManualResetEvent(false);
-    event->Set();
-    event->Reset();
-    if (event) {
-        delete event;
-        event = NULL;
-    }
+    do {
+        ManualResetEvent *event = new ManualResetEvent(false);
+        //ManualResetEvent event2(false);
+        EventWaitHandle *event3 = new EventWaitHandle();
+        EventWaitHandle *event_base = (EventWaitHandle *)event;
+        event->Set();
+        event->Reset();
+        if (event_base) {
+            delete event_base;
+            event_base = NULL;
+        }
+        if (event) {
+            //delete event;
+            event = NULL;
+        }
+        bool bSignal = event3->WaitOne();
+        if (event3)
+            delete event3;
+    } while (0);
 
     printf("\n");
 

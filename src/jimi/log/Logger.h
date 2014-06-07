@@ -46,8 +46,17 @@ using namespace std;
 #define JIMI_LOG4(x,a,b,c,d)            ((void)(0))
 #endif /* JIMI_LOG_ENABLE */
 
+#ifndef _JIMI_LOG
 #define _JIMI_LOG                       NS_JIMI_LOG(utils.log.print)
+#endif
+
+#ifndef sLog
 #define sLog                            NS_JIMI_LOG(utils.log)
+#endif
+
+#ifndef DebugLog
+#define DebugLog                        NS_JIMI_LOG(utils.log)
+#endif
 
 ////////////////////////////////////////////////////////////////
 
@@ -75,7 +84,13 @@ using namespace std;
 #define JIMI_LOG_TRACE4(x,a,b,c,d)      ((void)(0))
 #endif /* JIMI_LOG_TRACE_ENABLE */
 
+#ifndef _JIMI_LOG
 #define _JIMI_LOG_TRACE                 NS_JIMI_LOG(utils.log.trace)
+#endif
+
+#ifndef TraceLog
+#define TraceLog                        NS_JIMI_LOG(utils.log)
+#endif
 
 ////////////////////////////////////////////////////////////////
 

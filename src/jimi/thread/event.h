@@ -195,7 +195,7 @@ class ManualResetEvent : public EventWaitHandle
 public:
     ManualResetEvent(bool bInitialState, const char *lpEventName = NULL)
         : EventWaitHandle(bInitialState, EventResetMode::kManualReset, lpEventName) { };
-    ~ManualResetEvent() { };
+    ~ManualResetEvent() { sLog.info("ManualResetEvent::~ManualResetEvent()."); };
 };
 
 /**************************************************************************
@@ -207,7 +207,7 @@ class AutoResetEvent : public EventWaitHandle
 public:
     AutoResetEvent(bool bInitialState, const char *lpEventName = NULL)
         : EventWaitHandle(bInitialState, EventResetMode::kAutoReset, lpEventName) { };
-    ~AutoResetEvent() { };
+    ~AutoResetEvent() { sLog.info("AutoResetEvent::~AutoResetEvent()."); };
 };
 
 NS_JIMI_SYSTEM_END

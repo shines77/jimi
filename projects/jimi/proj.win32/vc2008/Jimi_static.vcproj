@@ -214,6 +214,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\..\..\src\jimi\lang\Char_Traits.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimi\lang\Cloneable.h"
 						>
 					</File>
@@ -238,6 +242,14 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\..\..\src\jimi\lang\String.inl.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\lang\StringUtils.inl.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimi\lang\Throwable.h"
 						>
 					</File>
@@ -246,7 +258,7 @@
 					Name="thread"
 					>
 					<File
-						RelativePath="..\..\..\..\src\jimi\thread\event.h"
+						RelativePath="..\..\..\..\src\jimi\thread\Event.h"
 						>
 					</File>
 					<File
