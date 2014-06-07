@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="IocpServd"
-	ProjectGUID="{32E6D992-7397-400C-A12F-61EC3018B9FF}"
-	RootNamespace="IocpServD"
+	Name="UnitTest"
+	ProjectGUID="{916F8AC2-693C-4F26-8FE4-3BF9C5E10772}"
+	RootNamespace="UnitTest"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\apps\IocpServd\src;..\..\..\..\apps\IocpServd\include;..\..\..\..\apps\IocpServd;..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)apps\IocpServd&quot;;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\test\UnitTest\src;..\..\..\..\test\UnitTest\include;..\..\..\..\test\UnitTest;..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)test\UnitTest&quot;;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;JIMI_USE_STATIC;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -119,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\..\..\apps\IocpServd\src;..\..\..\..\apps\IocpServd\include;..\..\..\..\apps\IocpServd;..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)apps\IocpServd&quot;;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\test\UnitTest\src;..\..\..\..\test\UnitTest\include;..\..\..\..\test\UnitTest;..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)test\UnitTest&quot;;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;JIMI_USE_STATIC;"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -179,27 +179,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\src\IocpServd.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\IocpServd.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\IocpServdService.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\IocpServdService.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\SampleThread.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\src\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\UnitTest.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\UnitTest.h"
 				>
 			</File>
 		</Filter>

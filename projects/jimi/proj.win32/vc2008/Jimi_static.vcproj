@@ -310,6 +310,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\..\..\src\jimi\system\stop_watch.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimi\system\WinService.cpp"
 						>
 					</File>

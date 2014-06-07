@@ -95,6 +95,22 @@ using namespace std;
 #define JIMI_MIN(a, b)          ((a) < (b) ? (a) : (b))
 #define JIMI_MAX(a, b)          ((a) > (b) ? (a) : (b))
 
+NS_JIMI_BEGIN
+
+template <typename value_type>
+inline value_type jimi_min(value_type a, value_type b)
+{
+    return (a < b ? a : b);
+}
+
+template <typename value_type>
+inline value_type jimi_max(value_type a, value_type b)
+{
+    return (a > b ? a : b);
+}
+
+NS_JIMI_END
+
 // for precompiled macro to string
 #define JIMI_STRING_ESCAPE(x)   #x
 #define JIMI_TO_STRING(x)       JIMI_STRING_ESCAPE(x)

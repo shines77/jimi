@@ -71,7 +71,7 @@ typedef enum StringTypeMask
 template < class _CharT  = char,
            class _Traits = char_traits<_CharT>,
            class _Alloc  = allocator<_CharT> >
-class basic_string
+class JIMI_API basic_string
 {
 public:
     // Types:
