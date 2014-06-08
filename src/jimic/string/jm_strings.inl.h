@@ -10,6 +10,9 @@
 
 #include <jimi/platform/jimi_platform_config.h>
 
+#include <jimic/core/jimic_def.h>
+#include <jimic/string/jm_strings.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -30,16 +33,16 @@ typedef unsigned int size_t;
 #endif
 #include <string.h>
 
-//#include <jimic/string/jm_strings.h>
-
 #endif  /* NOT_IS_INLINE_INCLUDE */
-
-#undef NOT_IS_INLINE_INCLUDE
 
 ///////////////////////////////////////////////////////////////////////////
 
 // the errno can get from _get_errno(), _set_errno()
 // _TRUNCATE = ((size_t)-1)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #if defined(JIMI_IS_WINDOWS)
 
@@ -555,25 +558,23 @@ JMC_INLINE_NONSTD(char *) jm_strstr(const char *_Str, const char *_SubStr)
 }
 
 /**
- * strupr()
- */
-JMC_INLINE_NONSTD(char *) jm_strupr(char *_Str, size_t _NumberOfElements)
-{
-    if (_NumberOfElements != 0)
-        return strnupr(_Str, _NumberOfElements - 1);
-    else
-        return strnupr(_Str, 0);
-}
-
-/**
  * strlwr()
  */
 JMC_INLINE_NONSTD(char *) jm_strlwr(char *_Str, size_t _NumberOfElements)
 {
     if (_NumberOfElements != 0)
-        return strnlwr(_Str, _NumberOfElements - 1);
-    else
-        return strnlwr(_Str, 0);
+        jm_strlwr_self(_Str, _NumberOfElements - 1);
+    return _Str;
+}
+
+/**
+ * strupr()
+ */
+JMC_INLINE_NONSTD(char *) jm_strupr(char *_Str, size_t _NumberOfElements)
+{
+    if (_NumberOfElements != 0)
+        jm_strupr_self(_Str, _NumberOfElements - 1);
+    return _Str;
 }
 
 /**
@@ -584,7 +585,10 @@ JMC_INLINE_NONSTD(int) jm_sprintf(char *buffer, size_t numberOfElements, const c
     int ret_cnt;
     va_list arg_list;
     size_t n;
-    n = JIMI_MIN(_MaxCount, _NumberOfElements - 1);
+    if (numberOfElements != 0)
+        n = numberOfElements - 1;
+    else
+        n = 0;
     va_start(arg_list, format);
     ret_cnt = vsnprintf(buffer, n, format, arg_list);
     va_end(arg_list);
@@ -596,7 +600,7 @@ JMC_INLINE_NONSTD(int) jm_sprintf(char *buffer, size_t numberOfElements, const c
  */
 JMC_INLINE_NONSTD(int) jm_vsprintf(char *buffer, size_t numberOfElements, const char *format, va_list arg_list)
 {
-    if (_NumberOfElements != 0)
+    if (numberOfElements != 0)
         return vsnprintf(buffer, numberOfElements - 1, format, arg_list);
     else
         return vsnprintf(buffer, 0, format, arg_list);
@@ -610,9 +614,9 @@ JMC_INLINE_NONSTD(int) jm_snprintf(char *buffer, size_t numberOfElements, size_t
     int ret_cnt;
     va_list arg_list;
     size_t n;
-    n = JIMI_MIN(_MaxCount, _NumberOfElements - 1);
+    n = JIMI_MIN(count, numberOfElements - 1);
     va_start(arg_list, format);
-    ret_cnt = _vsnprintf_s(buffer, n, format, arg_list);
+    ret_cnt = vsnprintf(buffer, n, format, arg_list);
     va_end(arg_list);
     return ret_cnt;
 }
@@ -623,12 +627,146 @@ JMC_INLINE_NONSTD(int) jm_snprintf(char *buffer, size_t numberOfElements, size_t
 JMC_INLINE_NONSTD(int) jm_vsnprintf(char *buffer, size_t numberOfElements, size_t count, const char *format, va_list arg_list)
 {
     size_t n;
-    n = JIMI_MIN(_MaxCount, _NumberOfElements - 1);
+    n = JIMI_MIN(count, numberOfElements - 1);
     return vsnprintf(buffer, n, format, arg_list);
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
 #endif  /* JIMI_IS_WINDOWS */
+
+///////////////////////////////////////////////////////////////////////////
+// jm_strlwrs() & jm_struprs()
+///////////////////////////////////////////////////////////////////////////
+
+/**
+ * str2lwr()
+ */
+JMC_INLINE_NONSTD(int) jm_str2lwr(char *dest, char *src, size_t n)
+{
+    char *dest_sav = dest;
+    while (n > 0) {
+        if (*src != '\0') {
+            *dest = jimi_tolower(*src);
+            ++dest;
+            ++src;
+        }
+        else
+            break;
+        --n;
+    }
+    *dest = '\0';
+    return (dest - dest_sav);
+}
+
+/**
+ * str2upr()
+ */
+JMC_INLINE_NONSTD(int) jm_str2upr(char *dest, char *src, size_t n)
+{
+    char *dest_sav = dest;
+    while (n > 0) {
+        if (*src != '\0') {
+            *dest = jimi_toupper(*src);
+            ++dest;
+            ++src;
+        }
+        else
+            break;
+        --n;
+    }
+    *dest = '\0';
+    return (dest - dest_sav);
+}
+
+/**
+ * strlwr_self()
+ */
+JMC_INLINE_NONSTD(int) jm_strlwr_self(char *src, size_t n)
+{
+    char *src_sav = src;
+    while (n > 0) {
+        if (*src != '\0') {
+            *src = jimi_tolower(*src);
+            ++src;
+        }
+        else
+            break;
+        --n;
+    }
+    return (src - src_sav);
+}
+
+/**
+ * strupr_self()
+ */
+JMC_INLINE_NONSTD(int) jm_strupr_self(char *src, size_t n)
+{
+    char *src_sav = src;
+    while (n > 0) {
+        if (*src != '\0') {
+            *src = jimi_toupper(*src);
+            ++src;
+        }
+        else
+            break;
+        --n;
+    }
+    return (src - src_sav);
+}
+
+/**
+ * strnlwr()
+ */
+JMC_INLINE_NONSTD(void) jm_strnlwr(char *dest, char *src, size_t n)
+{
+    while (n > 0) {
+        *dest = jimi_tolower(*src);
+        ++dest;
+        ++src;
+        --n;
+    }
+}
+
+/**
+ * strnupr()
+ */
+JMC_INLINE_NONSTD(void) jm_strnupr(char *dest, char *src, size_t n)
+{
+    while (n > 0) {
+        *dest = jimi_toupper(*src);
+        ++dest;
+        ++src;
+        --n;
+    }
+}
+
+/**
+ * strnlwr_self()
+ */
+JMC_INLINE_NONSTD(void) jm_strnlwr_self(char *src, size_t n)
+{
+    while (n > 0) {
+        *src = jimi_tolower(*src);
+        ++src;
+        --n;
+    }
+}
+
+/**
+ * strnupr_self()
+ */
+JMC_INLINE_NONSTD(void) jm_strnupr_self(char *src, size_t n)
+{
+    while (n > 0) {
+        *src = jimi_toupper(*src);
+        ++src;
+        --n;
+    }
+}
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  /* _JIMIC_STRING_JM_STRINGS_INL_H_ */

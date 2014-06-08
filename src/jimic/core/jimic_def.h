@@ -195,7 +195,6 @@ typedef struct JIMIC_MACRO_T
 #define JMC_INLINE_DECLARE(type)    JMC_INLINE type __stdcall
 #define JMC_DECLARE_NONSTD(type)    type __cdecl
 #define JMC_INLINE_NONSTD(type)     JMC_INLINE type __cdecl
-//#define JMC_INLINE_NONSTD(type)     type
 #define JMC_DECLARE_DATA
 
 #endif  /* (!defined(JIMI_IS_WINDOWS)) || defined(JIMI_IS_DOXYGEN) */

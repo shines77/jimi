@@ -12,13 +12,33 @@
 #include <tchar.h>
 #include <mbstring.h>
 #endif  /* JIMI_IS_WINDOWS */
-#include <string.h>
 
 #include <jimic/core/jimic_def.h>
+#include <string.h>
+
+#define jimi_tolower(c)     (unsigned char) ((c >= 'A' && c <= 'Z') ? (c |  0x20) : c)
+#define jimi_toupper(c)     (unsigned char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+///////////////////////////////////////////////////////////////////////////
+// jm_strlwrs() & jm_struprs()
+///////////////////////////////////////////////////////////////////////////
+
+/**
+* jm_strlwrs() & jm_struprs()
+ */
+JMC_INLINE_NONSTD(int)  jm_str2lwr(char *dest, char *src, size_t n);
+JMC_INLINE_NONSTD(int)  jm_str2upr(char *dest, char *src, size_t n);
+JMC_INLINE_NONSTD(int)  jm_strlwr_self(char *src, size_t n);
+JMC_INLINE_NONSTD(int)  jm_strupr_self(char *src, size_t n);
+JMC_INLINE_NONSTD(void) jm_strnlwr(char *dest, char *src, size_t n);
+JMC_INLINE_NONSTD(void) jm_strnupr(char *dest, char *src, size_t n);
+JMC_INLINE_NONSTD(void) jm_strnlwr_self(char *src, size_t n);
+JMC_INLINE_NONSTD(void) jm_strnupr_self(char *src, size_t n);
+
 
 #if defined(JIMI_IS_WINDOWS)
 
@@ -169,10 +189,6 @@ JMC_INLINE_NONSTD(int)      jm_vsntprintf(TCHAR *buffer, size_t numberOfElements
 
 ///////////////////////////////////////////////////////////////////////////
 
-#include <jimic/string/jm_strings.inl.h>
-
-///////////////////////////////////////////////////////////////////////////
-
 #else  /* !JIMI_IS_WINDOWS */
 
 ///////////////////////////////////////////////////////////////////////////
@@ -320,14 +336,16 @@ JMC_INLINE_NONSTD(int) jm_vsnprintf(char *buffer, size_t numberOfElements, size_
 
 ///////////////////////////////////////////////////////////////////////////
 
-#include <jimic/string/jm_strings.inl.h>
-
-///////////////////////////////////////////////////////////////////////////
-
 #endif  /* JIMI_IS_WINDOWS */
 
 #ifdef __cplusplus
 }
 #endif
+
+///////////////////////////////////////////////////////////////////////////
+
+#include <jimic/string/jm_strings.inl.h>
+
+///////////////////////////////////////////////////////////////////////////
 
 #endif  /* _JIMIC_STRING_JM_STRINGS_H_ */
