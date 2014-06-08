@@ -19,23 +19,6 @@
 #endif
 #endif
 
-#if USE_CRTDBG_CHECK
-#ifdef _DEBUG
-// crtdbg.h must be behind the stdlib.h
-#include <crtdbg.h>
-#endif
-#endif
-
-#ifdef _DEBUG
-#ifndef DEBUG_CLIENTBLOCK
-#define DEBUG_CLIENTBLOCK   new(_CLIENT_BLOCK, __FILE__, __LINE__)
-#endif
-#define new                 DEBUG_CLIENTBLOCK
-#else
-#undef  DEBUG_CLIENTBLOCK
-#define DEBUG_CLIENTBLOCK
-#endif
-
 #include "UnitTest.h"
 
 #include <jimi/core/jimi_def.h>
@@ -52,6 +35,26 @@
 #include <jimi/system/stop_watch.h>
 
 #include "SampleThread.h"
+#include <string>
+
+#if USE_CRTDBG_CHECK
+#ifdef _DEBUG
+// crtdbg.h must be behind the stdlib.h
+#include <crtdbg.h>
+#endif
+#endif
+
+/*
+#ifdef _DEBUG
+#ifndef DEBUG_CLIENTBLOCK
+#define DEBUG_CLIENTBLOCK   new(_CLIENT_BLOCK, __FILE__, __LINE__)
+#endif
+#define new                 DEBUG_CLIENTBLOCK
+#else
+#undef  DEBUG_CLIENTBLOCK
+#define DEBUG_CLIENTBLOCK
+#endif
+//*/
 
 /**********************************************************
  *
@@ -66,7 +69,6 @@
 #endif  /* _DEBUG */
 #endif  /* _MSC_VER */
 
-#include <string>
 using namespace std;
 
 USING_NS_JIMI;

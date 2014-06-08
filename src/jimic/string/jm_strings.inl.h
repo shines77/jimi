@@ -1,16 +1,28 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-#ifndef NOT_IS_INLINE_INCLUDE
-#define NOT_IS_INLINE_INCLUDE   0
+#ifndef _JIMIC_STRING_JM_STRINGS_INL_H_
+#define _JIMIC_STRING_JM_STRINGS_INL_H_
+
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
+#pragma once
 #endif
+
+#include <jimi/platform/jimi_platform_config.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 
-#if NOT_IS_INLINE_INCLUDE
+#ifndef _SIZE_T_DEFINED
+typedef unsigned int size_t;
+#define _SIZE_T_DEFINED
+#endif
 
-#include <jimi/platform/jimi_platform_config.h>
+#ifndef NOT_IS_INLINE_INCLUDE
+#define NOT_IS_INLINE_INCLUDE   0
+#endif
+
+#if NOT_IS_INLINE_INCLUDE
 
 #if defined(JIMI_IS_WINDOWS)
 #include <tchar.h>
@@ -18,7 +30,7 @@
 #endif
 #include <string.h>
 
-#include <jimic/string/jm_strings.h>
+//#include <jimic/string/jm_strings.h>
 
 #endif  /* NOT_IS_INLINE_INCLUDE */
 
@@ -205,7 +217,16 @@ JMC_INLINE_NONSTD(TCHAR *) jm_tcsdup(const TCHAR *_Src)
 
 JMC_INLINE_NONSTD(unsigned char *) jm_mbsdup(const unsigned char *_Src)
 {
+#if defined(_MSC_VER) && defined(_DEBUG)
+#ifdef __cplusplus
+    const char *_Ptr = CONST_CAST_CONST(_Src, unsigned char *, char *);
+    return reinterpret_cast<unsigned char *>(_strdup(_Ptr));
+#else
+    return (unsigned char *)_strdup((const char *)_Src);
+#endif
+#else
     return _mbsdup(_Src);
+#endif
 }
 
 /**
@@ -439,8 +460,175 @@ JMC_INLINE_NONSTD(int) jm_vsntprintf(TCHAR *buffer, size_t numberOfElements, siz
 
 ///////////////////////////////////////////////////////////////////////////
 
-//
+/**
+ * strlen()
+ */
+JMC_INLINE_NONSTD(size_t) jm_strlen(const char *_Str)
+{
+    return strlen(_Str);
+}
+
+/**
+ * strnlen()
+ */
+JMC_INLINE_NONSTD(size_t) jm_strnlen(const char *_Str, size_t _MaxCount)
+{
+    return strnlen(_Str, _MaxCount);
+}
+
+/**
+ * strcpy()
+ */
+JMC_INLINE_NONSTD(char *) jm_strcpy(char *_Dest, size_t _NumberOfElements, const char *_Source)
+{
+    char *_DestNew;
+    _DestNew = strncpy(_Dest, _Source, _NumberOfElements - 1);
+    _Dest[_NumberOfElements - 1] = '\0';
+    return _DestNew;
+}
+
+/**
+ * strncpy()
+ */
+JMC_INLINE_NONSTD(char *) jm_strncpy(char *_Dest, size_t _NumberOfElements, const char *_Source, size_t _MaxCount)
+{
+    size_t n;
+    n = JIMI_MIN(_MaxCount, _NumberOfElements - 1);
+    return strncpy(_Dest, _Source, n);
+}
+
+/**
+ * strcat()
+ */
+JMC_INLINE_NONSTD(char *) jm_strcat(char *_Dest, size_t _NumberOfElements, const char *_Source)
+{
+    char *_DestNew;
+    if (_NumberOfElements != 0)
+        _DestNew = strncat(_Dest, _Source, _NumberOfElements - 1);
+    else
+        _DestNew = strncat(_Dest, _Source, 0);
+    return _DestNew;
+}
+
+/**
+ * strncat()
+ */
+JMC_INLINE_NONSTD(char *) jm_strncat(char *_Dest, size_t _NumberOfElements, const char *_Source, size_t _MaxCount)
+{
+    char *_DestNew;
+    size_t n;
+    n = JIMI_MIN(_MaxCount, _NumberOfElements - 1);
+    _DestNew = strncat(_Dest, _Source, n);
+    return _DestNew;
+}
+
+/**
+ * strdup()
+ */
+JMC_INLINE_NONSTD(char *) jm_strdup(const char *_Src)
+{
+    return strdup(_Src);
+}
+
+/**
+ * strcmp()
+ */
+JMC_INLINE_NONSTD(int) jm_strcmp(const char *_Str1, const char *_Str2)
+{
+    return strcmp(_Str1, _Str2);
+}
+
+/**
+ * strncmp()
+ */
+JMC_INLINE_NONSTD(int) jm_strncmp(const char *_Str1, const char *_Str2, size_t _MaxCount)
+{
+    return strncmp(_Str1, _Str2, _MaxCount);
+}
+
+/**
+ * strstr()
+ */
+JMC_INLINE_NONSTD(char *) jm_strstr(const char *_Str, const char *_SubStr)
+{
+    return (char *)strstr(_Str, _SubStr);
+}
+
+/**
+ * strupr()
+ */
+JMC_INLINE_NONSTD(char *) jm_strupr(char *_Str, size_t _NumberOfElements)
+{
+    if (_NumberOfElements != 0)
+        return strnupr(_Str, _NumberOfElements - 1);
+    else
+        return strnupr(_Str, 0);
+}
+
+/**
+ * strlwr()
+ */
+JMC_INLINE_NONSTD(char *) jm_strlwr(char *_Str, size_t _NumberOfElements)
+{
+    if (_NumberOfElements != 0)
+        return strnlwr(_Str, _NumberOfElements - 1);
+    else
+        return strnlwr(_Str, 0);
+}
+
+/**
+ * sprintf()
+ */
+JMC_INLINE_NONSTD(int) jm_sprintf(char *buffer, size_t numberOfElements, const char *format, ...)
+{
+    int ret_cnt;
+    va_list arg_list;
+    size_t n;
+    n = JIMI_MIN(_MaxCount, _NumberOfElements - 1);
+    va_start(arg_list, format);
+    ret_cnt = vsnprintf(buffer, n, format, arg_list);
+    va_end(arg_list);
+    return ret_cnt;
+}
+
+/**
+ * vsprintf()
+ */
+JMC_INLINE_NONSTD(int) jm_vsprintf(char *buffer, size_t numberOfElements, const char *format, va_list arg_list)
+{
+    if (_NumberOfElements != 0)
+        return vsnprintf(buffer, numberOfElements - 1, format, arg_list);
+    else
+        return vsnprintf(buffer, 0, format, arg_list);
+}
+
+/**
+ * snprintf()
+ */
+JMC_INLINE_NONSTD(int) jm_snprintf(char *buffer, size_t numberOfElements, size_t count, const char *format, ...)
+{
+    int ret_cnt;
+    va_list arg_list;
+    size_t n;
+    n = JIMI_MIN(_MaxCount, _NumberOfElements - 1);
+    va_start(arg_list, format);
+    ret_cnt = _vsnprintf_s(buffer, n, format, arg_list);
+    va_end(arg_list);
+    return ret_cnt;
+}
+
+/**
+ * vsnprintf()
+ */
+JMC_INLINE_NONSTD(int) jm_vsnprintf(char *buffer, size_t numberOfElements, size_t count, const char *format, va_list arg_list)
+{
+    size_t n;
+    n = JIMI_MIN(_MaxCount, _NumberOfElements - 1);
+    return vsnprintf(buffer, n, format, arg_list);
+}
 
 ///////////////////////////////////////////////////////////////////////////
 
 #endif  /* JIMI_IS_WINDOWS */
+
+#endif  /* _JIMIC_STRING_JM_STRINGS_INL_H_ */

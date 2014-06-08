@@ -111,7 +111,18 @@ inline value_type jimi_max(value_type a, value_type b)
 
 NS_JIMI_END
 
-// for precompiled macro to string
+/**
+ * for c++ const_cast
+ */
+#define CONST_CAST(_Val, _TypeVal, _TypeNew) \
+    reinterpret_cast<_TypeNew>(const_cast<_TypeVal>(_Val))
+
+#define CONST_CAST_CONST(_Val, _TypeVal, _TypeNew) \
+    const_cast<const _TypeNew>(reinterpret_cast<_TypeNew>(const_cast<_TypeVal>(_Val)))
+
+/**
+ * for precompiled macro to string
+ */
 #define JIMI_STRING_ESCAPE(x)   #x
 #define JIMI_TO_STRING(x)       JIMI_STRING_ESCAPE(x)
 
@@ -123,7 +134,9 @@ typedef struct JIMI_MACRO_T
     const char *value;
 } JIMI_MACRO_T;
 
-// for exported func
+/**
+ * for exported func
+ */
 #if _MSC_VER >= 1400
     #define JIMI_EXPORTED_FUNC      __cdecl
     #define JIMI_EXPORTED_METHOD    __thiscall

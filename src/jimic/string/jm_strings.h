@@ -11,7 +11,7 @@
 #if defined(JIMI_IS_WINDOWS)
 #include <tchar.h>
 #include <mbstring.h>
-#endif
+#endif  /* JIMI_IS_WINDOWS */
 #include <string.h>
 
 #include <jimic/core/jimic_def.h>
@@ -175,7 +175,154 @@ JMC_INLINE_NONSTD(int)      jm_vsntprintf(TCHAR *buffer, size_t numberOfElements
 
 #else  /* !JIMI_IS_WINDOWS */
 
-//
+///////////////////////////////////////////////////////////////////////////
+
+/**
+ * strlen()
+ */
+JMC_INLINE_NONSTD(size_t) jm_strlen(const char *_Str);
+
+#define jm_wcslen         jm_strlen
+#define jm_tcslen         jm_strlen
+#define jm_mbslen         jm_strlen
+
+/**
+ * strnlen()
+ */
+JMC_INLINE_NONSTD(size_t) jm_strnlen(const char *_Str, size_t _MaxCount);
+
+#define jm_wcsnlen        jm_strnlen
+#define jm_tcsnlen        jm_strnlen
+#define jm_mbsnlen        jm_strnlen
+
+/**
+ * strcpy()
+ */
+JMC_INLINE_NONSTD(char *) jm_strcpy(char *_Dest, size_t _NumberOfElements, const char *_Source);
+
+#define jm_wcscpy         jm_strcpy
+#define jm_tcscpy         jm_strcpy
+#define jm_mbscpy         jm_strcpy
+
+/**
+ * strncpy()
+ */
+JMC_INLINE_NONSTD(char *) jm_strncpy(char *_Dest, size_t _NumberOfElements, const char *_Source, size_t _MaxCount);
+
+#define jm_wcsncpy        jm_strncpy
+#define jm_tcsncpy        jm_strncpy
+#define jm_mbsncpy        jm_strncpy
+
+/**
+ * strcat()
+ */
+JMC_INLINE_NONSTD(char *) jm_strcat(char *_Dest, size_t _NumberOfElements, const char *_Source);
+
+#define jm_wcscat         jm_strcat
+#define jm_tcscat         jm_strcat
+#define jm_mbscat         jm_strcat
+
+/**
+ * strncat()
+ */
+JMC_INLINE_NONSTD(char *) jm_strncat(char *_Dest, size_t _NumberOfElements, const char *_Source, size_t _MaxCount);
+
+#define jm_wcsncat        jm_strncat
+#define jm_tcsncat        jm_strncat
+#define jm_mbsncat        jm_strncat
+
+/**
+ * strdup()
+ */
+JMC_INLINE_NONSTD(char *) jm_strdup(const char *_Src);
+
+#define jm_wcsdup         jm_strdup
+#define jm_tcsdup         jm_strdup
+#define jm_mbsdup         jm_strdup
+
+/**
+ * strcmp()
+ */
+JMC_INLINE_NONSTD(int) jm_strcmp(const char *_Str1, const char *_Str2);
+
+#define jm_wcscmp      jm_strcmp
+#define jm_tcscmp      jm_strcmp
+#define jm_mbscmp      jm_strcmp
+
+/**
+ * strncmp()
+ */
+JMC_INLINE_NONSTD(int) jm_strncmp(const char *_Str1, const char *_Str2, size_t _MaxCount);
+
+#define jm_wcsncmp     jm_strncmp
+#define jm_tcsncmp     jm_strncmp
+#define jm_mbsncmp     jm_strncmp
+
+/**
+ * strstr()
+ */
+
+JMC_INLINE_NONSTD(char *) jm_strstr(const char *_Str, const char *_SubStr);
+
+#define jm_wcsstr         jm_strstr
+#define jm_tcsstr         jm_strstr
+#define jm_mbsstr         jm_strstr
+
+/**
+ * strupr()
+ */
+JMC_INLINE_NONSTD(char *) jm_strupr(char *_Str, size_t _NumberOfElements);
+
+#define jm_wcsupr         jm_strupr
+#define jm_tcsupr         jm_strupr
+#define jm_mbsupr         jm_strupr
+
+/**
+ * strlwr()
+ */
+JMC_INLINE_NONSTD(char *) jm_strlwr(char *_Str, size_t _NumberOfElements);
+
+#define jm_wcslwr         jm_strlwr
+#define jm_tcslwr         jm_strlwr
+#define jm_mbslwr         jm_strlwr
+
+/**
+ * sprintf()
+ */
+JMC_INLINE_NONSTD(int) jm_sprintf(char *buffer, size_t numberOfElements, const char *format, ...);
+
+#define jm_swprintf    jm_sprintf
+#define jm_stprintf    jm_sprintf
+
+/**
+ * vsprintf()
+ */
+JMC_INLINE_NONSTD(int) jm_vsprintf(char *buffer, size_t numberOfElements, const char *format, va_list arg_list);
+
+#define jm_vswprintf   jm_vsprintf
+#define jm_vstprintf   jm_vsprintf
+
+/**
+ * snprintf()
+ */
+JMC_INLINE_NONSTD(int) jm_snprintf(char *buffer, size_t numberOfElements, size_t count, const char *format, ...);
+
+#define jm_snwprintf   jm_snprintf
+#define jm_sntprintf   jm_snprintf
+
+/**
+ * vsnprintf()
+ */
+JMC_INLINE_NONSTD(int) jm_vsnprintf(char *buffer, size_t numberOfElements, size_t count, const char *format, va_list arg_list);
+
+#define jm_vsnwprintf  jm_vsnprintf
+#define jm_vsntprintf  jm_vsnprintf
+
+///////////////////////////////////////////////////////////////////////////
+
+#include <jimic/string/jm_strings.inl.h>
+
+///////////////////////////////////////////////////////////////////////////
 
 #endif  /* JIMI_IS_WINDOWS */
 
