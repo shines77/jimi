@@ -563,7 +563,7 @@ JMC_INLINE_NONSTD(char *) jm_strstr(const char *_Str, const char *_SubStr)
 JMC_INLINE_NONSTD(char *) jm_strlwr(char *_Str, size_t _NumberOfElements)
 {
     if (_NumberOfElements != 0)
-        jm_strlwr_self(_Str, _NumberOfElements - 1);
+        jm_strlwr_s(_Str, _NumberOfElements - 1);
     return _Str;
 }
 
@@ -573,7 +573,7 @@ JMC_INLINE_NONSTD(char *) jm_strlwr(char *_Str, size_t _NumberOfElements)
 JMC_INLINE_NONSTD(char *) jm_strupr(char *_Str, size_t _NumberOfElements)
 {
     if (_NumberOfElements != 0)
-        jm_strupr_self(_Str, _NumberOfElements - 1);
+        jm_strupr_s(_Str, _NumberOfElements - 1);
     return _Str;
 }
 
@@ -644,7 +644,7 @@ JMC_INLINE_NONSTD(int) jm_vsnprintf(char *buffer, size_t numberOfElements, size_
  */
 JMC_INLINE_NONSTD(int) jm_str2lwr(char *dest, char *src, size_t n)
 {
-    char *dest_sav = dest;
+    char *orig = dest;
     while (n > 0) {
         if (*src != '\0') {
             *dest = jimi_tolower(*src);
@@ -656,7 +656,7 @@ JMC_INLINE_NONSTD(int) jm_str2lwr(char *dest, char *src, size_t n)
         --n;
     }
     *dest = '\0';
-    return (dest - dest_sav);
+    return (dest - orig);
 }
 
 /**
@@ -664,7 +664,7 @@ JMC_INLINE_NONSTD(int) jm_str2lwr(char *dest, char *src, size_t n)
  */
 JMC_INLINE_NONSTD(int) jm_str2upr(char *dest, char *src, size_t n)
 {
-    char *dest_sav = dest;
+    char *orig = dest;
     while (n > 0) {
         if (*src != '\0') {
             *dest = jimi_toupper(*src);
@@ -676,15 +676,15 @@ JMC_INLINE_NONSTD(int) jm_str2upr(char *dest, char *src, size_t n)
         --n;
     }
     *dest = '\0';
-    return (dest - dest_sav);
+    return (dest - orig);
 }
 
 /**
- * strlwr_self()
+ * strlwr_s()
  */
-JMC_INLINE_NONSTD(int) jm_strlwr_self(char *src, size_t n)
+JMC_INLINE_NONSTD(int) jm_strlwr_s(char *src, size_t n)
 {
-    char *src_sav = src;
+    char *orig = src;
     while (n > 0) {
         if (*src != '\0') {
             *src = jimi_tolower(*src);
@@ -694,15 +694,15 @@ JMC_INLINE_NONSTD(int) jm_strlwr_self(char *src, size_t n)
             break;
         --n;
     }
-    return (src - src_sav);
+    return (src - orig);
 }
 
 /**
- * strupr_self()
+ * strupr_s()
  */
-JMC_INLINE_NONSTD(int) jm_strupr_self(char *src, size_t n)
+JMC_INLINE_NONSTD(int) jm_strupr_s(char *src, size_t n)
 {
-    char *src_sav = src;
+    char *orig = src;
     while (n > 0) {
         if (*src != '\0') {
             *src = jimi_toupper(*src);
@@ -712,7 +712,7 @@ JMC_INLINE_NONSTD(int) jm_strupr_self(char *src, size_t n)
             break;
         --n;
     }
-    return (src - src_sav);
+    return (src - orig);
 }
 
 /**
@@ -742,9 +742,9 @@ JMC_INLINE_NONSTD(void) jm_strnupr(char *dest, char *src, size_t n)
 }
 
 /**
- * strnlwr_self()
+ * strnlwr_s()
  */
-JMC_INLINE_NONSTD(void) jm_strnlwr_self(char *src, size_t n)
+JMC_INLINE_NONSTD(void) jm_strnlwr_s(char *src, size_t n)
 {
     while (n > 0) {
         *src = jimi_tolower(*src);
@@ -754,9 +754,9 @@ JMC_INLINE_NONSTD(void) jm_strnlwr_self(char *src, size_t n)
 }
 
 /**
- * strnupr_self()
+ * strnupr_s()
  */
-JMC_INLINE_NONSTD(void) jm_strnupr_self(char *src, size_t n)
+JMC_INLINE_NONSTD(void) jm_strnupr_s(char *src, size_t n)
 {
     while (n > 0) {
         *src = jimi_toupper(*src);

@@ -32,12 +32,12 @@ extern "C" {
  */
 JMC_INLINE_NONSTD(int)  jm_str2lwr(char *dest, char *src, size_t n);
 JMC_INLINE_NONSTD(int)  jm_str2upr(char *dest, char *src, size_t n);
-JMC_INLINE_NONSTD(int)  jm_strlwr_self(char *src, size_t n);
-JMC_INLINE_NONSTD(int)  jm_strupr_self(char *src, size_t n);
+JMC_INLINE_NONSTD(int)  jm_strlwr_s(char *src, size_t n);
+JMC_INLINE_NONSTD(int)  jm_strupr_s(char *src, size_t n);
 JMC_INLINE_NONSTD(void) jm_strnlwr(char *dest, char *src, size_t n);
 JMC_INLINE_NONSTD(void) jm_strnupr(char *dest, char *src, size_t n);
-JMC_INLINE_NONSTD(void) jm_strnlwr_self(char *src, size_t n);
-JMC_INLINE_NONSTD(void) jm_strnupr_self(char *src, size_t n);
+JMC_INLINE_NONSTD(void) jm_strnlwr_s(char *src, size_t n);
+JMC_INLINE_NONSTD(void) jm_strnupr_s(char *src, size_t n);
 
 
 #if defined(JIMI_IS_WINDOWS)

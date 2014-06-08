@@ -63,7 +63,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;..\..\..\..\lib;..\..\..\..\deps;&quot;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(SolutionDir)lib&quot;;&quot;$(SolutionDir)deps&quot;;&quot;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;.\lib;.\deps;&quot;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)deps&quot;"
+				AdditionalLibraryDirectories="&quot;..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;..\..\..\..\lib;..\..\..\..\deps;..\..\..\..\deps\asmlib;&quot;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(SolutionDir)lib&quot;;&quot;$(SolutionDir)deps&quot;;&quot;$(SolutionDir)deps\asmlib&quot;;&quot;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;.\lib;.\deps;.\deps\asmlib;&quot;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)deps&quot;;&quot;$(ProjectDir)deps\asmlib&quot;"
 				UACExecutionLevel="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -139,7 +139,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;..\..\..\..\lib;..\..\..\..\deps;&quot;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(SolutionDir)lib&quot;;&quot;$(SolutionDir)deps&quot;;&quot;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;.\lib;.\deps;&quot;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)deps&quot;"
+				AdditionalLibraryDirectories="&quot;..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;..\..\..\..\lib;..\..\..\..\deps;..\..\..\..\deps\asmlib;&quot;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(SolutionDir)lib&quot;;&quot;$(SolutionDir)deps&quot;;&quot;$(SolutionDir)deps\asmlib&quot;;&quot;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;.\lib;.\deps;.\deps\asmlib;&quot;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)deps&quot;;&quot;$(ProjectDir)deps\asmlib&quot;"
 				UACExecutionLevel="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"

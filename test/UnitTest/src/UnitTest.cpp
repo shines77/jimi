@@ -34,8 +34,11 @@
 #include <jimi/log/Logger.h>
 #include <jimi/system/stop_watch.h>
 
+#include <asmlib/asmlib.h>
 #include "SampleThread.h"
 #include <string>
+
+#pragma comment(lib, "libacof32.lib")
 
 #if USE_CRTDBG_CHECK
 #ifdef _DEBUG
@@ -144,13 +147,106 @@ void String_Copy_On_Write_Test()
     printf("\n");
 }
 
+void Memcpy_Test()
+{
+    const unsigned int BUFFER_SIZE = 64 * 1024 * 1024;
+    unsigned int buf_size;
+    void *buffer1, *buffer2, *buffer3, *buffer4;
+    double time1, time2, time3 = 0.0;
+    stop_watch sw;
+
+    buffer1 = ::malloc(BUFFER_SIZE);
+    buffer2 = ::malloc(BUFFER_SIZE);
+    buffer3 = ::malloc(BUFFER_SIZE);
+    buffer4 = ::malloc(BUFFER_SIZE);
+
+#if 1
+    buf_size = 16 * 1024;
+
+    sw.restart();
+    ::memcpy(buffer1, buffer2, buf_size);
+    sw.stop();
+    time1 = sw.getMillisec();
+
+    sw.restart();
+    A_memcpy(buffer3, buffer4, buf_size);
+    sw.stop();
+    time2 = sw.getMillisec();
+
+    printf("::memcpy,   size = %d K, time = %0.3f ms\n", buf_size / 1024, time1);
+    printf("A_memcpy(), size = %d K, time = %0.3f ms\n", buf_size / 1024, time2);
+
+    printf("\n");
+
+    buf_size = BUFFER_SIZE;
+
+    sw.restart();
+    ::memcpy(buffer1, buffer2, buf_size);
+    sw.stop();
+    time1 = sw.getMillisec();
+
+    sw.restart();
+    A_memcpy(buffer3, buffer4, buf_size);
+    sw.stop();
+    time2 = sw.getMillisec();
+
+    printf("::memcpy,   size = %d M, time = %0.3f ms\n", buf_size / (1024 * 1024), time1);
+    printf("A_memcpy(), size = %d M, time = %0.3f ms\n", buf_size / (1024 * 1024), time2);
+
+    printf("\n");
+#else
+    buf_size = 16 * 1024;
+
+    sw.restart();
+    A_memcpy(buffer1, buffer2, buf_size);
+    sw.stop();
+    time1 = sw.getMillisec();
+
+    sw.restart();
+    ::memcpy(buffer3, buffer4, buf_size);
+    sw.stop();
+    time2 = sw.getMillisec();
+
+    printf("A_memcpy(), size = %d K, time = %0.3f ms\n", buf_size / 1024, time1);
+    printf("::memcpy,   size = %d K, time = %0.3f ms\n", buf_size / 1024, time2);
+
+    printf("\n");
+
+    buf_size = BUFFER_SIZE;
+
+    sw.restart();
+    A_memcpy(buffer1, buffer2, buf_size);
+    sw.stop();
+    time1 = sw.getMillisec();
+
+    sw.restart();
+    ::memcpy(buffer3, buffer4, buf_size);
+    sw.stop();
+    time2 = sw.getMillisec();
+
+    printf("A_memcpy(), size = %d M, time = %0.3f ms\n", buf_size / (1024 * 1024), time1);
+    printf("::memcpy,   size = %d M, time = %0.3f ms\n", buf_size / (1024 * 1024), time2);
+
+    printf("\n");
+#endif
+
+    if (buffer1) free(buffer1);
+    if (buffer2) free(buffer2);
+    if (buffer3) free(buffer3);
+    if (buffer4) free(buffer4);
+}
+
 /* char_traits<T>相关字符串函数的测试 */
 
 void Char_Traits_Test()
 {
-    const int LOOP_TIMES = 10000000;
-    stop_watch sw;
+#ifndef _DEBUG
+    const int LOOP_TIMES = 5000000;
+#else
+    const int LOOP_TIMES = 100000;
+#endif
     double time1, time2, time3;
+    stop_watch sw;
     int i, j;
 
     String str = "abcdefg";
@@ -250,6 +346,9 @@ int UnitTest_Main(int argc, char *argv[])
 
     // 测试std::string是否使用了COW(Copy On Write)
     String_Copy_On_Write_Test();
+
+    // Memcpy 内存复制测试
+    Memcpy_Test();
 
     // char_traits<T>相关字符串函数的测试
     Char_Traits_Test();
