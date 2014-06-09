@@ -213,7 +213,7 @@ static void *fast_memcpy_stat(void *dest, const void *src, size_t len)
 #endif  /* STATISTICS */
 
 __declspec(naked)
-static void *fast_memcpy_impl(void *dest, const void *src, size_t len)
+static void * __cdecl fast_memcpy_impl(void *dest, const void *src, size_t len)
 {
     __asm {
         sub     esp, ARGS      // # Generate Stack Frame

@@ -280,10 +280,10 @@ void Memcpy_Test()
         bufsize_text[0] = '\0';
         get_bytes_display(bufsize_text, jm_countof(bufsize_text), buf_size);
 
-        printf("%-16s size =%5s, time = %0.5f ms\n", "::memcpy()",     bufsize_text, time1);
-        printf("%-16s size =%5s, time = %0.5f ms\n", "A_memcpy()",     bufsize_text, time2);
-        printf("%-16s size =%5s, time = %0.5f ms\n", "fast_memcpy()",  bufsize_text, time3);
-        printf("%-16s size =%5s, time = %0.5f ms\n", "memcpy_mmx4()",  bufsize_text, time4);
+        printf("%-16s size = %5s, time = %0.5f ms\n", "::memcpy()",     bufsize_text, time1);
+        printf("%-16s size = %5s, time = %0.5f ms\n", "A_memcpy()",     bufsize_text, time2);
+        printf("%-16s size = %5s, time = %0.5f ms\n", "fast_memcpy()",  bufsize_text, time3);
+        printf("%-16s size = %5s, time = %0.5f ms\n", "memcpy_mmx4()",  bufsize_text, time4);
 #if USE_BUFFER_VERIFY
         printf("\n");
         printf("verify_ok1 = %d, verify_ok2 = %d\n", verify_ok1 , verify_ok2);
@@ -291,10 +291,10 @@ void Memcpy_Test()
 
         printf("\n");
 
-        printf("%-16s size =%5s, time = %0.5f ms\n", "::memcpy()",     bufsize_text, time5 / (double)loop_times);
-        printf("%-16s size =%5s, time = %0.5f ms\n", "A_memcpy()",     bufsize_text, time6 / (double)loop_times);
-        printf("%-16s size =%5s, time = %0.5f ms\n", "fast_memcpy()",  bufsize_text, time7 / (double)loop_times);
-        printf("%-16s size =%5s, time = %0.5f ms\n", "memcpy_mmx4()",  bufsize_text, time8 / (double)loop_times);
+        printf("%-16s size = %5s, time = %0.5f ms\n", "::memcpy()",     bufsize_text, time5 / (double)loop_times);
+        printf("%-16s size = %5s, time = %0.5f ms\n", "A_memcpy()",     bufsize_text, time6 / (double)loop_times);
+        printf("%-16s size = %5s, time = %0.5f ms\n", "fast_memcpy()",  bufsize_text, time7 / (double)loop_times);
+        printf("%-16s size = %5s, time = %0.5f ms\n", "memcpy_mmx4()",  bufsize_text, time8 / (double)loop_times);
 
         printf("\n");
     }
