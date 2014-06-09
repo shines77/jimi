@@ -58,7 +58,8 @@ typedef enum StringTypeMask
     STRING_TYPE_SSO     = 0x01,
     STRING_TYPE_ECP     = 0x02,
     STRING_TYPE_COW     = 0x04,
-    STRING_TYPE_MASK    = 0x07,
+    STRING_TYPE_REF     = 0x08,
+    STRING_TYPE_MASK    = 0x0F,
     STRING_TYPE_MAX
 } StringTypeMask;
 
@@ -101,6 +102,9 @@ public:
 
     void destroy();
 
+    void    retail();
+    int32_t release();
+
     bool equals(const basic_string &rhs);
 
     bool compare(const basic_string &rhs);
@@ -132,20 +136,46 @@ BASIC_STRING::basic_string()
 , _size(0)
 , _capacity(0)
 , _flag(0)
-, _refcount(0)
+, _refcount(1)
 {
-    // init SSO buffer
-    _buf[0] = '\0';
+    // init sso buffer
+    (*(uint32_t *)(&_buf[0])) = 0;
 }
 
 template <BASIC_STRING_CLASSES>
 BASIC_STRING::basic_string(const basic_string &src)
 {
-    this->_data      = src._data;
-    this->_size      = src._size;
-    this->_capacity  = src._capacity;
-    this->_flag      = src._flag;
-    this->_refcount  = src._refcount;
+    _size = src._size;
+    _flag = src._flag;
+    /* eager copy */
+    if (is_type_ecp()) {
+        JIMI_ASSERT(src._capacity == STRING_ECP_SIZE);
+        _capacity = STRING_ECP_SIZE;
+        _refcount = 1;
+        (*(uint32_t *)(&_buf[0])) = 0;
+        _data = char_traits<char>::assign(STRING_ECP_SIZE);
+        char_traits<char>::strlcpy(_data, STRING_ECP_SIZE, src._data, src._size);
+    }
+    /* copy-on-write */
+    else if (is_type_cow()) {
+        JIMI_ASSERT(src._refcount >= 0);
+        _data     = src._data;
+        _capacity = src._capacity;
+        _refcount = 1;
+        (*(uint32_t *)(&_buf[0])) = 0;
+        const_cast<basic_string &>(src).retail();
+    }
+    /* is_type_sso or unknown type */
+    else {
+        _data = NULL;
+        _capacity = 0;
+        _refcount = 1;
+        JIMI_ASSERT(src._size < STRING_SSO_SIZE);
+        if (_size < STRING_SSO_SIZE)
+            char_traits<char>::strlcpy(&_buf[0], STRING_SSO_SIZE, &src._buf[0], _size);
+        else
+            sLog.error("basic_string(const basic_string &src): _data = %08X, _size = %d.", _data, _size);
+    }
 
     // init SSO buffer
     _buf[0] = '\0';
@@ -156,30 +186,31 @@ BASIC_STRING::basic_string(const char *src)
 {
     size_t src_len = char_traits<char>::strlen(src);
     if (src_len < STRING_SSO_SIZE) {
-        _flag = STRING_TYPE_SSO;
-        _size = src_len;
-        char_traits<char>::strncpy(_buf, jm_countof(_buf), src, src_len);
-
-        _data = NULL;
+        _data = NULL;       
+        _size = src_len;     
         _capacity = 0;
-    }
-    else if (src_len < STRING_ECP_SIZE) {
         _flag = STRING_TYPE_SSO;
-        _capacity = calc_capacity(src_len);
-        _data = char_traits<char>::assign(_capacity);
+        char_traits<char>::strncpy(_buf, jm_countof(_buf), src, src_len);
+    }
+    /* eager copy */
+    else if (src_len < STRING_ECP_SIZE) {
         _size = src_len;
+        _capacity = calc_capacity(src_len);
+        _flag = STRING_TYPE_SSO;
+        _data = char_traits<char>::assign(_capacity);
         if (_data)
             char_traits<char>::strncpy(_data, _capacity, src, src_len);
     }
+    /* copy-on-write or unknown type */
     else {
-        _flag = STRING_TYPE_COW;
         _capacity = calc_capacity(src_len);
         _data = char_traits<char>::assign(_capacity);
         _size = src_len;
+        _flag = STRING_TYPE_COW;
         if (_data)
             char_traits<char>::strncpy(_data, _capacity, src, src_len);
     }
-    _refcount = 0;
+    _refcount = 1;
 }
 
 template <BASIC_STRING_CLASSES>
@@ -189,9 +220,15 @@ BASIC_STRING::~basic_string()
 }
 
 template <BASIC_STRING_CLASSES>
-inline void BASIC_STRING::destroy()
+inline void BASIC_STRING::retail()
 {
-    _refcount--;
+    ++_refcount;
+}
+
+template <BASIC_STRING_CLASSES>
+inline int32_t BASIC_STRING::release()
+{
+    --_refcount;
     if (_refcount <= 0) {
         if (_data != NULL) {
             delete _data;
@@ -202,6 +239,13 @@ inline void BASIC_STRING::destroy()
         _flag = 0;
         _refcount = 0;
     }
+    return _refcount;
+}
+
+template <BASIC_STRING_CLASSES>
+inline void BASIC_STRING::destroy()
+{
+    release();
 }
 
 template <BASIC_STRING_CLASSES>

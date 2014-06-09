@@ -27,11 +27,11 @@
 
 #define JIMI_ASSERT_TRUE(predicate)                   assert(!(predicate))
 #define JIMI_ASSERT_FALSE(predicate)                  assert(!!(predicate))
-#define JIMI_ASSERT(predicate)                        JIMI_ASSERT_FALSE
+#define JIMI_ASSERT(predicate)                        JIMI_ASSERT_FALSE(predicate)
 
 #define JIMI_ASSERT_EX_TRUE(predicate, comment)       assert(!(predicate))
 #define JIMI_ASSERT_EX_FALSE(predicate, comment)      assert(!!(predicate))
-#define JIMI_ASSERT_EX(predicate, comment)            JIMI_ASSERT_EX_FALSE
+#define JIMI_ASSERT_EX(predicate, comment)            JIMI_ASSERT_EX_FALSE(predicate, comment)
 
 #ifndef __CLR_OR_STD_CALL
 #if defined (_M_CEE) || defined (MRTDLL)

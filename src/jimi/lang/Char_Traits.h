@@ -271,9 +271,37 @@ inline char_type *char_traits<char_type>::strncpy(char_type *_Dest, size_t _Numb
     dest = (char_type *)_Dest;
     src  = (char_type *)_Source;
 
-    n = jimi::jimi_min((int)_MaxCount, (int)(_NumberOfElements - 1));
-    if (n < 0)
+    n = (int)jimi_min(_MaxCount, _NumberOfElements - 1);
+
+    while (--n >= 0) {
+        *dest = *src;
+
+        if (*dest == '\0')
+            return _Dest;
+
+        ++dest;
+        ++src;
+    }
+
+    return _Dest;
+}
+
+template <class char_type>
+inline char_type *char_traits<char_type>::strlcpy(char_type *_Dest, size_t _NumberOfElements,
+                                                  const char_type *_Source, size_t _MaxCount)
+{
+    char_type *dest, *src;
+    int n;
+
+#if CHAR_TRAITS_STRICT_CHECK
+    if (_Dest == NULL || _Source == NULL)
         return _Dest;
+#endif
+
+    dest = (char_type *)_Dest;
+    src  = (char_type *)_Source;
+
+    n = (int)jimi_min(_MaxCount, _NumberOfElements - 1);
 
     while (--n >= 0) {
         *dest = *src;
@@ -343,6 +371,37 @@ inline char_type *char_traits<char_type>::strncpy_e(char_type *_Dest, size_t _Nu
         return _Dest;
 
     while (--n > 0) {
+        *dest = *src;
+
+        if (*dest == '\0')
+            return dest;
+
+        ++dest;
+        ++src;
+    }
+
+    *dest = '\0';
+    return dest;
+}
+
+template <class char_type>
+inline char_type *char_traits<char_type>::strlcpy_e(char_type *_Dest, size_t _NumberOfElements,
+                                                    const char_type *_Source, size_t _MaxCount)
+{
+    char_type *dest, *src;
+    int n;
+
+#if CHAR_TRAITS_STRICT_CHECK
+    if (_Dest == NULL || _Source == NULL)
+        return _Dest;
+#endif
+
+    dest = (char_type *)_Dest;
+    src  = (char_type *)_Source;
+
+    n = (int)jimi_min(_MaxCount, _NumberOfElements - 1);
+
+    while (--n >= 0) {
         *dest = *src;
 
         if (*dest == '\0')

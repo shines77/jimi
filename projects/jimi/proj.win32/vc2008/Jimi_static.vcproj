@@ -246,7 +246,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\lang\StringUtils.inl.h"
+						RelativePath="..\..\..\..\src\jimi\lang\StringUtils.h"
 						>
 					</File>
 					<File
