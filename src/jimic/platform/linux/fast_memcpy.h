@@ -276,7 +276,7 @@ static void *fast_memcpy(void *dest, const void *src, size_t len)
             dest = (void *)(((unsigned char *)dest) + 64);
         }
 
-        /*    printf(" %p %p\n", (uintptr_t)from & 1023, (uintptr_t)to & 1023); */
+        /*    printf(" %p %p\n", (uintptr_t)src & 1023, (uintptr_t)dest & 1023); */
         /* Pure Assembly cuz gcc is a bit unpredictable ;) */
 # if 0
         if (i >= BLOCK_SIZE / 64)
@@ -284,12 +284,12 @@ static void *fast_memcpy(void *dest, const void *src, size_t len)
                 "xorl %%eax, %%eax          \n\t"
                 ".balign 16                 \n\t"
                 "1:                         \n\t"
-                "movl (%0, %%eax), %%ebx    \n\t"
+                "movl   (%0, %%eax), %%ebx  \n\t"
                 "movl 32(%0, %%eax), %%ebx  \n\t"
                 "movl 64(%0, %%eax), %%ebx  \n\t"
                 "movl 96(%0, %%eax), %%ebx  \n\t"
                 "addl $128, %%eax           \n\t"
-                "cmpl %3, %%eax             \n\t"
+                "cmpl %3,   %%eax           \n\t"
                 " jb 1b                     \n\t"
 
                 "xorl %%eax, %%eax      \n\t"
@@ -313,7 +313,7 @@ static void *fast_memcpy(void *dest, const void *src, size_t len)
                 MOVNTQ" %%mm6, 48(%1, %%eax)\n"
                 MOVNTQ" %%mm7, 56(%1, %%eax)\n"
                 "addl $64, %%eax        \n\t"
-                "cmpl %3, %%eax         \n\t"
+                "cmpl %3,  %%eax        \n\t"
                 "jb 2b                  \n\t"
 
 #if CONFUSION_FACTOR > 0

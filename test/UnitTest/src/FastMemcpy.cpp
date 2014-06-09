@@ -548,8 +548,8 @@ MainLoop_NTQ:
             movntq  qword ptr [edi + 48], mm6
             movntq  qword ptr [edi + 56], mm7
 
-            add esi, 64
-            add edi, 64
+            sub esi, -64
+            sub edi, -64
             dec ecx
             jnz MainLoop_NTQ
 

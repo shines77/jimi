@@ -38,13 +38,14 @@
 
 #define USE_PREFETCH        0
 
-#define PREFETCH_SIZE       ((15 * 8 + 4) * 8)
+//#define PREFETCH_SIZE       ((15 * 8 + 4) * 8)
+#define PREFETCH_SIZE       512
 
 #define BLOCK_SIZE          4096
 #define CONFUSION_FACTOR    0
 /*Feel free to fine-tune the above 2, it might be possible to get some speedup with them :)*/
 
-/*#define STATISTICS*/
+/*#define FASTMEMCPY_STATISTICS*/
 
 #ifndef JIMI_HAVE_SSE2
 /*
@@ -165,7 +166,7 @@ If you have questions please contact with me: Nick Kurshev: nickols_k@mail.ru.
 #define MIN_LEN         64     /* 64-byte blocks */
 #endif
 
-#ifndef STATISTICS
+#ifndef FASTMEMCPY_STATISTICS
 #define fast_memcpy     fast_memcpy_impl
 #else
 #define fast_memcpy     fast_memcpy_stat
@@ -193,7 +194,8 @@ If you have questions please contact with me: Nick Kurshev: nickols_k@mail.ru.
 extern "C" {
 #endif
 
-#ifdef STATISTICS
+#ifdef FASTMEMCPY_STATISTICS
+
 static void *fast_memcpy_stat(void *dest, const void *src, size_t len)
 {
     static int freq[33];
@@ -210,7 +212,8 @@ static void *fast_memcpy_stat(void *dest, const void *src, size_t len)
 
     return fast_memcpy_impl(dest, src, len);
 }
-#endif  /* STATISTICS */
+
+#endif  /* FASTMEMCPY_STATISTICS */
 
 __declspec(naked)
 static void * __cdecl fast_memcpy_impl(void *dest, const void *src, size_t len)
@@ -227,7 +230,7 @@ static void * __cdecl fast_memcpy_impl(void *dest, const void *src, size_t len)
         mov     DEST, DEST_ARG
         mov     LEN,  LEN_ARG
 
-#ifndef JIMI_HAVE_MMX1
+#if (!defined(JIMI_HAVE_MMX1)) || (JIMI_HAVE_MMX1 == 0)
 
 #if USE_PREFETCH
         /* PREFETCH has effect even for MOVSB instruction ;) */
@@ -242,7 +245,7 @@ static void * __cdecl fast_memcpy_impl(void *dest, const void *src, size_t len)
 
         // if (len >= MIN_LEN) {
         cmp     ecx, MIN_LEN
-        jl      L999_END
+        jl      L900
         
         mov     DELTA, DEST
         and     DELTA, (MMREG_SIZE - 1)
@@ -272,7 +275,10 @@ L100:
            perform reading and writing to be multiple to a number of
            processor's decoders, but it's not always possible.
         */
-#ifdef JIMI_HAVE_SSE /* Only P3 (may be Cyrix3) */
+
+        /* Only P3 (may be Cyrix3) */
+#if JIMI_HAVE_SSE
+
         cmp     SRC, 15
         jz      L300
 
@@ -280,7 +286,7 @@ L100:
 L200:
         /* if SRC is misaligned */
 #if USE_PREFETCH
-        PREFETCH byte ptr [SRC + 320]
+        PREFETCH byte ptr [SRC + PREFETCH_SIZE]
 #endif
         movups  xmm0, xmmword ptr [SRC +  0]
         movups  xmm1, xmmword ptr [SRC + 16]
@@ -308,7 +314,7 @@ L200:
 L300:
 
 #if USE_PREFETCH
-        PREFETCH byte ptr [SRC + 320]
+        PREFETCH byte ptr [SRC + PREFETCH_SIZE]
 #endif
         movaps  xmm0, xmmword ptr [SRC +  0]
         movaps  xmm1, xmmword ptr [SRC + 16]
@@ -328,22 +334,83 @@ L300:
 #else  /* !JIMI_HAVE_SSE */
 
         /* Align destination at BLOCK_SIZE boundary */
+        cmp     SRC, 7
+        jnz     L500
+
+        /*
+           Only if SRC is aligned on 8-byte boundary.
+           It allows to use movaps instead of movups, which required data
+           to be aligned or a general-protection exception (#GP) is generated.
+        */
+        align 16
+L400:
+
+#if USE_PREFETCH
+        PREFETCH byte ptr [SRC + PREFETCH_SIZE]
+#endif
+        movq  mm0, qword ptr [SRC +  0]
+        movq  mm1, qword ptr [SRC +  8]
+        movq  mm2, qword ptr [SRC + 16]
+        movq  mm3, qword ptr [SRC + 24]
+        movq  mm4, qword ptr [SRC + 32]
+        movq  mm5, qword ptr [SRC + 40]
+        movq  mm6, qword ptr [SRC + 48]
+        movq  mm7, qword ptr [SRC + 56]
+
+        MOVNTQ qword ptr [DEST +  0], mm0
+        MOVNTQ qword ptr [DEST +  8], mm1
+        MOVNTQ qword ptr [DEST + 16], mm2
+        MOVNTQ qword ptr [DEST + 24], mm3
+        MOVNTQ qword ptr [DEST + 32], mm4
+        MOVNTQ qword ptr [DEST + 40], mm5
+        MOVNTQ qword ptr [DEST + 48], mm6
+        MOVNTQ qword ptr [DEST + 56], mm7
+
+        sub     SRC,  -64
+        sub     DEST, -64
+        dec     I
+        jg      L400
+        jmp     L888
+
+        /* if SRC is misaligned */
+        align 16
+L500:
+
+#if USE_PREFETCH
+        PREFETCH byte ptr [SRC + PREFETCH_SIZE]
+#endif
+        movups  xmm0, xmmword ptr [SRC +  0]
+        movups  xmm1, xmmword ptr [SRC + 16]
+        movups  xmm2, xmmword ptr [SRC + 32]
+        movups  xmm3, xmmword ptr [SRC + 48]
+
+        movntps xmmword ptr [DEST +  0], xmm0
+        movntps xmmword ptr [DEST + 16], xmm1
+        movntps xmmword ptr [DEST + 32], xmm2
+        movntps xmmword ptr [DEST + 48], xmm3
+
+        sub     SRC,  -64
+        sub     DEST, -64
+        dec     I
+        jg      L500
 
 #endif  /* JIMI_HAVE_SSE */
 
         align 16
 L888:
 
-#ifdef JIMI_HAVE_MMX2
+#if JIMI_HAVE_MMX2
         /* since movntq is weakly-ordered, a "sfence"
          * is needed to become ordered again. */
         sfence
 #endif
 
-#ifndef JIMI_HAVE_SSE
+#if (!defined(JIMI_HAVE_SSE)) || (JIMI_HAVE_SSE == 0)
         /* enables to use FPU */
         EMMS
 #endif
+        align 16
+L900:
         /*
          *    Now do the tail of the block
          */
@@ -367,125 +434,6 @@ L999_END:
         add     esp, ARGS
         ret
     }
-
-#if 0
-        /* Align destination at BLOCK_SIZE boundary */
-        for (; ((uintptr_t)dest & (BLOCK_SIZE - 1)) && i > 0; i--) {
-            __asm__ __volatile__(
-#ifndef JIMI_HAVE_MMX1
-                PREFETCH" 320(%0)\n"
-#endif
-                "movq   (%0), %%mm0\n"
-                "movq  8(%0), %%mm1\n"
-                "movq 16(%0), %%mm2\n"
-                "movq 24(%0), %%mm3\n"
-                "movq 32(%0), %%mm4\n"
-                "movq 40(%0), %%mm5\n"
-                "movq 48(%0), %%mm6\n"
-                "movq 56(%0), %%mm7\n"
-                MOVNTQ" %%mm0,   (%1)\n"
-                MOVNTQ" %%mm1,  8(%1)\n"
-                MOVNTQ" %%mm2, 16(%1)\n"
-                MOVNTQ" %%mm3, 24(%1)\n"
-                MOVNTQ" %%mm4, 32(%1)\n"
-                MOVNTQ" %%mm5, 40(%1)\n"
-                MOVNTQ" %%mm6, 48(%1)\n"
-                MOVNTQ" %%mm7, 56(%1)\n"
-                :: "r"(src), "r"(dest) : "memory");
-            src  = (const void *)(((const unsigned char *)src) + 64);
-            dest = (void *)(((unsigned char *)dest) + 64);
-        }
-
-        /*    printf(" %p %p\n", (uintptr_t)from & 1023, (uintptr_t)to & 1023); */
-        /* Pure Assembly cuz gcc is a bit unpredictable ;) */
-# if 0
-        if (i >= BLOCK_SIZE / 64)
-            __asm__ __volatile__(
-                "xorl %%eax, %%eax          \n\t"
-                ".balign 16                 \n\t"
-                "1:                         \n\t"
-                "movl (%0, %%eax), %%ebx    \n\t"
-                "movl 32(%0, %%eax), %%ebx  \n\t"
-                "movl 64(%0, %%eax), %%ebx  \n\t"
-                "movl 96(%0, %%eax), %%ebx  \n\t"
-                "addl $128, %%eax           \n\t"
-                "cmpl %3, %%eax             \n\t"
-                " jb 1b                     \n\t"
-
-                "xorl %%eax, %%eax      \n\t"
-
-                ".balign 16             \n\t"
-                "2:                     \n\t"
-                "movq   (%0, %%eax), %%mm0\n"
-                "movq  8(%0, %%eax), %%mm1\n"
-                "movq 16(%0, %%eax), %%mm2\n"
-                "movq 24(%0, %%eax), %%mm3\n"
-                "movq 32(%0, %%eax), %%mm4\n"
-                "movq 40(%0, %%eax), %%mm5\n"
-                "movq 48(%0, %%eax), %%mm6\n"
-                "movq 56(%0, %%eax), %%mm7\n"
-                MOVNTQ" %%mm0,   (%1, %%eax)\n"
-                MOVNTQ" %%mm1,  8(%1, %%eax)\n"
-                MOVNTQ" %%mm2, 16(%1, %%eax)\n"
-                MOVNTQ" %%mm3, 24(%1, %%eax)\n"
-                MOVNTQ" %%mm4, 32(%1, %%eax)\n"
-                MOVNTQ" %%mm5, 40(%1, %%eax)\n"
-                MOVNTQ" %%mm6, 48(%1, %%eax)\n"
-                MOVNTQ" %%mm7, 56(%1, %%eax)\n"
-                "addl $64, %%eax        \n\t"
-                "cmpl %3, %%eax         \n\t"
-                "jb 2b                  \n\t"
-
-#if CONFUSION_FACTOR > 0
-                /* a few percent speedup on out of order executing CPUs */
-                "movl %5, %%eax      \n\t"
-                "2:                  \n\t"
-                "movl (%0), %%ebx    \n\t"
-                "movl (%0), %%ebx    \n\t"
-                "movl (%0), %%ebx    \n\t"
-                "movl (%0), %%ebx    \n\t"
-                "decl %%eax          \n\t"
-                "jnz 2b              \n\t"
-#endif
-
-                "xorl %%eax, %%eax  \n\t"
-                "addl %3, %0        \n\t"
-                "addl %3, %1        \n\t"
-                "subl %4, %2        \n\t"
-                "cmpl %4, %2        \n\t"
-                "jae 1b             \n\t"
-                : "+r"(src), "+r"(dest), "+r"(i)
-                : "r"(BLOCK_SIZE), "i"(BLOCK_SIZE / 64), "i"(CONFUSION_FACTOR)
-                : "%eax", "%ebx"
-            );
-#endif
-
-        for (; i > 0; i--) {
-            __asm__ __volatile__(
-#ifndef JIMI_HAVE_MMX1
-                PREFETCH" 320(%0)\n"
-#endif
-                "movq   (%0), %%mm0\n"
-                "movq  8(%0), %%mm1\n"
-                "movq 16(%0), %%mm2\n"
-                "movq 24(%0), %%mm3\n"
-                "movq 32(%0), %%mm4\n"
-                "movq 40(%0), %%mm5\n"
-                "movq 48(%0), %%mm6\n"
-                "movq 56(%0), %%mm7\n"
-                MOVNTQ" %%mm0,   (%1)\n"
-                MOVNTQ" %%mm1,  8(%1)\n"
-                MOVNTQ" %%mm2, 16(%1)\n"
-                MOVNTQ" %%mm3, 24(%1)\n"
-                MOVNTQ" %%mm4, 32(%1)\n"
-                MOVNTQ" %%mm5, 40(%1)\n"
-                MOVNTQ" %%mm6, 48(%1)\n"
-                MOVNTQ" %%mm7, 56(%1)\n"
-                :: "r"(src), "r"(dest) : "memory");
-            src  = (const void *)(((const unsigned char *)src) + 64);
-            dest = (void *)(((unsigned char *)dest) + 64);
-        }
-#endif
 
 }
 
