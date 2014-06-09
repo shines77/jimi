@@ -65,8 +65,15 @@
 # For log file
 *.log
 
-# For Intel C++ Compiler Log File
+# For Intel C++ Compiler Log File & Project File
 IcUpdateLog.htm
+*.icproj
+
+# For AStyle backup file
+*.orig
+
+# For Code::Blocks backup file
+*.sav
 
 # tmp and obj files
 /obj

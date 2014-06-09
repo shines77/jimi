@@ -36,6 +36,10 @@
 
 #include <asmlib/asmlib.h>
 #include "SampleThread.h"
+#include "FastMemcpy.h"
+
+#include <jimic/platform/win/fast_memcpy.h>
+
 #include <string>
 
 #pragma comment(lib, "libacof32.lib")
@@ -147,93 +151,281 @@ void String_Copy_On_Write_Test()
     printf("\n");
 }
 
+int get_bytes_display(char *buffer, size_t buf_size, size_t size)
+{
+    int result;
+    if (size <= 8192)
+        result = jm_sprintf(buffer, buf_size, "%d", size);
+    else if (size < 1024 * 1024)
+        result = jm_sprintf(buffer, buf_size, "%d K", size / 1024);
+    else if (size < 1024 * 1024 * 1024)
+        result = jm_sprintf(buffer, buf_size, "%d M", size / (1024 * 1024));
+    else
+        result = jm_sprintf(buffer, buf_size, "%d G", size / (1024 * 1024 * 1024));
+    return result;
+}
+
+#define USE_BUFFER_VERIFY   0
+
 void Memcpy_Test()
 {
+#ifndef _DEBUG
+    const int LOOP_TIMES = 16;
+#else
+    const int LOOP_TIMES = 4;
+#endif
     const unsigned int BUFFER_SIZE = 64 * 1024 * 1024;
     unsigned int buf_size;
     void *buffer1, *buffer2, *buffer3, *buffer4;
-    double time1, time2, time3 = 0.0;
+    void *buffer5, *buffer6, *buffer7, *buffer8;
+    double time1, time2, time3, time4;
+    double time5, time6, time7, time8;
+    int i, j, loop_times;
     stop_watch sw;
+#if USE_BUFFER_VERIFY
+    bool verify_ok1, verify_ok2;
+#endif
 
-    buffer1 = ::malloc(BUFFER_SIZE);
-    buffer2 = ::malloc(BUFFER_SIZE);
-    buffer3 = ::malloc(BUFFER_SIZE);
-    buffer4 = ::malloc(BUFFER_SIZE);
+    char bufsize_text[256];
+    unsigned int bufsize_list[] = {
+        // 16, 32, 
+        64, 128, 256, 512,
+        //
+        1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8, 1024 * 16,
+        1024 * 32, 1024 * 64, 1024 * 128, 1024 * 256,
+        //
+        1048576 * 1, 1048576 * 2, 1048576 * 4, 1048576 * 8,
+        1048576 * 16, 1048576 * 32, 1048576 * 64  
+    };
+
+    buffer1 = ::_aligned_malloc(BUFFER_SIZE, 64);
+    buffer2 = ::_aligned_malloc(BUFFER_SIZE, 64);
+    buffer3 = ::_aligned_malloc(BUFFER_SIZE, 64);
+    buffer4 = ::_aligned_malloc(BUFFER_SIZE, 64);
+
+    buffer5 = ::_aligned_malloc(BUFFER_SIZE, 64);
+    buffer6 = ::_aligned_malloc(BUFFER_SIZE, 64);
+    buffer7 = ::_aligned_malloc(BUFFER_SIZE, 64);
+    buffer8 = ::_aligned_malloc(BUFFER_SIZE, 64);
 
 #if 1
-    buf_size = 16 * 1024;
+    for (j = 0; j < jm_countof(bufsize_list); ++j) {
+        buf_size = bufsize_list[j];
 
-    sw.restart();
-    ::memcpy(buffer1, buffer2, buf_size);
-    sw.stop();
-    time1 = sw.getMillisec();
+        if (buf_size <= 1024)
+            loop_times = (8 * 1024 * 1024 / buf_size) * LOOP_TIMES;
+        else if (buf_size <= 64 * 1024)
+            loop_times = (4 * 1024 * 1024 / buf_size) * LOOP_TIMES;
+        else
+            loop_times = LOOP_TIMES;
 
-    sw.restart();
-    A_memcpy(buffer3, buffer4, buf_size);
-    sw.stop();
-    time2 = sw.getMillisec();
+        sw.restart();
+        ::memcpy(buffer1, buffer2, buf_size);
+        sw.stop();
+        time1 = sw.getMillisec();
 
-    printf("::memcpy,   size = %d K, time = %0.3f ms\n", buf_size / 1024, time1);
-    printf("A_memcpy(), size = %d K, time = %0.3f ms\n", buf_size / 1024, time2);
+        sw.restart();
+        for (i = 0; i < loop_times; ++i)
+            ::memcpy(buffer1, buffer2, buf_size);
+        sw.stop();
+        time5 = sw.getMillisec();
 
-    printf("\n");
+        sw.restart();
+        A_memcpy(buffer3, buffer4, buf_size);
+        sw.stop();
+        time2 = sw.getMillisec();
 
-    buf_size = BUFFER_SIZE;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i)
+            A_memcpy(buffer3, buffer4, buf_size);
+        sw.stop();
+        time6 = sw.getMillisec();
 
-    sw.restart();
-    ::memcpy(buffer1, buffer2, buf_size);
-    sw.stop();
-    time1 = sw.getMillisec();
+#if USE_BUFFER_VERIFY
+        buffer_set_val(buffer1, 0, buf_size);
+        buffer_set_val(buffer2, 1, buf_size);
+#endif
+        sw.restart();
+        fast_memcpy(buffer5, buffer6, buf_size);
+        sw.stop();
+        time3 = sw.getMillisec();
 
-    sw.restart();
-    A_memcpy(buffer3, buffer4, buf_size);
-    sw.stop();
-    time2 = sw.getMillisec();
+        sw.restart();
+        for (i = 0; i < loop_times; ++i)
+            fast_memcpy(buffer5, buffer6, buf_size);
+        sw.stop();
+        time7 = sw.getMillisec();
 
-    printf("::memcpy,   size = %d M, time = %0.3f ms\n", buf_size / (1024 * 1024), time1);
-    printf("A_memcpy(), size = %d M, time = %0.3f ms\n", buf_size / (1024 * 1024), time2);
+#if USE_BUFFER_VERIFY
+        verify_ok1 = verify_buffer_val(buffer5, buf_size, 1);
 
-    printf("\n");
+        buffer_set_val(buffer3, 0, buf_size);
+        buffer_set_val(buffer4, 1, buf_size);
+#endif
+        sw.restart();
+        memcpy_mmx4(buffer7, buffer8, buf_size);
+        sw.stop();
+        time4 = sw.getMillisec();
+
+        sw.restart();
+        for (i = 0; i < loop_times; ++i)
+            memcpy_mmx4(buffer7, buffer8, buf_size);
+        sw.stop();
+        time8 = sw.getMillisec();
+
+#if USE_BUFFER_VERIFY
+        verify_ok2 = verify_buffer_val(buffer7, buf_size, 1);
+#endif
+
+        bufsize_text[0] = '\0';
+        get_bytes_display(bufsize_text, jm_countof(bufsize_text), buf_size);
+
+        printf("%-16s size =%5s, time = %0.5f ms\n", "::memcpy()",     bufsize_text, time1);
+        printf("%-16s size =%5s, time = %0.5f ms\n", "A_memcpy()",     bufsize_text, time2);
+        printf("%-16s size =%5s, time = %0.5f ms\n", "fast_memcpy()",  bufsize_text, time3);
+        printf("%-16s size =%5s, time = %0.5f ms\n", "memcpy_mmx4()",  bufsize_text, time4);
+#if USE_BUFFER_VERIFY
+        printf("\n");
+        printf("verify_ok1 = %d, verify_ok2 = %d\n", verify_ok1 , verify_ok2);
+#endif
+
+        printf("\n");
+
+        printf("%-16s size =%5s, time = %0.5f ms\n", "::memcpy()",     bufsize_text, time5 / (double)loop_times);
+        printf("%-16s size =%5s, time = %0.5f ms\n", "A_memcpy()",     bufsize_text, time6 / (double)loop_times);
+        printf("%-16s size =%5s, time = %0.5f ms\n", "fast_memcpy()",  bufsize_text, time7 / (double)loop_times);
+        printf("%-16s size =%5s, time = %0.5f ms\n", "memcpy_mmx4()",  bufsize_text, time8 / (double)loop_times);
+
+        printf("\n");
+    }
 #else
+
     buf_size = 16 * 1024;
 
     sw.restart();
-    A_memcpy(buffer1, buffer2, buf_size);
+    fast_memcpy(buffer1, buffer2, buf_size);
     sw.stop();
     time1 = sw.getMillisec();
 
     sw.restart();
-    ::memcpy(buffer3, buffer4, buf_size);
+    memcpy_mmx4(buffer3, buffer4, buf_size);
     sw.stop();
     time2 = sw.getMillisec();
 
-    printf("A_memcpy(), size = %d K, time = %0.3f ms\n", buf_size / 1024, time1);
-    printf("::memcpy,   size = %d K, time = %0.3f ms\n", buf_size / 1024, time2);
+    sw.restart();
+    A_memcpy(buffer5, buffer6, buf_size);
+    sw.stop();
+    time3 = sw.getMillisec();
+
+    sw.restart();
+    ::memcpy(buffer7, buffer8, buf_size);
+    sw.stop();
+    time4 = sw.getMillisec();
+
+    printf("%-16s size = %d K, time = %0.5f ms\n", "fast_memcpy()",   buf_size / 1024, time1);
+    printf("%-16s size = %d K, time = %0.5f ms\n", "memcpy_mmx4()",  buf_size / 1024, time2);
+    printf("%-16s size = %d K, time = %0.5f ms\n", "A_memcpy()",      buf_size / 1024, time3);
+    printf("%-16s size = %d K, time = %0.5f ms\n", "::memcpy()",      buf_size / 1024, time4);
+
+    printf("\n");
+
+    buf_size = 64 * 1024;
+
+    sw.restart();
+    fast_memcpy(buffer1, buffer2, buf_size);
+    sw.stop();
+    time1 = sw.getMillisec();
+
+    sw.restart();
+    memcpy_mmx4(buffer3, buffer4, buf_size);
+    sw.stop();
+    time2 = sw.getMillisec();
+
+    sw.restart();
+    A_memcpy(buffer5, buffer6, buf_size);
+    sw.stop();
+    time3 = sw.getMillisec();
+
+    sw.restart();
+    ::memcpy(buffer7, buffer8, buf_size);
+    sw.stop();
+    time4 = sw.getMillisec();
+
+    printf("%-16s size = %d K, time = %0.5f ms\n", "fast_memcpy()",   buf_size / 1024, time1);
+    printf("%-16s size = %d K, time = %0.5f ms\n", "memcpy_mmx4()",  buf_size / 1024, time2);
+    printf("%-16s size = %d K, time = %0.5f ms\n", "A_memcpy()",      buf_size / 1024, time3);
+    printf("%-16s size = %d K, time = %0.5f ms\n", "::memcpy()",      buf_size / 1024, time4);
+
+    printf("\n");
+
+    buf_size = 16 * 1024 * 1024;
+
+    sw.restart();
+    fast_memcpy(buffer1, buffer2, buf_size);
+    sw.stop();
+    time1 = sw.getMillisec();
+
+    sw.restart();
+    memcpy_mmx4(buffer3, buffer4, buf_size);
+    sw.stop();
+    time2 = sw.getMillisec();
+
+    sw.restart();
+    A_memcpy(buffer5, buffer6, buf_size);
+    sw.stop();
+    time3 = sw.getMillisec();
+
+    sw.restart();
+    ::memcpy(buffer7, buffer8, buf_size);
+    sw.stop();
+    time4 = sw.getMillisec();
+
+    printf("%-16s size = %d M, time = %0.5f ms\n", "fast_memcpy()",   buf_size / (1024 * 1024), time1);
+    printf("%-16s size = %d M, time = %0.5f ms\n", "memcpy_mmx4()",  buf_size / (1024 * 1024), time2);
+    printf("%-16s size = %d M, time = %0.5f ms\n", "A_memcpy()",      buf_size / (1024 * 1024), time3);
+    printf("%-16s size = %d M, time = %0.5f ms\n", "::memcpy()",      buf_size / (1024 * 1024), time4);
 
     printf("\n");
 
     buf_size = BUFFER_SIZE;
 
     sw.restart();
-    A_memcpy(buffer1, buffer2, buf_size);
+    fast_memcpy(buffer1, buffer2, buf_size);
     sw.stop();
     time1 = sw.getMillisec();
 
     sw.restart();
-    ::memcpy(buffer3, buffer4, buf_size);
+    memcpy_mmx4(buffer3, buffer4, buf_size);
     sw.stop();
     time2 = sw.getMillisec();
 
-    printf("A_memcpy(), size = %d M, time = %0.3f ms\n", buf_size / (1024 * 1024), time1);
-    printf("::memcpy,   size = %d M, time = %0.3f ms\n", buf_size / (1024 * 1024), time2);
+    sw.restart();
+    A_memcpy(buffer5, buffer6, buf_size);
+    sw.stop();
+    time3 = sw.getMillisec();
+
+    sw.restart();
+    ::memcpy(buffer7, buffer8, buf_size);
+    sw.stop();
+    time4 = sw.getMillisec();
+
+    printf("%-16s size = %d M, time = %0.5f ms\n", "fast_memcpy()",   buf_size / (1024 * 1024), time1);
+    printf("%-16s size = %d M, time = %0.5f ms\n", "memcpy_mmx4()",  buf_size / (1024 * 1024), time2);
+    printf("%-16s size = %d M, time = %0.5f ms\n", "A_memcpy()",      buf_size / (1024 * 1024), time3);
+    printf("%-16s size = %d M, time = %0.5f ms\n", "::memcpy()",      buf_size / (1024 * 1024), time4);
 
     printf("\n");
 #endif
 
-    if (buffer1) free(buffer1);
-    if (buffer2) free(buffer2);
-    if (buffer3) free(buffer3);
-    if (buffer4) free(buffer4);
+    if (buffer1) _aligned_free(buffer1);
+    if (buffer2) _aligned_free(buffer2);
+    if (buffer3) _aligned_free(buffer3);
+    if (buffer4) _aligned_free(buffer4);
+
+    if (buffer5) _aligned_free(buffer5);
+    if (buffer6) _aligned_free(buffer6);
+    if (buffer7) _aligned_free(buffer7);
+    if (buffer8) _aligned_free(buffer8);
 }
 
 /* char_traits<T>相关字符串函数的测试 */
@@ -314,7 +506,7 @@ void Char_Traits_Test()
         printf("::strlen(pstr1)                       = %d bytes\n", str_len);
         printf("::strncpy(),                     time = %0.3f ms\n", time1);
         printf("char_traits<char>::strncpy_u(),  time = %0.3f ms\n", time2);
-        printf("char_traits<char>::strncpy_u2(), time = %0.3f ms\n", time3);
+        printf("char_traits<char>::strncpy_u2(), time = %0.5f ms\n", time3);
 
         printf("\n");
     }
@@ -350,8 +542,10 @@ int UnitTest_Main(int argc, char *argv[])
     // Memcpy 内存复制测试
     Memcpy_Test();
 
+#if 0
     // char_traits<T>相关字符串函数的测试
     Char_Traits_Test();
+#endif
 
 #if 0
     SampleThread *thread = new SampleThread();
@@ -384,6 +578,7 @@ int UnitTest_Main(int argc, char *argv[])
 
     printf("\n");
 
+#if 0
     do {
         ManualResetEvent *event = new ManualResetEvent(false);
         //ManualResetEvent event2(false);
@@ -405,6 +600,7 @@ int UnitTest_Main(int argc, char *argv[])
     } while (0);
 
     printf("\n");
+#endif
 
     ///*
     //system::mutex read_mutex;

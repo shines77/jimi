@@ -475,6 +475,22 @@
 						RelativePath="..\..\..\..\src\jimic\platform\jimic_targetver.h"
 						>
 					</File>
+					<Filter
+						Name="linux"
+						>
+						<File
+							RelativePath="..\..\..\..\src\jimic\platform\linux\fast_memcpy.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="win"
+						>
+						<File
+							RelativePath="..\..\..\..\src\jimic\platform\win\fast_memcpy.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 		</Filter>
