@@ -20,7 +20,7 @@ template <class _CharT, class _ValueT, class _Atomic = non_atomic<_ValueT>>
 class JIMI_API refcounted
 {
 public:
-    // Types:
+    // Types
     typedef _CharT      char_type;
     typedef _ValueT     value_type;
     typedef _Atomic     atomic_type;

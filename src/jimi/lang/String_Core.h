@@ -29,28 +29,29 @@ NS_JIMI_BEGIN
 ///
 /// </comment>
 
-//#define STRING_SMALL_SIZE     (128 - 4 * sizeof(size_t))
 #define STRING_SMALL_SIZE       32
 
 #define STRING_MEDIUM_SIZE      256
 
 typedef enum StringTypeMask
 {
-    STRING_TYPE_SMALL   = 0x01,
-    STRING_TYPE_MEDIUM  = 0x02,
-    STRING_TYPE_LARGE   = 0x04,
-    STRING_TYPE_REF     = 0x08,
-    STRING_TYPE_MASK    = 0x0F,
-    STRING_TYPE_MAX
+    STRING_TYPE_SMALL   = (sizeof(size_t) == 4) ? 0x20000000u : 0x2000000000000000u,
+    STRING_TYPE_MEDIUM  = (sizeof(size_t) == 4) ? 0x40000000u : 0x4000000000000000u,
+    STRING_TYPE_LARGE   = (sizeof(size_t) == 4) ? 0x80000000u : 0x8000000000000000u,
+    STRING_TYPE_MASK    = (STRING_TYPE_SMALL
+        | STRING_TYPE_MEDIUM | STRING_TYPE_LARGE),
+    STRING_TYPE_SMALL_X = 0x01,
+    TRING_TYPE_MEDIUM_X = 0x02,
+    STRING_TYPE_LARGE_X = 0x04,
+    STRING_TYPE_MASK_X  = 0x07
 } StringTypeMask;
 
 #define TYPE_IS_SMALL(type)     ((type & STRING_TYPE_SMALL) != 0)
 #define TYPE_IS_MIDIUM(type)    ((type & STRING_TYPE_MEDIUM) != 0)
 #define TYPE_IS_LARGE(type)     ((type & STRING_TYPE_LARGE) != 0)
-#define TYPE_IS_REF(type)       ((type & STRING_TYPE_REF) != 0)
 
 #define TYPE_NOT_IS_SMALL(type)   \
-    ((type & (STRING_TYPE_MEDIUM | STRING_TYPE_LARGE | STRING_TYPE_REF)) != 0)
+    ((type & (STRING_TYPE_MEDIUM | STRING_TYPE_LARGE)) != 0)
 
 #define STRING_CORE_CLASSES    \
     class _CharT, class _RefCount
@@ -61,12 +62,19 @@ template <class _CharT, class _RefCount = refcounted<_CharT, int32_t>>
 class JIMI_API string_core
 {
 public:
-    // Types:
+    // Types
     typedef _CharT              char_type;
     typedef _RefCount           refcount_type;
     typedef size_t              size_type;
-    typedef uint32_t            flag_type;
+    typedef size_t              flag_type;
     typedef char_traits<_CharT> traits_type;
+
+    // Constant
+    static const flag_type      kIsSmall  = STRING_TYPE_SMALL;
+    static const flag_type      kIsMedium = STRING_TYPE_MEDIUM;
+    static const flag_type      kIsLarge  = STRING_TYPE_LARGE;
+    static const flag_type      kTypeMask = STRING_TYPE_MASK;
+    static const flag_type      kSizeMask = ~STRING_TYPE_MASK;
 
 public:
     // Contructor
@@ -83,18 +91,19 @@ public:
 
     bool equals(const string_core &rhs) const;
 
-    bool compare(const string_core &rhs) const;
-    bool compare(const char_type *rhs) const;
+    int compare(const string_core &rhs) const;
+    int compare(const char_type *rhs) const;
 
-    bool is_small() const   { return TYPE_IS_SMALL(_type);  }
-    bool is_medium() const  { return TYPE_IS_MIDIUM(_type); }
-    bool is_large() const   { return TYPE_IS_LARGE(_type);  }
-    bool is_ref() const     { return TYPE_IS_REF(_type);    }
+    bool is_small() const   { return TYPE_IS_SMALL(_ml.type);  }
+    bool is_medium() const  { return TYPE_IS_MIDIUM(_ml.type); }
+    bool is_large() const   { return TYPE_IS_LARGE(_ml.type);  }
 
-    bool is_not_small() const { return TYPE_NOT_IS_SMALL(_type); }
+    bool not_is_small() const { return TYPE_NOT_IS_SMALL(_ml.type); }
 
-    char_type *data() const { return c_str(); }
-    char_type *c_str() const;
+    flag_type get_type() const { return (_ml.type & kTypeMask); }
+
+    const char_type *data() const { return c_str(); }
+    const char_type *c_str() const;
 
     size_type size() const;
 
@@ -102,71 +111,119 @@ protected:
     size_t calc_capacity(size_t src_len);
 
 private:
-    typedef struct core_data {
-        char_type  *_data;
-        size_type   _size;
-        size_type   _capacity;
-        flag_type   _type;
-    } core_data;
+    /* 这个结构只是为了动态设置buf的size而存在的 */
+    struct core_data_t {
+        char_type  *data;
+        size_type   size;
+        size_type   capacity;
+        flag_type   type;
+    };
 
-public:
-    char_type  *_data;
-    size_type   _size;
-    size_type   _capacity;
-    flag_type   _type;
-    char_type   _buf[STRING_SMALL_SIZE - sizeof(core_data)];
-    int32_t     _refcount;
+    struct medium_large {
+        union {
+            struct {
+                /* small object buffer (这里只是占位用, 未使用) */
+                char       dummy[(STRING_SMALL_SIZE - sizeof(core_data_t)) / sizeof(char)];
+
+                /* 后面的定义必须和core_data的结构一致 */
+                char_type *data;
+                size_type  size;
+                size_type  capacity;
+                flag_type  type;
+            };
+
+            char_type buf[(STRING_SMALL_SIZE - sizeof(core_data_t)) / sizeof(char_type)];
+        };
+    };
+
+    struct small_size_t {
+        union {
+            struct {
+                unsigned char size : 5;
+                unsigned char type : 3;
+            };
+            unsigned char     byte_;
+        };
+    };
+
+    struct small_t {
+        /* small object buffer */
+        union {
+            struct {
+                unsigned char dummy[(STRING_SMALL_SIZE - sizeof(small_size_t)) / sizeof(char)];
+                small_size_t  info;
+            };
+            char_type buf[(STRING_SMALL_SIZE - sizeof(small_size_t)) / sizeof(char_type)];
+        };
+    };
+
+protected:
+    /* 这是一个union联合, 即small_t类型和medium_large类型共享于同一个内存结构 */
+    union {
+        /* mutable修饰符是针对const修饰的, 即使是在const修饰过的成员函数里, */
+        /* 也可以改变mutable修饰过的成员变量 */
+        mutable small_t      _small;
+        mutable medium_large _ml;
+    };
+    int32_t _refcount;
 };
 
 template <STRING_CORE_CLASSES>
 STRING_CORE::string_core()
-: _data(NULL)
-, _size(0)
-, _capacity(0)
-, _type(0)
-, _refcount(1)
 {
+    _ml.data = NULL;
+    _ml.size = 0;
+    _ml.capacity = 0;
+    _ml.type = 0;
+    _refcount = 1;
+
     // init sso buffer
-    (*(uint32_t *)(&_buf[0])) = 0;
+    (*(uint32_t *)(&_ml.buf[0])) = 0;
 }
 
 template <STRING_CORE_CLASSES>
 STRING_CORE::string_core(const string_core &src)
 {
     jimi_assert(&src != this);
-
-    _size = src._size;
-    _type = src._type;
+    /* small object */
+    if (is_small()) {
+        _small.info.type = src._small.info.type;
+        _small.info.size = src._small.info.size;
+        _refcount = 1;
+        jimi_assert(src._small.info.size < STRING_SMALL_SIZE);
+        if (_small.info.size < STRING_SMALL_SIZE) {
+            char_traits<char>::strlcpy(&_small.buf[0], STRING_SMALL_SIZE, &src._small.buf[0], _small.info.size);
+        }
+        else {
+            sLog.error("string_core(const string_core &src): data = %s, type = 0x%04X, size = %d.",
+                &_small.buf[0], _small.info.type, _small.info.size);
+        }
+    }
     /* eager copy */
-    if (is_medium()) {
-        jimi_assert(src._capacity == STRING_MEDIUM_SIZE);
-        _capacity = STRING_MEDIUM_SIZE;
+    else if (is_medium()) {
+        _ml.size = src._ml.size;
+        jimi_assert(src._ml.capacity == STRING_MEDIUM_SIZE);
+        _ml.capacity = STRING_MEDIUM_SIZE;
+        _ml.type = src._ml.type;
         _refcount = 1;
         // init sso buffer
-        (*(uint32_t *)(&_buf[0])) = 0;
-        _data = char_traits<char>::assign(STRING_MEDIUM_SIZE);
-        char_traits<char>::strlcpy(_data, STRING_MEDIUM_SIZE, src._data, src._size);
+        (*(uint32_t *)(&_ml.buf[0])) = 0;
+        _ml.data = char_traits<char>::assign(STRING_MEDIUM_SIZE);
+        char_traits<char>::strlcpy(_ml.data, STRING_MEDIUM_SIZE, src._ml.data, src._ml.size);
     }
     /* copy-on-write */
     else if (is_large()) {
         jimi_assert(src._refcount >= 0);
-        _data     = src._data;
-        _capacity = src._capacity;
+        _ml.data     = src._ml.data;
+        _ml.capacity = src._ml.capacity;
         _refcount = 1;
         // init sso buffer
-        (*(uint32_t *)(&_buf[0])) = 0;
+        (*(uint32_t *)(&_ml.buf[0])) = 0;
         const_cast<string_core &>(src).retail();
     }
-    /* is_small or unknown type */
+    /* unknown type */
     else {
-        _data = NULL;
-        _capacity = 0;
-        _refcount = 1;
-        jimi_assert(src._size < STRING_SMALL_SIZE);
-        if (_size < STRING_SMALL_SIZE)
-            char_traits<char>::strlcpy(&_buf[0], STRING_SMALL_SIZE, &src._buf[0], _size);
-        else
-            sLog.error("string_core(const string_core &src): _data = %08X, _size = %d.", _data, _size);
+        sLog.error("string_core(const string_core &src): type = 0x%04X, data = %08X, size = %d.", get_type(), _ml.data, _ml.size);
     }
 }
 
@@ -175,29 +232,32 @@ STRING_CORE::string_core(const char * const src, const size_t size)
 {
     size_t src_len = size;
     if (src_len < STRING_SMALL_SIZE) {
-        _data = NULL;       
-        _size = src_len;     
-        _capacity = 0;
-        _type = STRING_TYPE_SMALL;
-        char_traits<char>::strncpy(_buf, jm_countof(_buf), src, src_len);
+        _small.info.type = STRING_TYPE_SMALL_X;
+        _small.info.size = src_len;     
+        char_traits<char>::strncpy_u(_small.buf, src, src_len);
+        _small.buf[src_len] = '\0';
     }
     /* eager copy */
     else if (src_len < STRING_MEDIUM_SIZE) {
-        _size = src_len;
-        _capacity = calc_capacity(src_len);
-        _type = STRING_TYPE_MEDIUM;
-        _data = char_traits<char>::assign(_capacity);
-        if (_data)
-            char_traits<char>::strncpy(_data, _capacity, src, src_len);
+        _ml.size = src_len;
+        _ml.capacity = calc_capacity(src_len);
+        _ml.type = STRING_TYPE_MEDIUM;
+        _ml.data = char_traits<char>::assign(_ml.capacity);
+        if (_ml.data) {
+            char_traits<char>::strncpy(_ml.data, _ml.capacity, src, src_len);
+            _ml.data[src_len] = '\0';
+        }
     }
     /* copy-on-write or unknown type */
     else {
-        _capacity = calc_capacity(src_len);
-        _data = char_traits<char>::assign(_capacity);
-        _size = src_len;
-        _type = STRING_TYPE_LARGE;
-        if (_data)
-            char_traits<char>::strncpy(_data, _capacity, src, src_len);
+        _ml.capacity = calc_capacity(src_len);
+        _ml.data = char_traits<char>::assign(_ml.capacity);
+        _ml.size = src_len;
+        _ml.type = STRING_TYPE_LARGE;
+        if (_ml.data) {
+            char_traits<char>::strncpy(_ml.data, _ml.capacity, src, src_len);
+            _ml.data[src_len] = '\0';
+        }
     }
     _refcount = 1;
 }
@@ -207,29 +267,27 @@ STRING_CORE::string_core(const wchar_t * const src, const size_t size)
 {
     size_t src_len = size;
     if (src_len < STRING_SMALL_SIZE) {
-        _data = NULL;       
-        _size = src_len;     
-        _capacity = 0;
-        _type = STRING_TYPE_SMALL;
-        char_traits<wchar_t>::strncpy(_buf, jm_countof(_buf), src, src_len);
+        _small.info.size = src_len;     
+        _small.info.type = STRING_TYPE_SMALL;
+        char_traits<wchar_t>::strncpy(_ml.buf, jm_countof(_ml.buf), src, src_len);
     }
     /* eager copy */
     else if (src_len < STRING_MEDIUM_SIZE) {
-        _size = src_len;
-        _capacity = calc_capacity(src_len);
-        _type = STRING_TYPE_MEDIUM;
-        _data = char_traits<wchar_t>::assign(_capacity);
-        if (_data)
-            char_traits<wchar_t>::strncpy(_data, _capacity, src, src_len);
+        _ml.size = src_len;
+        _ml.capacity = calc_capacity(src_len);
+        _ml.type = STRING_TYPE_MEDIUM;
+        _ml.data = char_traits<wchar_t>::assign(_ml.capacity);
+        if (_ml.data)
+            char_traits<wchar_t>::strncpy(_ml.data, _ml.capacity, src, src_len);
     }
     /* copy-on-write or unknown type */
     else {
-        _capacity = calc_capacity(src_len);
-        _data = char_traits<wchar_t>::assign(_capacity);
-        _size = src_len;
-        _type = STRING_TYPE_LARGE;
-        if (_data)
-            char_traits<wchar_t>::strncpy(_data, _capacity, src, src_len);
+        _ml.capacity = calc_capacity(src_len);
+        _ml.data = char_traits<wchar_t>::assign(_ml.capacity);
+        _ml.size = src_len;
+        _ml.type = STRING_TYPE_LARGE;
+        if (_ml.data)
+            char_traits<wchar_t>::strncpy(_ml.data, _ml.capacity, src, src_len);
     }
     _refcount = 1;
 }
@@ -251,38 +309,39 @@ inline void STRING_CORE::retail()
 {
     ++_refcount;
     if (is_large())
-        _type = STRING_TYPE_REF;
+        _ml.type = STRING_TYPE_LARGE;
 }
 
 template <STRING_CORE_CLASSES>
 inline void STRING_CORE::release()
 {
     --_refcount;
-    if (_refcount <= 0 && !is_ref()) {
-        if (_data != NULL) {
-            delete _data;
-            _data = NULL;
+    if (_refcount <= 0) {
+        if (_ml.data != NULL) {
+            delete _ml.data;
+            _ml.data = NULL;
         }
-        _size = 0;
-        _capacity = 0;
-        _type = 0;
+        _ml.size = 0;
+        _ml.capacity = 0;
+        _ml.type = 0;
         _refcount = 0;
     }
 }
 
 template <STRING_CORE_CLASSES>
-inline typename STRING_CORE::char_type *STRING_CORE::c_str() const
+inline const typename STRING_CORE::char_type *STRING_CORE::c_str() const
 {
-    if (_size < STRING_SMALL_SIZE)
-        return (char_type *)&_buf[0];
+    flag_type type = get_type();
+    if (type == kIsSmall)
+        return &_small.buf[0];
     else
-        return _data;
+        return _ml.data;
 }
 
 template <STRING_CORE_CLASSES>
 inline typename STRING_CORE::size_type STRING_CORE::size() const
 {
-    return _size;
+    return _ml.size;
 }
 
 template <STRING_CORE_CLASSES>
@@ -298,25 +357,25 @@ inline bool STRING_CORE::equals(const STRING_CORE &rhs) const
 }
 
 template <STRING_CORE_CLASSES>
-bool STRING_CORE::compare(const STRING_CORE &rhs) const
+inline int STRING_CORE::compare(const STRING_CORE &rhs) const
 {
     if (&rhs == this)
-        return true;
+        return 0;
 
-    bool equal = false;
+    int equal = -1;
     char_type *rhs_data;
 
-    if (_size == rhs._size) {
-        if (_type == rhs._type) {
+    if (_ml.size == rhs._ml.size) {
+        if (_ml.type == rhs._ml.type) {
             if (is_small()) {
-                equal = (traits_type::strncmp(&_buf[0], &rhs._buf[0], _size) == 0);
+                equal = traits_type::strncmp(&_ml.buf[0], &rhs._ml.buf[0], _ml.size);
             }
-            else if (is_not_small()) {
-                rhs_data = rhs._data;
-                if (_data == rhs_data)
-                    equal = true;
+            else if (not_is_small()) {
+                rhs_data = rhs._ml.data;
+                if (_ml.data == rhs_data)
+                    equal = 0;
                 else
-                    equal = (traits_type::strncmp(_data, rhs_data, _size) == 0);
+                    equal = traits_type::strncmp(_ml.data, rhs_data, _ml.size);
             }
             else {
                 // Unknown string type
@@ -335,20 +394,20 @@ bool STRING_CORE::compare(const STRING_CORE &rhs) const
 }
 
 template <STRING_CORE_CLASSES>
-bool STRING_CORE::compare(const char_type *rhs) const
+inline int STRING_CORE::compare(const char_type *rhs) const
 {
-    bool equal = false;
-    if (_store.is_small()) {
-        if (_buf == rhs)
-            equal = true;
+    int equal = -1;
+    if (is_small()) {
+        if (_ml.buf == rhs)
+            equal = 0;
         else
-            equal = traits_type::strncmp(_buf, rhs, _size);
+            equal = traits_type::strncmp(_ml.buf, rhs, _ml.size);
     }
-    else if (_store.is_not_small()) {
-        if (_data == rhs)
-            equal = true;
+    else if (not_is_small()) {
+        if (_ml.data == rhs)
+            equal = 0;
         else
-            equal = traits_type::strncmp(_data, rhs, _size);
+            equal = traits_type::strncmp(_ml.data, rhs, _ml.size);
     }
     else {
         // Unknown string type
@@ -358,19 +417,19 @@ bool STRING_CORE::compare(const char_type *rhs) const
 }
 
 template <STRING_CORE_CLASSES>
-inline bool operator == (const STRING_CORE &lhs, const STRING_CORE &rhs)
+inline int operator == (const STRING_CORE &lhs, const STRING_CORE &rhs)
 {
     return lhs.compare(rhs);
 }
 
 template <STRING_CORE_CLASSES>
-inline bool operator == (const STRING_CORE &lhs, const _CharT *rhs)
+inline int operator == (const STRING_CORE &lhs, const _CharT *rhs)
 {
     return lhs.compare(rhs);
 }
 
 template <STRING_CORE_CLASSES>
-inline bool operator == (const _CharT *lhs, const STRING_CORE &rhs)
+inline int operator == (const _CharT *lhs, const STRING_CORE &rhs)
 {
     return rhs.compare(lhs);
 }

@@ -26,6 +26,10 @@ NS_JIMI_BEGIN
 /// Reference:
 ///    http://haoel.blog.51cto.com/313033/124638
 ///
+/// 漫步Facebook开源C++库folly(1)：string类的设计
+///
+/// Reference:
+///    http://www.cnblogs.com/promise6522/archive/2012/06/05/2535530.html
 ///
 /// </comment>
 
@@ -67,7 +71,7 @@ template <class _CharT  = char,
 class JIMI_API basic_string
 {
 public:
-    // Types:
+    // Types
     typedef _CharT                                  char_type;
     typedef typename _Traits::char_type             value_type;
     typedef _Traits                                 traits_type;
@@ -103,16 +107,16 @@ public:
 
     bool equals(const basic_string &rhs) const;
 
-    bool compare(const basic_string &rhs) const;
-    bool compare(const char_type *rhs) const;
+    int compare(const basic_string &rhs) const;
+    int compare(const char_type *rhs) const;
 
     const storage_type &getStorage() const { return _store; }
 
-    char_type *data() const  { return _store.c_str(); }
-    char_type *c_str() const { return _store.c_str(); }
-    size_type size() const   { return (size_type)_store.size();  }
+    const value_type *data() const  { return _store.c_str(); }
+    const value_type *c_str() const { return _store.c_str(); }
+    size_type size() const { return (size_type)_store.size(); }
 
-protected:
+private:
     storage_type _store;
 };
 
@@ -148,7 +152,7 @@ BASIC_STRING::basic_string(const char *src, size_t size)
 
 template <BASIC_STRING_CLASSES>
 BASIC_STRING::basic_string(const wchar_t *src)
-: _store(src, ::jm_strlen(src))
+: _store(src, ::jm_wcslen(src))
 {
 }
 
@@ -192,7 +196,7 @@ inline bool BASIC_STRING::equals(const BASIC_STRING &rhs) const
 }
 
 template <BASIC_STRING_CLASSES>
-bool BASIC_STRING::compare(const BASIC_STRING &rhs) const
+inline int BASIC_STRING::compare(const BASIC_STRING &rhs) const
 {
     if (&rhs == this)
         return true;
@@ -201,7 +205,7 @@ bool BASIC_STRING::compare(const BASIC_STRING &rhs) const
 }
 
 template <BASIC_STRING_CLASSES>
-bool BASIC_STRING::compare(const char_type *rhs) const
+inline int BASIC_STRING::compare(const char_type *rhs) const
 {
     return _store.compare(rhs);
 }
@@ -209,19 +213,19 @@ bool BASIC_STRING::compare(const char_type *rhs) const
 template <BASIC_STRING_CLASSES>
 inline bool operator == (const BASIC_STRING &lhs, const BASIC_STRING &rhs)
 {
-    return lhs.compare(rhs);
+    return (lhs.compare(rhs) == 0);
 }
 
 template <BASIC_STRING_CLASSES>
 inline bool operator == (const BASIC_STRING &lhs, const _CharT *rhs)
 {
-    return lhs.compare(rhs);
+    return (lhs.compare(rhs) == 0);
 }
 
 template <BASIC_STRING_CLASSES>
 inline bool operator == (const _CharT *lhs, const BASIC_STRING &rhs)
 {
-    return rhs.compare(lhs);
+    return (rhs.compare(lhs) == 0);
 }
 
 typedef basic_string<char> String;
