@@ -35,18 +35,19 @@ public:
         return static_cast<refcounted *>(
             static_cast<void *>(
                 static_cast<unsigned char *>(static_cast<void *>(p))
-                    - sizeof(_refcount)));
+                    - sizeof(atomic_type)));
     }
 
-    value_type refs(char_type *p) {
+    static value_type refs(char_type *p) {
         return fromData(p)->_refcount.load(0);
     }
 
-    void retail(char_type *p)  {
+    static void retail(char_type *p)  {
         //++_refcount;
         refcount.fetch_add(1, 0);
     }
-    void release(char_type *p) {
+
+    static void release(char_type *p) {
         const refcounted *dis = fromData(p);
         //--_refcount;
         _refcount.fetch_sub(1, 0);

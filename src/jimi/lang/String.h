@@ -58,15 +58,14 @@ inline void pod_copy(const Pod *b, const Pod *e, Pod *d) {
 }  /* end of the namespace string_detail */
 
 #define BASIC_STRING_CLASSES    \
-    class _CharT, class _Traits, class _Alloc, class _RefCount, class _Storage
+    class _CharT, class _Traits, class _Alloc, class _Storage
 #define BASIC_STRING            \
-    basic_string<_CharT, _Traits, _Alloc, _RefCount, _Storage>
+    basic_string<_CharT, _Traits, _Alloc, _Storage>
 
 template <class _CharT  = char,
           class _Traits = char_traits<_CharT>,
           class _Alloc  = allocator<_CharT>,
-          class _RefCount = refcounted<_CharT, int32_t>,
-          class _Storage = string_core<_CharT, _RefCount>>
+          class _Storage = string_core<_CharT>>
 
 class JIMI_API basic_string
 {
@@ -105,18 +104,23 @@ public:
     void retail();
     void release();
 
+    basic_string &operator = (const basic_string &lhs);
+
     bool equals(const basic_string &rhs) const;
 
     int compare(const basic_string &rhs) const;
     int compare(const char_type *rhs) const;
 
-    const storage_type &getStorage() const { return _store; }
+    //const storage_type &getStorage() const { return _store; }
 
     const value_type *data() const  { return _store.c_str(); }
     const value_type *c_str() const { return _store.c_str(); }
     size_type size() const { return (size_type)_store.size(); }
 
-private:
+    void swap(basic_string &rhs) { _store.swap(rhs._store); }
+    size_type capacity() const   { return (size_type)_store.capacity(); }
+
+protected:
     storage_type _store;
 };
 
@@ -187,6 +191,31 @@ inline void BASIC_STRING::release()
 }
 
 template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &lhs) {
+    if (&lhs == this) {
+        return *this;
+    }
+    const size_type oldSize = size();
+    const size_type srcSize = lhs.size();
+    if (capacity() >= srcSize && !_store.is_shared()) {
+        // great, just copy the contents
+        /*
+        if (oldSize < srcSize)
+            _store.expand_noinit(srcSize - oldSize);
+        else
+            _store.shrink(oldSize - srcSize);
+        //*/
+        jimi_assert(size() == srcSize);
+        //string_detail::pod_copy(lhs.begin(), lhs.end(), begin());
+        //_store.writeTerminator();
+    } else {
+        // need to reallocate, so we may as well create a brand new string
+        basic_string(lhs).swap(*this);
+    }
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
 inline bool BASIC_STRING::equals(const BASIC_STRING &rhs) const
 {
     if (&rhs == this)
@@ -199,7 +228,7 @@ template <BASIC_STRING_CLASSES>
 inline int BASIC_STRING::compare(const BASIC_STRING &rhs) const
 {
     if (&rhs == this)
-        return true;
+        return 0;
     else
         return _store.compare(rhs._store);
 }
@@ -208,6 +237,12 @@ template <BASIC_STRING_CLASSES>
 inline int BASIC_STRING::compare(const char_type *rhs) const
 {
     return _store.compare(rhs);
+}
+
+template <BASIC_STRING_CLASSES>
+inline void swap(BASIC_STRING &lhs, BASIC_STRING &rhs)
+{
+    lhs.swap(rhs);
 }
 
 template <BASIC_STRING_CLASSES>

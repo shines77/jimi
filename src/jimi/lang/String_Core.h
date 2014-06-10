@@ -76,6 +76,9 @@ public:
     static const flag_type      kTypeMask = STRING_TYPE_MASK;
     static const flag_type      kSizeMask = ~STRING_TYPE_MASK;
 
+    static const size_type      kMaxSmallSize  = (STRING_SMALL_SIZE - 1);
+    static const size_type      kMaxMediumSize = STRING_MEDIUM_SIZE;
+
 public:
     // Contructor
     string_core();
@@ -100,6 +103,10 @@ public:
 
     bool not_is_small() const { return TYPE_NOT_IS_SMALL(_ml.type); }
 
+    bool is_shared() const {
+        return (is_large() && (refcount_type::refs(_ml.data) > 1));
+    }
+
     flag_type get_type() const { return (_ml.type & kTypeMask); }
 
     const char_type *data() const { return c_str(); }
@@ -107,8 +114,24 @@ public:
 
     size_type size() const;
 
+    // swap below doesn't test whether &rhs == this (and instead
+    // potentially does extra work) on the premise that the rarity of
+    // that situation actually makes the check more expensive than is
+    // worth.
+    void swap(string_core &rhs) {
+        const medium_large t = _ml;
+        _ml = rhs._ml;
+        rhs._ml = t;
+    }
+
+    size_type capacity() const;
+    
 protected:
     size_t calc_capacity(size_t src_len);
+
+private:
+    // Disabled
+    string_core & operator = (const string_core &rhs) {};
 
 private:
     /* 这个结构只是为了动态设置buf的size而存在的 */
@@ -137,8 +160,13 @@ private:
     };
 
     struct small_size_t {
-        unsigned char size : 5;
-        unsigned char type : 3;
+        union {
+            struct {
+                unsigned char size : 5;
+                unsigned char type : 3;
+            };
+            unsigned char     lastChar;
+        };
     };
 
     struct small_t {
@@ -157,6 +185,7 @@ protected:
     union {
         /* mutable修饰符是针对const修饰的, 即使是在const修饰过的成员函数里, */
         /* 也可以改变mutable修饰过的成员变量 */
+        /* Reference: http://blog.csdn.net/wuliming_sc/article/details/3717017 */
         mutable small_t      _small;
         mutable medium_large _ml;
     };
@@ -164,8 +193,23 @@ protected:
 };
 
 template <STRING_CORE_CLASSES>
+typename STRING_CORE::size_type STRING_CORE::capacity() const
+{
+    if (is_small())
+        return kMaxSmallSize - 1;
+    else if (is_medium())
+        return kMaxMediumSize - 1;
+    else
+        return _ml.capacity;
+}
+
+template <STRING_CORE_CLASSES>
 STRING_CORE::string_core()
 {
+#if 1
+    _ml.type = STRING_TYPE_SMALL;
+    (*(size_t *)(&_small.buf[0])) = 0;
+#else
     _ml.data = NULL;
     _ml.size = 0;
     _ml.capacity = 0;
@@ -173,17 +217,20 @@ STRING_CORE::string_core()
     _refcount = 1;
 
     // init sso buffer
-    (*(uint32_t *)(&_ml.buf[0])) = 0;
+    (*(size_t *)(&_ml.buf[0])) = 0;
+#endif
 }
 
 template <STRING_CORE_CLASSES>
 STRING_CORE::string_core(const string_core &src)
 {
     jimi_assert(&src != this);
+    flag_type type = src.get_type();
     /* small object */
-    if (is_small()) {
-        _small.info.type = src._small.info.type;
-        _small.info.size = src._small.info.size;
+    if (type == kIsSmall) {
+        //_small.info.type = src._small.info.type;
+        //_small.info.size = src._small.info.size;
+        _small.info.lastChar = src._small.info.lastChar;
         _refcount = 1;
         jimi_assert(src._small.info.size < STRING_SMALL_SIZE);
         if (_small.info.size < STRING_SMALL_SIZE) {
@@ -195,25 +242,21 @@ STRING_CORE::string_core(const string_core &src)
         }
     }
     /* eager copy */
-    else if (is_medium()) {
-        _ml.size = src._ml.size;
+    else if (type == kIsMedium) {
         jimi_assert(src._ml.capacity == STRING_MEDIUM_SIZE);
+        _ml.size = src._ml.size;
         _ml.capacity = STRING_MEDIUM_SIZE;
         _ml.type = src._ml.type;
         _refcount = 1;
-        // init sso buffer
-        (*(uint32_t *)(&_ml.buf[0])) = 0;
         _ml.data = char_traits<char>::assign(STRING_MEDIUM_SIZE);
         char_traits<char>::strlcpy(_ml.data, STRING_MEDIUM_SIZE, src._ml.data, src._ml.size);
     }
     /* copy-on-write */
-    else if (is_large()) {
+    else if (type == kIsLarge) {
         jimi_assert(src._refcount >= 0);
         _ml.data     = src._ml.data;
         _ml.capacity = src._ml.capacity;
         _refcount = 1;
-        // init sso buffer
-        (*(uint32_t *)(&_ml.buf[0])) = 0;
         const_cast<string_core &>(src).retail();
     }
     /* unknown type */
@@ -363,7 +406,7 @@ inline int STRING_CORE::compare(const STRING_CORE &rhs) const
     char_type *rhs_data;
 
     if (_ml.size == rhs._ml.size) {
-        if (_ml.type == rhs._ml.type) {
+        if (get_type() == rhs.get_type()) {
             if (is_small()) {
                 equal = traits_type::strncmp(&_ml.buf[0], &rhs._ml.buf[0], _ml.size);
             }
