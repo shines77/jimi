@@ -46,9 +46,9 @@ typedef enum StringTypeMask
     STRING_TYPE_MASK_X  = 0x07
 } StringTypeMask;
 
-#define TYPE_IS_SMALL(type)     ((type & STRING_TYPE_SMALL) != 0)
+#define TYPE_IS_SMALL(type)     ((type & STRING_TYPE_SMALL)  != 0)
 #define TYPE_IS_MIDIUM(type)    ((type & STRING_TYPE_MEDIUM) != 0)
-#define TYPE_IS_LARGE(type)     ((type & STRING_TYPE_LARGE) != 0)
+#define TYPE_IS_LARGE(type)     ((type & STRING_TYPE_LARGE)  != 0)
 
 #define TYPE_NOT_IS_SMALL(type)   \
     ((type & (STRING_TYPE_MEDIUM | STRING_TYPE_LARGE)) != 0)
@@ -137,13 +137,8 @@ private:
     };
 
     struct small_size_t {
-        union {
-            struct {
-                unsigned char size : 5;
-                unsigned char type : 3;
-            };
-            unsigned char     byte_;
-        };
+        unsigned char size : 5;
+        unsigned char type : 3;
     };
 
     struct small_t {
@@ -317,9 +312,11 @@ inline void STRING_CORE::release()
 {
     --_refcount;
     if (_refcount <= 0) {
-        if (_ml.data != NULL) {
-            delete _ml.data;
-            _ml.data = NULL;
+        if (not_is_small()) {
+            if (_ml.data != NULL) {
+                delete _ml.data;
+                _ml.data = NULL;
+            }
         }
         _ml.size = 0;
         _ml.capacity = 0;
