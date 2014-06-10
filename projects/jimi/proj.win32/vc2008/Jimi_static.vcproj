@@ -210,6 +210,10 @@
 					Name="lang"
 					>
 					<File
+						RelativePath="..\..\..\..\src\jimi\lang\Allocator.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimi\lang\AutoCloseable.h"
 						>
 					</File>

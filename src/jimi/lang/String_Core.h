@@ -294,10 +294,7 @@ inline size_t STRING_CORE::calc_capacity(size_t src_len)
 template <STRING_CORE_CLASSES>
 inline bool STRING_CORE::equals(const STRING_CORE &rhs) const
 {
-    bool equal = false;
-    if (&rhs == this)
-        equal = true;
-    return equal;
+    return (&rhs == this);
 }
 
 template <STRING_CORE_CLASSES>

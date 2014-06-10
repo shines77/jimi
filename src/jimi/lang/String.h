@@ -8,6 +8,7 @@
 
 #include <jimi/core/jimi_def.h>
 #include <jimi/log/log.h>
+#include <jimi/lang/Allocator.h>
 #include <jimi/lang/Char_Traits.h>
 #include <jimi/lang/RefCounted.h>
 #include <jimi/lang/String_Core.h>
@@ -27,18 +28,6 @@ NS_JIMI_BEGIN
 ///
 ///
 /// </comment>
-
-template <class _CharT>
-class JIMI_API allocator
-{
-public:
-    typedef size_t          size_type;
-    typedef size_t          difference_type;
-    typedef _CharT &        reference;
-    typedef const _CharT &  const_reference;
-    typedef _CharT *        pointer;
-    typedef const _CharT *  const_pointer;
-};
 
 template <class _PtrT, class _T>
 class JIMI_API normal_iterator
@@ -79,8 +68,8 @@ class JIMI_API basic_string
 {
 public:
     // Types:
-    typedef _CharT                                  value_type;
-    typedef typename _Traits::char_type             char_type;
+    typedef _CharT                                  char_type;
+    typedef typename _Traits::char_type             value_type;
     typedef _Traits                                 traits_type;
     typedef _Alloc                                  allocator_type;
     typedef _Storage                                storage_type;
@@ -196,10 +185,10 @@ inline void BASIC_STRING::release()
 template <BASIC_STRING_CLASSES>
 inline bool BASIC_STRING::equals(const BASIC_STRING &rhs) const
 {
-    bool equal = false;
     if (&rhs == this)
-        equal = true;
-    return equal;
+        return true;
+    else
+        return _store.equals(rhs._store);
 }
 
 template <BASIC_STRING_CLASSES>
@@ -207,7 +196,8 @@ bool BASIC_STRING::compare(const BASIC_STRING &rhs) const
 {
     if (&rhs == this)
         return true;
-    return _store.compare(rhs._store);
+    else
+        return _store.compare(rhs._store);
 }
 
 template <BASIC_STRING_CLASSES>
