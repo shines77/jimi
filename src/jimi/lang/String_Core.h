@@ -62,17 +62,18 @@ class JIMI_API string_core
 {
 public:
     // Types:
-    typedef _CharT      char_type;
-    typedef _RefCount   refcount_type;
-    typedef size_t      size_type;
-    typedef uint32_t    flag_type;
+    typedef _CharT              char_type;
+    typedef _RefCount           refcount_type;
+    typedef size_t              size_type;
+    typedef uint32_t            flag_type;
+    typedef char_traits<_CharT> traits_type;
 
 public:
     // Contructor
     string_core();
     string_core(const string_core &src);
-    string_core(const char *src);
-    string_core(const wchar_t *src);
+    string_core(const char * const src, const size_t size);
+    string_core(const wchar_t * const src, const size_t size);
     ~string_core();
 
     void destroy();
@@ -80,12 +81,25 @@ public:
     void retail();
     void release();
 
-    bool is_small()  { return TYPE_IS_SMALL(_type);  }
-    bool is_medium() { return TYPE_IS_MIDIUM(_type); }
-    bool is_large()  { return TYPE_IS_LARGE(_type);  }
-    bool is_ref()    { return TYPE_IS_REF(_type);    }
+    bool equals(const string_core &rhs) const;
 
-    bool is_not_small() { return TYPE_NOT_IS_SMALL(_type); }
+    bool compare(const string_core &rhs) const;
+    bool compare(const char_type *rhs) const;
+
+    bool is_small() const   { return TYPE_IS_SMALL(_type);  }
+    bool is_medium() const  { return TYPE_IS_MIDIUM(_type); }
+    bool is_large() const   { return TYPE_IS_LARGE(_type);  }
+    bool is_ref() const     { return TYPE_IS_REF(_type);    }
+
+    bool is_not_small() const { return TYPE_NOT_IS_SMALL(_type); }
+
+    char_type *data() const { return c_str(); }
+    char_type *c_str() const;
+
+    size_type size() const;
+
+protected:
+    size_t calc_capacity(size_t src_len);
 
 private:
     typedef struct core_data {
@@ -157,9 +171,9 @@ STRING_CORE::string_core(const string_core &src)
 }
 
 template <STRING_CORE_CLASSES>
-STRING_CORE::string_core(const char *src)
+STRING_CORE::string_core(const char * const src, const size_t size)
 {
-    size_t src_len = char_traits<char>::strlen(src);
+    size_t src_len = size;
     if (src_len < STRING_SMALL_SIZE) {
         _data = NULL;       
         _size = src_len;     
@@ -189,6 +203,38 @@ STRING_CORE::string_core(const char *src)
 }
 
 template <STRING_CORE_CLASSES>
+STRING_CORE::string_core(const wchar_t * const src, const size_t size)
+{
+    size_t src_len = size;
+    if (src_len < STRING_SMALL_SIZE) {
+        _data = NULL;       
+        _size = src_len;     
+        _capacity = 0;
+        _type = STRING_TYPE_SMALL;
+        char_traits<wchar_t>::strncpy(_buf, jm_countof(_buf), src, src_len);
+    }
+    /* eager copy */
+    else if (src_len < STRING_MEDIUM_SIZE) {
+        _size = src_len;
+        _capacity = calc_capacity(src_len);
+        _type = STRING_TYPE_MEDIUM;
+        _data = char_traits<wchar_t>::assign(_capacity);
+        if (_data)
+            char_traits<wchar_t>::strncpy(_data, _capacity, src, src_len);
+    }
+    /* copy-on-write or unknown type */
+    else {
+        _capacity = calc_capacity(src_len);
+        _data = char_traits<wchar_t>::assign(_capacity);
+        _size = src_len;
+        _type = STRING_TYPE_LARGE;
+        if (_data)
+            char_traits<wchar_t>::strncpy(_data, _capacity, src, src_len);
+    }
+    _refcount = 1;
+}
+
+template <STRING_CORE_CLASSES>
 STRING_CORE::~string_core()
 {
     destroy();
@@ -204,7 +250,7 @@ template <STRING_CORE_CLASSES>
 inline void STRING_CORE::retail()
 {
     ++_refcount;
-    if (_store.is_large())
+    if (is_large())
         _type = STRING_TYPE_REF;
 }
 
@@ -222,6 +268,114 @@ inline void STRING_CORE::release()
         _type = 0;
         _refcount = 0;
     }
+}
+
+template <STRING_CORE_CLASSES>
+inline typename STRING_CORE::char_type *STRING_CORE::c_str() const
+{
+    if (_size < STRING_SMALL_SIZE)
+        return (char_type *)&_buf[0];
+    else
+        return _data;
+}
+
+template <STRING_CORE_CLASSES>
+inline typename STRING_CORE::size_type STRING_CORE::size() const
+{
+    return _size;
+}
+
+template <STRING_CORE_CLASSES>
+inline size_t STRING_CORE::calc_capacity(size_t src_len)
+{
+    return src_len + 1;
+}
+
+template <STRING_CORE_CLASSES>
+inline bool STRING_CORE::equals(const STRING_CORE &rhs) const
+{
+    bool equal = false;
+    if (&rhs == this)
+        equal = true;
+    return equal;
+}
+
+template <STRING_CORE_CLASSES>
+bool STRING_CORE::compare(const STRING_CORE &rhs) const
+{
+    if (&rhs == this)
+        return true;
+
+    bool equal = false;
+    char_type *rhs_data;
+
+    if (_size == rhs._size) {
+        if (_type == rhs._type) {
+            if (is_small()) {
+                equal = (traits_type::strncmp(&_buf[0], &rhs._buf[0], _size) == 0);
+            }
+            else if (is_not_small()) {
+                rhs_data = rhs._data;
+                if (_data == rhs_data)
+                    equal = true;
+                else
+                    equal = (traits_type::strncmp(_data, rhs_data, _size) == 0);
+            }
+            else {
+                // Unknown string type
+                sLog.error("string_core::compare(const string_core &rhs) - Error: Unknown string type.");
+            }
+        }
+        else {
+            //
+        }
+    }
+    else {
+        // Is not same size
+        sLog.info("string_core::compare(const string_core &rhs), size = %d, rhs.size = %d", size(), rhs.size());
+    }
+    return equal;
+}
+
+template <STRING_CORE_CLASSES>
+bool STRING_CORE::compare(const char_type *rhs) const
+{
+    bool equal = false;
+    if (_store.is_small()) {
+        if (_buf == rhs)
+            equal = true;
+        else
+            equal = traits_type::strncmp(_buf, rhs, _size);
+    }
+    else if (_store.is_not_small()) {
+        if (_data == rhs)
+            equal = true;
+        else
+            equal = traits_type::strncmp(_data, rhs, _size);
+    }
+    else {
+        // Unknown string type
+        sLog.error("STRING_CORE::compare(const char_type *rhs) - Error: Unknown string type.");
+    }
+    return equal;
+}
+
+template <STRING_CORE_CLASSES>
+inline bool operator == (const STRING_CORE &lhs, const STRING_CORE &rhs)
+{
+    return lhs.compare(rhs);
+}
+
+template <STRING_CORE_CLASSES>
+inline bool operator == (const STRING_CORE &lhs, const _CharT *rhs)
+{
+    return lhs.compare(rhs);
+}
+
+template <STRING_CORE_CLASSES>
+inline bool operator == (const _CharT *lhs, const STRING_CORE &rhs)
+{
+    return rhs.compare(lhs);
 }
 
 NS_JIMI_END

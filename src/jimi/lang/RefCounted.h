@@ -9,6 +9,13 @@
 #include <jimi/core/jimi_def.h>
 #include <jimi/thread/Atomic.h>
 
+NS_JIMI_BEGIN
+
+void *smartRealloc(void *memory, size_t cur_size, size_t cur_capacity, size_t new_size)
+{
+    return ::realloc(memory, new_size);
+}
+
 template <class _CharT, class _ValueT, class _Atomic = non_atomic<_ValueT>>
 class JIMI_API refcounted
 {
@@ -77,7 +84,7 @@ public:
         // null. In this case, however, one Char is already part of the
         // struct.
         refcounted *result = static_cast<refcounted *>(
-            ::realloc(dis,
+            ::smartRealloc(dis,
                 sizeof(refcounted) + currentSize * sizeof(char_type),
                 sizeof(refcounted) + currentCapacity * sizeof(char_type),
                 sizeof(refcounted) + newCapacity * sizeof(char_type)));
@@ -89,5 +96,7 @@ private:
     atomic_type _refcount;
     char_type   _data[1];
 };
+
+NS_JIMI_END
 
 #endif  /* _JIMI_LANG_REFCOUNTED_H_ */

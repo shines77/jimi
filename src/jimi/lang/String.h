@@ -28,8 +28,6 @@ NS_JIMI_BEGIN
 ///
 /// </comment>
 
-std::string str;
-
 template <class _CharT>
 class JIMI_API allocator
 {
@@ -102,8 +100,11 @@ public:
     // Contructor
     basic_string();
     basic_string(const basic_string &src);
+    basic_string(const std::string &src);
     basic_string(const char *src);
+    basic_string(const char *src, size_t size);
     basic_string(const wchar_t *src);
+    basic_string(const wchar_t *src, size_t size);
     ~basic_string();
 
     void destroy();
@@ -111,109 +112,61 @@ public:
     void retail();
     void release();
 
-    bool equals(const basic_string &rhs);
+    bool equals(const basic_string &rhs) const;
 
-    bool compare(const basic_string &rhs);
-    bool compare(const char_type *rhs);
+    bool compare(const basic_string &rhs) const;
+    bool compare(const char_type *rhs) const;
 
-    char_type *data() const { return c_str(); }
-    char_type *c_str() const;
+    const storage_type &getStorage() const { return _store; }
+
+    char_type *data() const  { return _store.c_str(); }
+    char_type *c_str() const { return _store.c_str(); }
+    size_type size() const   { return (size_type)_store.size();  }
 
 protected:
-    size_t calc_capacity(size_t src_len);
-
-protected:
-    char_type  *_data;
-    size_type   _size;
-    size_type   _capacity;
-    uint32_t    _type;
-    int32_t     _refcount;
-    char_type   _buf[STRING_SMALL_SIZE];
-
     storage_type _store;
 };
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING::basic_string()
-: _data(NULL)
-, _size(0)
-, _capacity(0)
-, _type(0)
-, _refcount(1)
+BASIC_STRING::basic_string() 
+: _store()
 {
-    // init sso buffer
-    (*(uint32_t *)(&_buf[0])) = 0;
 }
 
 template <BASIC_STRING_CLASSES>
 BASIC_STRING::basic_string(const basic_string &src)
+: _store(src._store)
 {
-    _size = src._size;
-    _type = src._type;
-    /* eager copy */
-    if (_store.is_medium()) {
-        jimi_assert(src._capacity == STRING_MEDIUM_SIZE);
-        _capacity = STRING_MEDIUM_SIZE;
-        _refcount = 1;
-        (*(uint32_t *)(&_buf[0])) = 0;
-        _data = char_traits<char>::assign(STRING_MEDIUM_SIZE);
-        char_traits<char>::strlcpy(_data, STRING_MEDIUM_SIZE, src._data, src._size);
-    }
-    /* copy-on-write */
-    else if (_store.is_large()) {
-        jimi_assert(src._refcount >= 0);
-        _data     = src._data;
-        _capacity = src._capacity;
-        _refcount = 1;
-        (*(uint32_t *)(&_buf[0])) = 0;
-        const_cast<basic_string &>(src).retail();
-    }
-    /* is_small or unknown type */
-    else {
-        _data = NULL;
-        _capacity = 0;
-        _refcount = 1;
-        jimi_assert(src._size < STRING_SMALL_SIZE);
-        if (_size < STRING_SMALL_SIZE)
-            char_traits<char>::strlcpy(&_buf[0], STRING_SMALL_SIZE, &src._buf[0], _size);
-        else
-            sLog.error("basic_string(const basic_string &src): _data = %08X, _size = %d.", _data, _size);
-    }
+}
 
-    // init SSO buffer
-    _buf[0] = '\0';
+template <BASIC_STRING_CLASSES>
+BASIC_STRING::basic_string(const std::string &src)
+: _store(src.data(), src.size())
+{
 }
 
 template <BASIC_STRING_CLASSES>
 BASIC_STRING::basic_string(const char *src)
+: _store(src, ::jm_strlen(src))
 {
-    size_t src_len = char_traits<char>::strlen(src);
-    if (src_len < STRING_SMALL_SIZE) {
-        _data = NULL;       
-        _size = src_len;     
-        _capacity = 0;
-        _type = STRING_TYPE_SMALL;
-        char_traits<char>::strncpy(_buf, jm_countof(_buf), src, src_len);
-    }
-    /* eager copy */
-    else if (src_len < STRING_MEDIUM_SIZE) {
-        _size = src_len;
-        _capacity = calc_capacity(src_len);
-        _type = STRING_TYPE_MEDIUM;
-        _data = char_traits<char>::assign(_capacity);
-        if (_data)
-            char_traits<char>::strncpy(_data, _capacity, src, src_len);
-    }
-    /* copy-on-write or unknown type */
-    else {
-        _capacity = calc_capacity(src_len);
-        _data = char_traits<char>::assign(_capacity);
-        _size = src_len;
-        _type = STRING_TYPE_LARGE;
-        if (_data)
-            char_traits<char>::strncpy(_data, _capacity, src, src_len);
-    }
-    _refcount = 1;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING::basic_string(const char *src, size_t size)
+: _store(src, size)
+{
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING::basic_string(const wchar_t *src)
+: _store(src, ::jm_strlen(src))
+{
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING::basic_string(const wchar_t *src, size_t size)
+: _store(src, size)
+{
 }
 
 template <BASIC_STRING_CLASSES>
@@ -231,110 +184,36 @@ inline void BASIC_STRING::destroy()
 template <BASIC_STRING_CLASSES>
 inline void BASIC_STRING::retail()
 {
-    ++_refcount;
-    if (_store.is_large())
-        _type = STRING_TYPE_REF;
+    _store.retail();
 }
 
 template <BASIC_STRING_CLASSES>
 inline void BASIC_STRING::release()
 {
-    --_refcount;
-    if (_refcount <= 0 && !_store.is_ref()) {
-        if (_data != NULL) {
-            delete _data;
-            _data = NULL;
-        }
-        _size = 0;
-        _capacity = 0;
-        _type = 0;
-        _refcount = 0;
-    }
-    return _refcount;
+    _store.release();
 }
 
 template <BASIC_STRING_CLASSES>
-inline size_t BASIC_STRING::calc_capacity(size_t src_len)
-{
-    return src_len + 1;
-}
-
-template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::char_type *BASIC_STRING::c_str() const
-{
-    if (_size < STRING_SMALL_SIZE)
-        return (char_type *)&_store._buf[0];
-    else
-        return _store._data;
-}
-
-template <BASIC_STRING_CLASSES>
-inline bool BASIC_STRING::equals(const BASIC_STRING &rhs)
+inline bool BASIC_STRING::equals(const BASIC_STRING &rhs) const
 {
     bool equal = false;
-    if (this == &rhs)
+    if (&rhs == this)
         equal = true;
     return equal;
 }
 
 template <BASIC_STRING_CLASSES>
-bool BASIC_STRING::compare(const BASIC_STRING &rhs)
+bool BASIC_STRING::compare(const BASIC_STRING &rhs) const
 {
-    if (this == &rhs)
+    if (&rhs == this)
         return true;
-
-    bool equal = false;
-    char_type *rhs_data;
-
-    if (size == rhs._size) {
-        if (flag == rhs._type) {
-            if (_store.is_small()) {
-                equal = traits_type::strncmp(_buf, rhs._buf, _size);
-            }
-            else if (_store.is_not_small()) {
-                rhs_data = rhs._data;
-                if (_data == rhs_data)
-                    equal = true;
-                else
-                    equal = traits_type::strncmp(_data, rhs_data, _size);
-            }
-            else {
-                // Unknown string type
-                sLog.error("BASIC_STRING::compare(const BASIC_STRING &rhs) - Error: Unknown string type.");
-            }
-        }
-        else {
-            //
-        }
-    }
-    else {
-        // Is not same size
-        sLog.info("BASIC_STRING::compare(const BASIC_STRING &rhs), size = %d, rhs.size = %d", size, rhs.size);
-    }
-    return equal;
+    return _store.compare(rhs._store);
 }
 
 template <BASIC_STRING_CLASSES>
-bool BASIC_STRING::compare(const char_type *rhs)
+bool BASIC_STRING::compare(const char_type *rhs) const
 {
-    bool equal = false;
-    if (_store.is_small()) {
-        if (buf == rhs)
-            equal = true;
-        else
-            equal = traits_type::strncmp(_buf, rhs, _size);
-    }
-    else if (_store.is_not_small()) {
-        if (data == rhs)
-            equal = true;
-        else
-            equal = traits_type::strncmp(_data, rhs, _size);
-    }
-    else {
-        // Unknown string type
-        sLog.error("BASIC_STRING::compare(const char_type *rhs) - Error: Unknown string type.");
-    }
-    return equal;
+    return _store.compare(rhs);
 }
 
 template <BASIC_STRING_CLASSES>

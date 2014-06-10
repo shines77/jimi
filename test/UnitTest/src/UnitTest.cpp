@@ -433,9 +433,9 @@ void Memcpy_Test()
 void Char_Traits_Test()
 {
 #ifndef _DEBUG
-    const int LOOP_TIMES = 5000000;
+    const int LOOP_TIMES = 1000000;
 #else
-    const int LOOP_TIMES = 100000;
+    const int LOOP_TIMES = 50000;
 #endif
     double time1, time2, time3;
     stop_watch sw;
@@ -445,6 +445,8 @@ void Char_Traits_Test()
     String str2 = "hijklmnop";
     printf("str1.c_str() = %s\n\n", str1.c_str());
     printf("str2.c_str() = %s\n\n", str2.c_str());
+    printf("? (str1 == str2) = %d\n", (str1 == str2));
+    printf("? (str1 == str1) = %d\n\n", (str1 == str1));
 
     char *pstr1, *pstr2, *pstr3, *pstr4, *pstr;
     int str_len;

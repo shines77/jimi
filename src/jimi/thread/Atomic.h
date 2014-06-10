@@ -8,6 +8,8 @@
 
 #include <jimi/core/jimi_def.h>
 
+NS_JIMI_BEGIN
+
 template <class _ValueT = int32_t>
 class atomic
 {
@@ -63,5 +65,7 @@ public:
 private:
     value_type _value;
 };
+
+NS_JIMI_END
 
 #endif  /* _JIMI_THREAD_ATOMIC_H_ */
