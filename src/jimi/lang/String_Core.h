@@ -193,17 +193,6 @@ protected:
 };
 
 template <STRING_CORE_CLASSES>
-typename STRING_CORE::size_type STRING_CORE::capacity() const
-{
-    if (is_small())
-        return kMaxSmallSize - 1;
-    else if (is_medium())
-        return kMaxMediumSize - 1;
-    else
-        return _ml.capacity;
-}
-
-template <STRING_CORE_CLASSES>
 STRING_CORE::string_core()
 {
 #if 1
@@ -369,6 +358,26 @@ inline void STRING_CORE::release()
 }
 
 template <STRING_CORE_CLASSES>
+inline typename STRING_CORE::size_type STRING_CORE::size() const
+{
+    if (is_small())
+        return _small.info.size;
+    else
+        return _ml.size;
+}
+
+template <STRING_CORE_CLASSES>
+typename STRING_CORE::size_type STRING_CORE::capacity() const
+{
+    if (is_small())
+        return kMaxSmallSize - 1;
+    else if (is_medium())
+        return kMaxMediumSize - 1;
+    else
+        return _ml.capacity;
+}
+
+template <STRING_CORE_CLASSES>
 inline const typename STRING_CORE::char_type *STRING_CORE::c_str() const
 {
     flag_type type = get_type();
@@ -376,12 +385,6 @@ inline const typename STRING_CORE::char_type *STRING_CORE::c_str() const
         return &_small.buf[0];
     else
         return _ml.data;
-}
-
-template <STRING_CORE_CLASSES>
-inline typename STRING_CORE::size_type STRING_CORE::size() const
-{
-    return _ml.size;
 }
 
 template <STRING_CORE_CLASSES>
