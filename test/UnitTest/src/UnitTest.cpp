@@ -441,8 +441,10 @@ void Char_Traits_Test()
     stop_watch sw;
     int i, j;
 
-    String str = "abcdefg";
-    printf("str.c_str() = %s\n\n", str.c_str());
+    String str1 = "abcdefg";
+    String str2 = "hijklmnop";
+    printf("str1.c_str() = %s\n\n", str1.c_str());
+    printf("str2.c_str() = %s\n\n", str2.c_str());
 
     char *pstr1, *pstr2, *pstr3, *pstr4, *pstr;
     int str_len;
@@ -540,9 +542,9 @@ int UnitTest_Main(int argc, char *argv[])
     String_Copy_On_Write_Test();
 
     // Memcpy 内存复制测试
-    Memcpy_Test();
+    //Memcpy_Test();
 
-#if 0
+#if 1
     // char_traits<T>相关字符串函数的测试
     Char_Traits_Test();
 #endif

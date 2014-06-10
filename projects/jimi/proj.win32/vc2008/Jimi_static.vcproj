@@ -238,11 +238,19 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\..\..\src\jimi\lang\RefCounted.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimi\lang\String.h"
 						>
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimi\lang\String.inl.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\lang\String_Core.h"
 						>
 					</File>
 					<File
@@ -257,6 +265,10 @@
 				<Filter
 					Name="thread"
 					>
+					<File
+						RelativePath="..\..\..\..\src\jimi\thread\Atomic.h"
+						>
+					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimi\thread\Event.h"
 						>

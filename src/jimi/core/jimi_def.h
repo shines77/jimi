@@ -23,16 +23,39 @@
     #include <stdint.h>
 #endif
 
+/**
+ * for assert define
+ */
 #include <assert.h>
 
+#ifndef JIMI_ASSERT
 #define JIMI_ASSERT_TRUE(predicate)                   assert(!(predicate))
 #define JIMI_ASSERT_FALSE(predicate)                  assert(!!(predicate))
 #define JIMI_ASSERT(predicate)                        JIMI_ASSERT_FALSE(predicate)
+#endif
 
+#ifndef JIMI_ASSERT_EX
 #define JIMI_ASSERT_EX_TRUE(predicate, comment)       assert(!(predicate))
 #define JIMI_ASSERT_EX_FALSE(predicate, comment)      assert(!!(predicate))
 #define JIMI_ASSERT_EX(predicate, comment)            JIMI_ASSERT_EX_FALSE(predicate, comment)
+#endif
 
+#ifndef jimi_assert
+#define jimi_assert_true        JIMI_ASSERT_TRUE
+#define jimi_assert_false       JIMI_ASSERT_FALSE
+#define jimi_assert             JIMI_ASSERT
+#endif
+
+#ifndef jimi_assert_ex
+#define jimi_assert_ex_true     JIMI_ASSERT_EX_TRUE
+#define jimi_assert_ex_false    JIMI_ASSERT_EX_FALSE
+#define jimi_assert_ex          JIMI_ASSERT_EX
+#endif
+
+/**
+ * for jimi_winapi
+ */
+#if defined(JIMI_MSVC)
 #ifndef __CLR_OR_STD_CALL
 #if defined (_M_CEE) || defined (MRTDLL)
 #define __CLR_OR_STD_CALL   __clrcall
@@ -42,6 +65,9 @@
 #endif  /* __CLR_OR_STD_CALL */
 
 #define JIMI_WINAPI             __CLR_OR_STD_CALL
+#else
+#define JIMI_WINAPI
+#endif  /* JIMI_MSVC */
 
 #include <iostream>
 #include <string>
