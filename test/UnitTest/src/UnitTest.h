@@ -8,7 +8,9 @@
 
 #include <jimi/core/jimi_def.h>
 
-#if 1
+#define UNITEST_USE_NAMESPACE   1
+
+#if UNITEST_USE_NAMESPACE
 
 #define NS_UNITEST_BEGIN    namespace UnitTest {
 #define NS_UNITEST_END      }
@@ -22,6 +24,6 @@
 
 #define USING_NS_UNITEST
 
-#endif
+#endif  /* UNITEST_USE_NAMESPACE */
 
 #endif  /* _UNITEST_H_ */

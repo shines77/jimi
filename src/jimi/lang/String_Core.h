@@ -72,8 +72,16 @@ public:
     typedef size_t              size_type;
     typedef size_t              flag_type;
     typedef char_traits<_CharT> traits_type;
-
+    
     struct small_info_t;
+    struct small_t;
+    struct core_data_t;
+    struct medium_large;
+    
+    typedef struct small_info_t small_info_t;
+    typedef struct small_t      small_t;
+    typedef struct core_data_t  core_data_t;
+    typedef struct medium_large medium_large; 
 
     // Constant
     static const flag_type      kIsSmall  =  STRING_TYPE_SMALL;
@@ -119,6 +127,7 @@ public:
     const char_type *c_str() const;
 
     size_type size() const;
+    size_type capacity() const;
 
     // swap below doesn't test whether &rhs == this (and instead
     // potentially does extra work) on the premise that the rarity of
@@ -126,28 +135,20 @@ public:
     // worth.
     void swap(string_core &rhs);
 
-    size_type capacity() const;
+    // Don't disabled
+    string_core & operator = (const string_core &rhs);
     
 protected:
     size_t calc_capacity(size_t src_len);
 
 private:
-    // Disabled
-    string_core & operator = (const string_core &rhs) {
-        flag_type type = rhs.get_type();
-        if (type == kIsSmall)
-            small_clone(_small, rhs._small);
-        else
-            ml_clone(_ml, rhs._ml);
+    void small_clone(small_t &dest, const small_t &src) {
+        dest.info.lastShort = src.info.lastShort;
+        traits_type::strncpy_u(dest.buf, src.buf, src.info.size);
+        dest.buf[src.info.size] = '\0';
     }
 
-    static void small_clone(struct small_t &dest, const struct small_t &src) {
-        dest.info.lastShort = src._small.info.lastShort;
-        traits_type::strncpy_u(dest.buf, src._small.buf, src._small.info.size);
-        dest.buf[src._small.info.size] = '\0';
-    }
-
-    static void ml_clone(struct medium_large &dest, const struct medium_large &src) {
+    void ml_clone(medium_large &dest, const medium_large &src) {
         dest.data = src.data;
         dest.size = src.size;
         dest.capacity = src.capacity;
@@ -164,7 +165,6 @@ private:
             unsigned short    lastShort;
         };
     };
-    typedef struct small_info_t small_info_t;
 
     /* small object buffer */
     struct small_t {
@@ -176,7 +176,6 @@ private:
             char_type buf[(STRING_SMALL_SIZE - sizeof(small_info_t)) / sizeof(char_type)];
         };
     };
-    typedef struct small_t small_t;
 
     /* 这个结构只是为了动态设置buf的size而存在的 */
     struct core_data_t {
@@ -185,7 +184,6 @@ private:
         size_type   capacity;
         flag_type   type;
     };
-    typedef struct core_data_t core_data_t;
 
     struct medium_large {
         union {
@@ -203,7 +201,6 @@ private:
             char_type buf[(STRING_SMALL_SIZE - sizeof(core_data_t)) / sizeof(char_type)];
         };
     };
-    typedef struct medium_large medium_large;
 
 private:
     /* 这是一个union联合, 即small_t类型和medium_large类型共享于同一个内存结构 */
@@ -376,6 +373,16 @@ inline void STRING_CORE::release()
     }
 }
 
+template <STRING_CORE_CLASSES>
+STRING_CORE & STRING_CORE::operator = (const STRING_CORE &rhs) {
+    flag_type type = rhs.get_type();
+    if (type == kIsSmall)
+        small_clone(_small, rhs._small);
+    else
+        ml_clone(_ml, rhs._ml);
+    return *this;
+}
+
 // swap below doesn't test whether &rhs == this (and instead
 // potentially does extra work) on the premise that the rarity of
 // that situation actually makes the check more expensive than is
@@ -384,17 +391,17 @@ inline void STRING_CORE::release()
 template <STRING_CORE_CLASSES>
 inline void STRING_CORE::swap(STRING_CORE &rhs)
 {
-#if 0
+#if 1
         // 在不同的type下, _ml的有些数据是不必复制的
         flag_type type = rhs.get_type();
         if (type == kIsSmall) {
-            const small_t t;
+            small_t t;
             small_clone(t, _small);
             small_clone(_small, rhs._small);
             small_clone(rhs._small, t);
         }
         else {
-            const medium_large t;
+            medium_large t;
             ml_clone(t, _ml);
             ml_clone(_ml, rhs._ml);
             ml_clone(rhs._ml, t);
@@ -406,7 +413,6 @@ inline void STRING_CORE::swap(STRING_CORE &rhs)
         rhs._ml = t;
 #endif
 }
-
 
 template <STRING_CORE_CLASSES>
 inline typename STRING_CORE::size_type STRING_CORE::size() const

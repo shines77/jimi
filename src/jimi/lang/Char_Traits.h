@@ -151,9 +151,6 @@ inline char_type *char_traits<char_type>::strncpy_u(char_type *_Dest, const char
     while (--n >= 0) {
         *dest = *src;
 
-        //if (*dest == '\0')
-        //    return _Dest;
-
         ++dest;
         ++src;
     }
@@ -181,9 +178,6 @@ inline char_type *char_traits<char_type>::strncpy_u2(char_type *_Dest, const cha
 
     do {
         *dest = *src;
-
-        //if (*dest == '\0')
-        //    return _Dest;
 
         ++dest;
         ++src;
@@ -275,9 +269,6 @@ inline char_type *char_traits<char_type>::strncpy(char_type *_Dest, size_t _Numb
 
     while (--n >= 0) {
         *dest = *src;
-
-        if (*dest == '\0')
-            return _Dest;
 
         ++dest;
         ++src;
@@ -372,9 +363,6 @@ inline char_type *char_traits<char_type>::strncpy_e(char_type *_Dest, size_t _Nu
 
     while (--n > 0) {
         *dest = *src;
-
-        if (*dest == '\0')
-            return dest;
 
         ++dest;
         ++src;
@@ -544,7 +532,7 @@ inline int char_traits<char_type>::strneql(const char_type *_Str1, const char_ty
             }
         }
         else {
-            // un equal
+            // isn't equal
             return 0;
         }
     } while (--n > 0);

@@ -3,10 +3,8 @@
 //
 
 // whether use crtdbg check?
-#ifdef _DEBUG
 #ifndef USE_CRTDBG_CHECK
 #define USE_CRTDBG_CHECK    1
-#endif
 #endif
 
 //
@@ -42,26 +40,37 @@
 
 #include <string>
 
+/**
+ * for asmlib
+ */
 #pragma comment(lib, "libacof32.lib")
 
+/* 基于CRT的内存泄漏检测 */
 #if USE_CRTDBG_CHECK
+
+//
+// C++中基于CRT的内存泄漏检测
+//
+// Reference: http://www.cnblogs.com/weiym/archive/2013/02/25/2932810.html
+//
+
 #ifdef _DEBUG
-// crtdbg.h must be behind the stdlib.h
-#include <crtdbg.h>
-#endif
+  #define DEBUG_CLIENTBLOCK  new( _CLIENT_BLOCK, __FILE__, __LINE__)
+#else
+  #define DEBUG_CLIENTBLOCK
 #endif
 
-/*
+// 如果不定义这个宏, C方式的malloc泄露不会被记录下来
+#define _CRTDBG_MAP_ALLOC
+
+// crtdbg.h must be behind the stdlib.h
+#include <crtdbg.h>
+
 #ifdef _DEBUG
-#ifndef DEBUG_CLIENTBLOCK
-#define DEBUG_CLIENTBLOCK   new(_CLIENT_BLOCK, __FILE__, __LINE__)
+  #define new DEBUG_CLIENTBLOCK
 #endif
-#define new                 DEBUG_CLIENTBLOCK
-#else
-#undef  DEBUG_CLIENTBLOCK
-#define DEBUG_CLIENTBLOCK
-#endif
-//*/
+
+#endif  /* USE_CRTDBG_CHECK */
 
 /**********************************************************
  *
@@ -92,6 +101,7 @@ void set_crtdbg_env()
 {
 /* 使用CRTDBG将会检查内存越界问题, 如果你使用了vld, 内存泄漏信息可关闭 */
 #if USE_CRTDBG_CHECK
+
     // 设置 CRT 报告模式
     _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 
@@ -100,6 +110,7 @@ void set_crtdbg_env()
     // 进程退出时, 显示内存泄漏信息
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif  /* VLD_RPTHOOK_INSTALL */
+
 #endif  /* USE_CRTDBG_CHECK */
 }
 
@@ -147,6 +158,36 @@ void String_Copy_On_Write_Test()
     printf ("After Copy-On-Write:\n");
     printf ("\tstr1's address: %x\n", str1.c_str() );
     printf ("\tstr2's address: %x\n", str2.c_str() );
+
+    printf("\n");
+}
+
+/* String类的基础测试 */
+
+void String_Base_Test()
+{
+    String str1 = "abcdefg";
+    String str2 = "hijklmnop";
+    printf("str1.c_str() = %s\n", str1.c_str());
+    printf("str2.c_str() = %s\n\n", str2.c_str());
+    printf("? (str1 == str2) = %d\n", (str1 == str2));
+    printf("? (str1 == str1) = %d\n\n", (str1 == str1));
+
+    str1.swap(str2);
+
+    printf("str1.swap(str2);\n\n");
+    printf("str1.c_str() = %s\n", str1.c_str());
+    printf("str2.c_str() = %s\n\n", str2.c_str());
+
+    printf("sizeof(str1) = %d bytes\n\n", sizeof(str1));
+
+    str1 = str2;
+    printf("str1 = str2;\n");
+    printf("str1.c_str() = %s\n", str1.c_str());
+
+    str1 = "i21938219";
+    printf("str1 = \"i21938219\";\n");
+    printf("str1.c_str() = %s\n", str1.c_str());
 
     printf("\n");
 }
@@ -426,26 +467,6 @@ void Memcpy_Test()
     if (buffer6) _aligned_free(buffer6);
     if (buffer7) _aligned_free(buffer7);
     if (buffer8) _aligned_free(buffer8);
-}
-
-/* String类的基础测试 */
-
-void String_Base_Test()
-{
-    String str1 = "abcdefg";
-    String str2 = "hijklmnop";
-    printf("str1.c_str() = %s\n", str1.c_str());
-    printf("str2.c_str() = %s\n\n", str2.c_str());
-    printf("? (str1 == str2) = %d\n", (str1 == str2));
-    printf("? (str1 == str1) = %d\n\n", (str1 == str1));
-
-    str1.swap(str2);
-
-    printf("str1.swap(str2);\n\n");
-    printf("str1.c_str() = %s\n", str1.c_str());
-    printf("str2.c_str() = %s\n\n", str2.c_str());
-
-    printf("sizeof(str1) = %d bytes\n\n", sizeof(str1));
 }
 
 /* char_traits<T>相关字符串函数的测试 */

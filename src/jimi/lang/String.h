@@ -62,9 +62,9 @@ inline void pod_copy(const Pod *b, const Pod *e, Pod *d) {
 #define BASIC_STRING            \
     basic_string<_CharT, _Traits, _Alloc, _Storage>
 
-template <class _CharT  = char,
-          class _Traits = char_traits<_CharT>,
-          class _Alloc  = allocator<_CharT>,
+template <class _CharT   = char,
+          class _Traits  = char_traits<_CharT>,
+          class _Alloc   = allocator<_CharT>,
           class _Storage = string_core<_CharT>>
 
 class JIMI_API basic_string
@@ -205,6 +205,7 @@ BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &lhs) {
         else
             _store.shrink(oldSize - srcSize);
         //*/
+        _store = lhs._store;
         jimi_assert(size() == srcSize);
         //string_detail::pod_copy(lhs.begin(), lhs.end(), begin());
         //_store.writeTerminator();
