@@ -10,7 +10,7 @@
 
 NS_JIMI_BEGIN
 
-template <class _ValueT = int32_t>
+template <class _ValueT = size_t>
 class atomic
 {
 public:
@@ -25,7 +25,7 @@ private:
     value_type _value;
 };
 
-template <class _ValueT = int32_t>
+template <class _ValueT = size_t>
 class non_atomic
 {
 public:

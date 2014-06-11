@@ -72,7 +72,7 @@
 #ifdef _MSC_VER
 #ifdef _DEBUG
 // 如果你没有安装vld(Visual Leak Detector), 请注释掉这一句.
-//#include <vld.h>
+#include <vld.h>
 #endif  /* _DEBUG */
 #endif  /* _MSC_VER */
 
@@ -428,6 +428,26 @@ void Memcpy_Test()
     if (buffer8) _aligned_free(buffer8);
 }
 
+/* String类的基础测试 */
+
+void String_Base_Test()
+{
+    String str1 = "abcdefg";
+    String str2 = "hijklmnop";
+    printf("str1.c_str() = %s\n", str1.c_str());
+    printf("str2.c_str() = %s\n\n", str2.c_str());
+    printf("? (str1 == str2) = %d\n", (str1 == str2));
+    printf("? (str1 == str1) = %d\n\n", (str1 == str1));
+
+    str1.swap(str2);
+
+    printf("str1.swap(str2);\n\n");
+    printf("str1.c_str() = %s\n", str1.c_str());
+    printf("str2.c_str() = %s\n\n", str2.c_str());
+
+    printf("sizeof(str1) = %d bytes\n\n", sizeof(str1));
+}
+
 /* char_traits<T>相关字符串函数的测试 */
 
 void Char_Traits_Test()
@@ -440,13 +460,6 @@ void Char_Traits_Test()
     double time1, time2, time3;
     stop_watch sw;
     int i, j;
-
-    String str1 = "abcdefg";
-    String str2 = "hijklmnop";
-    printf("str1.c_str() = %s\n\n", str1.c_str());
-    printf("str2.c_str() = %s\n\n", str2.c_str());
-    printf("? (str1 == str2) = %d\n", (str1 == str2));
-    printf("? (str1 == str1) = %d\n\n", (str1 == str1));
 
     char *pstr1, *pstr2, *pstr3, *pstr4, *pstr;
     int str_len;
@@ -546,7 +559,9 @@ int UnitTest_Main(int argc, char *argv[])
     // Memcpy 内存复制测试
     //Memcpy_Test();
 
-#if 1
+    String_Base_Test();
+
+#if 0
     // char_traits<T>相关字符串函数的测试
     Char_Traits_Test();
 #endif
@@ -570,6 +585,7 @@ int UnitTest_Main(int argc, char *argv[])
     printf("\n");
 #endif
 
+#if 0
      do {
         jimi::Object *object = new jimi::Object();
         jimi::Object &newObject = object->Clone();
@@ -581,6 +597,7 @@ int UnitTest_Main(int argc, char *argv[])
     } while (0);
 
     printf("\n");
+#endif
 
 #if 0
     do {

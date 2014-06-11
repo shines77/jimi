@@ -35,16 +35,20 @@ NS_JIMI_BEGIN
 
 typedef enum StringTypeMask
 {
-    STRING_TYPE_SMALL   = (sizeof(size_t) == 4) ? 0x20000000u : 0x2000000000000000u,
-    STRING_TYPE_MEDIUM  = (sizeof(size_t) == 4) ? 0x40000000u : 0x4000000000000000u,
-    STRING_TYPE_LARGE   = (sizeof(size_t) == 4) ? 0x80000000u : 0x8000000000000000u,
+    STRING_TYPE_SMALL   = (sizeof(size_t) == 4) ? 0x01000000 : 0x0100000000000000,
+    STRING_TYPE_MEDIUM  = (sizeof(size_t) == 4) ? 0x02000000 : 0x0200000000000000,
+    STRING_TYPE_LARGE   = (sizeof(size_t) == 4) ? 0x04000000 : 0x0400000000000000,
     STRING_TYPE_MASK    = (STRING_TYPE_SMALL
         | STRING_TYPE_MEDIUM | STRING_TYPE_LARGE),
+} StringTypeMask;
+
+typedef enum StringTypeMaskX
+{
     STRING_TYPE_SMALL_X = 0x01,
     TRING_TYPE_MEDIUM_X = 0x02,
     STRING_TYPE_LARGE_X = 0x04,
     STRING_TYPE_MASK_X  = 0x07
-} StringTypeMask;
+} StringTypeMaskX;
 
 #define TYPE_IS_SMALL(type)     ((type & STRING_TYPE_SMALL)  != 0)
 #define TYPE_IS_MIDIUM(type)    ((type & STRING_TYPE_MEDIUM) != 0)
@@ -58,7 +62,7 @@ typedef enum StringTypeMask
 #define STRING_CORE            \
     string_core<_CharT, _RefCount>
 
-template <class _CharT, class _RefCount = refcounted<_CharT, int32_t>>
+template <class _CharT, class _RefCount = refcounted<_CharT, size_t>>
 class JIMI_API string_core
 {
 public:
@@ -118,11 +122,7 @@ public:
     // potentially does extra work) on the premise that the rarity of
     // that situation actually makes the check more expensive than is
     // worth.
-    void swap(string_core &rhs) {
-        const medium_large t = _ml;
-        _ml = rhs._ml;
-        rhs._ml = t;
-    }
+    void swap(string_core &rhs);
 
     size_type capacity() const;
     
@@ -131,41 +131,35 @@ protected:
 
 private:
     // Disabled
-    string_core & operator = (const string_core &rhs) {};
+    string_core & operator = (const string_core &rhs) {
+        flag_type type = rhs.get_type();
+        if (type == kIsSmall)
+            small_clone(_small, rhs._small);
+        else
+            ml_clone(_ml, rhs._ml);
+    }
+
+    static void small_clone(struct small_t &dest, const struct small_t &src) {
+        dest.info.lastShort = src._small.info.lastShort;
+        traits_type::strncpy_u(dest.buf, src._small.buf, src._small.info.size);
+        dest.buf[src._small.info.size] = '\0';
+    }
+
+    static void ml_clone(struct medium_large &dest, const struct medium_large &src) {
+        dest.data = src.data;
+        dest.size = src.size;
+        dest.capacity = src.capacity;
+        dest.type = src.type;
+    }
 
 private:
-    /* 这个结构只是为了动态设置buf的size而存在的 */
-    struct core_data_t {
-        char_type  *data;
-        size_type   size;
-        size_type   capacity;
-        flag_type   type;
-    };
-
-    struct medium_large {
-        union {
-            struct {
-                /* small object buffer (这里只是占位用, 未使用) */
-                char       dummy[(STRING_SMALL_SIZE - sizeof(core_data_t)) / sizeof(char)];
-
-                /* 后面的定义必须和core_data的结构一致 */
-                char_type *data;
-                size_type  size;
-                size_type  capacity;
-                flag_type  type;
-            };
-
-            char_type buf[(STRING_SMALL_SIZE - sizeof(core_data_t)) / sizeof(char_type)];
-        };
-    };
-
     struct small_size_t {
         union {
             struct {
-                unsigned char size : 5;
-                unsigned char type : 3;
+                unsigned char size;
+                unsigned char type;
             };
-            unsigned char     lastChar;
+            unsigned short    lastShort;
         };
     };
 
@@ -180,7 +174,33 @@ private:
         };
     };
 
-protected:
+    /* 这个结构只是为了动态设置buf的size而存在的 */
+    struct core_data_t {
+        char_type  *data;
+        size_type   size;
+        size_type   capacity;
+        flag_type   type;
+    };
+
+    struct medium_large {
+        union {
+            struct {
+                /* small object buffer (这里只是占位用, 未使用) */
+                unsigned char dummy[(STRING_SMALL_SIZE - sizeof(core_data_t)) / sizeof(char)];
+
+                /* 后面的定义必须和core_data的结构一致 */
+                char_type *data;
+                size_type  size;
+                size_type  capacity;
+                flag_type  type;
+            };
+
+            char_type buf[(STRING_SMALL_SIZE - sizeof(core_data_t)) / sizeof(char_type)];
+        };
+    };
+
+private:
+
     /* 这是一个union联合, 即small_t类型和medium_large类型共享于同一个内存结构 */
     union {
         /* mutable修饰符是针对const修饰的, 即使是在const修饰过的成员函数里, */
@@ -189,7 +209,6 @@ protected:
         mutable small_t      _small;
         mutable medium_large _ml;
     };
-    int32_t _refcount;
 };
 
 template <STRING_CORE_CLASSES>
@@ -203,7 +222,6 @@ STRING_CORE::string_core()
     _ml.size = 0;
     _ml.capacity = 0;
     _ml.type = 0;
-    _refcount = 1;
 
     // init sso buffer
     (*(size_t *)(&_ml.buf[0])) = 0;
@@ -219,8 +237,7 @@ STRING_CORE::string_core(const string_core &src)
     if (type == kIsSmall) {
         //_small.info.type = src._small.info.type;
         //_small.info.size = src._small.info.size;
-        _small.info.lastChar = src._small.info.lastChar;
-        _refcount = 1;
+        _small.info.lastShort = src._small.info.lastShort;
         jimi_assert(src._small.info.size < STRING_SMALL_SIZE);
         if (_small.info.size < STRING_SMALL_SIZE) {
             char_traits<char>::strlcpy(&_small.buf[0], STRING_SMALL_SIZE, &src._small.buf[0], _small.info.size);
@@ -236,21 +253,18 @@ STRING_CORE::string_core(const string_core &src)
         _ml.size = src._ml.size;
         _ml.capacity = STRING_MEDIUM_SIZE;
         _ml.type = src._ml.type;
-        _refcount = 1;
         _ml.data = char_traits<char>::assign(STRING_MEDIUM_SIZE);
         char_traits<char>::strlcpy(_ml.data, STRING_MEDIUM_SIZE, src._ml.data, src._ml.size);
     }
     /* copy-on-write */
     else if (type == kIsLarge) {
-        jimi_assert(src._refcount >= 0);
         _ml.data     = src._ml.data;
         _ml.capacity = src._ml.capacity;
-        _refcount = 1;
         const_cast<string_core &>(src).retail();
     }
     /* unknown type */
     else {
-        sLog.error("string_core(const string_core &src): type = 0x%04X, data = %08X, size = %d.", get_type(), _ml.data, _ml.size);
+        sLog.error("string_core(const string_core &src): type = 0x%04X, data = %08X, size() = %d.", get_type(), _ml.data, _ml.size);
     }
 }
 
@@ -286,7 +300,6 @@ STRING_CORE::string_core(const char * const src, const size_t size)
             _ml.data[src_len] = '\0';
         }
     }
-    _refcount = 1;
 }
 
 template <STRING_CORE_CLASSES>
@@ -316,7 +329,6 @@ STRING_CORE::string_core(const wchar_t * const src, const size_t size)
         if (_ml.data)
             char_traits<wchar_t>::strncpy(_ml.data, _ml.capacity, src, src_len);
     }
-    _refcount = 1;
 }
 
 template <STRING_CORE_CLASSES>
@@ -334,7 +346,6 @@ inline void STRING_CORE::destroy()
 template <STRING_CORE_CLASSES>
 inline void STRING_CORE::retail()
 {
-    ++_refcount;
     if (is_large())
         _ml.type = STRING_TYPE_LARGE;
 }
@@ -342,20 +353,55 @@ inline void STRING_CORE::retail()
 template <STRING_CORE_CLASSES>
 inline void STRING_CORE::release()
 {
-    --_refcount;
-    if (_refcount <= 0) {
-        if (not_is_small()) {
-            if (_ml.data != NULL) {
-                delete _ml.data;
-                _ml.data = NULL;
-            }
+    if (is_medium()) {
+        if (_ml.data != NULL) {
+            delete _ml.data;
+            _ml.data = NULL;
         }
         _ml.size = 0;
         _ml.capacity = 0;
         _ml.type = 0;
-        _refcount = 0;
+    }
+    else if (is_large()) {
+        refcount_type::release(_ml.data);
+        _ml.data = NULL;
+        _ml.size = 0;
+        _ml.capacity = 0;
+        _ml.type = 0;
     }
 }
+
+// swap below doesn't test whether &rhs == this (and instead
+// potentially does extra work) on the premise that the rarity of
+// that situation actually makes the check more expensive than is
+// worth.
+
+template <STRING_CORE_CLASSES>
+inline void STRING_CORE::swap(STRING_CORE &rhs)
+{
+#if 0
+        // 在不同的type下, _ml的有些数据是不必复制的
+        flag_type type = rhs.get_type();
+        if (type == kIsSmall) {
+            const small_t t;
+            small_clone(t, _small);
+            small_clone(_small, rhs._small);
+            small_clone(rhs._small, t);
+        }
+        else {
+            const medium_large t;
+            ml_clone(t, _ml);
+            ml_clone(_ml, rhs._ml);
+            ml_clone(rhs._ml, t);
+        }
+#else
+        // 完全直接复制_ml, 有些复制可能是多余的
+        const medium_large t = _ml;
+        _ml = rhs._ml;
+        rhs._ml = t;
+#endif
+}
+
 
 template <STRING_CORE_CLASSES>
 inline typename STRING_CORE::size_type STRING_CORE::size() const
@@ -431,7 +477,7 @@ inline int STRING_CORE::compare(const STRING_CORE &rhs) const
     }
     else {
         // Is not same size
-        sLog.info("string_core::compare(const string_core &rhs), size = %d, rhs.size = %d", size(), rhs.size());
+        sLog.info("string_core::compare(const string_core &rhs), size() = %d, rhs.size() = %d", size(), rhs.size());
     }
     return equal;
 }

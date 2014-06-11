@@ -21,9 +21,9 @@ class JIMI_API refcounted
 {
 public:
     // Types
-    typedef _CharT      char_type;
-    typedef _ValueT     value_type;
-    typedef _Atomic     atomic_type;
+    typedef _CharT                          char_type;
+    typedef typename _Atomic::value_type    value_type;
+    typedef _Atomic                         atomic_type;
 
 public:
     // Contructor
@@ -44,15 +44,16 @@ public:
 
     static void retail(char_type *p)  {
         //++_refcount;
-        refcount.fetch_add(1, 0);
+        fromData(p)->_refcount.fetch_add(1, 0);
     }
 
     static void release(char_type *p) {
-        const refcounted *dis = fromData(p);
+        const refcounted *refobj = fromData(p);
         //--_refcount;
-        _refcount.fetch_sub(1, 0);
-        if (_refcount <= 0) {
-            ::free(dis);
+        value_type oldcnt = refobj->_refcount.fetch_sub(1, 0);
+        value_type refval = refobj->_refcount.load(0);
+        if (refval == 0) {
+            ::free((void *)refobj);
         }
     }
 
@@ -79,13 +80,13 @@ public:
                                   const size_t currentCapacity,
                                   const size_t newCapacity) {
         jimi_assert(newCapacity > 0 && newCapacity > currentSize);
-        const refcounted *dis = fromData(data);
-        jimi_assert(dis->_refcount.load(0) == 1);
+        const refcounted *refobj = fromData(data);
+        jimi_assert(refobj->_refcount.load(0) == 1);
         // Don't forget to allocate one extra Char for the terminating
         // null. In this case, however, one Char is already part of the
         // struct.
         refcounted *result = static_cast<refcounted *>(
-            ::smartRealloc(dis,
+            ::smartRealloc(refobj,
                 sizeof(refcounted) + currentSize * sizeof(char_type),
                 sizeof(refcounted) + currentCapacity * sizeof(char_type),
                 sizeof(refcounted) + newCapacity * sizeof(char_type)));
@@ -94,8 +95,8 @@ public:
     }
 
 private:
-    atomic_type _refcount;
-    char_type   _data[1];
+    mutable atomic_type _refcount;
+    char_type           _data[1];
 };
 
 NS_JIMI_END
