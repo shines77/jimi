@@ -73,14 +73,16 @@ public:
     typedef size_t              flag_type;
     typedef char_traits<_CharT> traits_type;
 
+    struct small_info_t;
+
     // Constant
-    static const flag_type      kIsSmall  = STRING_TYPE_SMALL;
-    static const flag_type      kIsMedium = STRING_TYPE_MEDIUM;
-    static const flag_type      kIsLarge  = STRING_TYPE_LARGE;
-    static const flag_type      kTypeMask = STRING_TYPE_MASK;
+    static const flag_type      kIsSmall  =  STRING_TYPE_SMALL;
+    static const flag_type      kIsMedium =  STRING_TYPE_MEDIUM;
+    static const flag_type      kIsLarge  =  STRING_TYPE_LARGE;
+    static const flag_type      kTypeMask =  STRING_TYPE_MASK;
     static const flag_type      kSizeMask = ~STRING_TYPE_MASK;
 
-    static const size_type      kMaxSmallSize  = (STRING_SMALL_SIZE - 1);
+    static const size_type      kMaxSmallSize  = (STRING_SMALL_SIZE - sizeof(small_info_t));
     static const size_type      kMaxMediumSize = STRING_MEDIUM_SIZE;
 
 public:
@@ -101,6 +103,8 @@ public:
     int compare(const string_core &rhs) const;
     int compare(const char_type *rhs) const;
 
+    flag_type get_type() const { return (_ml.type & kTypeMask); }
+
     bool is_small() const   { return TYPE_IS_SMALL(_ml.type);  }
     bool is_medium() const  { return TYPE_IS_MIDIUM(_ml.type); }
     bool is_large() const   { return TYPE_IS_LARGE(_ml.type);  }
@@ -109,9 +113,7 @@ public:
 
     bool is_shared() const {
         return (is_large() && (refcount_type::refs(_ml.data) > 1));
-    }
-
-    flag_type get_type() const { return (_ml.type & kTypeMask); }
+    }    
 
     const char_type *data() const { return c_str(); }
     const char_type *c_str() const;
@@ -153,7 +155,7 @@ private:
     }
 
 private:
-    struct small_size_t {
+    struct small_info_t {
         union {
             struct {
                 unsigned char size;
@@ -162,17 +164,19 @@ private:
             unsigned short    lastShort;
         };
     };
+    typedef struct small_info_t small_info_t;
 
+    /* small object buffer */
     struct small_t {
-        /* small object buffer */
         union {
             struct {
-                unsigned char dummy[(STRING_SMALL_SIZE - sizeof(small_size_t)) / sizeof(char)];
-                small_size_t  info;
+                unsigned char dummy[(STRING_SMALL_SIZE - sizeof(small_info_t)) / sizeof(char)];
+                small_info_t  info;
             };
-            char_type buf[(STRING_SMALL_SIZE - sizeof(small_size_t)) / sizeof(char_type)];
+            char_type buf[(STRING_SMALL_SIZE - sizeof(small_info_t)) / sizeof(char_type)];
         };
     };
+    typedef struct small_t small_t;
 
     /* 这个结构只是为了动态设置buf的size而存在的 */
     struct core_data_t {
@@ -181,6 +185,7 @@ private:
         size_type   capacity;
         flag_type   type;
     };
+    typedef struct core_data_t core_data_t;
 
     struct medium_large {
         union {
@@ -198,9 +203,9 @@ private:
             char_type buf[(STRING_SMALL_SIZE - sizeof(core_data_t)) / sizeof(char_type)];
         };
     };
+    typedef struct medium_large medium_large;
 
 private:
-
     /* 这是一个union联合, 即small_t类型和medium_large类型共享于同一个内存结构 */
     union {
         /* mutable修饰符是针对const修饰的, 即使是在const修饰过的成员函数里, */
