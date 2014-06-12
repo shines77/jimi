@@ -16,12 +16,14 @@
 #include <jimi/core/win32/jimi_config.h>
 #include <jimi/core/jimi_export.h>
 
-#if (JIMI_TARGET_COMPILER == JIMI_COMPILER_MSVC)
-    #include <jimi/core/vs/stdint.h>
+#if JIMI_IS_MSVC
+    #include <jimi/core/win32/vs_stdint.h>
     #define snprintf _snprintf
 #else
     #include <stdint.h>
 #endif
+
+#include <jimi/core/jimi_common.h>
 
 /**
  * for assert define
@@ -55,7 +57,7 @@
 /**
  * for jimi_winapi
  */
-#if defined(JIMI_MSVC)
+#if defined(JIMI_IS_MSVC)
 #ifndef __CLR_OR_STD_CALL
 #if defined (_M_CEE) || defined (MRTDLL)
 #define __CLR_OR_STD_CALL   __clrcall
@@ -67,11 +69,7 @@
 #define JIMI_WINAPI             __CLR_OR_STD_CALL
 #else
 #define JIMI_WINAPI
-#endif  /* JIMI_MSVC */
-
-#include <iostream>
-#include <string>
-using namespace std;
+#endif  /* JIMI_IS_MSVC */
 
 #define USING_NS_JIMI           using namespace jimi;
 #define USING_NS_JIMI_CORE      using namespace jimi::core;
@@ -160,74 +158,18 @@ typedef struct JIMI_MACRO_T
     const char *value;
 } JIMI_MACRO_T;
 
-/**
- * for exported func
- */
-#if _MSC_VER >= 1400
-    #define JIMI_EXPORTED_FUNC      __cdecl
-    #define JIMI_EXPORTED_METHOD    __thiscall
-#else
-    #define JIMI_EXPORTED_FUNC
-    #define JIMI_EXPORTED_METHOD
-#endif
-
-#if _MSC_VER || __INTEL_COMPILER
-#define JIMI_NOINLINE(decl)     __declspec(noinline) decl
-#elif __GNUC__
-#define JIMI_NOINLINE(decl)     decl __attribute__ ((noinline))
-#else
-#define JIMI_NOINLINE(decl)     decl
-#endif
-
 #include <cstddef>      /* Need size_t and ptrdiff_t */
+//#include <iostream>
+//#include <string>
+
+//using namespace std;
 
 // warning C4290: 忽略 C++ 异常规范，但指示函数不是 __declspec(nothrow)
 #pragma warning(disable : 4290)
 
 /**
- * for jm_countof helper
+ * for tbb's itune support
  */
-#if defined(_M_MRX000) || defined(_M_ALPHA) || defined(_M_PPC) || defined(_M_IA64) || defined(_M_AMD64)
-#define ALIGNMENT_MACHINE
-#define UNALIGNED   __unaligned
-#if defined(_WIN64)
-#define UNALIGNED64 __unaligned
-#else
-#define UNALIGNED64
-#endif
-#else
-#undef ALIGNMENT_MACHINE
-#ifndef UNALIGNED
-#define UNALIGNED
-#endif
-#ifndef UNALIGNED64
-#define UNALIGNED64
-#endif
-#endif
-
-/**
- * jm_countof helper
- */
-#if !defined(jm_countof)
-
-#if !defined(__cplusplus)
-
-#define jm_countof(_Array)      (sizeof(_Array) / sizeof(_Array[0]))
-
-#else
-
-extern "C++"
-{
-template <typename _CountofType, size_t _SizeOfArray>
-char (*__jm_countof_helper(UNALIGNED _CountofType (&_Array)[_SizeOfArray]))[_SizeOfArray];
-
-#define jm_countof(_Array)      sizeof(*__jm_countof_helper(_Array))
-}
-
-#endif  /* !defined(__cplusplus) */
-
-#endif  /* !defined(jm_countof) */
-
 #define ITT_SYNC_CREATE(obj, type, name)
 
 NS_JIMI_BEGIN

@@ -13,6 +13,10 @@
 #include <jimi/lang/RefCounted.h>
 #include <jimi/lang/String_Core.h>
 #include <jimic/string/jm_strings.h>
+#include <jimic/string/jmf_strings.h>
+
+#pragma warning(disable : 4995)         // 禁止不带_s函数的废弃warning信息
+#pragma warning(disable : 4996)
 
 #include <string>
 using namespace std;
@@ -26,6 +30,10 @@ NS_JIMI_BEGIN
 /// Reference:
 ///    http://haoel.blog.51cto.com/313033/124638
 ///
+/// 漫步Facebook开源C++库folly(1)：string类的设计
+///
+/// Reference:
+///    http://www.cnblogs.com/promise6522/archive/2012/06/05/2535530.html
 ///
 /// </comment>
 
@@ -97,6 +105,7 @@ public:
     // Contructor
     string_core();
     string_core(const string_core &src);
+    string_core(const char *src);
     string_core(const char * const src, const size_t size);
     string_core(const wchar_t * const src, const size_t size);
     ~string_core();
@@ -142,6 +151,7 @@ protected:
     size_t calc_capacity(size_t src_len);
 
 private:
+
     void small_clone(small_t &dest, const small_t &src) {
         dest.info.lastShort = src.info.lastShort;
         traits_type::strncpy_u(dest.buf, src.buf, src.info.size);
@@ -205,8 +215,8 @@ private:
 private:
     /* 这是一个union联合, 即small_t类型和medium_large类型共享于同一个内存结构 */
     union {
-        /* mutable修饰符是针对const修饰的, 即使是在const修饰过的成员函数里, */
-        /* 也可以改变mutable修饰过的成员变量 */
+        /* mutable修饰符是针对const修饰的, 即使是在被const修饰过的成员函数里, */
+        /* 也可以改变被mutable修饰过的成员变量 */
         /* Reference: http://blog.csdn.net/wuliming_sc/article/details/3717017 */
         mutable small_t      _small;
         mutable medium_large _ml;
@@ -270,18 +280,75 @@ STRING_CORE::string_core(const string_core &src)
     }
 }
 
+#if 1
+
+template <STRING_CORE_CLASSES>
+STRING_CORE::string_core(const char *src)
+{
+#if 0
+    size_t src_len = ::strnlen(src, kMaxMediumSize);
+#else
+    size_t src_len = ::strlen(src);
+#endif
+    /* small object */
+    if (src_len < kMaxSmallSize) {
+        _small.info.type = STRING_TYPE_SMALL_X;
+        _small.info.size = src_len;
+#if 1
+        char_traits<char>::strncpy_u(_small.buf, src, src_len);
+        _small.buf[src_len] = '\0';
+#else
+        ::strcpy(_small.buf, src);
+#endif
+    }
+#if 1
+    /* eager copy */
+    else if (src_len < kMaxMediumSize) {
+        _ml.size = src_len;
+        _ml.capacity = calc_capacity(src_len);
+        _ml.type = STRING_TYPE_MEDIUM;
+        _ml.data = char_traits<char>::assign(_ml.capacity);
+        if (_ml.data) {
+            char_traits<char>::strncpy(_ml.data, _ml.capacity, src, src_len);
+            _ml.data[src_len] = '\0';
+        }
+    }
+    /* copy-on-write or unknown type */
+    else {
+        size_t src_left;
+        src_left = ::strlen(src + src_len);
+        src_len += src_left;
+        _ml.capacity = calc_capacity(src_len);
+        _ml.data = char_traits<char>::assign(_ml.capacity);
+        _ml.size = src_len;
+        _ml.type = STRING_TYPE_LARGE;
+        if (_ml.data) {
+            char_traits<char>::strncpy(_ml.data, _ml.capacity, src, src_len);
+            _ml.data[src_len] = '\0';
+        }
+    }
+#endif
+}
+
+#endif
+
 template <STRING_CORE_CLASSES>
 STRING_CORE::string_core(const char * const src, const size_t size)
 {
     size_t src_len = size;
-    if (src_len < STRING_SMALL_SIZE) {
+    /* small object */
+    if (src_len < kMaxSmallSize) {
         _small.info.type = STRING_TYPE_SMALL_X;
-        _small.info.size = src_len;     
+        _small.info.size = src_len;
+#if 1
         char_traits<char>::strncpy_u(_small.buf, src, src_len);
         _small.buf[src_len] = '\0';
+#else
+        strcpy(_small.buf, src);
+#endif
     }
     /* eager copy */
-    else if (src_len < STRING_MEDIUM_SIZE) {
+    else if (src_len < kMaxMediumSize) {
         _ml.size = src_len;
         _ml.capacity = calc_capacity(src_len);
         _ml.type = STRING_TYPE_MEDIUM;
@@ -308,6 +375,7 @@ template <STRING_CORE_CLASSES>
 STRING_CORE::string_core(const wchar_t * const src, const size_t size)
 {
     size_t src_len = size;
+    /* small object */
     if (src_len < STRING_SMALL_SIZE) {
         _small.info.size = src_len;     
         _small.info.type = STRING_TYPE_SMALL;
@@ -342,7 +410,18 @@ STRING_CORE::~string_core()
 template <STRING_CORE_CLASSES>
 inline void STRING_CORE::destroy()
 {
-    release();
+    if (is_medium()) {
+        if (_ml.data != NULL) {
+            delete _ml.data;
+            _ml.data = NULL;
+        }
+    }
+    else if (is_large()) {
+        if (_ml.data != NULL) {
+            refcount_type::release(_ml.data);
+            _ml.data = NULL;
+        }
+    }
 }
 
 template <STRING_CORE_CLASSES>
@@ -365,8 +444,10 @@ inline void STRING_CORE::release()
         _ml.type = 0;
     }
     else if (is_large()) {
-        refcount_type::release(_ml.data);
-        _ml.data = NULL;
+        if (_ml.data != NULL) {
+            refcount_type::release(_ml.data);
+            _ml.data = NULL;
+        }
         _ml.size = 0;
         _ml.capacity = 0;
         _ml.type = 0;
@@ -535,5 +616,8 @@ inline int operator == (const _CharT *lhs, const STRING_CORE &rhs)
 }
 
 NS_JIMI_END
+
+#pragma warning(default : 4995)         // 恢复默认的warning
+#pragma warning(default : 4996)
 
 #endif  /* _JIMI_LANG_STRING_CORE_H_ */

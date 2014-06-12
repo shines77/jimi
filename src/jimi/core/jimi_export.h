@@ -49,7 +49,7 @@
     #undef JIMI_API
 #endif
 
-#if defined(JIMI_MSVC)  /* is microsoft visual studio ? */
+#if defined(JIMI_IS_MSVC)  /* is microsoft visual studio ? */
     #if defined(JIMI_DECLARE_EXPORT)              /* is a dll library */
         #define JIMI_API                __declspec(dllexport)
         #define JIMI_API_TPL            __declspec(dllexport)
@@ -66,7 +66,7 @@
         #define JIMI_PRIVATE
         #define JIMI_EXPIMP_TEMPLATE
     #endif
-#elif defined(JIMI_GNUC)   
+#elif defined(JIMI_IS_GNUC)   
     #define JIMI_API                    __attribute__ ((visibility ("default")))
     #define JIMI_API                    __attribute__ ((visibility ("default")))
     #define JIMI_API_TPL                __attribute__ ((visibility ("default")))

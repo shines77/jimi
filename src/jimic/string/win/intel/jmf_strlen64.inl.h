@@ -16,13 +16,8 @@
 #include <jimic/core/jimic_def.h>
 #include <string.h>
 
-#ifndef jimic_tolower
-#define jimic_tolower(c)     (unsigned char) ((c >= 'A' && c <= 'Z') ? (c |  0x20) : c)
-#endif
-
-#ifndef jimic_toupper
-#define jimic_toupper(c)     (unsigned char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
-#endif
+#define jimi_tolower(c)     (unsigned char) ((c >= 'A' && c <= 'Z') ? (c |  0x20) : c)
+#define jimi_toupper(c)     (unsigned char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
 
 #ifdef __cplusplus
 extern "C" {

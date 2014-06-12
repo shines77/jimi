@@ -34,7 +34,7 @@
 #endif
 
 #ifdef _MSC_VER
-#include <jimi/core/vs/stdint.h>
+#include <jimi/core/win32/vs_stdint.h>
 #else
 #include <stdint.h>
 #endif

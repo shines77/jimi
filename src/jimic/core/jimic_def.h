@@ -16,12 +16,13 @@
 #include <jimic/core/win32/jimic_config.h>
 #include <jimic/core/jimic_export.h>
 
-#if (JIMI_TARGET_COMPILER == JIMI_COMPILER_MSVC)
-    #include <jimic/core/vs/stdint.h>
-    #define snprintf _snprintf
+#if JIMI_IS_MSVC
+    #include <jimic/core/win32/vs_stdint.h>
 #else
     #include <stdint.h>
 #endif
+
+#include <jimi/core/jimi_common.h>
 
 /**
  * @file jimic_def.h
@@ -119,6 +120,18 @@
 #define JIMIC_ASSERT_EX_FALSE(predicate, comment)       assert(!!(predicate))
 #define JIMIC_ASSERT_EX(predicate, comment)             JIMIC_ASSERT_EX_FALSE
 
+#ifndef jimic_assert
+#define jimic_assert_true       JIMIC_ASSERT_TRUE
+#define jimic_assert_false      JIMIC_ASSERT_FALSE
+#define jimic_assert            JIMIC_ASSERT
+#endif
+
+#ifndef jimic_assert_ex
+#define jimic_assert_ex_true    JIMIC_ASSERT_EX_TRUE
+#define jimic_assert_ex_false   JIMIC_ASSERT_EX_FALSE
+#define jimic_assert_ex         JIMIC_ASSERT_EX
+#endif
+
 #define JIMIC_MIN(a, b)         ((a) < (b) ? (a) : (b))
 #define JIMIC_MAX(a, b)         ((a) > (b) ? (a) : (b))
 
@@ -144,23 +157,6 @@ typedef struct JIMIC_MACRO_T
 #define JMC_BEGIN_DECLS
 #define JMC_END_DECLS
 #endif  /* __cplusplus */
-
-/**
- * for inline define
- */
-#if defined(JIMI_MSC_VER)
-
-#define JMC_INLINE              __inline
-#define JMC_FORCEINLINE         __forceinline
-#define JMC_HAS_INLINE          1
-
-#else
-
-#define JMC_INLINE              inline
-#define JMC_FORCEINLINE         inline
-#define JMC_HAS_INLINE          1
-
-#endif  /* JIMI_MSC_VER */
 
 /**
  * for JMC_DECLARE define

@@ -99,8 +99,6 @@ public:
     basic_string(const wchar_t *src, size_t size);
     ~basic_string();
 
-    void destroy();
-
     void retail();
     void release();
 
@@ -119,6 +117,9 @@ public:
 
     void swap(basic_string &rhs) { _store.swap(rhs._store); }
     size_type capacity() const   { return (size_type)_store.capacity(); }
+
+private:
+    void destroy();
 
 protected:
     storage_type _store;
@@ -145,6 +146,7 @@ BASIC_STRING::basic_string(const std::string &src)
 template <BASIC_STRING_CLASSES>
 BASIC_STRING::basic_string(const char *src)
 : _store(src, ::jm_strlen(src))
+//: _store(src)
 {
 }
 
@@ -175,7 +177,7 @@ BASIC_STRING::~basic_string()
 template <BASIC_STRING_CLASSES>
 inline void BASIC_STRING::destroy()
 {
-    release();
+    _store.destroy();
 }
 
 template <BASIC_STRING_CLASSES>

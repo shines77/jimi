@@ -166,6 +166,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\..\..\src\jimi\core\jimi_common.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimi\core\jimi_def.h"
 						>
 					</File>
@@ -294,11 +298,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\thread\thread.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimi\thread\thread.h"
+						RelativePath="..\..\..\..\src\jimi\thread\Thread.h"
 						>
 					</File>
 					<File
@@ -451,12 +451,36 @@
 							/>
 						</FileConfiguration>
 					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\jmf_strings.h"
+						>
+					</File>
+					<Filter
+						Name="win"
+						>
+						<Filter
+							Name="intel"
+							>
+							<File
+								RelativePath="..\..\..\..\src\jimic\string\win\intel\jmf_strlen32.inl.h"
+								>
+							</File>
+							<File
+								RelativePath="..\..\..\..\src\jimic\string\win\intel\jmf_strlen64.inl.h"
+								>
+							</File>
+						</Filter>
+					</Filter>
 				</Filter>
 				<Filter
 					Name="core"
 					>
 					<File
 						RelativePath="..\..\..\..\src\jimic\jimic_all.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\core\jimic_asm.h"
 						>
 					</File>
 					<File

@@ -37,6 +37,7 @@
 #include "FastMemcpy.h"
 
 #include <jimic/platform/win/fast_memcpy.h>
+#include <jimic/string/jmf_strings.h>
 
 #include <string>
 
@@ -115,6 +116,7 @@ void set_crtdbg_env()
 }
 
 /* 预热时间至少要大于500毫秒, 如果还不够, 可以自行增加最小预热时间 */
+
 void jimi_cpu_warmup()
 {
 #ifndef _DEBUG
@@ -197,47 +199,111 @@ void String_Performance_Test()
 #ifndef _DEBUG
     const int LOOP_TIMES = 1000000;
 #else
-    const int LOOP_TIMES = 20000;
+    const int LOOP_TIMES = 200000;
 #endif
+    //char *str1, *str2;
+    size_t len1, len2;
+    char buffer1[32];
+    char buffer2[32];
     double time1, time2, time3, time4;
+    double time5, time6, time7, time8;
     int i, j = 0, loop_times = 0;
     stop_watch sw;
-    
+
     sw.restart();
-    for (i = 0; i < LOOP_TIMES; ++i) {
-        std::string str = "abcdefghijk";
+    for (i = 0; i < (LOOP_TIMES >> 0); ++i) {
+        strcpy(buffer1, "abcdefghijk");
+        //strcpy(buffer1 + (i & 2), "abcdefghijk");
+        /*
+        strcpy(buffer1 + 0, "abcdefghijk");
+        strcpy(buffer1 + 4, "abcdefghijk");
+        strcpy(buffer1 + 0, "abcdefghijk");
+        strcpy(buffer1 + 4, "abcdefghijk");
+        //*/
+        len1 = strlen(buffer1);
     }
     sw.stop();
     time1 = sw.getMillisec();
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        jimi::String str = "abcdefghijk";
+        strcpy_s(buffer2, 32, "abcdefghijk");
+        len2 = strlen("abcdefghijk");
     }
     sw.stop();
     time2 = sw.getMillisec();
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        std::string str = "abcdefghijklmnopqrstuvwxyz";
+        //jimi::String str = "abcdefghijk";
+        jimi::String str("abcdefghijk", sizeof("abcdefghijk") - 1);
     }
     sw.stop();
     time3 = sw.getMillisec();
-
+    
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        jimi::String str = "abcdefghijklmnopqrstuvwxyz";
+        //std::string str = "abcdefghijk";
+        std::string str("abcdefghijk", sizeof("abcdefghijk") - 1);
     }
     sw.stop();
     time4 = sw.getMillisec();
 
-    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefghijk\";",   time1);
-    printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"abcdefghijk\";",   time2);
-    printf("\n");
-    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefg...xyz\";", time3);
-    printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"abcdefg...xyz\";", time4);
+    printf("buffer1 = %s, len1 = %d, len2 = %d\n\n", buffer1, len1, len2);
 
+    sw.restart();
+    for (i = 0; i < (LOOP_TIMES >> 0); ++i) {
+        strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz");
+        //strcpy(buffer1 + (i & 2), "abcdefghijklmnopqrstuvwxyz");
+        /*
+        strcpy(buffer1 + 0, "abcdefghijklmnopqrstuvwxyz");
+        strcpy(buffer1 + 4, "abcdefghijklmnopqrstuvwxyz");
+        strcpy(buffer1 + 0, "abcdefghijklmnopqrstuvwxyz");
+        strcpy(buffer1 + 4, "abcdefghijklmnopqrstuvwxyz");
+        //*/
+        len1 = jmf_strlen(buffer1);
+        //len1 = wcslen((wchar_t *)buffer1);
+    }
+    sw.stop();
+    time5 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        strcpy_s(buffer2, 32, "abcdefghijklmnopqrstuvwxyz");
+        len2 = strlen(buffer2);
+    }
+    sw.stop();
+    time6 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        //jimi::String str = "abcdefghijklmnopqrstuvwxyz";
+        jimi::String str("abcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyz") - 1);
+    }
+    sw.stop();
+    time7 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        //std::string str = "abcdefghijklmnopqrstuvwxyz";
+        std::string str("abcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyz") - 1);
+    }
+    sw.stop();
+    time8 = sw.getMillisec();
+
+    printf("buffer1 = %s, len1 = %d, len2 = %d\n\n", buffer1, len1, len2);
+
+    printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefghijk\";",   time1);
+    printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefghijk\";",   time2);
+    printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"abcdefghijk\";",   time3);
+    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefghijk\";",   time4);
     printf("\n");
+    printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefg...xyz\";", time5);
+    printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefg...xyz\";", time6);
+    printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"abcdefg...xyz\";", time7);
+    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefg...xyz\";", time8);
+
+    printf("\n");    
 }
 
 int get_bytes_display(char *buffer, size_t buf_size, size_t size)

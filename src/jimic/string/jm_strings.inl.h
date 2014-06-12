@@ -647,7 +647,7 @@ JMC_INLINE_NONSTD(int) jm_str2lwr(char *dest, char *src, size_t n)
     char *orig = dest;
     while (n > 0) {
         if (*src != '\0') {
-            *dest = jimi_tolower(*src);
+            *dest = jimic_tolower(*src);
             ++dest;
             ++src;
         }
@@ -667,7 +667,7 @@ JMC_INLINE_NONSTD(int) jm_str2upr(char *dest, char *src, size_t n)
     char *orig = dest;
     while (n > 0) {
         if (*src != '\0') {
-            *dest = jimi_toupper(*src);
+            *dest = jimic_toupper(*src);
             ++dest;
             ++src;
         }
@@ -687,7 +687,7 @@ JMC_INLINE_NONSTD(int) jm_strlwr_s(char *src, size_t n)
     char *orig = src;
     while (n > 0) {
         if (*src != '\0') {
-            *src = jimi_tolower(*src);
+            *src = jimic_tolower(*src);
             ++src;
         }
         else
@@ -705,7 +705,7 @@ JMC_INLINE_NONSTD(int) jm_strupr_s(char *src, size_t n)
     char *orig = src;
     while (n > 0) {
         if (*src != '\0') {
-            *src = jimi_toupper(*src);
+            *src = jimic_toupper(*src);
             ++src;
         }
         else
@@ -721,7 +721,7 @@ JMC_INLINE_NONSTD(int) jm_strupr_s(char *src, size_t n)
 JMC_INLINE_NONSTD(void) jm_strnlwr(char *dest, char *src, size_t n)
 {
     while (n > 0) {
-        *dest = jimi_tolower(*src);
+        *dest = jimic_tolower(*src);
         ++dest;
         ++src;
         --n;
@@ -734,7 +734,7 @@ JMC_INLINE_NONSTD(void) jm_strnlwr(char *dest, char *src, size_t n)
 JMC_INLINE_NONSTD(void) jm_strnupr(char *dest, char *src, size_t n)
 {
     while (n > 0) {
-        *dest = jimi_toupper(*src);
+        *dest = jimic_toupper(*src);
         ++dest;
         ++src;
         --n;
@@ -747,7 +747,7 @@ JMC_INLINE_NONSTD(void) jm_strnupr(char *dest, char *src, size_t n)
 JMC_INLINE_NONSTD(void) jm_strnlwr_s(char *src, size_t n)
 {
     while (n > 0) {
-        *src = jimi_tolower(*src);
+        *src = jimic_tolower(*src);
         ++src;
         --n;
     }
@@ -759,7 +759,7 @@ JMC_INLINE_NONSTD(void) jm_strnlwr_s(char *src, size_t n)
 JMC_INLINE_NONSTD(void) jm_strnupr_s(char *src, size_t n)
 {
     while (n > 0) {
-        *src = jimi_toupper(*src);
+        *src = jimic_toupper(*src);
         ++src;
         --n;
     }

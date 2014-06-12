@@ -113,14 +113,14 @@
 #if defined(JIMI_TARGET_OS_IPHONE)
     #undef  JIMI_TARGET_PLATFORM
     #define JIMI_TARGET_PLATFORM        JIMI_PLATFORM_IOS
-    #define JIMI_IS_IOS        1
+    #define JIMI_IS_OS_IPHONE  1
 #endif
 
 // mac
 #if defined(JIMI_TARGET_OS_MAC)
     #undef  JIMI_TARGET_PLATFORM
     #define JIMI_TARGET_PLATFORM        JIMI_PLATFORM_MAC
-    #define JIMI_IS_MAC        1
+    #define JIMI_IS_OS_MAC     1
 #endif
 
 // linux
@@ -165,34 +165,44 @@
     #define JIMI_IS_WIN64               1
 #endif
 
+#if (JIMI_IS_WIN32 || JIMI_IS_WIN64)
 #ifndef JIMI_IS_WINDOWS
 #define JIMI_IS_WINDOWS                 (JIMI_CHECK_PLATFORM(WIN32) || JIMI_CHECK_PLATFORM(WIN64))
 #endif
+#endif
 
+#if (JIMI_IS_WIN32 || JIMI_IS_WIN64 || JIMI_IS_WINCE || JIMI_IS_WINRT || JIMI_IS_WP8)
 #ifndef JIMI_IS_WIN_FAMILY
 #define JIMI_IS_WIN_FAMILY              (JIMI_CHECK_PLATFORM(WIN32) || JIMI_CHECK_PLATFORM(WIN64) \
                                                 || JIMI_CHECK_PLATFORM(WINCE) || JIMI_CHECK_PLATFORM(WINRT) \
                                                 || JIMI_CHECK_PLATFORM(WP8))
 #endif
+#endif
 
-#ifndef JIMI_IS_UNIX
+#if JIMI_IS_LINUX
 #define JIMI_IS_UNIX                    (JIMI_CHECK_PLATFORM(LINUX))
 #endif
 
-#ifndef JIMI_IS_LINUX
+#if JIMI_IS_LINUX
 #define JIMI_IS_LINUX                   (JIMI_CHECK_PLATFORM(LINUX))
 #endif
 
+#if JIMI_IS_OS_IPHONE
+#ifndef JIMI_IS_IOS
+#define JIMI_IS_IOS                     (JIMI_CHECK_PLATFORM(OS_IPHONE))
+#endif
+#endif
+
+#if JIMI_IS_OS_MAC
+#ifndef JIMI_IS_MAC
+#define JIMI_IS_MAC                     (JIMI_CHECK_PLATFORM(OS_MAC))
+#endif
+#endif
+
+#if (JIMI_IS_IOS || JIMI_IS_MAC)
 #ifndef JIMI_IS_APPLE
 #define JIMI_IS_APPLE                   (JIMI_CHECK_PLATFORM(IOS) || JIMI_CHECK_PLATFORM(MAC))
 #endif
-
-#ifndef JIMI_IS_IOS
-#define JIMI_IS_IOS                     (JIMI_CHECK_PLATFORM(IOS))
-#endif
-
-#ifndef JIMI_IS_MAC
-#define JIMI_IS_MAC                     (JIMI_CHECK_PLATFORM(MAC))
 #endif
 
 // for DOXYGEN
