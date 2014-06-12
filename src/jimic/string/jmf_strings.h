@@ -13,9 +13,9 @@
 #if JIMI_IS_WINDOWS
 
 #if defined(JIMI_IS_WIN32) && !defined(JIMI_IS_WIN64)
-#include <jimic/string/win/intel/jmf_strlen32.inl.h>
+#include <jimic/string/win32/intel/jmf_strlen32.inl.h>
 #else
-#include <jimic/string/win/intel/jmf_strlen64.inl.h>
+#include <jimic/string/win32/intel/jmf_strlen64.inl.h>
 #endif
 
 #endif  /* JIMI_IS_WINDOWS */
