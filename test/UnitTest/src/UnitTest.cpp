@@ -183,11 +183,59 @@ void String_Base_Test()
 
     str1 = str2;
     printf("str1 = str2;\n");
-    printf("str1.c_str() = %s\n", str1.c_str());
+    printf("str1.c_str() = %s\n\n", str1.c_str());
 
     str1 = "i21938219";
     printf("str1 = \"i21938219\";\n");
     printf("str1.c_str() = %s\n", str1.c_str());
+
+    printf("\n");
+}
+
+void String_Performance_Test()
+{
+#ifndef _DEBUG
+    const int LOOP_TIMES = 1000000;
+#else
+    const int LOOP_TIMES = 20000;
+#endif
+    double time1, time2, time3, time4;
+    int i, j = 0, loop_times = 0;
+    stop_watch sw;
+    
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        std::string str = "abcdefghijk";
+    }
+    sw.stop();
+    time1 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        jimi::String str = "abcdefghijk";
+    }
+    sw.stop();
+    time2 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        std::string str = "abcdefghijklmnopqrstuvwxyz";
+    }
+    sw.stop();
+    time3 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        jimi::String str = "abcdefghijklmnopqrstuvwxyz";
+    }
+    sw.stop();
+    time4 = sw.getMillisec();
+
+    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefghijk\";",   time1);
+    printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"abcdefghijk\";",   time2);
+    printf("\n");
+    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefg...xyz\";", time3);
+    printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"abcdefg...xyz\";", time4);
 
     printf("\n");
 }
@@ -581,6 +629,8 @@ int UnitTest_Main(int argc, char *argv[])
     //Memcpy_Test();
 
     String_Base_Test();
+
+    String_Performance_Test();
 
 #if 0
     // char_traits<T>相关字符串函数的测试

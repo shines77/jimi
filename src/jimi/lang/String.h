@@ -192,9 +192,9 @@ inline void BASIC_STRING::release()
 
 template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &lhs) {
-    if (&lhs == this) {
+    if (&lhs == this)
         return *this;
-    }
+
     const size_type oldSize = size();
     const size_type srcSize = lhs.size();
     if (capacity() >= srcSize && !_store.is_shared()) {
@@ -209,7 +209,8 @@ BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &lhs) {
         jimi_assert(size() == srcSize);
         //string_detail::pod_copy(lhs.begin(), lhs.end(), begin());
         //_store.writeTerminator();
-    } else {
+    }
+    else {
         // need to reallocate, so we may as well create a brand new string
         basic_string(lhs).swap(*this);
     }
