@@ -149,6 +149,20 @@ void jimi_cpu_warmup()
 #endif
 }
 
+int get_bytes_display(char *buffer, size_t buf_size, size_t size)
+{
+    int result;
+    if (size <= 8192)
+        result = jm_sprintf(buffer, buf_size, "%d", size);
+    else if (size < 1024 * 1024)
+        result = jm_sprintf(buffer, buf_size, "%d K", size / 1024);
+    else if (size < 1024 * 1024 * 1024)
+        result = jm_sprintf(buffer, buf_size, "%d M", size / (1024 * 1024));
+    else
+        result = jm_sprintf(buffer, buf_size, "%d G", size / (1024 * 1024 * 1024));
+    return result;
+}
+
 /* 测试std::string是否使用了COW(Copy On Write) */
 
 void String_Copy_On_Write_Test()
@@ -318,7 +332,7 @@ void Fast_StrLen_Test()
 #else
     const int LOOP_TIMES = 200000;
 #endif
-    //char *str1, *str2;
+    char *str1, *str2, *str3;
     size_t len1, len2, len3, len4;
     size_t len5, len6, len7, len8;
     char buffer1[512], buffer2[512], buffer3[512], buffer4[512];
@@ -467,8 +481,7 @@ void Fast_StrLen_Test()
 
     // 256 bytes
     strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
-        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs1"
-        );
+                    "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs1");
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
@@ -479,8 +492,7 @@ void Fast_StrLen_Test()
 
     // 256 bytes
     strcpy(buffer2, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
-        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs2"
-        );
+                    "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs2");
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
@@ -491,10 +503,7 @@ void Fast_StrLen_Test()
 
     // 256 bytes
     strcpy(buffer3, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
-        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
-        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
-        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqr3"
-        );
+                    "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs3");
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
@@ -505,10 +514,7 @@ void Fast_StrLen_Test()
 
     // 256 bytes
     strcpy(buffer4, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
-        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
-        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
-        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqr4"
-        );
+                    "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs4");
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
@@ -530,20 +536,135 @@ void Fast_StrLen_Test()
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
     printf("\n");
-}
 
-int get_bytes_display(char *buffer, size_t buf_size, size_t size)
-{
-    int result;
-    if (size <= 8192)
-        result = jm_sprintf(buffer, buf_size, "%d", size);
-    else if (size < 1024 * 1024)
-        result = jm_sprintf(buffer, buf_size, "%d K", size / 1024);
-    else if (size < 1024 * 1024 * 1024)
-        result = jm_sprintf(buffer, buf_size, "%d M", size / (1024 * 1024));
-    else
-        result = jm_sprintf(buffer, buf_size, "%d G", size / (1024 * 1024 * 1024));
-    return result;
+    ///////////////////////////////////////////////////////////////////////
+
+    // 511 bytes
+    strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqr1"
+        );
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len5 = strlen(buffer1);
+    }
+    sw.stop();
+    time5 = sw.getMillisec();
+
+    // 511 bytes
+    strcpy(buffer2, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqr2"
+        );
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len6 = jimi::char_traits<char>::strlen(buffer2);
+    }
+    sw.stop();
+    time6 = sw.getMillisec();
+
+    // 511 bytes
+    strcpy(buffer3, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqr3"
+        );
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len7 = A_strlen(buffer3);
+    }
+    sw.stop();
+    time7 = sw.getMillisec();
+
+    // 511 bytes
+    strcpy(buffer4, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqr4"
+        );
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len8 = jmf_strlen(buffer4);
+    }
+    sw.stop();
+    time8 = sw.getMillisec();
+
+    buffer1[20] = '\0';
+    printf("buffer1 = %s, len1 = %d, len2 = %d, len3 = %d, len4 = %d\n\n", buffer1, len5, len6, len7, len8);
+
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len5, time5);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
+    printf("\n");
+
+    size_t buf_size = 2 * 1024 * 1024 * sizeof(char);
+
+    str1 = (char *)::malloc(buf_size);
+    if (str1) {
+        memset(str1, 'A', buf_size - 1);
+        str1[buf_size - 1] = '\0';
+
+        sw.restart();
+        for (i = 0; i < 1000; ++i) {
+            len1 = ::strlen(str1);
+        }
+        sw.stop();
+        time1 = sw.getMillisec();
+    }
+
+    str2 = (char *)::malloc(buf_size);
+    if (str2) {
+        memset(str2, 'A', buf_size - 1);
+        str2[buf_size - 1] = '\0';
+
+        sw.restart();
+        for (i = 0; i < 1000; ++i) {
+            len2 = ::A_strlen(str2);
+        }
+        sw.stop();
+        time2 = sw.getMillisec();
+    }
+
+    str3 = (char *)::malloc(buf_size);
+    if (str3) {
+        memset(str3, 'A', buf_size - 1);
+        str3[buf_size - 1] = '\0';
+
+        sw.restart();
+        for (i = 0; i < 1000; ++i) {
+            len3 = ::jmf_strlen(str3);
+        }
+        sw.stop();
+        time3 = sw.getMillisec();
+    }
+
+    char bufsize_text1[128], bufsize_text2[128], bufsize_text3[128];
+    bufsize_text1[0] = '\0';
+    get_bytes_display(bufsize_text1, jm_countof(bufsize_text1), len1);
+    bufsize_text2[0] = '\0';
+    get_bytes_display(bufsize_text2, jm_countof(bufsize_text2), len2);
+    bufsize_text3[0] = '\0';
+    get_bytes_display(bufsize_text3, jm_countof(bufsize_text3), len3);
+
+    printf("%-30s bytes = %5s, time = %0.5f ms.\n", "::strlen()",         bufsize_text1, time1);
+    printf("%-30s bytes = %5s, time = %0.5f ms.\n", "asmlib::A_strlen()", bufsize_text2, time2);
+    printf("%-30s bytes = %5s, time = %0.5f ms.\n", "jimi::jmf_strlen()", bufsize_text3, time3);
+    printf("\n");
+
+    printf("jimi::jmf_strlen() use time is ::strlen()         use time : %0.3f %%.\n", time3 / time1 * 100.0);
+    printf("jimi::jmf_strlen() use time is asmlib::A_strlen() use time : %0.3f %%.\n", time3 / time2 * 100.0);
+    printf("\n");
+
+    if (str1) ::free(str1);
+    if (str2) ::free(str2);
+    if (str3) ::free(str3);
 }
 
 #define USE_BUFFER_VERIFY   0
