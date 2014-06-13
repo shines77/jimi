@@ -31,11 +31,6 @@
 
 #if defined(_MSC_VER) || defined(_ICC) || defined(_BCB)
 
-#define JIMI_HAVE_MMX       1
-#define JIMI_HAVE_MMX2      1
-#define JIMI_HAVE_SSE       1
-#define JIMI_HAVE_SSE2      1
-
 #define USE_PREFETCH        0
 
 //#define PREFETCH_SIZE       ((15 * 8 + 4) * 8)
@@ -173,15 +168,15 @@ If you have questions please contact with me: Nick Kurshev: nickols_k@mail.ru.
 #endif
 
 #define STACK           16
-#define ARGS            16
+#define ARGS            0
 
 #define DEST_ARG        DWORD PTR [esp +  4 + STACK + ARGS]
 #define SRC_ARG         DWORD PTR [esp +  8 + STACK + ARGS]
 #define LEN_ARG         DWORD PTR [esp + 12 + STACK + ARGS]
 
-/* Local ARGS = 16 bytes */
-#define II              DWORD PTR [esp +  0 + STACK]
-#define DELTA2          DWORD PTR [esp +  4 + STACK]
+/* Local ARGS = 0 bytes */
+#define LOCAL_ARG1      DWORD PTR [esp +  0 + STACK]
+#define LOCAL_ARG2      DWORD PTR [esp +  4 + STACK]
 
 #define DEST            edi
 #define SRC             esi
@@ -219,7 +214,9 @@ __declspec(naked)
 static void * __cdecl fast_memcpy_impl(void *dest, const void *src, size_t len)
 {
     __asm {
+#if defined(ARGS) && (ARGS > 0)
         sub     esp, ARGS      // # Generate Stack Frame
+#endif
 
         push    ebp
         push    edi
@@ -431,11 +428,19 @@ L999_END:
         pop     edi
         pop     ebp
 
+#if defined(ARGS) && (ARGS > 0)
         add     esp, ARGS
+#endif
         ret
     }
 
 }
+
+#undef STACK
+#undef ARGS
+
+#undef LOCAL_ARG1
+#undef LOCAL_ARG2
 
 #ifdef __cplusplus
 }

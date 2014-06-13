@@ -318,14 +318,6 @@
 					Name="system"
 					>
 					<File
-						RelativePath="..\..\..\..\src\jimi\system\CWinService.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimi\system\CWinService.h"
-						>
-					</File>
-					<File
 						RelativePath="..\..\..\..\src\jimi\system\stop_watch.h"
 						>
 					</File>
@@ -456,17 +448,17 @@
 						>
 					</File>
 					<Filter
-						Name="win"
+						Name="win32"
 						>
 						<Filter
 							Name="intel"
 							>
 							<File
-								RelativePath="..\..\..\..\src\jimic\string\win\intel\jmf_strlen32.inl.h"
+								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.inl.h"
 								>
 							</File>
 							<File
-								RelativePath="..\..\..\..\src\jimic\string\win\intel\jmf_strlen64.inl.h"
+								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.inl.h"
 								>
 							</File>
 						</Filter>

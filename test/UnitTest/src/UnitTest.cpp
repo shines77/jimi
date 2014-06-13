@@ -41,6 +41,12 @@
 
 #include <string>
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#pragma warning(disable: 4996)
+
 /**
  * for asmlib
  */
@@ -203,8 +209,8 @@ void String_Performance_Test()
 #endif
     //char *str1, *str2;
     size_t len1, len2;
-    char buffer1[32];
-    char buffer2[32];
+    char buffer1[512];
+    char buffer2[512];
     double time1, time2, time3, time4;
     double time5, time6, time7, time8;
     int i, j = 0, loop_times = 0;
@@ -261,8 +267,7 @@ void String_Performance_Test()
         strcpy(buffer1 + 0, "abcdefghijklmnopqrstuvwxyz");
         strcpy(buffer1 + 4, "abcdefghijklmnopqrstuvwxyz");
         //*/
-        len1 = jmf_strlen(buffer1);
-        //len1 = wcslen((wchar_t *)buffer1);
+        len1 = strlen(buffer1);
     }
     sw.stop();
     time5 = sw.getMillisec();
@@ -304,6 +309,223 @@ void String_Performance_Test()
     printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefg...xyz\";", time8);
 
     printf("\n");    
+}
+
+void Fast_StrLen_Test()
+{
+#ifndef _DEBUG
+    const int LOOP_TIMES = 1000000;
+#else
+    const int LOOP_TIMES = 200000;
+#endif
+    //char *str1, *str2;
+    size_t len1, len2, len3, len4;
+    size_t len5, len6, len7, len8;
+    char buffer1[512], buffer2[512], buffer3[512], buffer4[512];
+    double time1, time2, time3, time4;
+    double time5, time6, time7, time8;
+    int i, j = 0, loop_times = 0;
+    stop_watch sw;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // 32 bytes
+    strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz|ab1");
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len1 = strlen(buffer1);
+    }
+    sw.stop();
+    time1 = sw.getMillisec();
+
+    // 32 bytes
+    strcpy(buffer2, "abcdefghijklmnopqrstuvwxyz|ab2");
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len2 = jimi::char_traits<char>::strlen(buffer2);
+    }
+    sw.stop();
+    time2 = sw.getMillisec();
+
+    // 32 bytes
+    strcpy(buffer3, "abcdefghijklmnopqrstuvwxyz|ab3");
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len3 = A_strlen(buffer3);
+    }
+    sw.stop();
+    time3 = sw.getMillisec();
+
+    // 32 bytes
+    strcpy(buffer4, "abcdefghijklmnopqrstuvwxyz|ab4");
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len4 = jmf_strlen(buffer4);
+    }
+    sw.stop();
+    time4 = sw.getMillisec();
+
+    // 64 bytes
+    strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijk1");
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len5 = strlen(buffer1);
+    }
+    sw.stop();
+    time5 = sw.getMillisec();
+
+    // 64 bytes
+    strcpy(buffer2, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijk2");
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len6 = jimi::char_traits<char>::strlen(buffer2);
+    }
+    sw.stop();
+    time6 = sw.getMillisec();
+
+    // 64 bytes
+    strcpy(buffer3, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijk3");
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len7 = A_strlen(buffer3);
+    }
+    sw.stop();
+    time7 = sw.getMillisec();
+
+    // 64 bytes
+    strcpy(buffer4, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijk4");
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len8 = jmf_strlen(buffer4);
+    }
+    sw.stop();
+    time8 = sw.getMillisec();
+
+    buffer1[20] = '\0';
+    printf("buffer1 = %s, len1 = %d, len2 = %d, len3 = %d, len4 = %d\n\n", buffer1, len1, len2, len3, len4);
+
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len1, time1);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len2, time2);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len3, time3);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len4, time4);
+    printf("\n");
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len5, time5);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
+    printf("\n"); 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // 128 bytes
+    strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs1");
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len1 = strlen(buffer1);
+    }
+    sw.stop();
+    time1 = sw.getMillisec();
+
+    // 128 bytes
+    strcpy(buffer2, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs2");
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len2 = jimi::char_traits<char>::strlen(buffer2);
+    }
+    sw.stop();
+    time2 = sw.getMillisec();
+
+    // 128 bytes
+    strcpy(buffer3, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs3");
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len3 = A_strlen(buffer3);
+    }
+    sw.stop();
+    time3 = sw.getMillisec();
+
+    // 128 bytes
+    strcpy(buffer4, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs4");
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len4 = jmf_strlen(buffer4);
+    }
+    sw.stop();
+    time4 = sw.getMillisec();
+
+    // 256 bytes
+    strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs1"
+        );
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len5 = strlen(buffer1);
+    }
+    sw.stop();
+    time5 = sw.getMillisec();
+
+    // 256 bytes
+    strcpy(buffer2, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs2"
+        );
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len6 = jimi::char_traits<char>::strlen(buffer2);
+    }
+    sw.stop();
+    time6 = sw.getMillisec();
+
+    // 256 bytes
+    strcpy(buffer3, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs3"
+        );
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len7 = A_strlen(buffer3);
+    }
+    sw.stop();
+    time7 = sw.getMillisec();
+
+    // 256 bytes
+    strcpy(buffer4, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrst"
+        "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs4"
+        );
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len8 = jmf_strlen(buffer4);
+    }
+    sw.stop();
+    time8 = sw.getMillisec();
+
+    buffer1[20] = '\0';
+    printf("buffer1 = %s, len1 = %d, len2 = %d, len3 = %d, len4 = %d\n\n", buffer1, len1, len2, len3, len4);
+
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len1, time1);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len2, time2);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len3, time3);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len4, time4);
+    printf("\n");
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len5, time5);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
+    printf("\n"); 
 }
 
 int get_bytes_display(char *buffer, size_t buf_size, size_t size)
@@ -697,6 +919,8 @@ int UnitTest_Main(int argc, char *argv[])
     String_Base_Test();
 
     String_Performance_Test();
+
+    Fast_StrLen_Test();
 
 #if 0
     // char_traits<T>相关字符串函数的测试

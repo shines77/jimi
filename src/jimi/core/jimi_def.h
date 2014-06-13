@@ -158,11 +158,23 @@ typedef struct JIMI_MACRO_T
     const char *value;
 } JIMI_MACRO_T;
 
-#include <cstddef>      /* Need size_t and ptrdiff_t */
+/* Need size_t and ptrdiff_t */
+#include <cstddef>
+
 //#include <iostream>
 //#include <string>
 
-//using namespace std;
+using namespace std;
+
+#if defined(_MSC_VER) && _MSC_VER >= 1400
+#ifndef _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_DEPRECATE
+#endif
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+#pragma warning(disable: 4996)
+#endif  /* _MSC_VER */
 
 // warning C4290: 忽略 C++ 异常规范，但指示函数不是 __declspec(nothrow)
 #pragma warning(disable : 4290)

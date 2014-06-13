@@ -18,8 +18,13 @@
 
 #if JIMI_IS_MSVC
     #include <jimic/core/win32/vs_stdint.h>
+    /* Need size_t */
+    #include <stddef.h>
 #else
     #include <stdint.h>
+    /* Need size_t */
+    #include <stddef.h>
+    #include <sys/types.h>
 #endif
 
 #include <jimi/core/jimi_common.h>
@@ -37,7 +42,7 @@
 /* Ignore most warnings (back down to /W3) for poorly constructed headers
  */
 #if defined(_MSC_VER) && _MSC_VER >= 1200
-#pragma warning(push, 3)
+//#pragma warning(push, 3)
 #endif
 
 /* disable or reduce the frequency of...
@@ -57,9 +62,12 @@
  */
 #if defined(_MSC_VER) && _MSC_VER >= 1400
 #ifndef _CRT_SECURE_NO_DEPRECATE
-//#define _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_DEPRECATE
 #endif
-//#pragma warning(disable: 4996)
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+#pragma warning(disable: 4996)
 #endif  /* _MSC_VER */
 
 /* Has windows.h already been included?  If so, our preferences don't matter,
@@ -274,7 +282,7 @@ char (*__jmc_countof_helper(UNALIGNED _CountofType (&_Array)[_SizeOfArray]))[_Si
 /* Done with badly written headers
  */
 #if defined(_MSC_VER) && _MSC_VER >= 1200
-#pragma warning(pop)
+//#pragma warning(pop)
 //#pragma warning(disable: 4996)
 #endif
 
