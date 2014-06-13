@@ -246,7 +246,7 @@ void String_Performance_Test()
     }
     sw.stop();
     time3 = sw.getMillisec();
-    
+
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
         //std::string str = "abcdefghijk";
@@ -308,7 +308,7 @@ void String_Performance_Test()
     printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"abcdefg...xyz\";", time7);
     printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefg...xyz\";", time8);
 
-    printf("\n");    
+    printf("\n");
 }
 
 void Fast_StrLen_Test()
@@ -421,7 +421,7 @@ void Fast_StrLen_Test()
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
-    printf("\n"); 
+    printf("\n");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -525,7 +525,7 @@ void Fast_StrLen_Test()
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
-    printf("\n"); 
+    printf("\n");
 }
 
 int get_bytes_display(char *buffer, size_t buf_size, size_t size)
@@ -565,14 +565,14 @@ void Memcpy_Test()
 
     char bufsize_text[256];
     unsigned int bufsize_list[] = {
-        // 16, 32, 
+        // 16, 32,
         64, 128, 256, 512,
         //
         1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8, 1024 * 16,
         1024 * 32, 1024 * 64, 1024 * 128, 1024 * 256,
         //
         1048576 * 1, 1048576 * 2, 1048576 * 4, 1048576 * 8,
-        1048576 * 16, 1048576 * 32, 1048576 * 64  
+        1048576 * 16, 1048576 * 32, 1048576 * 64
     };
 
     buffer1 = ::_aligned_malloc(BUFFER_SIZE, 64);
@@ -996,7 +996,7 @@ int UnitTest_Main(int argc, char *argv[])
 
     sLog.log_end();
 
-    ::system("pause");    
+    ::system("pause");
     return 0;
 }
 
