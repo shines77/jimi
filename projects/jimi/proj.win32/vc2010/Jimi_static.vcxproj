@@ -86,11 +86,12 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\asmlib\asmlib.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\win32\vs_stdint.h" />
     <ClInclude Include="..\..\..\..\src\jimi\jimi_all.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_common.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_def.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_export.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\core\vs\stdint.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\win32\jimi_config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_compiler_config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_platform_config.h" />
@@ -144,7 +145,6 @@
     <ClInclude Include="..\..\..\..\src\jimic\core\jimic_def.h" />
     <ClInclude Include="..\..\..\..\src\jimic\core\jimic_export.h" />
     <ClInclude Include="..\..\..\..\src\jimic\core\win32\jimic_config.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\core\vs\stdint.h" />
     <ClInclude Include="..\..\..\..\src\jimic\platform\jimic_targetver.h" />
     <ClInclude Include="..\..\..\..\src\jimic\platform\linux\fast_memcpy.h" />
     <ClInclude Include="..\..\..\..\src\jimic\platform\win\fast_memcpy.h" />

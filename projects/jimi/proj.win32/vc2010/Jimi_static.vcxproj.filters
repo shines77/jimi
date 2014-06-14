@@ -11,9 +11,6 @@
     <Filter Include="src\jimi\core">
       <UniqueIdentifier>{94221e15-455b-40bb-aa92-bbe3453f612a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\jimi\core\vs">
-      <UniqueIdentifier>{45b491c3-c114-45bc-b5ef-7976c607a2cd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\jimi\core\win32">
       <UniqueIdentifier>{22b27444-1ff7-460e-afe4-d071801c66ad}</UniqueIdentifier>
     </Filter>
@@ -71,9 +68,6 @@
     <Filter Include="src\jimic\core\win32">
       <UniqueIdentifier>{3cb23f28-002c-4dac-bfcc-54f210dfbf27}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\jimic\core\vs">
-      <UniqueIdentifier>{36c6d328-7d12-4e6a-bde0-f7cec11a9106}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\jimic\platform">
       <UniqueIdentifier>{3233b5c6-6357-4e86-bb5d-12633073bdcd}</UniqueIdentifier>
     </Filter>
@@ -86,6 +80,9 @@
     <Filter Include="res">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="src\asmlib">
+      <UniqueIdentifier>{ab9af6e0-1e26-41d9-bfc0-da4fa01b5fe2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -100,9 +97,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_export.h">
       <Filter>src\jimi\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\core\vs\stdint.h">
-      <Filter>src\jimi\core\vs</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\core\win32\jimi_config.h">
       <Filter>src\jimi\core\win32</Filter>
@@ -239,9 +233,6 @@
     <ClInclude Include="..\..\..\..\src\jimic\core\win32\jimic_config.h">
       <Filter>src\jimic\core\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\core\vs\stdint.h">
-      <Filter>src\jimic\core\vs</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\platform\jimic_targetver.h">
       <Filter>src\jimic\platform</Filter>
     </ClInclude>
@@ -250,6 +241,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\platform\win\fast_memcpy.h">
       <Filter>src\jimic\platform\win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\win32\vs_stdint.h">
+      <Filter>src\jimic\core\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\asmlib\asmlib.h">
+      <Filter>src\asmlib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

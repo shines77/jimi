@@ -63,6 +63,9 @@
 /x64-Release
 !/deps/
 
+# For Visual Studio Update File
+UpgradeLog.XML
+
 # For log file
 *.log
 

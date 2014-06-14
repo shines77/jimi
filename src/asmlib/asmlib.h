@@ -30,28 +30,35 @@ Define compiler-specific types and directives
 
 // Define integer types with known size: int32_t, uint32_t, int64_t, uint64_t.
 // If this doesn't work then insert compiler-specific definitions here:
+// (stdint.h defined from visual studio 2010)
 #if defined(__GNUC__) || (defined(_MSC_VER) && _MSC_VER >= 1600)
   // Compilers supporting C99 or C++0x have stdint.h defining these integer types
   #include <stdint.h>
   #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
 #elif defined(_MSC_VER)
-  // Older Microsoft compilers have their own definition
-  typedef signed   __int16  int16_t;
-  typedef unsigned __int16 uint16_t;
-  typedef signed   __int32  int32_t;
-  typedef unsigned __int32 uint32_t;
-  typedef signed   __int64  int64_t;
-  typedef unsigned __int64 uint64_t;
-  #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
+  #ifndef _STDINT
+    #define _STDINT
+    // Older Microsoft compilers have their own definition
+    typedef signed   __int16  int16_t;
+    typedef unsigned __int16 uint16_t;
+    typedef signed   __int32  int32_t;
+    typedef unsigned __int32 uint32_t;
+    typedef signed   __int64  int64_t;
+    typedef unsigned __int64 uint64_t;
+    #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
+  #endif
 #else
-  // This works with most compilers
-  typedef signed   short int  int16_t;
-  typedef unsigned short int uint16_t;
-  typedef signed   int        int32_t;
-  typedef unsigned int       uint32_t;
-  typedef long long           int64_t;
-  typedef unsigned long long uint64_t;
-  #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
+  #ifndef _STDINT
+    #define _STDINT
+    // This works with most compilers
+    typedef signed   short int  int16_t;
+    typedef unsigned short int uint16_t;
+    typedef signed   int        int32_t;
+    typedef unsigned int       uint32_t;
+    typedef long long           int64_t;
+    typedef unsigned long long uint64_t;
+    #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
+  #endif
 #endif
 
 

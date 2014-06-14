@@ -16,13 +16,34 @@
 #include <jimi/core/win32/jimi_config.h>
 #include <jimi/core/jimi_export.h>
 
-#if JIMI_IS_MSVC
-    #ifndef _STDINT
-        #define _STDINT
-        #include <jimic/core/win32/vs_stdint.h>
-    #endif
+// Define type size_t
+#ifndef _SIZE_T_DEFINED
+#include <stddef.h>
+#endif
+
+// linux maybe need #include <sys/types.h>
+
+// Define integer types with known size: int32_t, uint32_t, int64_t, uint64_t.
+// If this doesn't work then insert compiler-specific definitions here:
+// (stdint.h defined from visual studio 2010)
+#if defined(JIMI_IS_GNUC) || (defined(JIMI_MSC_VER) && JIMI_MSC_VER >= 1600)
+  // Compilers supporting C99 or C++0x have stdint.h defining these integer types
+  #include <stdint.h>
+  #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
+#elif defined(JIMI_MSC_VER)
+  #include <jimi/core/win32/vs_stdint.h>
 #else
-    #include <stdint.h>
+  #ifndef _STDINT
+    #define _STDINT
+    // This works with most compilers
+    typedef signed   short int  int16_t;
+    typedef unsigned short int uint16_t;
+    typedef signed   int        int32_t;
+    typedef unsigned int       uint32_t;
+    typedef long long           int64_t;
+    typedef unsigned long long uint64_t;
+    #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
+  #endif
 #endif
 
 #include <jimi/core/jimi_common.h>

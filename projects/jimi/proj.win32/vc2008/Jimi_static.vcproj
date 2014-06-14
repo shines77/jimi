@@ -178,18 +178,14 @@
 						>
 					</File>
 					<Filter
-						Name="vs"
-						>
-						<File
-							RelativePath="..\..\..\..\src\jimi\core\vs\stdint.h"
-							>
-						</File>
-					</Filter>
-					<Filter
 						Name="win32"
 						>
 						<File
 							RelativePath="..\..\..\..\src\jimi\core\win32\jimi_config.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\..\src\jimi\core\win32\vs_stdint.h"
 							>
 						</File>
 					</Filter>
@@ -490,12 +486,8 @@
 							RelativePath="..\..\..\..\src\jimic\core\win32\jimic_config.h"
 							>
 						</File>
-					</Filter>
-					<Filter
-						Name="vs"
-						>
 						<File
-							RelativePath="..\..\..\..\src\jimic\core\vs\stdint.h"
+							RelativePath="..\..\..\..\src\jimic\core\win32\vs_stdint.h"
 							>
 						</File>
 					</Filter>
@@ -524,6 +516,14 @@
 						</File>
 					</Filter>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="asmlib"
+				>
+				<File
+					RelativePath="..\..\..\..\src\asmlib\asmlib.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
