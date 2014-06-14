@@ -62,6 +62,10 @@ size_t __CDECL jmf_strlen(const char *str);
 
 ///////////////////////////////////////////////////////////////////////////
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 JIMI_INLINE
 __declspec(naked)
 size_t __CDECL jmf_strlen(const char *str)
@@ -163,6 +167,10 @@ strlen_386:
         ret
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #undef STACK
 #undef ARGS

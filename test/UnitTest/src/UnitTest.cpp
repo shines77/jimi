@@ -333,6 +333,7 @@ void Fast_StrLen_Test()
     const int LOOP_TIMES = 200000;
 #endif
     char *str1, *str2, *str3;
+    char *pbuffer;
     size_t len1, len2, len3, len4;
     size_t len5, len6, len7, len8;
     char buffer1[512], buffer2[512], buffer3[512], buffer4[512];
@@ -343,13 +344,36 @@ void Fast_StrLen_Test()
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    typedef size_t (*pfn_strlen) (const char *_Str);
+    pfn_strlen pstrlen = (pfn_strlen)&strlen;
+    pbuffer = &buffer1[0];
+
     // 32 bytes
     strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz|ab1");
 
     sw.restart();
+#if 0
     for (i = 0; i < LOOP_TIMES; ++i) {
         len1 = strlen(buffer1);
     }
+#else
+    __asm {
+        push    ebx
+        push    edx
+        mov     ebx, LOOP_TIMES
+        align   16
+strlen_loop1_1:
+        mov     edx, pbuffer
+        push    edx
+        call    dword ptr [pstrlen]
+        add     esp, 4
+        mov     len1, eax
+        dec     ebx
+        jnz     strlen_loop1_1
+        pop     edx
+        pop     ebx
+    }
+#endif
     sw.stop();
     time1 = sw.getMillisec();
 
@@ -387,9 +411,28 @@ void Fast_StrLen_Test()
     strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijk1");
 
     sw.restart();
+#if 0
     for (i = 0; i < LOOP_TIMES; ++i) {
         len5 = strlen(buffer1);
     }
+#else
+    __asm {
+        push    ebx
+        push    edx
+        mov     ebx, LOOP_TIMES
+        align   16
+strlen_loop1_5:
+        mov     edx, pbuffer
+        push    edx
+        call    dword ptr [pstrlen]
+        add     esp, 4
+        mov     len5, eax
+        dec     ebx
+        jnz     strlen_loop1_5
+        pop     edx
+        pop     ebx
+    }
+#endif
     sw.stop();
     time5 = sw.getMillisec();
 
@@ -443,9 +486,28 @@ void Fast_StrLen_Test()
     strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs1");
 
     sw.restart();
+#if 0
     for (i = 0; i < LOOP_TIMES; ++i) {
         len1 = strlen(buffer1);
     }
+#else
+    __asm {
+        push    ebx
+        push    edx
+        mov     ebx, LOOP_TIMES
+        align   16
+strlen_loop2_1:
+        mov     edx, pbuffer
+        push    edx
+        call    dword ptr [pstrlen]
+        add     esp, 4
+        mov     len1, eax
+        dec     ebx
+        jnz     strlen_loop2_1
+        pop     edx
+        pop     ebx
+    }
+#endif
     sw.stop();
     time1 = sw.getMillisec();
 
@@ -484,9 +546,28 @@ void Fast_StrLen_Test()
                     "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs1");
 
     sw.restart();
+#if 0
     for (i = 0; i < LOOP_TIMES; ++i) {
         len5 = strlen(buffer1);
     }
+#else
+    __asm {
+        push    ebx
+        push    edx
+        mov     ebx, LOOP_TIMES
+        align   16
+strlen_loop2_5:
+        mov     edx, pbuffer
+        push    edx
+        call    dword ptr [pstrlen]
+        add     esp, 4
+        mov     len5, eax
+        dec     ebx
+        jnz     strlen_loop2_5
+        pop     edx
+        pop     ebx
+    }
+#endif
     sw.stop();
     time5 = sw.getMillisec();
 
@@ -547,9 +628,28 @@ void Fast_StrLen_Test()
         );
 
     sw.restart();
+#if 0
     for (i = 0; i < LOOP_TIMES; ++i) {
         len5 = strlen(buffer1);
     }
+#else
+    __asm {
+        push    ebx
+        push    edx
+        mov     ebx, LOOP_TIMES
+        align   16
+strlen_loop3_5:
+        mov     edx, pbuffer
+        push    edx
+        call    dword ptr [pstrlen]
+        add     esp, 4
+        mov     len5, eax
+        dec     ebx
+        jnz     strlen_loop3_5
+        pop     edx
+        pop     ebx
+    }
+#endif
     sw.stop();
     time5 = sw.getMillisec();
 
@@ -612,9 +712,28 @@ void Fast_StrLen_Test()
         str1[buf_size - 1] = '\0';
 
         sw.restart();
+#if 0
         for (i = 0; i < 1000; ++i) {
             len1 = ::strlen(str1);
         }
+#else
+            __asm {
+                push    ebx
+                push    edx
+                mov     ebx, 1000
+                align   16
+strlen_loop4_1:
+                mov     edx, str1
+                push    edx
+                call    dword ptr [pstrlen]
+                add     esp, 4
+                mov     len1, eax
+                dec     ebx
+                jnz     strlen_loop4_1
+                pop     edx
+                pop     ebx
+            }
+#endif
         sw.stop();
         time1 = sw.getMillisec();
     }
@@ -825,7 +944,7 @@ void Memcpy_Test()
     time4 = sw.getMillisec();
 
     printf("%-16s size = %d K, time = %0.5f ms\n", "fast_memcpy()",   buf_size / 1024, time1);
-    printf("%-16s size = %d K, time = %0.5f ms\n", "memcpy_mmx4()",  buf_size / 1024, time2);
+    printf("%-16s size = %d K, time = %0.5f ms\n", "memcpy_mmx4()",   buf_size / 1024, time2);
     printf("%-16s size = %d K, time = %0.5f ms\n", "A_memcpy()",      buf_size / 1024, time3);
     printf("%-16s size = %d K, time = %0.5f ms\n", "::memcpy()",      buf_size / 1024, time4);
 
@@ -854,7 +973,7 @@ void Memcpy_Test()
     time4 = sw.getMillisec();
 
     printf("%-16s size = %d K, time = %0.5f ms\n", "fast_memcpy()",   buf_size / 1024, time1);
-    printf("%-16s size = %d K, time = %0.5f ms\n", "memcpy_mmx4()",  buf_size / 1024, time2);
+    printf("%-16s size = %d K, time = %0.5f ms\n", "memcpy_mmx4()",   buf_size / 1024, time2);
     printf("%-16s size = %d K, time = %0.5f ms\n", "A_memcpy()",      buf_size / 1024, time3);
     printf("%-16s size = %d K, time = %0.5f ms\n", "::memcpy()",      buf_size / 1024, time4);
 
@@ -883,7 +1002,7 @@ void Memcpy_Test()
     time4 = sw.getMillisec();
 
     printf("%-16s size = %d M, time = %0.5f ms\n", "fast_memcpy()",   buf_size / (1024 * 1024), time1);
-    printf("%-16s size = %d M, time = %0.5f ms\n", "memcpy_mmx4()",  buf_size / (1024 * 1024), time2);
+    printf("%-16s size = %d M, time = %0.5f ms\n", "memcpy_mmx4()",   buf_size / (1024 * 1024), time2);
     printf("%-16s size = %d M, time = %0.5f ms\n", "A_memcpy()",      buf_size / (1024 * 1024), time3);
     printf("%-16s size = %d M, time = %0.5f ms\n", "::memcpy()",      buf_size / (1024 * 1024), time4);
 
@@ -912,7 +1031,7 @@ void Memcpy_Test()
     time4 = sw.getMillisec();
 
     printf("%-16s size = %d M, time = %0.5f ms\n", "fast_memcpy()",   buf_size / (1024 * 1024), time1);
-    printf("%-16s size = %d M, time = %0.5f ms\n", "memcpy_mmx4()",  buf_size / (1024 * 1024), time2);
+    printf("%-16s size = %d M, time = %0.5f ms\n", "memcpy_mmx4()",   buf_size / (1024 * 1024), time2);
     printf("%-16s size = %d M, time = %0.5f ms\n", "A_memcpy()",      buf_size / (1024 * 1024), time3);
     printf("%-16s size = %d M, time = %0.5f ms\n", "::memcpy()",      buf_size / (1024 * 1024), time4);
 
@@ -1039,13 +1158,13 @@ int UnitTest_Main(int argc, char *argv[])
     String_Copy_On_Write_Test();
 
     // Memcpy 内存复制测试
-    Memcpy_Test();
+    //Memcpy_Test();
 
     //String_Base_Test();
 
     //String_Performance_Test();
 
-    //Fast_StrLen_Test();
+    Fast_StrLen_Test();
 
 #if 0
     // char_traits<T>相关字符串函数的测试
