@@ -40,31 +40,27 @@ size_t __CDECL jmf_strlen(const char *str);
 /* Local ARGS = 0 bytes */
 #define ARGS            0
 
-#define ARG_1           DWORD PTR [esp +  4 + STACK + ARGS]
-#define ARG_2           DWORD PTR [esp +  8 + STACK + ARGS]
-#define ARG_3           DWORD PTR [esp + 12 + STACK + ARGS]
-#define ARG_4           DWORD PTR [esp + 16 + STACK + ARGS]
-#define ARG_5           DWORD PTR [esp + 20 + STACK + ARGS]
-#define ARG_6           DWORD PTR [esp + 24 + STACK + ARGS]
-#define ARG_7           DWORD PTR [esp + 28 + STACK + ARGS]
-#define ARG_8           DWORD PTR [esp + 32 + STACK + ARGS]
-#define ARG_9           DWORD PTR [esp + 36 + STACK + ARGS]
-#define ARG_A           DWORD PTR [esp + 40 + STACK + ARGS]
-#define ARG_B           DWORD PTR [esp + 44 + STACK + ARGS]
-#define ARG_C           DWORD PTR [esp + 48 + STACK + ARGS]
-#define ARG_D           DWORD PTR [esp + 52 + STACK + ARGS]
-#define ARG_E           DWORD PTR [esp + 56 + STACK + ARGS]
-#define ARG_F           DWORD PTR [esp + 60 + STACK + ARGS]
+#define ARG_1           dword ptr [esp +  4 + STACK + ARGS]
+#define ARG_2           dword ptr [esp +  8 + STACK + ARGS]
+#define ARG_3           dword ptr [esp + 12 + STACK + ARGS]
+#define ARG_4           dword ptr [esp + 16 + STACK + ARGS]
+#define ARG_5           dword ptr [esp + 20 + STACK + ARGS]
+#define ARG_6           dword ptr [esp + 24 + STACK + ARGS]
+#define ARG_7           dword ptr [esp + 28 + STACK + ARGS]
+#define ARG_8           dword ptr [esp + 32 + STACK + ARGS]
+#define ARG_9           dword ptr [esp + 36 + STACK + ARGS]
+#define ARG_A           dword ptr [esp + 40 + STACK + ARGS]
+#define ARG_B           dword ptr [esp + 44 + STACK + ARGS]
+#define ARG_C           dword ptr [esp + 48 + STACK + ARGS]
+#define ARG_D           dword ptr [esp + 52 + STACK + ARGS]
+#define ARG_E           dword ptr [esp + 56 + STACK + ARGS]
+#define ARG_F           dword ptr [esp + 60 + STACK + ARGS]
 
 /* Local ARGS = 0 bytes */
-#define LOCAL_ARG1      DWORD PTR [esp +  0 + STACK]
-#define LOCAL_ARG2      DWORD PTR [esp +  4 + STACK]
+#define LOCAL_ARG1      dword ptr [esp +  0 + STACK]
+#define LOCAL_ARG2      dword ptr [esp +  4 + STACK]
 
 ///////////////////////////////////////////////////////////////////////////
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 JIMI_INLINE
 __declspec(naked)
@@ -72,17 +68,17 @@ size_t __CDECL jmf_strlen(const char *str)
 {
     __asm {
 #if defined(ARGS) && (ARGS > 0)
-        sub     esp, ARGS      // # Generate Stack Frame
+        sub         esp, ARGS      // # Generate Stack Frame
 #endif
 #if 0
-        push    ebp
-        push    edi
-        push    esi
+        push        ebp
+        push        edi
+        push        esi
 #endif
-        push    ebx
+        push        ebx
 
 #if 0
-        jmp     strlen_SSE2
+        jmp         strlen_SSE2
 
         ALIGN_16
 strlen_SSE2:
@@ -149,28 +145,24 @@ L300:
 #if 0
         ALIGN_16
 strlen_386:
-        mov     eax, 0
+        mov         eax, 0
 
-        jnz     strlen_386
+        jnz         strlen_386
 #endif
 
-        pop     ebx
+        pop         ebx
 #if 0
-        pop     esi
-        pop     edi
-        pop     ebp
+        pop         esi
+        pop         edi
+        pop         ebp
 #endif
 
 #if defined(ARGS) && (ARGS > 0)
-        add     esp, ARGS
+        add         esp, ARGS
 #endif
         ret
     }
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #undef STACK
 #undef ARGS
