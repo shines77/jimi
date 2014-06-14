@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="ProjEnvProperty"
+	>
+	<UserMacro
+		Name="MsvcPlatformToolset"
+		Value="vc2010"
+	/>
+	<UserMacro
+		Name="MsvcPlatformShortName"
+		Value="x86"
+	/>
+	<UserMacro
+		Name="MsvcPlatformShortName64"
+		Value="x64"
+	/>
+</VisualStudioPropertySheet>

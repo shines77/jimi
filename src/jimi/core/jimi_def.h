@@ -17,8 +17,10 @@
 #include <jimi/core/jimi_export.h>
 
 #if JIMI_IS_MSVC
-    #include <jimi/core/win32/vs_stdint.h>
-    #define snprintf _snprintf
+    #ifndef _STDINT
+        #define _STDINT
+        #include <jimic/core/win32/vs_stdint.h>
+    #endif
 #else
     #include <stdint.h>
 #endif

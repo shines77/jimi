@@ -17,7 +17,10 @@
 #include <jimic/core/jimic_export.h>
 
 #if JIMI_IS_MSVC
-    #include <jimic/core/win32/vs_stdint.h>
+    #ifndef _STDINT
+        #define _STDINT
+        #include <jimic/core/win32/vs_stdint.h>
+    #endif
     /* Need size_t */
     #include <stddef.h>
 #else

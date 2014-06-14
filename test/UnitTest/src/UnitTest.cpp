@@ -1039,13 +1039,13 @@ int UnitTest_Main(int argc, char *argv[])
     String_Copy_On_Write_Test();
 
     // Memcpy 内存复制测试
-    //Memcpy_Test();
+    Memcpy_Test();
 
-    String_Base_Test();
+    //String_Base_Test();
 
-    String_Performance_Test();
+    //String_Performance_Test();
 
-    Fast_StrLen_Test();
+    //Fast_StrLen_Test();
 
 #if 0
     // char_traits<T>相关字符串函数的测试
