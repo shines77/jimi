@@ -1160,7 +1160,7 @@ int UnitTest_Main(int argc, char *argv[])
     // Memcpy ÄÚ´æ¸´ÖÆ²âÊÔ
     //Memcpy_Test();
 
-    //String_Base_Test();
+    String_Base_Test();
 
     //String_Performance_Test();
 

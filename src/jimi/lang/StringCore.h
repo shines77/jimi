@@ -21,6 +21,10 @@
 #include <string>
 using namespace std;
 
+#define JIMI_STRING_PERVERSE
+#define JIMI_STRING_CONSERVATIVE
+
+
 NS_JIMI_BEGIN
 
 /// <comment>
@@ -41,28 +45,39 @@ NS_JIMI_BEGIN
 
 #define STRING_MEDIUM_SIZE      256
 
+#define STRING_NULL_CHAR        '\0'
+
 typedef enum StringTypeMask
 {
-    STRING_TYPE_SMALL   = (sizeof(size_t) == 4) ? 0x01000000 : 0x0100000000000000,
-    STRING_TYPE_MEDIUM  = (sizeof(size_t) == 4) ? 0x02000000 : 0x0200000000000000,
-    STRING_TYPE_LARGE   = (sizeof(size_t) == 4) ? 0x04000000 : 0x0400000000000000,
-    STRING_TYPE_MASK    = (STRING_TYPE_SMALL
-        | STRING_TYPE_MEDIUM | STRING_TYPE_LARGE),
+    STRING_TYPE_SMALL       = (sizeof(size_t) == 4) ? 0x01000000 : 0x0100000000000000,
+    STRING_TYPE_MEDIUM      = (sizeof(size_t) == 4) ? 0x02000000 : 0x0200000000000000,
+    STRING_TYPE_LARGE       = (sizeof(size_t) == 4) ? 0x04000000 : 0x0400000000000000,
+    STRING_TYPE_CONSTANT    = (sizeof(size_t) == 4) ? 0x08000000 : 0x0800000000000000,
+    STRING_TYPE_MASK        = (STRING_TYPE_SMALL
+        | STRING_TYPE_MEDIUM | STRING_TYPE_LARGE | STRING_TYPE_CONSTANT),
 } StringTypeMask;
 
 typedef enum StringTypeMaskX
 {
-    STRING_TYPE_SMALL_X = 0x01,
-    TRING_TYPE_MEDIUM_X = 0x02,
-    STRING_TYPE_LARGE_X = 0x04,
-    STRING_TYPE_MASK_X  = 0x07
+    STRING_TYPE_SMALL_X     = 0x01,
+    STRING_TYPE_MEDIUM_X    = 0x02,
+    STRING_TYPE_LARGE_X     = 0x04,
+    STRING_TYPE_CONSTANT_X  = 0x08,
+    STRING_TYPE_MASK_X      = (STRING_TYPE_SMALL_X
+        | STRING_TYPE_MEDIUM_X | STRING_TYPE_LARGE_X | STRING_TYPE_CONSTANT_X),
 } StringTypeMaskX;
 
-#define TYPE_IS_SMALL(type)     ((type & STRING_TYPE_SMALL)  != 0)
-#define TYPE_IS_MIDIUM(type)    ((type & STRING_TYPE_MEDIUM) != 0)
-#define TYPE_IS_LARGE(type)     ((type & STRING_TYPE_LARGE)  != 0)
+#define STRING_TYPE_IS(type, mask)      ((type & mask) != 0)
 
-#define TYPE_NOT_IS_SMALL(type)   \
+#define STRING_TYPE_IS_SMALL(type)      ((type & STRING_TYPE_SMALL)     != 0)
+#define STRING_TYPE_IS_MEDIUM(type)     ((type & STRING_TYPE_MEDIUM)    != 0)
+#define STRING_TYPE_IS_LARGE(type)      ((type & STRING_TYPE_LARGE)     != 0)
+#define STRING_TYPE_IS_CONSTANT(type)   ((type & STRING_TYPE_CONSTANT)  != 0)
+
+#define STRING_TYPE_NOT_IS_SMALL(type)   \
+    ((type & (STRING_TYPE_MASK & (~STRING_TYPE_SMALL) & (~STRING_TYPE_CONSTANT))) != 0)
+
+#define STRING_TYPE_IS_MEDIUM_OR_LARGE(type)   \
     ((type & (STRING_TYPE_MEDIUM | STRING_TYPE_LARGE)) != 0)
 
 #define STRING_CORE_CLASSES    \
@@ -70,7 +85,7 @@ typedef enum StringTypeMaskX
 #define STRING_CORE            \
     string_core<_CharT, _RefCount>
 
-template <class _CharT, class _RefCount = refcounted<_CharT, size_t>>
+template <class _CharT, class _RefCount = refcounted<_CharT, size_t> >
 class JIMI_API string_core
 {
 public:
@@ -92,14 +107,18 @@ public:
     typedef struct medium_large medium_large; 
 
     // Constant
-    static const flag_type      kIsSmall  =  STRING_TYPE_SMALL;
-    static const flag_type      kIsMedium =  STRING_TYPE_MEDIUM;
-    static const flag_type      kIsLarge  =  STRING_TYPE_LARGE;
-    static const flag_type      kTypeMask =  STRING_TYPE_MASK;
-    static const flag_type      kSizeMask = ~STRING_TYPE_MASK;
+    static const flag_type      kIsSmall    =  STRING_TYPE_SMALL;
+    static const flag_type      kIsMedium   =  STRING_TYPE_MEDIUM;
+    static const flag_type      kIsLarge    =  STRING_TYPE_LARGE;
+    static const flag_type      kIsConstant =  STRING_TYPE_CONSTANT;
+    static const flag_type      kTypeMask   =  STRING_TYPE_MASK;
+    static const flag_type      kSizeMask   = ~STRING_TYPE_MASK;
 
-    static const size_type      kMaxSmallSize  = (STRING_SMALL_SIZE - sizeof(small_info_t));
-    static const size_type      kMaxMediumSize = STRING_MEDIUM_SIZE;
+    static const flag_type      kIsMediumOrLargeMask = STRING_TYPE_MEDIUM | STRING_TYPE_LARGE;
+    static const flag_type      kNotIsSmallMask      = STRING_TYPE_MASK & (~STRING_TYPE_SMALL) & (~STRING_TYPE_CONSTANT);
+
+    static const size_type      kMaxSmallSize   = (STRING_SMALL_SIZE - sizeof(small_info_t)) / sizeof(char_type);
+    static const size_type      kMaxMediumSize  = STRING_MEDIUM_SIZE;
 
 public:
     // Contructor
@@ -120,17 +139,35 @@ public:
     int compare(const string_core &rhs) const;
     int compare(const char_type *rhs) const;
 
-    flag_type get_type() const { return (_ml.type & kTypeMask); }
+    flag_type getType() const       { return (_ml.type & kTypeMask); }
+    flag_type getTypeValue() const  { return _ml.type;               }
+    flag_type getTypeMask() const   { return kTypeMask;              }
 
-    bool is_small() const   { return TYPE_IS_SMALL(_ml.type);  }
-    bool is_medium() const  { return TYPE_IS_MIDIUM(_ml.type); }
-    bool is_large() const   { return TYPE_IS_LARGE(_ml.type);  }
+    bool is_small() const       { return STRING_TYPE_IS_SMALL(_ml.type);    }
+    bool is_medium() const      { return STRING_TYPE_IS_MEDIUM(_ml.type);   }
+    bool is_large() const       { return STRING_TYPE_IS_LARGE(_ml.type);    }
+    bool is_constant() const    { return STRING_TYPE_IS_CONSTANT(_ml.type); }
 
-    bool not_is_small() const { return TYPE_NOT_IS_SMALL(_ml.type); }
+    bool is_medium_or_large() const { return STRING_TYPE_IS_MEDIUM_OR_LARGE(_ml.type); }
+
+    bool not_is_small() const { return STRING_TYPE_NOT_IS_SMALL(_ml.type); }
 
     bool is_shared() const {
         return (is_large() && (refcount_type::refs(_ml.data) > 1));
-    }    
+    }
+
+    static bool is_small(const flag_type type)      { return STRING_TYPE_IS_SMALL(type);    }
+    static bool is_medium(const flag_type type)     { return STRING_TYPE_IS_MEDIUM(type);   }
+    static bool is_large(const flag_type type)      { return STRING_TYPE_IS_LARGE(type);    }
+    static bool is_constant(const flag_type type)   { return STRING_TYPE_IS_CONSTANT(type); }
+
+    static bool is_medium_or_large(const flag_type type) { return STRING_TYPE_IS_MEDIUM_OR_LARGE(type); }
+
+    static bool not_is_small(const flag_type type) { return STRING_TYPE_NOT_IS_SMALL(type); }
+
+    static bool is_shared(const medium_large &ml) {
+        return (is_large(ml.type) && (refcount_type::refs(ml.data) > 1));
+    } 
 
     const char_type *data() const { return c_str(); }
     const char_type *c_str() const;
@@ -146,6 +183,13 @@ public:
 
     // Don't disabled
     string_core & operator = (const string_core &rhs);
+
+    void reserve(size_type minCapacity);
+
+    void expandTo(const size_type newSize);
+    void shrinkTo(const size_type newSize);
+
+    void writeNull();
     
 protected:
     size_t calc_capacity(size_t src_len);
@@ -166,6 +210,7 @@ private:
     }
 
 private:
+    /* lastShort 有时候可以提供效率 */
     struct small_info_t {
         union {
             struct {
@@ -180,7 +225,9 @@ private:
     struct small_t {
         union {
             struct {
+                /* (dummy只是占位用, 未使用) */
                 unsigned char dummy[(STRING_SMALL_SIZE - sizeof(small_info_t)) / sizeof(char)];
+                /* size and type */
                 small_info_t  info;
             };
             char_type buf[(STRING_SMALL_SIZE - sizeof(small_info_t)) / sizeof(char_type)];
@@ -195,10 +242,11 @@ private:
         flag_type   type;
     };
 
+    /* medium 和 large 共享一样的结构 */
     struct medium_large {
         union {
             struct {
-                /* small object buffer (这里只是占位用, 未使用) */
+                /* (dummy只是占位用, 未使用) */
                 unsigned char dummy[(STRING_SMALL_SIZE - sizeof(core_data_t)) / sizeof(char)];
 
                 /* 后面的定义必须和core_data的结构一致 */
@@ -244,12 +292,15 @@ template <STRING_CORE_CLASSES>
 STRING_CORE::string_core(const string_core &src)
 {
     jimi_assert(&src != this);
-    flag_type type = src.get_type();
+    flag_type type = src.getType();
     /* small object */
-    if (type == kIsSmall) {
-        //_small.info.type = src._small.info.type;
-        //_small.info.size = src._small.info.size;
+    if (is_small(type)) {
+#if 0
+        _small.info.type = src._small.info.type;
+        _small.info.size = src._small.info.size;
+#else
         _small.info.lastShort = src._small.info.lastShort;
+#endif
         jimi_assert(src._small.info.size < STRING_SMALL_SIZE);
         if (_small.info.size < STRING_SMALL_SIZE) {
             char_traits<char>::strlcpy(&_small.buf[0], STRING_SMALL_SIZE, &src._small.buf[0], _small.info.size);
@@ -260,7 +311,7 @@ STRING_CORE::string_core(const string_core &src)
         }
     }
     /* eager copy */
-    else if (type == kIsMedium) {
+    else if (is_medium(type)) {
         jimi_assert(src._ml.capacity == STRING_MEDIUM_SIZE);
         _ml.size = src._ml.size;
         _ml.capacity = STRING_MEDIUM_SIZE;
@@ -269,14 +320,14 @@ STRING_CORE::string_core(const string_core &src)
         char_traits<char>::strlcpy(_ml.data, STRING_MEDIUM_SIZE, src._ml.data, src._ml.size);
     }
     /* copy-on-write */
-    else if (type == kIsLarge) {
+    else if (is_large(type)) {
         _ml.data     = src._ml.data;
         _ml.capacity = src._ml.capacity;
         const_cast<string_core &>(src).retail();
     }
     /* unknown type */
     else {
-        sLog.error("string_core(const string_core &src): type = 0x%04X, data = %08X, size() = %d.", get_type(), _ml.data, _ml.size);
+        sLog.error("string_core(const string_core &src): type = 0x%04X, data = %08X, size() = %d.", getType(), _ml.data, _ml.size);
     }
 }
 
@@ -429,6 +480,7 @@ inline void STRING_CORE::retail()
 {
     if (is_large())
         _ml.type = STRING_TYPE_LARGE;
+    refcount_type::retail(_ml.data);
 }
 
 template <STRING_CORE_CLASSES>
@@ -456,7 +508,7 @@ inline void STRING_CORE::release()
 
 template <STRING_CORE_CLASSES>
 STRING_CORE & STRING_CORE::operator = (const STRING_CORE &rhs) {
-    flag_type type = rhs.get_type();
+    flag_type type = rhs.getType();
     if (type == kIsSmall)
         small_clone(_small, rhs._small);
     else
@@ -474,7 +526,7 @@ inline void STRING_CORE::swap(STRING_CORE &rhs)
 {
 #if 1
         // 在不同的type下, _ml的有些数据是不必复制的
-        flag_type type = rhs.get_type();
+        flag_type type = rhs.getType();
         if (type == kIsSmall) {
             small_t t;
             small_clone(t, _small);
@@ -507,9 +559,10 @@ inline typename STRING_CORE::size_type STRING_CORE::size() const
 template <STRING_CORE_CLASSES>
 typename STRING_CORE::size_type STRING_CORE::capacity() const
 {
-    if (is_small())
+    flag_type type = getType();
+    if (type == kIsSmall)
         return kMaxSmallSize - 1;
-    else if (is_medium())
+    else if (type == kIsMedium)
         return kMaxMediumSize - 1;
     else
         return _ml.capacity;
@@ -518,7 +571,7 @@ typename STRING_CORE::size_type STRING_CORE::capacity() const
 template <STRING_CORE_CLASSES>
 inline const typename STRING_CORE::char_type *STRING_CORE::c_str() const
 {
-    flag_type type = get_type();
+    flag_type type = getType();
     if (type == kIsSmall)
         return &_small.buf[0];
     else
@@ -547,7 +600,7 @@ inline int STRING_CORE::compare(const STRING_CORE &rhs) const
     char_type *rhs_data;
 
     if (_ml.size == rhs._ml.size) {
-        if (get_type() == rhs.get_type()) {
+        if (getType() == rhs.getType()) {
             if (is_small()) {
                 equal = traits_type::strncmp(&_ml.buf[0], &rhs._ml.buf[0], _ml.size);
             }
@@ -614,6 +667,74 @@ inline int operator == (const _CharT *lhs, const STRING_CORE &rhs)
 {
     return rhs.compare(lhs);
 }
+
+template <STRING_CORE_CLASSES>
+inline void STRING_CORE::reserve(size_t minCapacity)
+{
+    //
+}
+
+template <STRING_CORE_CLASSES>
+inline void STRING_CORE::expandTo(const size_t newSize)
+{
+    // Strategy is simple: make room, then change size
+    jimi_assert(capacity() >= size());
+    size_t type = getType();
+    if (type == kIsLarge) {
+        //size_type _capacity = _ml.capacity;
+        if (newSize > _ml.capacity)
+            reserve(newSize);
+    }
+    else if (type == kIsMedium) {
+        //size_type _capacity = kMaxMediumSize - 1;
+        if (newSize > kMaxMediumSize - 1)
+            reserve(newSize);
+    }
+    else if (type == kIsSmall) {
+        //size_type _capacity = kMaxSmallSize - 1;
+        if (newSize <= kMaxSmallSize - 1) {
+            _small.info.size = newSize;
+            _small.buf[newSize] = STRING_NULL_CHAR;
+            return;
+        }
+        reserve(newSize);
+    }
+    /* is constant string or unknown type */
+    else {
+        return;
+    }
+
+    jimi_assert(capacity() >= newSize);
+    // Category can't be small - we took care of that above
+    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
+
+    _ml.size = newSize;
+    _ml.data[newSize] = STRING_NULL_CHAR;
+
+    jimi_assert(size() == newSize);
+}
+
+template <STRING_CORE_CLASSES>
+inline void STRING_CORE::shrinkTo(const size_t newSize)
+{
+    //
+}
+
+template <STRING_CORE_CLASSES>
+inline void STRING_CORE::writeNull()
+{
+#if defined(JIMI_STRING_PERVERSE) || defined(JIMI_STRING_CONSERVATIVE)
+    if (getType() == isSmall) {
+        const size_type _size = _small.info.size;
+        if (_size < kMaxSmallSize)
+            _small.buf[_size] = STRING_NULL_CHAR;
+    }
+    else {
+        _ml.data_[_ml.size_] = STRING_NULL_CHAR;
+    }
+#endif
+}
+
 
 NS_JIMI_END
 

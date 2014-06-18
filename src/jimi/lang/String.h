@@ -65,7 +65,7 @@ inline void pod_copy(const Pod *b, const Pod *e, Pod *d) {
 template <class _CharT   = char,
           class _Traits  = char_traits<_CharT>,
           class _Alloc   = allocator<_CharT>,
-          class _Storage = string_core<_CharT>>
+          class _Storage = string_core<_CharT> >
 
 class JIMI_API basic_string
 {
@@ -107,7 +107,7 @@ public:
     bool equals(const basic_string &rhs) const;
 
     int compare(const basic_string &rhs) const;
-    int compare(const char_type *rhs) const;
+    int compare(const value_type *rhs) const;
 
     //const storage_type &getStorage() const { return _store; }
 
@@ -201,16 +201,16 @@ BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &lhs) {
     const size_type srcSize = lhs.size();
     if (capacity() >= srcSize && !_store.is_shared()) {
         // great, just copy the contents
-        /*
+        ///*
         if (oldSize < srcSize)
-            _store.expand_noinit(srcSize - oldSize);
+            _store.expandTo(srcSize);
         else
-            _store.shrink(oldSize - srcSize);
+            _store.shrinkTo(srcSize);
         //*/
         _store = lhs._store;
         jimi_assert(size() == srcSize);
         //string_detail::pod_copy(lhs.begin(), lhs.end(), begin());
-        //_store.writeTerminator();
+        //_store.writeNull();
     }
     else {
         // need to reallocate, so we may as well create a brand new string
@@ -238,7 +238,7 @@ inline int BASIC_STRING::compare(const BASIC_STRING &rhs) const
 }
 
 template <BASIC_STRING_CLASSES>
-inline int BASIC_STRING::compare(const char_type *rhs) const
+inline int BASIC_STRING::compare(const value_type *rhs) const
 {
     return _store.compare(rhs);
 }
