@@ -32,10 +32,10 @@ struct JIMI_API char_traits
     static size_t strlen(const char_type *_Str);
     static size_t strnlen(const char_type *_Str, size_t _MaxCount);
 
-    static char_type *strcpy_u(char_type *_Dest, const char_type *_Source);
-    static char_type *strncpy_u(char_type *_Dest, const char_type *_Source, size_t _MaxCount);
-    static char_type *strncpy_u2(char_type *_Dest, const char_type *_Source, size_t _MaxCount);
-    static char_type *strlcpy_u(char_type *_Dest, const char_type *_Source, size_t _MaxCount);
+    static char_type *strcpy_unsafe(char_type *_Dest, const char_type *_Source);
+    static char_type *strncpy_unsafe(char_type *_Dest, const char_type *_Source, size_t _MaxCount);
+    static char_type *strncpy_unsafe2(char_type *_Dest, const char_type *_Source, size_t _MaxCount);
+    static char_type *strlcpy_unsafe(char_type *_Dest, const char_type *_Source, size_t _MaxCount);
 
     static char_type *strcpy(char_type *_Dest, size_t _NumberOfElements,
         const char_type *_Source);
@@ -108,7 +108,7 @@ inline size_t char_traits<char_type>::strnlen(const char_type *_Str, size_t _Max
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strcpy_u(char_type *_Dest, const char_type *_Source)
+inline char_type *char_traits<char_type>::strcpy_unsafe(char_type *_Dest, const char_type *_Source)
 {
     char_type *dest, *src;
 
@@ -133,7 +133,7 @@ inline char_type *char_traits<char_type>::strcpy_u(char_type *_Dest, const char_
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strncpy_u(char_type *_Dest, const char_type *_Source, size_t _MaxCount)
+inline char_type *char_traits<char_type>::strncpy_unsafe(char_type *_Dest, const char_type *_Source, size_t _MaxCount)
 {
     char_type *dest, *src;
     int n;
@@ -159,7 +159,7 @@ inline char_type *char_traits<char_type>::strncpy_u(char_type *_Dest, const char
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strncpy_u2(char_type *_Dest, const char_type *_Source, size_t _MaxCount)
+inline char_type *char_traits<char_type>::strncpy_unsafe2(char_type *_Dest, const char_type *_Source, size_t _MaxCount)
 {
     char_type *dest, *src;
     int n;
@@ -187,7 +187,7 @@ inline char_type *char_traits<char_type>::strncpy_u2(char_type *_Dest, const cha
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strlcpy_u(char_type *_Dest, const char_type *_Source, size_t _MaxCount)
+inline char_type *char_traits<char_type>::strlcpy_unsafe(char_type *_Dest, const char_type *_Source, size_t _MaxCount)
 {
     char_type *dest, *src;
     int n;

@@ -61,10 +61,10 @@ public:
         // Don't forget to allocate one extra Char for the terminating
         // null. In this case, however, one Char is already part of the
         // struct.
-        const size_t allocSize = sizeof(_refcount) + (*size) * sizeof(char_type) + 1;
-        refcounted *result = static_cast<refcounted *>(::malloc(allocSize));
+        const size_t allocSizeBytes = sizeof(refcounted) + (*size) * sizeof(char_type) + 1;
+        refcounted *result = static_cast<refcounted *>(::malloc(allocSizeBytes));
         result->_refcount.store(1, 0);
-        *size = (allocSize - sizeof(_refcount) - 1) / sizeof(Char);
+        *size = (allocSizeBytes - sizeof(refcounted) - 1) / sizeof(char_type);
         return result;
     }
 
@@ -86,13 +86,15 @@ public:
         // null. In this case, however, one Char is already part of the
         // struct.
         refcounted *result = static_cast<refcounted *>(
-            ::smartRealloc(refobj,
+            ::smartRealloc((void *)refobj,
                 sizeof(refcounted) + currentSize * sizeof(char_type),
                 sizeof(refcounted) + currentCapacity * sizeof(char_type),
                 sizeof(refcounted) + newCapacity * sizeof(char_type)));
         jimi_assert(result->_refcount.load(0) == 1);
         return result;
     }
+
+    char_type *data() { return &_data[0]; }
 
 private:
     mutable atomic_type _refcount;

@@ -139,6 +139,8 @@
 #define NS_JIMI_IO_BEGIN        namespace io {
 #define NS_JIMI_IO_END          }
 
+#define NOMINMAX
+
 #define JIMI_MIN(a, b)          ((a) < (b) ? (a) : (b))
 #define JIMI_MAX(a, b)          ((a) > (b) ? (a) : (b))
 

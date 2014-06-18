@@ -132,7 +132,7 @@ void jimi_cpu_warmup()
     printf("CPU warm up start ...\n");
     do {
         sw.restart();
-        // 如果有聪明的编译器能发现这是一个固定值就牛比了, 应该没有
+        // 如果有聪明的编译器能发现这是一个固定值就NB了, 应该没有
         for (int i = 0; i < 10000; ++i) {
             sum += i;
             // 循环顺序故意颠倒过来的
@@ -149,6 +149,8 @@ void jimi_cpu_warmup()
 #endif
 }
 
+/* 从size转换成KB, MB, GB, TB */
+
 int get_bytes_display(char *buffer, size_t buf_size, size_t size)
 {
     int result;
@@ -160,6 +162,24 @@ int get_bytes_display(char *buffer, size_t buf_size, size_t size)
         result = jm_sprintf(buffer, buf_size, "%d M", size / (1024 * 1024));
     else
         result = jm_sprintf(buffer, buf_size, "%d G", size / (1024 * 1024 * 1024));
+    return result;
+}
+
+/* 从size转换成KB, MB, GB, TB */
+
+int get_bytes_display64(char *buffer, size_t buf_size, uint64_t size)
+{
+    int result;
+    if (size <= 8192ULL)
+        result = jm_sprintf(buffer, buf_size, "%d", size);
+    else if (size < 0x0000000000100000ULL)
+        result = jm_sprintf(buffer, buf_size, "%d K", size / 1024ULL);
+    else if (size < 0x0000000040000000ULL)
+        result = jm_sprintf(buffer, buf_size, "%d M", size / 0x0000000000100000ULL);
+    else if (size < 0x0000010000000000ULL)
+        result = jm_sprintf(buffer, buf_size, "%d G", size / 0x0000000040000000ULL);
+    else
+        result = jm_sprintf(buffer, buf_size, "%d T", size / 0x0000010000000000ULL);
     return result;
 }
 
@@ -1100,7 +1120,7 @@ void Char_Traits_Test()
 
         sw.restart();
         for (i = 0; i < LOOP_TIMES; ++i) {
-            pstr = jimi::char_traits<char>::strncpy_u(pstr3, pstr1, str_len);
+            pstr = jimi::char_traits<char>::strncpy_unsafe(pstr3, pstr1, str_len);
             pstr3[str_len] = '\0';
         }
         sw.stop();
@@ -1108,7 +1128,7 @@ void Char_Traits_Test()
 
         sw.restart();
         for (i = 0; i < LOOP_TIMES; ++i) {
-            pstr = jimi::char_traits<char>::strncpy_u2(pstr4, pstr1, str_len);
+            pstr = jimi::char_traits<char>::strncpy_unsafe2(pstr4, pstr1, str_len);
             pstr4[str_len] = '\0';
         }
         sw.stop();
