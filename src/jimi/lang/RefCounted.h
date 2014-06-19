@@ -71,7 +71,7 @@ public:
     static refcounted *create(const char_type *data, size_t *size) {
         const size_t effectiveSize = *size;
         refcounted *result = create(size);
-        string_detail::pod_copy(data, data + effectiveSize, result->data_);
+        string_detail::pod_copy(result->_data, data, effectiveSize);
         return result;
     }
 

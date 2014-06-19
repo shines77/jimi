@@ -106,10 +106,8 @@ public:
     basic_string();
     basic_string(const basic_string &src);
     basic_string(const std::string &src);
-    basic_string(const char *src);
-    basic_string(const char *src, size_t size);
-    basic_string(const wchar_t *src);
-    basic_string(const wchar_t *src, size_t size);
+    basic_string(const value_type *src);
+    basic_string(const value_type *src, size_t size);
     ~basic_string();
 
     void retail();
@@ -203,26 +201,14 @@ BASIC_STRING::basic_string(const std::string &src)
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING::basic_string(const char *src)
+BASIC_STRING::basic_string(const value_type *src)
 : _store(src, ::jm_strlen(src))
 //: _store(src)
 {
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING::basic_string(const char *src, size_t size)
-: _store(src, size)
-{
-}
-
-template <BASIC_STRING_CLASSES>
-BASIC_STRING::basic_string(const wchar_t *src)
-: _store(src, ::jm_wcslen(src))
-{
-}
-
-template <BASIC_STRING_CLASSES>
-BASIC_STRING::basic_string(const wchar_t *src, size_t size)
+BASIC_STRING::basic_string(const value_type *src, size_t size)
 : _store(src, size)
 {
 }

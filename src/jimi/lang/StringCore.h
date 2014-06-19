@@ -47,7 +47,7 @@ NS_JIMI_BEGIN
 ///
 /// </comment>
 
-#define STRING_SMALL_SIZE       32
+#define STRING_SMALL_BYTES      32
 
 #define STRING_MEDIUM_SIZE      256
 
@@ -125,16 +125,15 @@ public:
 
     static const size_type      kMaxMediumSizeBytes  = JIMI_ALIGNED_TO(STRING_MEDIUM_SIZE * sizeof(char_type), 64);
 
-    static const size_type      kMaxSmallSize   = (STRING_SMALL_SIZE - sizeof(small_info_t)) / sizeof(char_type);
+    static const size_type      kMaxSmallSize   = (STRING_SMALL_BYTES - sizeof(small_info_t)) / sizeof(char_type);
     static const size_type      kMaxMediumSize  = kMaxMediumSizeBytes / sizeof(char_type);
 
 public:
     // Contructor
     string_core();
-    string_core(const string_core &src);
-    string_core(const char *src);
-    string_core(const char * const src, const size_t size);
-    string_core(const wchar_t * const src, const size_t size);
+    string_core(const string_core &rhs);
+    string_core(const char_type * const src);
+    string_core(const char_type * const src, const size_t size);
     ~string_core();
 
     void destroy();
@@ -217,7 +216,7 @@ private:
         dest.buf[src.info.size] = '\0';
     }
 
-    void _mlclone(medium_large &dest, const medium_large &src) {
+    void ml_clone(medium_large &dest, const medium_large &src) {
         dest.data = src.data;
         dest.size = src.size;
         dest.capacity = src.capacity;
@@ -236,16 +235,16 @@ private:
         };
     };
 
-    /* small object buffer */
+    /* small string optimized buffer */
     struct small_t {
         union {
             struct {
                 /* (dummy只是占位用, 未使用) */
-                unsigned char dummy[(STRING_SMALL_SIZE - sizeof(small_info_t)) / sizeof(char)];
+                unsigned char dummy[(STRING_SMALL_BYTES - sizeof(small_info_t)) / sizeof(char)];
                 /* size and type */
                 small_info_t  info;
             };
-            char_type buf[(STRING_SMALL_SIZE - sizeof(small_info_t)) / sizeof(char_type)];
+            char_type buf[(STRING_SMALL_BYTES - sizeof(small_info_t)) / sizeof(char_type)];
         };
     };
 
@@ -262,7 +261,7 @@ private:
         union {
             struct {
                 /* (dummy只是占位用, 未使用) */
-                unsigned char dummy[(STRING_SMALL_SIZE - sizeof(core_data_t)) / sizeof(char)];
+                unsigned char dummy[(STRING_SMALL_BYTES - sizeof(core_data_t)) / sizeof(char)];
 
                 /* 后面的定义必须和core_data的结构一致 */
                 char_type *data;
@@ -271,7 +270,7 @@ private:
                 flag_type  type;
             };
 
-            char_type buf[(STRING_SMALL_SIZE - sizeof(core_data_t)) / sizeof(char_type)];
+            char_type buf[(STRING_SMALL_BYTES - sizeof(core_data_t)) / sizeof(char_type)];
         };
     };
 
@@ -304,41 +303,63 @@ STRING_CORE::string_core()
 }
 
 template <STRING_CORE_CLASSES>
-STRING_CORE::string_core(const string_core &src)
+STRING_CORE::string_core(const string_core &rhs)
 {
-    jimi_assert(&src != this);
-    flag_type type = src.getType();
-    /* small object */
-    if (is_small(type)) {
+    jimi_assert(&rhs != this);
+    flag_type type = rhs.getType();
+    /* small string optimized */
+    if (type == kIsSmall) {
 #if 0
-        _small.info.type = src._small.info.type;
-        _small.info.size = src._small.info.size;
+        _small.info.type = rhs._small.info.type;
+        _small.info.size = rhs._small.info.size;
 #else
-        _small.info.lastShort = src._small.info.lastShort;
+        _small.info.lastShort = rhs._small.info.lastShort;
 #endif
-        jimi_assert(src._small.info.size < STRING_SMALL_SIZE);
-        if (_small.info.size < STRING_SMALL_SIZE) {
-            char_traits<char>::strlcpy(&_small.buf[0], STRING_SMALL_SIZE, &src._small.buf[0], _small.info.size);
+        jimi_assert(rhs._small.info.size < kMaxSmallSize);
+        if (_small.info.size < kMaxSmallSize) {
+            //char_traits<char>::strncpy(&_small.buf[0], kMaxSmallSize, &rhs._small.buf[0], _small.info.size);
+            //char_traits<char>::strncpy_unsafe(&_small.buf[0], &rhs._small.buf[0], _small.info.size);
+            string_detail::pod_copy(&_small.buf[0], &rhs._small.buf[0], _small.info.size);
         }
         else {
             sLog.error("string_core(const string_core &src): data = %s, type = 0x%04X, size = %d.",
                 &_small.buf[0], _small.info.type, _small.info.size);
         }
+        jimi_assert(getType() == kIsSmall && this->size() == rhs.size());
     }
     /* eager copy */
-    else if (is_medium(type)) {
-        jimi_assert(src._ml.capacity == STRING_MEDIUM_SIZE);
-        _ml.size = src._ml.size;
-        _ml.capacity = STRING_MEDIUM_SIZE;
-        _ml.type = src._ml.type;
-        _ml.data = char_traits<char>::assign(STRING_MEDIUM_SIZE);
-        char_traits<char>::strlcpy(_ml.data, STRING_MEDIUM_SIZE, src._ml.data, src._ml.size);
+    else if (type == kIsMedium) {
+        // Medium strings are copied eagerly. Don't forget to allocate
+        // one extra Char for the null terminator.
+        jimi_assert(rhs._ml.capacity == kMaxMediumSize - 1);
+        char_type *newData = char_traits<char>::assign(kMaxMediumSize);
+        //char_traits<char>::strncpy(_ml.data, kMaxMediumSize, rhs._ml.data, rhs._ml.size);
+        //char_traits<char>::strncpy_unsafe(newData, rhs._ml.data, rhs._ml.size);
+        string_detail::pod_copy(newData, rhs._ml.data, rhs._ml.size + 1);
+        // No need for writeTerminator() here, we copied one extra
+        // element just above.
+        _ml.data     = newData;
+        _ml.size     = rhs._ml.size;
+        _ml.capacity = kMaxMediumSize - 1;
+        _ml.type     = STRING_TYPE_MEDIUM;
+
+        jimi_assert(getType() == kIsMedium);
     }
     /* copy-on-write */
-    else if (is_large(type)) {
-        _ml.data     = src._ml.data;
-        _ml.capacity = src._ml.capacity;
-        const_cast<string_core &>(src).retail();
+    else if (type == kIsLarge) {
+        // Large strings are just refcounted
+        _ml.data     = rhs._ml.data;
+        _ml.size     = rhs._ml.size;
+        _ml.capacity = rhs._ml.capacity;
+        _ml.type     = STRING_TYPE_LARGE;
+
+        refcount_type::retail(_ml.data);
+        //const_cast<string_core &>(rhs).retail();
+        jimi_assert(getType() == kIsLarge && size() == rhs.size());
+    }
+    /* constant string data */
+    else if (type == kIsConstant) {
+        // It's a constant string data
     }
     /* unknown type */
     else {
@@ -346,17 +367,21 @@ STRING_CORE::string_core(const string_core &src)
     }
 }
 
-#if 1
-
 template <STRING_CORE_CLASSES>
-STRING_CORE::string_core(const char *src)
+STRING_CORE::string_core(const char_type * const src)
+: string_core(src, ::jm_strlen(src))
 {
+#if 1
+    // Do nothing!!!
+    //return;
+#else
+
 #if 0
     size_t src_len = ::strnlen(src, kMaxMediumSize);
 #else
     size_t src_len = ::strlen(src);
 #endif
-    /* small object */
+    /* small string optimized */
     if (src_len < kMaxSmallSize) {
         _small.info.type = STRING_TYPE_SMALL_X;
         _small.info.size = src_len;
@@ -394,76 +419,67 @@ STRING_CORE::string_core(const char *src)
         }
     }
 #endif
-}
 
 #endif
+}
 
 template <STRING_CORE_CLASSES>
-STRING_CORE::string_core(const char * const src, const size_t size)
+STRING_CORE::string_core(const char_type * const src, const size_t size)
 {
-    size_t src_len = size;
-    /* small object */
-    if (src_len < kMaxSmallSize) {
+    /* small string optimized */
+    if (size < kMaxSmallSize) {
+        _small.info.size = (unsigned char)size;
         _small.info.type = STRING_TYPE_SMALL_X;
-        _small.info.size = src_len;
 #if 1
-        char_traits<char>::strncpy_unsafe(_small.buf, src, src_len);
-        _small.buf[src_len] = '\0';
+        //char_traits<char_type>::strncpy_unsafe(_small.buf, src, src_len);
+        string_detail::pod_copy(_small.buf, src, size);
+        _small.buf[size] = '\0';
 #else
-        strcpy(_small.buf, src);
+        ::strcpy(_small.buf, src);
 #endif
     }
     /* eager copy */
-    else if (src_len < kMaxMediumSize) {
-        _ml.size = src_len;
-        _ml.capacity = calc_capacity(src_len);
-        _ml.type = STRING_TYPE_MEDIUM;
-        _ml.data = char_traits<char>::assign(_ml.capacity);
-        if (_ml.data) {
-            char_traits<char>::strncpy(_ml.data, _ml.capacity, src, src_len);
-            _ml.data[src_len] = '\0';
+    else if (size < kMaxMediumSize) {
+        // Medium strings are allocated normally. Don't forget to
+        // allocate one extra Char for the terminating null.
+        size_type allocSize = calc_capacity(size);
+        char_type *newData = char_traits<char_type>::assign(allocSize);
+#if 1
+        string_detail::pod_copy(newData, src, size);
+        newData[size] = '\0';
+#else
+        if (newData) {
+            //char_traits<char_type>::strncpy(_ml.data, _ml.capacity, src, src_len);
+            //char_traits<char_type>::strncpy_unsafe(_ml.data, src, src_len);
+            string_detail::pod_copy(newData, src, src_len);
+            newData[src_len] = '\0';
         }
+#endif
+        _ml.data = newData;
+        _ml.size = size;
+        _ml.capacity = allocSize - 1;
+        _ml.type = STRING_TYPE_MEDIUM;
     }
     /* copy-on-write or unknown type */
     else {
-        _ml.capacity = calc_capacity(src_len);
-        _ml.data = char_traits<char>::assign(_ml.capacity);
-        _ml.size = src_len;
-        _ml.type = STRING_TYPE_LARGE;
-        if (_ml.data) {
-            char_traits<char>::strncpy(_ml.data, _ml.capacity, src, src_len);
-            _ml.data[src_len] = '\0';
+        // Large strings are allocated differently
+        size_type effectiveCapacity = calc_capacity(size);
+        refcount_type *newRC = refcount_type::create(src, &effectiveCapacity);
+        char_type *newData = newRC->data();
+#if 1
+        newData[size] = '\0';
+#else
+        if (newData) {
+            //char_traits<char_type>::strncpy(newData, effectiveCapacity, src, src_len);
+            //char_traits<char_type>::strncpy_unsafe(newData, src, src_len);
+            string_detail::pod_copy(newData, src, src_len);
+            newData[src_len] = '\0';
         }
-    }
-}
-
-template <STRING_CORE_CLASSES>
-STRING_CORE::string_core(const wchar_t * const src, const size_t size)
-{
-    size_t src_len = size;
-    /* small object */
-    if (src_len < STRING_SMALL_SIZE) {
-        _small.info.size = src_len;     
-        _small.info.type = STRING_TYPE_SMALL;
-        char_traits<wchar_t>::strncpy(_ml.buf, jm_countof(_ml.buf), src, src_len);
-    }
-    /* eager copy */
-    else if (src_len < STRING_MEDIUM_SIZE) {
-        _ml.size = src_len;
-        _ml.capacity = calc_capacity(src_len);
-        _ml.type = STRING_TYPE_MEDIUM;
-        _ml.data = char_traits<wchar_t>::assign(_ml.capacity);
-        if (_ml.data)
-            char_traits<wchar_t>::strncpy(_ml.data, _ml.capacity, src, src_len);
-    }
-    /* copy-on-write or unknown type */
-    else {
-        _ml.capacity = calc_capacity(src_len);
-        _ml.data = char_traits<wchar_t>::assign(_ml.capacity);
-        _ml.size = src_len;
-        _ml.type = STRING_TYPE_LARGE;
-        if (_ml.data)
-            char_traits<wchar_t>::strncpy(_ml.data, _ml.capacity, src, src_len);
+#endif
+        _ml.data     = newData;
+        _ml.size     = size;
+        _ml.capacity = effectiveCapacity;
+        _ml.type     = STRING_TYPE_LARGE;
     }
 }
 
@@ -527,7 +543,7 @@ STRING_CORE & STRING_CORE::operator = (const STRING_CORE &rhs) {
     if (type == kIsSmall)
         small_clone(_small, rhs._small);
     else
-        _mlclone(_ml, rhs._ml);
+        ml_clone(_ml, rhs._ml);
     return *this;
 }
 
@@ -550,9 +566,9 @@ inline void STRING_CORE::swap(STRING_CORE &rhs)
         }
         else {
             medium_large t;
-            _mlclone(t, _ml);
-            _mlclone(_ml, rhs._ml);
-            _mlclone(rhs._ml, t);
+            ml_clone(t, _ml);
+            ml_clone(_ml, rhs._ml);
+            ml_clone(rhs._ml, t);
         }
 #else
         // 完全直接复制_ml, 有些复制可能是多余的
@@ -618,7 +634,7 @@ inline typename STRING_CORE::char_type *STRING_CORE::mutable_data()
 template <STRING_CORE_CLASSES>
 inline size_t STRING_CORE::calc_capacity(size_t src_len)
 {
-    return src_len + 1;
+    return (src_len + 1);
 }
 
 template <STRING_CORE_CLASSES>

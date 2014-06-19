@@ -345,6 +345,84 @@ void String_Performance_Test()
     printf("\n");
 }
 
+// Faster strlen function. Warning: in rare cases it may
+// cause page faults (if the string is at the end of
+// the page). To avoid this, you must align the start
+// of the string by 4 bytes, or you must add 3 extra
+// bytes to the end of the string.
+// E.g., instead of char* str = (char*)malloc(size); use
+//                  char* str = (char*)malloc(size + 3);
+int strlen_my(const char *s) {
+	int len = 0;
+	for(;;) {
+		unsigned x = *(unsigned*)s;
+		if ((x & 0xFF) == 0) return len;
+		if ((x & 0xFF00) == 0) return len + 1;
+		if ((x & 0xFF0000) == 0) return len + 2;
+		if ((x & 0xFF000000) == 0) return len + 3;
+		s += 4, len += 4;
+	}
+}
+
+int strlen_AgnerFog(const char* s) {
+	__asm {
+        mov     eax, [s]               ; get pointer s 
+        lea     edx, [eax+3]           ; pointer+3 used in the end 
+l1:     
+		mov     ebx, [eax]             ; read 4 bytes of string 
+        add     eax, 4                 ; increment pointer 
+        lea     ecx, [ebx-01010101H]   ; subtract 1 from each byte 
+        not     ebx                    ; invert all bytes 
+        and     ecx, ebx               ; and these two 
+        and     ecx, 80808080H         ; test all sign bits 
+        jz      l1                     ; no zero bytes, continue loop 
+
+        mov     ebx, ecx 
+        shr     ebx, 16 
+        test    ecx, 00008080H         ; test first two bytes 
+        cmovz   ecx, ebx               ; shift if not in first 2 bytes 
+        lea     ebx, [eax+2]           ; .. and increment pointer by 2 
+        cmovz   eax, ebx 
+        add     cl,  cl                ; test first byte 
+        sbb     eax, edx               ; compute length 
+	}
+}
+
+__declspec(naked)
+inline int __cdecl __builtin_ctz(int bitmask)
+{
+    __asm {
+        mov eax, dword ptr [esp + 4]
+        bsf eax, eax
+        ret
+    }
+}
+
+//
+// From: http://www.strchr.com/strcmp_and_strlen_using_sse_4.2
+//
+size_t sse2_strlen(const char* s)
+{
+    __m128i zero = _mm_set1_epi8( 0 );
+    __m128i *s_aligned = (__m128i*) (((long)s) & -0x10L);
+    uint8 misbits = ((long)s) & 0x0f;
+    __m128i s16cs = _mm_load_si128( s_aligned );
+    __m128i bytemask = _mm_cmpeq_epi8( s16cs, zero );
+    int bitmask = _mm_movemask_epi8( bytemask );
+    bitmask = (bitmask >> misbits) << misbits;
+
+    // Alternative: use TEST instead of BSF, then BSF at end (only). Much better on older CPUs
+    // TEST has latency 1, while BSF has 3!
+    while (bitmask == 0) {
+        s16cs = _mm_load_si128( ++s_aligned );
+        bytemask = _mm_cmpeq_epi8( s16cs, zero );
+        bitmask = _mm_movemask_epi8( bytemask );
+    }
+
+    // bsf only takes 1 clock cycle on modern cpus
+    return ((( const char* ) s_aligned ) - s) + __builtin_ctz(bitmask);
+}
+
 void Fast_StrLen_Test()
 {
 #ifndef _DEBUG
@@ -356,11 +434,47 @@ void Fast_StrLen_Test()
     char *pbuffer;
     size_t len1, len2, len3, len4;
     size_t len5, len6, len7, len8;
-    char buffer1[512], buffer2[512], buffer3[512], buffer4[512];
+    char buffer1[1024], buffer2[1024], buffer3[1024], buffer4[1024];
     double time1, time2, time3, time4;
     double time5, time6, time7, time8;
     int i, j = 0, loop_times = 0;
     stop_watch sw;
+
+    char jabberwocky[] =
+        "'Twas brillig, and the slithy toves\n"
+        "Did gyre and gimble in the wabe:\n"
+        "All mimsy were the borogoves,\n"
+        "And the mome raths outgrabe.\n"
+
+        "Beware the Jabberwock, my son!\n"
+        "The jaws that bite, the claws that catch!\n"
+        "Beware the Jubjub bird, and shun\n"
+        "The frumious Bandersnatch!\n"
+
+        "He took his vorpal sword in hand:\n"
+        "Long time the manxome foe he sought -\n"
+        "So rested he by the Tumturn tree,\n"
+        "And stood awhile in thought.\n"
+
+        "And, as in uffish thought he stood;\n"
+        "The Jabberwock, with eyes of flame,\n"
+        "Came whiffling through the tulgey wood,\n"
+        "And burbled as it came!\n"
+
+        "One, two! One, two! And through and through\n"
+        "The vorpal blade went snicker-snackl\n"
+        "He left it dead, and with its head\n"
+        "He went galumphing back.\n"
+
+        "And hast thou slain the Jabberwock?\n"
+        "Come to my arms, my beamish boy!\n"
+        "O frabjous day! Callooh! Callay!\n"
+        "He chortled in his joy.\n"
+
+        "'Twas brillig, and the slithy toves\n"
+        "Did gyre and gimble in the wabe:\n"
+        "All mimsy were the borogoves,\n"
+        "And the mome raths outgrabe.";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -412,7 +526,7 @@ strlen_loop1_1:
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        len3 = A_strlen(buffer3);
+        len3 = sse2_strlen(buffer3);
     }
     sw.stop();
     time3 = sw.getMillisec();
@@ -471,7 +585,7 @@ strlen_loop1_5:
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        len7 = A_strlen(buffer3);
+        len7 = sse2_strlen(buffer3);
     }
     sw.stop();
     time7 = sw.getMillisec();
@@ -491,12 +605,12 @@ strlen_loop1_5:
 
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len1, time1);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len2, time2);
-    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len3, time3);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::sse2_strlen()",            len3, time3);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len4, time4);
     printf("\n");
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len5, time5);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
-    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::sse2_strlen()",            len7, time7);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
     printf("\n");
 
@@ -546,7 +660,7 @@ strlen_loop2_1:
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        len3 = A_strlen(buffer3);
+        len3 = sse2_strlen(buffer3);
     }
     sw.stop();
     time3 = sw.getMillisec();
@@ -608,7 +722,7 @@ strlen_loop2_5:
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        len7 = A_strlen(buffer3);
+        len7 = sse2_strlen(buffer3);
     }
     sw.stop();
     time7 = sw.getMillisec();
@@ -629,12 +743,12 @@ strlen_loop2_5:
 
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len1, time1);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len2, time2);
-    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len3, time3);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::sse2_strlen()",            len3, time3);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len4, time4);
     printf("\n");
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len5, time5);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
-    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::sse2_strlen()",            len7, time7);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
     printf("\n");
 
@@ -696,7 +810,7 @@ strlen_loop3_5:
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        len7 = A_strlen(buffer3);
+        len7 = sse2_strlen(buffer3);
     }
     sw.stop();
     time7 = sw.getMillisec();
@@ -720,7 +834,77 @@ strlen_loop3_5:
 
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len5, time5);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
-    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::sse2_strlen()",            len7, time7);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
+    printf("\n");
+
+    ///////////////////////////////////////////////////////////////////////
+
+    // long string jabberwocky
+    strcpy(buffer1, jabberwocky);
+
+    sw.restart();
+#if 0
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len5 = strlen(buffer1);
+    }
+#else
+    __asm {
+        push    ebx
+        push    edx
+        mov     ebx, LOOP_TIMES
+        align   16
+strlen_loop4_5:
+        mov     edx, pbuffer
+        push    edx
+        call    dword ptr [pstrlen]
+        add     esp, 4
+        mov     len5, eax
+        dec     ebx
+        jnz     strlen_loop4_5
+        pop     edx
+        pop     ebx
+    }
+#endif
+    sw.stop();
+    time5 = sw.getMillisec();
+
+    // long string jabberwocky
+    strcpy(buffer2, jabberwocky);
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len6 = jimi::char_traits<char>::strlen(buffer2);
+    }
+    sw.stop();
+    time6 = sw.getMillisec();
+
+    // long string jabberwocky
+    strcpy(buffer3, jabberwocky);
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len7 = sse2_strlen(buffer3);
+    }
+    sw.stop();
+    time7 = sw.getMillisec();
+
+    // long string jabberwocky
+    strcpy(buffer4, jabberwocky);
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        len8 = jmf_strlen(buffer4);
+    }
+    sw.stop();
+    time8 = sw.getMillisec();
+
+    buffer1[20] = '\0';
+    printf("buffer1 = %s, len1 = %d, len2 = %d, len3 = %d, len4 = %d\n\n", buffer1, len5, len6, len7, len8);
+
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len5, time5);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::sse2_strlen()",            len7, time7);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
     printf("\n");
 
@@ -765,7 +949,7 @@ strlen_loop4_1:
 
         sw.restart();
         for (i = 0; i < 1000; ++i) {
-            len2 = ::A_strlen(str2);
+            len2 = ::sse2_strlen(str2);
         }
         sw.stop();
         time2 = sw.getMillisec();
@@ -793,12 +977,12 @@ strlen_loop4_1:
     get_bytes_display(bufsize_text3, jm_countof(bufsize_text3), len3);
 
     printf("%-30s bytes = %5s, time = %0.5f ms.\n", "::strlen()",         bufsize_text1, time1);
-    printf("%-30s bytes = %5s, time = %0.5f ms.\n", "asmlib::A_strlen()", bufsize_text2, time2);
+    printf("%-30s bytes = %5s, time = %0.5f ms.\n", "asmlib::sse2_strlen()", bufsize_text2, time2);
     printf("%-30s bytes = %5s, time = %0.5f ms.\n", "jimi::jmf_strlen()", bufsize_text3, time3);
     printf("\n");
 
     printf("jimi::jmf_strlen() use time is ::strlen()         use time : %0.3f %%.\n", time3 / time1 * 100.0);
-    printf("jimi::jmf_strlen() use time is asmlib::A_strlen() use time : %0.3f %%.\n", time3 / time2 * 100.0);
+    printf("jimi::jmf_strlen() use time is asmlib::sse2_strlen() use time : %0.3f %%.\n", time3 / time2 * 100.0);
     printf("\n");
 
     if (str1) ::free(str1);
@@ -1175,12 +1359,12 @@ int UnitTest_Main(int argc, char *argv[])
     jimi_cpu_warmup();
 
     // 测试std::string是否使用了COW(Copy On Write)
-    String_Copy_On_Write_Test();
+    //String_Copy_On_Write_Test();
 
     // Memcpy 内存复制测试
     //Memcpy_Test();
 
-    String_Base_Test();
+    //String_Base_Test();
 
     //String_Performance_Test();
 
