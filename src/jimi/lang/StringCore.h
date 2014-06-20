@@ -96,11 +96,11 @@ class JIMI_API string_core
 {
 public:
     // Types
-    typedef _CharT                  char_type;
-    typedef _RefCount               refcount_type;
-    typedef size_t                  size_type;
-    typedef size_t                  flag_type;
-    typedef char_traits<char_type>  traits_type;
+    typedef _CharT              char_type;
+    typedef _RefCount           refcount_type;
+    typedef size_t              size_type;
+    typedef size_t              flag_type;
+    typedef char_traits<_CharT> traits_type;
 
     struct small_info_t;
     struct small_t;
@@ -433,7 +433,7 @@ STRING_CORE::string_core(const char_type * const src, const size_t size)
         _small.info.size = (unsigned char)size;
         _small.info.type = STRING_TYPE_SMALL_X;
 #if 1
-        //char_traits<char_type>::strncpy_unsafe(_small.buf, src, src_len);
+        //traits_type::strncpy_unsafe(_small.buf, src, src_len);
         string_detail::pod_copy(_small.buf, src, size);
         _small.buf[size] = '\0';
 #else
@@ -445,14 +445,14 @@ STRING_CORE::string_core(const char_type * const src, const size_t size)
         // Medium strings are allocated normally. Don't forget to
         // allocate one extra Char for the terminating null.
         size_type allocSize = calc_capacity(size);
-        char_type *newData = char_traits<char_type>::mem_alloc(allocSize);
+        char_type *newData = traits_type::mem_alloc(allocSize);
 #if 1
         string_detail::pod_copy(newData, src, size);
         newData[size] = '\0';
 #else
         if (newData) {
-            //char_traits<char_type>::strncpy(_ml.data, _ml.capacity, src, src_len);
-            //char_traits<char_type>::strncpy_unsafe(_ml.data, src, src_len);
+            //traits_type::strncpy(_ml.data, _ml.capacity, src, src_len);
+            //traits_type::strncpy_unsafe(_ml.data, src, src_len);
             string_detail::pod_copy(newData, src, src_len);
             newData[src_len] = '\0';
         }
@@ -472,8 +472,8 @@ STRING_CORE::string_core(const char_type * const src, const size_t size)
         newData[size] = '\0';
 #else
         if (newData) {
-            //char_traits<char_type>::strncpy(newData, effectiveCapacity, src, src_len);
-            //char_traits<char_type>::strncpy_unsafe(newData, src, src_len);
+            //traits_type::strncpy(newData, effectiveCapacity, src, src_len);
+            //traits_type::strncpy_unsafe(newData, src, src_len);
             string_detail::pod_copy(newData, src, src_len);
             newData[src_len] = '\0';
         }

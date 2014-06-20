@@ -129,6 +129,32 @@ protected:
     basic_string &assign(const value_type *str, const size_type size);
 
 public:
+#if 0
+    // Concatenation
+    basic_string &operator += (const basic_string &rhs);
+    basic_string &operator += (const value_type *str);
+    basic_string &operator += (value_type *str);
+    basic_string &operator += (const value_type c);
+
+    // Equality
+    bool operator == (const basic_string &rhs) const;
+    bool operator == (const value_type *str) const;
+    bool operator == (value_type *str) const;
+    bool operator == (const value_type c) const;
+
+    // Comparison
+    bool operator <  (const basic_string &rhs) const;
+    bool operator <= (const basic_string &rhs) const;
+    bool operator >  (const basic_string &rhs) const;
+    bool operator >= (const basic_string &rhs) const;
+
+    // Inequality
+    bool operator != (const basic_string &rhs) const;
+    bool operator != (const value_type *str) const;
+    bool operator != (value_type *str) const;
+    bool operator != (const value_type c) const;
+#endif
+
     // C++11 21.4.3 iterators:
     iterator begin();
     const_iterator begin() const;
