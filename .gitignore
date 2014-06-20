@@ -88,6 +88,10 @@ IcUpdateLog.htm
 # For Visual Studio C# files on Windows
 .cache
 
+# Zip or Rar files
+*.zip
+*.rar
+
 # Some files on Windows
 .DS_Store*
 ehthumbs.db
