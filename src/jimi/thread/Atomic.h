@@ -38,28 +38,33 @@ public:
 
     value_type load(int action) { return _value; }
     value_type store(value_type value, int action) {
+        value_type old_value = _value;
         _value = value;
-        return _value;
+        return old_value;
     }
 
     value_type fetch_inc(int action) {
+        value_type old_value = _value;
         ++_value;;
-        return _value;
+        return old_value;
     }
 
     value_type fetch_dec(int action) {
+        value_type old_value = _value;
         --_value;
-        return _value;
+        return old_value;
     }
 
     value_type fetch_add(value_type value, int action) {
+        value_type old_value = _value;
         _value += value;
-        return _value;
+        return old_value;
     }
 
     value_type fetch_sub(value_type value, int action) {
+        value_type old_value = _value;
         _value -= value;
-        return _value;
+        return old_value;
     }
 
 private:

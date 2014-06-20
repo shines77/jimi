@@ -105,39 +105,30 @@ public:
     // Contructor
     basic_string();
     basic_string(const basic_string &src);
-    basic_string(const std::string &src);
     basic_string(const value_type *src);
     basic_string(const value_type *src, size_t size);
+    basic_string(const value_type *begin, const value_type *end);
+    basic_string(const std::string &src);
+
+    // Discontructor
     ~basic_string();
 
-    void retail();
-    void release();
+    // Assigment operators
+    basic_string &operator = (const basic_string &rhs);
+    basic_string &operator = (const value_type *str);
+    basic_string &operator = (const value_type c);
 
-    basic_string &operator = (const basic_string &lhs);
+    // Compatibility with std::string
+    basic_string &operator = (const std::string &rhs);
+    std::string &toStdString() const;
 
-    bool equals(const basic_string &rhs) const;
+protected:
+    // Assigment functions
+    basic_string &assign(const basic_string &str);
+    basic_string &assign(const value_type *str);
+    basic_string &assign(const value_type *str, const size_type size);
 
-    int compare(const basic_string &rhs) const;
-    int compare(const value_type *rhs) const;
-
-    //const storage_type &getStorage() const { return _store; }
-
-    const value_type *c_str() const { return _store.c_str(); }
-    const value_type *data() const  { return c_str(); }
-
-    size_type size() const      { return (size_type)_store.size(); }
-    size_type length() const    { return size(); }
-    bool empty() const          { return size() == 0; }
-
-    size_type max_size() const {
-        return std::numeric_limits<size_type>::max();
-    }
-
-    void swap(basic_string &rhs) { _store.swap(rhs._store); }
-    size_type capacity() const   { return (size_type)_store.capacity(); }
-
-    void clear() { resize(0); }
-
+public:
     // C++11 21.4.3 iterators:
     iterator begin() { return _store.mutable_data(); }
 
@@ -175,6 +166,111 @@ public:
 
     const_reverse_iterator crend() const { return rend(); }
 
+    // Added by C++11
+    // C++11 21.4.5, element access:
+    const value_type &front() const { return *begin(); }
+    const value_type &back() const {
+        jimi_assert(!empty());
+        // Should be begin()[size() - 1], but that branches twice
+        return *(end() - 1);
+    }
+
+    value_type &front() { return *begin(); }
+    value_type &back() {
+        jimi_assert(!empty());
+        // Should be begin()[size() - 1], but that branches twice
+        return *(end() - 1);
+    }
+
+    void pop_back() {
+        jimi_assert(!empty());
+        _store.shrinkTo(size() - 1);
+    }
+
+    // C++11 21.4.5 element access:
+    const_reference operator [](size_type pos) const {
+        return *(c_str() + pos);
+    }
+
+    reference operator [](size_type pos) {
+#if 0
+        if (pos == size()) {
+            // Just call c_str() to make sure '\0' is present
+            c_str();
+        }
+#endif
+        return *(begin() + pos);
+    }
+
+    #define JIMI_UNLIKELY(x)    (x)
+
+    basic_string &append(const value_type *s, size_type n) {
+        if (JIMI_UNLIKELY(!n)) {
+            // Unlikely but must be done
+            return *this;
+        }
+
+        size_type oldSize = size();
+        const value_type *oldData = data();
+        // Check for aliasing (rare). We could use "<=" here but in theory
+        // those do not work for pointers unless the pointers point to
+        // elements in the same array. For that reason we use
+        // std::less_equal, which is guaranteed to offer a total order
+        // over pointers. See discussion at http://goo.gl/Cy2ya for more
+        // info.
+        std::less_equal<const value_type *> le;
+        if (JIMI_UNLIKELY(le(oldData, s) && !le(oldData + oldSize, s))) {
+            jimi_assert(le(s + n, oldData + oldSize));
+            const size_type offset = s - oldData;
+            _store.reserve(oldSize + n);
+            // Restore the source
+            s = data() + offset;
+        }
+        // Warning! Repeated appends with short strings may actually incur
+        // practically quadratic performance. Avoid that by pushing back
+        // the first character (which ensures exponential growth) and then
+        // appending the rest normally. Worst case the append may incur a
+        // second allocation but that will be rare.
+        push_back(*s++);
+        _store.expandTo(oldSize + n);
+        --n;
+        ::memcpy((void *)(data() + n), s, n * sizeof(value_type));
+        jimi_assert(size() == oldSize + n + 1);
+        return *this;
+    }
+
+    void push_back(const value_type c) {            // primitive
+        _store.push_back(c);
+    }
+
+    void retail();
+    void release();
+
+    bool equals(const basic_string &rhs) const;
+
+    int compare(const basic_string &rhs) const;
+    int compare(const value_type *rhs) const;
+
+    //const storage_type &getStorage() const { return _store; }
+
+    const value_type *c_str() const { return _store.c_str(); }
+    const value_type *data() const  { return c_str(); }
+
+    size_type size() const      { return _store.size(); }
+    size_type length() const    { return size(); }
+    bool empty() const          { return size() == 0; }
+
+    size_type max_size() const {
+        return std::numeric_limits<size_type>::max();
+    }
+
+    void swap(basic_string &rhs) { _store.swap(rhs._store); }
+    size_type capacity() const   { return _store.capacity(); }
+
+    void resize(const size_type newSize, const value_type c = value_type()) {}
+
+    void clear() { resize(0); }
+
 private:
     void destroy();
 
@@ -183,7 +279,7 @@ protected:
 };
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING::basic_string() 
+BASIC_STRING::basic_string()
 : _store()
 {
 }
@@ -213,6 +309,13 @@ BASIC_STRING::basic_string(const value_type *src, size_t size)
 {
 }
 
+// Specialization for const value_type *, const value_type *
+template <BASIC_STRING_CLASSES>
+BASIC_STRING::basic_string(const value_type *begin, const value_type *end)
+: store_(begin, end - begin)
+{
+}
+
 template <BASIC_STRING_CLASSES>
 BASIC_STRING::~basic_string()
 {
@@ -238,12 +341,13 @@ inline void BASIC_STRING::release()
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &lhs) {
-    if (&lhs == this)
+inline BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &rhs)
+{
+    if (&rhs == this)
         return *this;
 
     const size_type oldSize = size();
-    const size_type srcSize = lhs.size();
+    const size_type srcSize = rhs.size();
     if (capacity() >= srcSize && !_store.is_shared()) {
         // great, just copy the contents
         ///*
@@ -252,15 +356,79 @@ BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &lhs) {
         else
             _store.shrinkTo(srcSize);
         //*/
-        _store = lhs._store;
+        _store = rhs._store;
         jimi_assert(size() == srcSize);
-        string_detail::pod_copy(begin(), lhs.begin(), lhs.size());
+        string_detail::pod_copy(begin(), rhs.begin(), rhs.size());
         //_store.writeNull();
     }
     else {
         // need to reallocate, so we may as well create a brand new string
-        basic_string(lhs).swap(*this);
+        basic_string(rhs).swap(*this);
     }
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::operator = (const value_type *str)
+{
+    return assign(str);
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::operator = (const value_type c)
+{
+    size_type type = getType();
+    if (type == kIsSmall) {
+        _store = c;
+    }
+    else if (0) {
+        //
+    }
+}
+
+// Compatibility with std::string
+template <BASIC_STRING_CLASSES>
+inline std::string &BASIC_STRING::toStdString() const
+{
+    return std::string(data(), size());
+}
+
+// Compatibility with std::string
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::operator = (const std::string &rhs)
+{
+    return assign(rhs.data(), rhs.size());
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::assign(const BASIC_STRING &str)
+{
+    if (&str == this) return *this;
+    return assign(str.data(), str.size());
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::assign(const value_type *s)
+{
+    return assign(s, traits_type::length(s));
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::assign(const value_type *s, const size_type n)
+{
+    if (size() >= n) {
+        std::copy(s, s + n, begin());
+        resize(n);
+        jimi_assert(size() == n);
+    }
+    else {
+        const value_type * const s_end = s + size();
+        std::copy(s, s_end, begin());
+        append(s_end, n - size());
+        jimi_assert(size() == n);
+    }
+    _store.writeNull();
+    jimi_assert(size() == n);
     return *this;
 }
 

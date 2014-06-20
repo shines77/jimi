@@ -96,21 +96,21 @@ class JIMI_API string_core
 {
 public:
     // Types
-    typedef _CharT              char_type;
-    typedef _RefCount           refcount_type;
-    typedef size_t              size_type;
-    typedef size_t              flag_type;
-    typedef char_traits<_CharT> traits_type;
-    
+    typedef _CharT                  char_type;
+    typedef _RefCount               refcount_type;
+    typedef size_t                  size_type;
+    typedef size_t                  flag_type;
+    typedef char_traits<char_type>  traits_type;
+
     struct small_info_t;
     struct small_t;
     struct core_data_t;
     struct medium_large;
-    
+
     typedef struct small_info_t small_info_t;
     typedef struct small_t      small_t;
     typedef struct core_data_t  core_data_t;
-    typedef struct medium_large medium_large; 
+    typedef struct medium_large medium_large;
 
     // Constant
     static const flag_type      kIsSmall    =  STRING_TYPE_SMALL;
@@ -174,7 +174,7 @@ public:
 
     static bool is_shared(const medium_large &ml) {
         return (is_large(ml.type) && (refcount_type::refs(ml.data) > 1));
-    } 
+    }
 
     const char_type *data() const { return c_str(); }
     const char_type *c_str() const;
@@ -203,8 +203,10 @@ public:
     void expandTo(const size_type newSize);
     void shrinkTo(const size_type newSize);
 
+    void push_back(const char_type c);
+
     void writeNull();
-    
+
 protected:
     size_t calc_capacity(size_t src_len);
 
@@ -317,8 +319,8 @@ STRING_CORE::string_core(const string_core &rhs)
 #endif
         jimi_assert(rhs._small.info.size < kMaxSmallSize);
         if (_small.info.size < kMaxSmallSize) {
-            //char_traits<char>::strncpy(&_small.buf[0], kMaxSmallSize, &rhs._small.buf[0], _small.info.size);
-            //char_traits<char>::strncpy_unsafe(&_small.buf[0], &rhs._small.buf[0], _small.info.size);
+            //traits_type::strncpy(&_small.buf[0], kMaxSmallSize, &rhs._small.buf[0], _small.info.size);
+            //traits_type::strncpy_unsafe(&_small.buf[0], &rhs._small.buf[0], _small.info.size);
             string_detail::pod_copy(&_small.buf[0], &rhs._small.buf[0], _small.info.size);
         }
         else {
@@ -332,11 +334,11 @@ STRING_CORE::string_core(const string_core &rhs)
         // Medium strings are copied eagerly. Don't forget to allocate
         // one extra Char for the null terminator.
         jimi_assert(rhs._ml.capacity == kMaxMediumSize - 1);
-        char_type *newData = char_traits<char>::assign(kMaxMediumSize);
-        //char_traits<char>::strncpy(_ml.data, kMaxMediumSize, rhs._ml.data, rhs._ml.size);
-        //char_traits<char>::strncpy_unsafe(newData, rhs._ml.data, rhs._ml.size);
+        char_type *newData = traits_type::mem_alloc(kMaxMediumSize);
+        //traits_type::strncpy(_ml.data, kMaxMediumSize, rhs._ml.data, rhs._ml.size);
+        //traits_type::strncpy_unsafe(newData, rhs._ml.data, rhs._ml.size);
         string_detail::pod_copy(newData, rhs._ml.data, rhs._ml.size + 1);
-        // No need for writeTerminator() here, we copied one extra
+        // No need for writeNull() here, we copied one extra
         // element just above.
         _ml.data     = newData;
         _ml.size     = rhs._ml.size;
@@ -386,7 +388,7 @@ STRING_CORE::string_core(const char_type * const src)
         _small.info.type = STRING_TYPE_SMALL_X;
         _small.info.size = src_len;
 #if 1
-        char_traits<char>::strncpy_unsafe(_small.buf, src, src_len);
+        traits_type::strncpy_unsafe(_small.buf, src, src_len);
         _small.buf[src_len] = '\0';
 #else
         ::strcpy(_small.buf, src);
@@ -398,9 +400,9 @@ STRING_CORE::string_core(const char_type * const src)
         _ml.size = src_len;
         _ml.capacity = calc_capacity(src_len);
         _ml.type = STRING_TYPE_MEDIUM;
-        _ml.data = char_traits<char>::assign(_ml.capacity);
+        _ml.data = traits_type::mem_alloc(_ml.capacity);
         if (_ml.data) {
-            char_traits<char>::strncpy(_ml.data, _ml.capacity, src, src_len);
+            traits_type::strncpy(_ml.data, _ml.capacity, src, src_len);
             _ml.data[src_len] = '\0';
         }
     }
@@ -410,11 +412,11 @@ STRING_CORE::string_core(const char_type * const src)
         src_left = ::strlen(src + src_len);
         src_len += src_left;
         _ml.capacity = calc_capacity(src_len);
-        _ml.data = char_traits<char>::assign(_ml.capacity);
+        _ml.data = traits_type::mem_alloc(_ml.capacity);
         _ml.size = src_len;
         _ml.type = STRING_TYPE_LARGE;
         if (_ml.data) {
-            char_traits<char>::strncpy(_ml.data, _ml.capacity, src, src_len);
+            traits_type::strncpy(_ml.data, _ml.capacity, src, src_len);
             _ml.data[src_len] = '\0';
         }
     }
@@ -443,7 +445,7 @@ STRING_CORE::string_core(const char_type * const src, const size_t size)
         // Medium strings are allocated normally. Don't forget to
         // allocate one extra Char for the terminating null.
         size_type allocSize = calc_capacity(size);
-        char_type *newData = char_traits<char_type>::assign(allocSize);
+        char_type *newData = char_traits<char_type>::mem_alloc(allocSize);
 #if 1
         string_detail::pod_copy(newData, src, size);
         newData[size] = '\0';
@@ -754,7 +756,7 @@ inline void STRING_CORE::large_reserveTo(size_t minCapacity)
         refcount_type *newRC = refcount_type::create(&minCapacity);
         char_type *newData = newRC->data();
         string_detail::pod_copy(newData, _ml.data, _ml.size + 1);
-        // Done with the old data. No need to call writeTerminator(),
+        // Done with the old data. No need to call writeNull(),
         // we have + 1 above.
         refcount_type::release(_ml.data);
         _ml.data = newData;
@@ -930,6 +932,37 @@ inline void STRING_CORE::shrinkTo(const size_t newSize)
 }
 
 template <STRING_CORE_CLASSES>
+inline void STRING_CORE::push_back(const char_type c)
+{
+    jimi_assert(capacity() >= size());
+    size_t sz;
+    flag_type type = getType();
+    if (type == kIsSmall) {
+        sz = _small.info.size;
+        if (sz < kMaxSmallSize - 1) {
+            _small.info.size = sz + 1;
+            _small.buf[sz] = c;
+            _small.buf[sz + 1] = '\0';
+            return;
+        }
+        reserve(kMaxMediumSize);
+    }
+    else {
+        sz = _ml.size;
+        if (sz == capacity()) {         // always true for isShared()
+            reserve(sz * 3 / 2 + 1);    // ensures not shared
+        }
+    }
+    jimi_assert(!is_shared());
+    jimi_assert(capacity() >= (sz + 1));
+    // Category can't be small - we took care of that above
+    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
+    _ml.size = sz + 1;
+    _ml.data[sz] = c;
+    _ml.data[sz + 1] = '\0';
+}
+
+template <STRING_CORE_CLASSES>
 inline void STRING_CORE::writeNull()
 {
 #if defined(JIMI_STRING_PERVERSE) || defined(JIMI_STRING_CONSERVATIVE)
@@ -943,7 +976,6 @@ inline void STRING_CORE::writeNull()
     }
 #endif
 }
-
 
 NS_JIMI_END
 

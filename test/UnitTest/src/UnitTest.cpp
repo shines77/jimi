@@ -345,6 +345,7 @@ void String_Performance_Test()
     printf("\n");
 }
 
+//
 // Faster strlen function. Warning: in rare cases it may
 // cause page faults (if the string is at the end of
 // the page). To avoid this, you must align the start
@@ -352,6 +353,7 @@ void String_Performance_Test()
 // bytes to the end of the string.
 // E.g., instead of char* str = (char*)malloc(size); use
 //                  char* str = (char*)malloc(size + 3);
+//
 int strlen_my(const char *s) {
 	int len = 0;
 	for(;;) {
@@ -1364,9 +1366,9 @@ int UnitTest_Main(int argc, char *argv[])
     // Memcpy ÄÚ´æ¸´ÖÆ²âÊÔ
     //Memcpy_Test();
 
-    //String_Base_Test();
+    String_Base_Test();
 
-    //String_Performance_Test();
+    String_Performance_Test();
 
     Fast_StrLen_Test();
 

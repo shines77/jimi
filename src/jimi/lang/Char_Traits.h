@@ -27,7 +27,8 @@ struct JIMI_API char_traits
 {
     typedef _CharT char_type;
 
-    static char_type *assign(size_t size);
+    static char_type *mem_alloc(size_t size);
+    static size_t length(const char_type *str);
 
     static size_t strlen(const char_type *_Str);
     static size_t strnlen(const char_type *_Str, size_t _MaxCount);
@@ -59,9 +60,27 @@ struct JIMI_API char_traits
 };
 
 template <class char_type>
-inline char_type *char_traits<char_type>::assign(size_t size)
+inline char_type *char_traits<char_type>::mem_alloc(size_t size)
 {
     return (char_type *)::malloc(size * sizeof(char_type));
+}
+
+template <class char_type>
+inline size_t char_traits<char_type>::length(const char_type *str)
+{
+    return char_traits<char_type>::strlen(str);
+}
+
+template <>
+inline size_t char_traits<char>::length(const char *str)
+{
+    return ::jm_strlen(str);
+}
+
+template <>
+inline size_t char_traits<wchar_t>::length(const wchar_t *str)
+{
+    return ::jm_wcslen(str);
 }
 
 template <class char_type>
