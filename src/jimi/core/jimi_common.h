@@ -23,6 +23,9 @@
     #include <stdint.h>
 #endif
 
+#define JIMI_LIKELY(x)      (x)
+#define JIMI_UNLIKELY(x)    (x)
+
 /**
  * for jimi_winapi
  */

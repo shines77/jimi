@@ -130,118 +130,39 @@ protected:
 
 public:
     // C++11 21.4.3 iterators:
-    iterator begin() { return _store.mutable_data(); }
+    iterator begin();
+    const_iterator begin() const;
+    const_iterator cbegin() const;
 
-    const_iterator begin() const { return _store.data(); }
+    iterator end();
+    const_iterator end() const;
+    const_iterator cend() const;
 
-    const_iterator cbegin() const { return begin(); }
+    reverse_iterator rbegin();
+    const_reverse_iterator rbegin() const;
+    const_reverse_iterator crbegin() const;
 
-    iterator end() {
-        return _store.mutable_data() + _store.size();
-    }
-
-    const_iterator end() const {
-        return _store.data() + _store.size();
-    }
-
-    const_iterator cend() const { return end(); }
-
-    reverse_iterator rbegin() {
-        return reverse_iterator(end());
-    }
-
-    const_reverse_iterator rbegin() const {
-        return const_reverse_iterator(end());
-    }
-
-    const_reverse_iterator crbegin() const { return rbegin(); }
-
-    reverse_iterator rend() {
-        return reverse_iterator(begin());
-    }
-
-    const_reverse_iterator rend() const {
-        return const_reverse_iterator(begin());
-    }
-
-    const_reverse_iterator crend() const { return rend(); }
+    reverse_iterator rend();
+    const_reverse_iterator rend() const;
+    const_reverse_iterator crend() const;
 
     // Added by C++11
     // C++11 21.4.5, element access:
-    const value_type &front() const { return *begin(); }
-    const value_type &back() const {
-        jimi_assert(!empty());
-        // Should be begin()[size() - 1], but that branches twice
-        return *(end() - 1);
-    }
+    const value_type &front() const;
+    const value_type &back() const;
 
-    value_type &front() { return *begin(); }
-    value_type &back() {
-        jimi_assert(!empty());
-        // Should be begin()[size() - 1], but that branches twice
-        return *(end() - 1);
-    }
+    value_type &front();
+    value_type &back();
 
-    void pop_back() {
-        jimi_assert(!empty());
-        _store.shrinkTo(size() - 1);
-    }
+    void push_back(const value_type c);         // primitive
+    void pop_back();
 
     // C++11 21.4.5 element access:
-    const_reference operator [](size_type pos) const {
-        return *(c_str() + pos);
-    }
+    const_reference operator [](size_type pos) const;
+    reference operator [](size_type pos);
 
-    reference operator [](size_type pos) {
-#if 0
-        if (pos == size()) {
-            // Just call c_str() to make sure '\0' is present
-            c_str();
-        }
-#endif
-        return *(begin() + pos);
-    }
-
-    #define JIMI_UNLIKELY(x)    (x)
-
-    basic_string &append(const value_type *s, size_type n) {
-        if (JIMI_UNLIKELY(!n)) {
-            // Unlikely but must be done
-            return *this;
-        }
-
-        size_type oldSize = size();
-        const value_type *oldData = data();
-        // Check for aliasing (rare). We could use "<=" here but in theory
-        // those do not work for pointers unless the pointers point to
-        // elements in the same array. For that reason we use
-        // std::less_equal, which is guaranteed to offer a total order
-        // over pointers. See discussion at http://goo.gl/Cy2ya for more
-        // info.
-        std::less_equal<const value_type *> le;
-        if (JIMI_UNLIKELY(le(oldData, s) && !le(oldData + oldSize, s))) {
-            jimi_assert(le(s + n, oldData + oldSize));
-            const size_type offset = s - oldData;
-            _store.reserve(oldSize + n);
-            // Restore the source
-            s = data() + offset;
-        }
-        // Warning! Repeated appends with short strings may actually incur
-        // practically quadratic performance. Avoid that by pushing back
-        // the first character (which ensures exponential growth) and then
-        // appending the rest normally. Worst case the append may incur a
-        // second allocation but that will be rare.
-        push_back(*s++);
-        _store.expandTo(oldSize + n);
-        --n;
-        ::memcpy((void *)(data() + n), s, n * sizeof(value_type));
-        jimi_assert(size() == oldSize + n + 1);
-        return *this;
-    }
-
-    void push_back(const value_type c) {            // primitive
-        _store.push_back(c);
-    }
+    // Append operators
+    basic_string &append(const value_type *s, size_type n);
 
     void retail();
     void release();
@@ -256,20 +177,18 @@ public:
     const value_type *c_str() const { return _store.c_str(); }
     const value_type *data() const  { return c_str(); }
 
-    size_type size() const      { return _store.size(); }
-    size_type length() const    { return size(); }
     bool empty() const          { return size() == 0; }
-
-    size_type max_size() const {
-        return std::numeric_limits<size_type>::max();
-    }
+    size_type length() const    { return size(); }
+    size_type size() const      { return _store.size(); }
+    size_type capacity() const  { return _store.capacity(); }
 
     void swap(basic_string &rhs) { _store.swap(rhs._store); }
-    size_type capacity() const   { return _store.capacity(); }
-
-    void resize(const size_type newSize, const value_type c = value_type()) {}
 
     void clear() { resize(0); }
+
+    size_type max_size() const  { return std::numeric_limits<size_type>::max(); }
+
+    void resize(const size_type newSize, const value_type c = value_type()) {}
 
 private:
     void destroy();
@@ -429,6 +348,176 @@ inline BASIC_STRING &BASIC_STRING::assign(const value_type *s, const size_type n
     }
     _store.writeNull();
     jimi_assert(size() == n);
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::iterator BASIC_STRING::begin()
+{
+    return _store.mutable_data();
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::const_iterator BASIC_STRING::begin() const
+{
+    return _store.data();
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::const_iterator BASIC_STRING::cbegin() const
+{
+    return _store.mutable_data() + _store.size();
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::iterator BASIC_STRING::end()
+{
+    return _store.mutable_data();
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::const_iterator BASIC_STRING::end() const
+{
+    return _store.data() + _store.size();
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::const_iterator BASIC_STRING::cend() const
+{
+    return end();
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::reverse_iterator BASIC_STRING::rbegin()
+{
+    return reverse_iterator(end());
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::const_reverse_iterator BASIC_STRING::rbegin() const
+{
+    return const_reverse_iterator(end());
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::const_reverse_iterator BASIC_STRING::crbegin() const
+{
+    return rbegin();
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::reverse_iterator BASIC_STRING::rend()
+{
+    return reverse_iterator(begin());
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::const_reverse_iterator BASIC_STRING::rend() const
+{
+    return const_reverse_iterator(begin());
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::const_reverse_iterator BASIC_STRING::crend() const
+{
+    return rend();
+}
+
+// Added by C++11
+// C++11 21.4.5, element access:
+template <BASIC_STRING_CLASSES>
+inline typename const BASIC_STRING::value_type &BASIC_STRING::front() const
+{
+    return *begin();
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename const BASIC_STRING::value_type &BASIC_STRING::back() const
+{
+    jimi_assert(!empty());
+    // Should be begin()[size() - 1], but that branches twice
+    return *(end() - 1);
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::value_type &BASIC_STRING::front()
+{
+    return *begin();
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::value_type &BASIC_STRING::back()
+{
+    jimi_assert(!empty());
+    // Should be begin()[size() - 1], but that branches twice
+    return *(end() - 1);
+}
+
+template <BASIC_STRING_CLASSES>
+inline void BASIC_STRING::push_back(const value_type c)
+{
+    _store.push_back(c);
+}
+
+template <BASIC_STRING_CLASSES>
+inline void BASIC_STRING::pop_back()
+{
+    jimi_assert(!empty());
+    _store.shrinkTo(size() - 1);
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::const_reference BASIC_STRING::operator [](size_type pos) const
+{
+    return *(c_str() + pos);
+}
+
+template <BASIC_STRING_CLASSES>
+inline typename BASIC_STRING::reference BASIC_STRING::operator [](size_type pos)
+{
+#if 0
+    if (pos == size()) {
+        // Just call c_str() to make sure '\0' is present
+        c_str();
+    }
+#endif
+    return *(begin() + pos);
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::append(const value_type *s, size_type n)
+{
+    if (JIMI_UNLIKELY(!n)) {
+        // Unlikely but must be done
+        return *this;
+    }
+
+    size_type oldSize = size();
+    const value_type *oldData = data();
+    // Check for aliasing (rare). We could use "<=" here but in theory
+    // those do not work for pointers unless the pointers point to
+    // elements in the same array. For that reason we use
+    // std::less_equal, which is guaranteed to offer a total order
+    // over pointers. See discussion at http://goo.gl/Cy2ya for more
+    // info.
+    std::less_equal<const value_type *> le;
+    if (JIMI_UNLIKELY(le(oldData, s) && !le(oldData + oldSize, s))) {
+        jimi_assert(le(s + n, oldData + oldSize));
+        const size_type offset = s - oldData;
+        _store.reserve(oldSize + n);
+        // Restore the source
+        s = data() + offset;
+    }
+    // Warning! Repeated appends with short strings may actually incur
+    // practically quadratic performance. Avoid that by pushing back
+    // the first character (which ensures exponential growth) and then
+    // appending the rest normally. Worst case the append may incur a
+    // second allocation but that will be rare.
+    push_back(*s++);
+    _store.expandTo(oldSize + n);
+    --n;
+    ::memcpy((void *)(data() + n), s, n * sizeof(value_type));
+    jimi_assert(size() == oldSize + n + 1);
     return *this;
 }
 
