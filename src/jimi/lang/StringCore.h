@@ -113,20 +113,29 @@ public:
     typedef struct medium_large medium_large;
 
     // Constant
-    static const flag_type      kIsSmall    =  STRING_TYPE_SMALL;
-    static const flag_type      kIsMedium   =  STRING_TYPE_MEDIUM;
-    static const flag_type      kIsLarge    =  STRING_TYPE_LARGE;
-    static const flag_type      kIsConstant =  STRING_TYPE_CONSTANT;
-    static const flag_type      kTypeMask   =  STRING_TYPE_MASK;
-    static const flag_type      kSizeMask   = ~STRING_TYPE_MASK;
+    static const flag_type  kIsSmall    =  STRING_TYPE_SMALL;
+    static const flag_type  kIsMedium   =  STRING_TYPE_MEDIUM;
+    static const flag_type  kIsLarge    =  STRING_TYPE_LARGE;
+    static const flag_type  kIsConstant =  STRING_TYPE_CONSTANT;
+    static const flag_type  kTypeMask   =  STRING_TYPE_MASK;
+    static const flag_type  kSizeMask   = ~(flag_type)STRING_TYPE_MASK;
 
-    static const flag_type      kIsMediumOrLargeMask = STRING_TYPE_MEDIUM | STRING_TYPE_LARGE;
-    static const flag_type      kNotIsSmallMask      = STRING_TYPE_MASK & (~STRING_TYPE_SMALL) & (~STRING_TYPE_CONSTANT);
+    static const flag_type  kIsMediumOrLargeMask =
+        STRING_TYPE_MEDIUM | STRING_TYPE_LARGE;
+    static const flag_type  kNotIsSmallMask      =
+        STRING_TYPE_MASK & (~STRING_TYPE_SMALL) & (~STRING_TYPE_CONSTANT);
 
-    static const size_type      kMaxMediumSizeBytes  = JIMI_ALIGNED_TO(STRING_MEDIUM_SIZE * sizeof(char_type), 64);
+    static const size_type  kMaxMediumSizeBytes  =
+        JIMI_ALIGNED_TO(STRING_MEDIUM_SIZE * sizeof(char_type), 64);
 
-    static const size_type      kMaxSmallSize   = (STRING_SMALL_BYTES - sizeof(small_info_t)) / sizeof(char_type);
-    static const size_type      kMaxMediumSize  = kMaxMediumSizeBytes / sizeof(char_type);
+    static const size_type  kMaxSmallSizeBytes   =
+        (STRING_SMALL_BYTES >= sizeof(medium_large)) ? STRING_SMALL_BYTES : sizeof(medium_large);
+
+    static const size_type  kMaxSmallSize   =
+        (kMaxSmallSizeBytes - sizeof(small_info_t)) / sizeof(char_type);
+
+    static const size_type  kMaxMediumSize  =
+        kMaxMediumSizeBytes / sizeof(char_type);
 
 public:
     // Contructor
@@ -134,6 +143,8 @@ public:
     string_core(const string_core &rhs);
     string_core(const char_type * const src);
     string_core(const char_type * const src, const size_t size);
+
+    // Discontructor
     ~string_core();
 
     void destroy();
