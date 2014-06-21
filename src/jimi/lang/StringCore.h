@@ -86,6 +86,9 @@ typedef enum StringTypeMaskX
 #define STRING_TYPE_IS_MEDIUM_OR_LARGE(type)   \
     ((type & (STRING_TYPE_MEDIUM | STRING_TYPE_LARGE)) != 0)
 
+#undef STRING_CORE_CLASSES
+#undef STRING_CORE
+
 #define STRING_CORE_CLASSES    \
     class _CharT, class _RefCount
 #define STRING_CORE            \
@@ -129,7 +132,7 @@ public:
         JIMI_ALIGNED_TO(STRING_MEDIUM_SIZE * sizeof(char_type), 64);
 
     static const size_type  kMaxSmallSizeBytes   =
-        (STRING_SMALL_BYTES >= sizeof(medium_large)) ? STRING_SMALL_BYTES : sizeof(medium_large);
+        (STRING_SMALL_BYTES >= sizeof(core_data_t)) ? STRING_SMALL_BYTES : sizeof(core_data_t);
 
     static const size_type  kMaxSmallSize   =
         (kMaxSmallSizeBytes - sizeof(small_info_t)) / sizeof(char_type);
@@ -143,9 +146,29 @@ public:
     string_core(const string_core &rhs);
     string_core(const char_type * const src);
     string_core(const char_type * const src, const size_t size);
+    string_core(const char_type c);
+    string_core(const char_type c, size_type n);
 
     // Discontructor
     ~string_core();
+
+#if 0
+protected:
+    // Assigment functions
+    string_core &assign(const string_core &str);
+    string_core &assign(const value_type *str);
+    string_core &assign(const value_type *str, const size_type size);
+    string_core &assign(const value_type c);
+    string_core &assign(const value_type c, size_type n);
+
+public:
+    // Append operators
+    string_core &append(const string_core &str);
+    string_core &append(const value_type *s);
+    string_core &append(const value_type *s, size_type n);
+    string_core &append(const value_type c);
+    string_core &append(const value_type c, size_type n);
+#endif
 
     void destroy();
 
@@ -172,19 +195,6 @@ public:
 
     bool is_shared() const {
         return (is_large() && (refcount_type::refs(_ml.data) > 1));
-    }
-
-    static bool is_small(const flag_type type)      { return STRING_TYPE_IS_SMALL(type);    }
-    static bool is_medium(const flag_type type)     { return STRING_TYPE_IS_MEDIUM(type);   }
-    static bool is_large(const flag_type type)      { return STRING_TYPE_IS_LARGE(type);    }
-    static bool is_constant(const flag_type type)   { return STRING_TYPE_IS_CONSTANT(type); }
-
-    static bool is_medium_or_large(const flag_type type) { return STRING_TYPE_IS_MEDIUM_OR_LARGE(type); }
-
-    static bool not_is_small(const flag_type type) { return STRING_TYPE_NOT_IS_SMALL(type); }
-
-    static bool is_shared(const medium_large &ml) {
-        return (is_large(ml.type) && (refcount_type::refs(ml.data) > 1));
     }
 
     const char_type *data() const { return c_str(); }
@@ -245,8 +255,8 @@ private:
         dest.type = src.type;
     }
 
-private:
-    /* lastShort 有时候可以提供效率 */
+protected:
+    /* 使用lastShort有时候可以快一点 */
     struct small_info_t {
         union {
             struct {
@@ -262,11 +272,11 @@ private:
         union {
             struct {
                 /* (dummy只是占位用, 未使用) */
-                unsigned char dummy[(STRING_SMALL_BYTES - sizeof(small_info_t)) / sizeof(char)];
+                char dummy[(kMaxSmallSizeBytes - sizeof(small_info_t)) / sizeof(char)];
                 /* size and type */
                 small_info_t  info;
             };
-            char_type buf[(STRING_SMALL_BYTES - sizeof(small_info_t)) / sizeof(char_type)];
+            char_type buf[(kMaxSmallSizeBytes - sizeof(small_info_t)) / sizeof(char_type)];
         };
     };
 
@@ -283,7 +293,7 @@ private:
         union {
             struct {
                 /* (dummy只是占位用, 未使用) */
-                unsigned char dummy[(STRING_SMALL_BYTES - sizeof(core_data_t)) / sizeof(char)];
+                char dummy[(kMaxSmallSizeBytes - sizeof(core_data_t)) / sizeof(char)];
 
                 /* 后面的定义必须和core_data的结构一致 */
                 char_type *data;
@@ -292,7 +302,7 @@ private:
                 flag_type  type;
             };
 
-            char_type buf[(STRING_SMALL_BYTES - sizeof(core_data_t)) / sizeof(char_type)];
+            char_type buf[(kMaxSmallSizeBytes - sizeof(core_data_t)) / sizeof(char_type)];
         };
     };
 
@@ -312,7 +322,7 @@ STRING_CORE::string_core()
 {
 #if 1
     _ml.type = STRING_TYPE_SMALL;
-    (*(size_t *)(&_small.buf[0])) = 0;
+    (*(size_t *)(&_small.buf[0])) = (size_t)0;
 #else
     _ml.data = NULL;
     _ml.size = 0;
@@ -320,7 +330,7 @@ STRING_CORE::string_core()
     _ml.type = 0;
 
     // init sso buffer
-    (*(size_t *)(&_ml.buf[0])) = 0;
+    (*(size_t *)(&_ml.buf[0])) = (size_t)0;
 #endif
 }
 
@@ -391,58 +401,9 @@ STRING_CORE::string_core(const string_core &rhs)
 
 template <STRING_CORE_CLASSES>
 STRING_CORE::string_core(const char_type * const src)
-: string_core(src, ::jm_strlen(src))
+: string_core(src, traits_type::length(src))
+//: string_core(src, ::jm_strlen(src))
 {
-#if 1
-    // Do nothing!!!
-    //return;
-#else
-
-#if 0
-    size_t src_len = ::strnlen(src, kMaxMediumSize);
-#else
-    size_t src_len = ::strlen(src);
-#endif
-    /* small string optimized */
-    if (src_len < kMaxSmallSize) {
-        _small.info.type = STRING_TYPE_SMALL_X;
-        _small.info.size = src_len;
-#if 1
-        traits_type::strncpy_unsafe(_small.buf, src, src_len);
-        _small.buf[src_len] = '\0';
-#else
-        ::strcpy(_small.buf, src);
-#endif
-    }
-#if 1
-    /* eager copy */
-    else if (src_len < kMaxMediumSize) {
-        _ml.size = src_len;
-        _ml.capacity = calc_capacity(src_len);
-        _ml.type = STRING_TYPE_MEDIUM;
-        _ml.data = traits_type::mem_alloc(_ml.capacity);
-        if (_ml.data) {
-            traits_type::strncpy(_ml.data, _ml.capacity, src, src_len);
-            _ml.data[src_len] = '\0';
-        }
-    }
-    /* copy-on-write or unknown type */
-    else {
-        size_t src_left;
-        src_left = ::strlen(src + src_len);
-        src_len += src_left;
-        _ml.capacity = calc_capacity(src_len);
-        _ml.data = traits_type::mem_alloc(_ml.capacity);
-        _ml.size = src_len;
-        _ml.type = STRING_TYPE_LARGE;
-        if (_ml.data) {
-            traits_type::strncpy(_ml.data, _ml.capacity, src, src_len);
-            _ml.data[src_len] = '\0';
-        }
-    }
-#endif
-
-#endif
 }
 
 template <STRING_CORE_CLASSES>
@@ -455,6 +416,9 @@ STRING_CORE::string_core(const char_type * const src, const size_t size)
 #if 1
         //traits_type::strncpy_unsafe(_small.buf, src, src_len);
         string_detail::pod_copy(_small.buf, src, size);
+        _small.buf[size] = '\0';
+#elif 0
+        traits_type::strncpy_unsafe(_small.buf, src, src_len);
         _small.buf[size] = '\0';
 #else
         ::strcpy(_small.buf, src);
@@ -503,6 +467,20 @@ STRING_CORE::string_core(const char_type * const src, const size_t size)
         _ml.capacity = effectiveCapacity;
         _ml.type     = STRING_TYPE_LARGE;
     }
+}
+
+template <STRING_CORE_CLASSES>
+STRING_CORE::string_core(const char_type c)
+{
+    _ml.type = STRING_TYPE_SMALL;
+    (*(size_t *)(&_small.buf[0])) = (size_t)c;
+}
+
+template <STRING_CORE_CLASSES>
+STRING_CORE::string_core(const char_type c, size_type n)
+{
+    _ml.type = STRING_TYPE_SMALL;
+    (*(size_t *)(&_small.buf[0])) = (size_t)c;
 }
 
 template <STRING_CORE_CLASSES>
@@ -1009,6 +987,9 @@ inline void STRING_CORE::writeNullForce()
         _ml.data[_ml.size] = STRING_NULL_CHAR;
     }
 }
+
+#undef STRING_CORE_CLASSES
+#undef STRING_CORE
 
 NS_JIMI_END
 

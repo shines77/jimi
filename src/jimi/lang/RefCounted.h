@@ -16,7 +16,9 @@ void *smartRealloc(void *memory, size_t cur_size, size_t cur_capacity, size_t ne
     return ::realloc(memory, new_size);
 }
 
-template <class _CharT, class _ValueT, class _Atomic = non_atomic<_ValueT>>
+template <class _CharT,
+          class _ValueT,
+          class _Atomic = non_atomic<_ValueT> >
 class JIMI_API refcounted
 {
 public:

@@ -65,6 +65,9 @@ inline void pod_copy2(Pod *dest, const Pod *src, const Pod *end) {
 
 }  /* end of the namespace string_detail */
 
+#undef BASIC_STRING_CLASSES
+#undef BASIC_STRING
+
 #define BASIC_STRING_CLASSES    \
     class _CharT, class _Traits, class _Alloc, class _Storage
 #define BASIC_STRING            \
@@ -106,8 +109,10 @@ public:
     basic_string();
     basic_string(const basic_string &src);
     basic_string(const value_type *src);
-    basic_string(const value_type *src, size_t size);
+    basic_string(const value_type *src, size_type size);
     basic_string(const value_type *begin, const value_type *end);
+    basic_string(const value_type c);
+    basic_string(const value_type c, size_type n);
     basic_string(const std::string &src);
 
     // Discontructor
@@ -127,6 +132,8 @@ protected:
     basic_string &assign(const basic_string &str);
     basic_string &assign(const value_type *str);
     basic_string &assign(const value_type *str, const size_type size);
+    basic_string &assign(const value_type c);
+    basic_string &assign(const value_type c, size_type n);
 
 public:
 #if 0
@@ -247,13 +254,14 @@ BASIC_STRING::basic_string(const std::string &src)
 
 template <BASIC_STRING_CLASSES>
 BASIC_STRING::basic_string(const value_type *src)
-: _store(src, ::jm_strlen(src))
+: _store(src, traits_type::length(src))
+//: _store(src, ::jm_strlen(src))
 //: _store(src)
 {
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING::basic_string(const value_type *src, size_t size)
+BASIC_STRING::basic_string(const value_type *src, size_type size)
 : _store(src, size)
 {
 }
@@ -262,6 +270,18 @@ BASIC_STRING::basic_string(const value_type *src, size_t size)
 template <BASIC_STRING_CLASSES>
 BASIC_STRING::basic_string(const value_type *begin, const value_type *end)
 : store_(begin, end - begin)
+{
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING::basic_string(const value_type c)
+: _store(c)
+{
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING::basic_string(const value_type c, size_type n)
+: _store(c, n)
 {
 }
 
@@ -379,6 +399,18 @@ inline BASIC_STRING &BASIC_STRING::assign(const value_type *s, const size_type n
     _store.writeNull();
     jimi_assert(size() == n);
     return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::assign(const value_type c)
+{
+    return _store.assign(c);
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::assign(const value_type c, size_type n)
+{
+    return _store.assign(c, n);
 }
 
 template <BASIC_STRING_CLASSES>
@@ -563,8 +595,9 @@ inline BASIC_STRING &BASIC_STRING::append(const value_type *s, size_type n)
     push_back(*s++);
     _store.expandTo(oldSize + n);
     --n;
-    if (n > 0)
+    if (n > 0) {
         ::memcpy((void *)(data() + oldSize + 1), s, n * sizeof(value_type));
+    }
     _store.writeNullForce();
     //jimi_assert(size() == oldSize + n);
     return *this;
@@ -631,6 +664,9 @@ inline bool operator == (const _CharT *lhs, const BASIC_STRING &rhs)
 {
     return (rhs.compare(lhs) == 0);
 }
+
+#undef BASIC_STRING_CLASSES
+#undef BASIC_STRING
 
 typedef basic_string<char> String;
 

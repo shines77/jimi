@@ -237,6 +237,10 @@ void String_Base_Test()
 
     printf("str2.c_str() = %s\n", str2.c_str());
     printf("\n");
+
+    String str3('a');
+    printf("str3.c_str() = %s\n", str3.c_str());
+    printf("\n");
 }
 
 void String_Performance_Test()
