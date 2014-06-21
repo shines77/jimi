@@ -230,7 +230,12 @@ void String_Base_Test()
     str1 = "i21938219";
     printf("str1 = \"i21938219\";\n");
     printf("str1.c_str() = %s\n", str1.c_str());
+    printf("\n");
 
+    str2.append("00abcd");
+    str2.append(str1);
+
+    printf("str2.c_str() = %s\n", str2.c_str());
     printf("\n");
 }
 

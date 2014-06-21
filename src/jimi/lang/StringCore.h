@@ -217,6 +217,7 @@ public:
     void push_back(const char_type c);
 
     void writeNull();
+    void writeNullForce();
 
 protected:
     size_t calc_capacity(size_t src_len);
@@ -224,9 +225,17 @@ protected:
 private:
 
     void small_clone(small_t &dest, const small_t &src) {
+#if 1
+        // 优化版本, 如果内存地址对齐4/8字节, 一次拷贝4/8字节
+        traits_type::strncpy_align4_unsafe(dest.buf, src.buf, src.info.size);
         dest.info.lastShort = src.info.lastShort;
-        traits_type::strncpy_unsafe(dest.buf, src.buf, src.info.size);
         dest.buf[src.info.size] = '\0';
+#else
+        // 慢速版本
+        traits_type::strncpy_unsafe(dest.buf, src.buf, src.info.size);
+        dest.info.lastShort = src.info.lastShort;
+        dest.buf[src.info.size] = '\0';
+#endif
     }
 
     void ml_clone(medium_large &dest, const medium_large &src) {
@@ -986,6 +995,19 @@ inline void STRING_CORE::writeNull()
         _ml.data[_ml.size] = STRING_NULL_CHAR;
     }
 #endif
+}
+
+template <STRING_CORE_CLASSES>
+inline void STRING_CORE::writeNullForce()
+{
+    if (getType() == kIsSmall) {
+        const size_type _size = _small.info.size;
+        if (_size < kMaxSmallSize)
+            _small.buf[_size] = STRING_NULL_CHAR;
+    }
+    else {
+        _ml.data[_ml.size] = STRING_NULL_CHAR;
+    }
 }
 
 NS_JIMI_END

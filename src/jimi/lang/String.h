@@ -155,6 +155,16 @@ public:
     bool operator != (const value_type c) const;
 #endif
 
+    // Append operators
+    basic_string &append(const basic_string &str);
+    basic_string &append(const value_type *s);
+    basic_string &append(const value_type *s, size_type n);
+    basic_string &append(const value_type c);
+    basic_string &append(const value_type c, size_type n);
+
+    void push_back(const value_type c);         // primitive
+    void pop_back();
+
     // C++11 21.4.3 iterators:
     iterator begin();
     const_iterator begin() const;
@@ -180,15 +190,9 @@ public:
     value_type &front();
     value_type &back();
 
-    void push_back(const value_type c);         // primitive
-    void pop_back();
-
     // C++11 21.4.5 element access:
     const_reference operator [](size_type pos) const;
     reference operator [](size_type pos);
-
-    // Append operators
-    basic_string &append(const value_type *s, size_type n);
 
     void retail();
     void release();
@@ -511,6 +515,23 @@ inline typename BASIC_STRING::reference BASIC_STRING::operator [](size_type pos)
 }
 
 template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::append(const basic_string &str)
+{
+#if defined(_DEBUG) || !defined(NDEBUG)
+    size_type nDesiredSize = size() + str.size();
+#endif
+    append(str.data(), str.size());
+    jimi_assert(size() == nDesiredSize);
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::append(const value_type *s)
+{
+    return append(s, traits_type::length(s));
+}
+
+template <BASIC_STRING_CLASSES>
 inline BASIC_STRING &BASIC_STRING::append(const value_type *s, size_type n)
 {
     if (JIMI_UNLIKELY(!n)) {
@@ -542,8 +563,24 @@ inline BASIC_STRING &BASIC_STRING::append(const value_type *s, size_type n)
     push_back(*s++);
     _store.expandTo(oldSize + n);
     --n;
-    ::memcpy((void *)(data() + n), s, n * sizeof(value_type));
-    jimi_assert(size() == oldSize + n + 1);
+    if (n > 0)
+        ::memcpy((void *)(data() + oldSize + 1), s, n * sizeof(value_type));
+    _store.writeNullForce();
+    //jimi_assert(size() == oldSize + n);
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::append(const value_type c)
+{
+    push_back(c);
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::append(const value_type c, size_type n)
+{
+    resize(size() + n, c);
     return *this;
 }
 

@@ -38,6 +38,9 @@ struct JIMI_API char_traits
     static char_type *strncpy_unsafe2(char_type *_dest, const char_type *_src, size_t _count);
     static char_type *strlcpy_unsafe(char_type *_dest, const char_type *_src, size_t _count);
 
+    static char_type *strncpy_align4_unsafe(char_type *_dest, const char_type *_src,
+        size_t _count);
+
     static char_type *strcpy(char_type *_dest, size_t numberOfElements,
         const char_type *_src);
     static char_type *strncpy(char_type *_dest, size_t numberOfElements,
@@ -100,7 +103,8 @@ inline size_t char_traits<char_type>::strlen(const char_type *_str)
 }
 
 template <class char_type>
-inline size_t char_traits<char_type>::strnlen(const char_type *_str, size_t _count)
+inline size_t char_traits<char_type>::strnlen(const char_type *_str,
+                                              size_t _count)
 {
     char_type *_ptr, *_end;
     int n;
@@ -127,7 +131,8 @@ inline size_t char_traits<char_type>::strnlen(const char_type *_str, size_t _cou
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strcpy_unsafe(char_type *_dest, const char_type *_src)
+inline char_type *char_traits<char_type>::strcpy_unsafe(char_type *_dest,
+                                                        const char_type *_src)
 {
     char_type *dest, *src;
 
@@ -152,7 +157,9 @@ inline char_type *char_traits<char_type>::strcpy_unsafe(char_type *_dest, const 
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strncpy_unsafe(char_type *_dest, const char_type *_src, size_t _count)
+inline char_type *char_traits<char_type>::strncpy_unsafe(char_type *_dest,
+                                                         const char_type *_src,
+                                                         size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -178,7 +185,9 @@ inline char_type *char_traits<char_type>::strncpy_unsafe(char_type *_dest, const
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strncpy_unsafe2(char_type *_dest, const char_type *_src, size_t _count)
+inline char_type *char_traits<char_type>::strncpy_unsafe2(char_type *_dest,
+                                                          const char_type *_src,
+                                                          size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -206,7 +215,71 @@ inline char_type *char_traits<char_type>::strncpy_unsafe2(char_type *_dest, cons
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strlcpy_unsafe(char_type *_dest, const char_type *_src, size_t _count)
+inline char_type *char_traits<char_type>::strncpy_align4_unsafe(char_type *_dest,
+                                                                const char_type *_src,
+                                                                size_t _count)
+{
+    char_type *dest, *src;
+    int n;
+
+#if CHAR_TRAITS_STRICT_CHECK
+    if (_dest == NULL || _src == NULL)
+        return _dest;
+#endif
+
+    /* if _dest align 4 or 8 bytes, copy 4 or 8 bytes one time */
+    if (((uintptr_t)_dest & (sizeof(uintptr_t) - 1)) == 0) {
+        uintptr_t *dest8, *src8;
+        dest8 = (uintptr_t *)_dest;
+        src8  = (uintptr_t *)_src;
+
+        n = (_count + sizeof(uintptr_t) - 1) / sizeof(uintptr_t);
+
+        while (--n >= 0) {
+            *dest8 = *src8;
+
+            ++dest8;
+            ++src8;
+        }
+    }
+    /* if is x64 mode and _dest align 4 bytes, copy 4 bytes one time */
+    else if ((sizeof(uintptr_t) == 8)
+        && (sizeof(uintptr_t) != sizeof(uint32_t))
+        && (((uint32_t)_dest & (sizeof(uint32_t) - 1)) == 0)) {
+        uint32_t *dest4, *src4;
+        dest4 = (uint32_t *)_dest;
+        src4  = (uint32_t *)_src;
+
+        n = (_count + sizeof(uint32_t) - 1) / sizeof(uint32_t);
+
+        while (--n >= 0) {
+            *dest4 = *src4;
+
+            ++dest4;
+            ++src4;
+        }
+    }
+    /* copy 1 bytes one time */
+    else {
+        dest = (char_type *)_dest;
+        src  = (char_type *)_src;
+
+        n = _count;
+
+        while (--n >= 0) {
+            *dest = *src;
+
+            ++dest;
+            ++src;
+        }
+    }
+    return _dest;
+}
+
+template <class char_type>
+inline char_type *char_traits<char_type>::strlcpy_unsafe(char_type *_dest,
+                                                         const char_type *_src,
+                                                         size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -236,7 +309,8 @@ inline char_type *char_traits<char_type>::strlcpy_unsafe(char_type *_dest, const
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strcpy(char_type *_dest, size_t numberOfElements,
+inline char_type *char_traits<char_type>::strcpy(char_type *_dest,
+                                                 size_t numberOfElements,
                                                  const char_type *_src)
 {
     char_type *dest, *src;
@@ -270,8 +344,10 @@ inline char_type *char_traits<char_type>::strcpy(char_type *_dest, size_t number
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strncpy(char_type *_dest, size_t numberOfElements,
-                                                  const char_type *_src, size_t _count)
+inline char_type *char_traits<char_type>::strncpy(char_type *_dest,
+                                                  size_t numberOfElements,
+                                                  const char_type *_src,
+                                                  size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -297,8 +373,10 @@ inline char_type *char_traits<char_type>::strncpy(char_type *_dest, size_t numbe
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strlcpy(char_type *_dest, size_t numberOfElements,
-                                                  const char_type *_src, size_t _count)
+inline char_type *char_traits<char_type>::strlcpy(char_type *_dest,
+                                                  size_t numberOfElements,
+                                                  const char_type *_src,
+                                                  size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -328,7 +406,8 @@ inline char_type *char_traits<char_type>::strlcpy(char_type *_dest, size_t numbe
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strcpy_e(char_type *_dest, size_t numberOfElements,
+inline char_type *char_traits<char_type>::strcpy_e(char_type *_dest,
+                                                   size_t numberOfElements,
                                                    const char_type *_src)
 {
     char_type *dest, *src;
@@ -362,8 +441,10 @@ inline char_type *char_traits<char_type>::strcpy_e(char_type *_dest, size_t numb
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strncpy_e(char_type *_dest, size_t numberOfElements,
-                                                    const char_type *_src, size_t _count)
+inline char_type *char_traits<char_type>::strncpy_e(char_type *_dest,
+                                                    size_t numberOfElements,
+                                                    const char_type *_src,
+                                                    size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -392,8 +473,10 @@ inline char_type *char_traits<char_type>::strncpy_e(char_type *_dest, size_t num
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strlcpy_e(char_type *_dest, size_t numberOfElements,
-                                                    const char_type *_src, size_t _count)
+inline char_type *char_traits<char_type>::strlcpy_e(char_type *_dest,
+                                                    size_t numberOfElements,
+                                                    const char_type *_src,
+                                                    size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -423,7 +506,8 @@ inline char_type *char_traits<char_type>::strlcpy_e(char_type *_dest, size_t num
 }
 
 template <class char_type>
-inline int char_traits<char_type>::strcmp(const char_type *_str1, const char_type *_str2)
+inline int char_traits<char_type>::strcmp(const char_type *_str1,
+                                          const char_type *_str2)
 {
     int equal;
     char_type *str1, *str2;
@@ -453,7 +537,8 @@ inline int char_traits<char_type>::strcmp(const char_type *_str1, const char_typ
 }
 
 template <class char_type>
-inline int char_traits<char_type>::strncmp(const char_type *_str1, const char_type *_str2,
+inline int char_traits<char_type>::strncmp(const char_type *_str1,
+                                           const char_type *_str2,
                                            size_t _count)
 {
     int equal = 0;
@@ -495,7 +580,8 @@ inline int char_traits<char_type>::strncmp(const char_type *_str1, const char_ty
 }
 
 template <class char_type>
-inline int char_traits<char_type>::streql(const char_type *_str1, const char_type *_str2)
+inline int char_traits<char_type>::streql(const char_type *_str1,
+                                          const char_type *_str2)
 {
     int equal = 0;
     char_type *str1, *str2;
@@ -521,7 +607,8 @@ inline int char_traits<char_type>::streql(const char_type *_str1, const char_typ
 }
 
 template <class char_type>
-inline int char_traits<char_type>::strneql(const char_type *_str1, const char_type *_str2,
+inline int char_traits<char_type>::strneql(const char_type *_str1,
+                                           const char_type *_str2,
                                            size_t _count)
 {
     int equal = 1;
