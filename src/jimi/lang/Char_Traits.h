@@ -30,33 +30,33 @@ struct JIMI_API char_traits
     static char_type *mem_alloc(size_t size);
     static size_t length(const char_type *str);
 
-    static size_t strlen(const char_type *_Str);
-    static size_t strnlen(const char_type *_Str, size_t _MaxCount);
+    static size_t strlen(const char_type *_str);
+    static size_t strnlen(const char_type *_str, size_t _count);
 
-    static char_type *strcpy_unsafe(char_type *_Dest, const char_type *_Source);
-    static char_type *strncpy_unsafe(char_type *_Dest, const char_type *_Source, size_t _MaxCount);
-    static char_type *strncpy_unsafe2(char_type *_Dest, const char_type *_Source, size_t _MaxCount);
-    static char_type *strlcpy_unsafe(char_type *_Dest, const char_type *_Source, size_t _MaxCount);
+    static char_type *strcpy_unsafe(char_type *_dest, const char_type *_src);
+    static char_type *strncpy_unsafe(char_type *_dest, const char_type *_src, size_t _count);
+    static char_type *strncpy_unsafe2(char_type *_dest, const char_type *_src, size_t _count);
+    static char_type *strlcpy_unsafe(char_type *_dest, const char_type *_src, size_t _count);
 
-    static char_type *strcpy(char_type *_Dest, size_t _NumberOfElements,
-        const char_type *_Source);
-    static char_type *strncpy(char_type *_Dest, size_t _NumberOfElements,
-        const char_type *_Source, size_t _MaxCount);
-    static char_type *strlcpy(char_type *_Dest, size_t _NumberOfElements,
-        const char_type *_Source, size_t _MaxCount);
+    static char_type *strcpy(char_type *_dest, size_t numberOfElements,
+        const char_type *_src);
+    static char_type *strncpy(char_type *_dest, size_t numberOfElements,
+        const char_type *_src, size_t _count);
+    static char_type *strlcpy(char_type *_dest, size_t numberOfElements,
+        const char_type *_src, size_t _count);
 
-    static char_type *strcpy_e(char_type *_Dest, size_t _NumberOfElements,
-        const char_type *_Source);
-    static char_type *strncpy_e(char_type *_Dest, size_t _NumberOfElements,
-        const char_type *_Source, size_t _MaxCount);
-    static char_type *strlcpy_e(char_type *_Dest, size_t _NumberOfElements,
-        const char_type *_Source, size_t _MaxCount);
+    static char_type *strcpy_e(char_type *_dest, size_t numberOfElements,
+        const char_type *_src);
+    static char_type *strncpy_e(char_type *_dest, size_t numberOfElements,
+        const char_type *_src, size_t _count);
+    static char_type *strlcpy_e(char_type *_dest, size_t numberOfElements,
+        const char_type *_src, size_t _count);
 
-    static int strcmp(const char_type *_Str1, const char_type *_Str2);
-    static int strncmp(const char_type *_Str1, const char_type *_Str2, size_t _MaxCount);
+    static int strcmp(const char_type *_str1, const char_type *_str2);
+    static int strncmp(const char_type *_str1, const char_type *_str2, size_t _count);
 
-    static int streql(const char_type *_Str1, const char_type *_Str2);
-    static int strneql(const char_type *_Str1, const char_type *_Str2, size_t _MaxCount);
+    static int streql(const char_type *_str1, const char_type *_str2);
+    static int strneql(const char_type *_str1, const char_type *_str2, size_t _count);
 };
 
 template <class char_type>
@@ -84,88 +84,88 @@ inline size_t char_traits<wchar_t>::length(const wchar_t *str)
 }
 
 template <class char_type>
-inline size_t char_traits<char_type>::strlen(const char_type *_Str)
+inline size_t char_traits<char_type>::strlen(const char_type *_str)
 {
-    char_type *_Ptr;
+    char_type *_ptr;
 
 #if CHAR_TRAITS_STRICT_CHECK_V3
-    if (_Str == NULL)
+    if (_str == NULL)
         return 0;
 #endif
 
-    _Ptr = (char_type *)_Str;
-    while (*_Ptr != '\0')
-        ++_Ptr;
-    return (size_t)(_Ptr - _Str);
+    _ptr = (char_type *)_str;
+    while (*_ptr != '\0')
+        ++_ptr;
+    return (size_t)(_ptr - _str);
 }
 
 template <class char_type>
-inline size_t char_traits<char_type>::strnlen(const char_type *_Str, size_t _MaxCount)
+inline size_t char_traits<char_type>::strnlen(const char_type *_str, size_t _count)
 {
-    char_type *_Ptr, *_End;
+    char_type *_ptr, *_end;
     int n;
 
 #if CHAR_TRAITS_STRICT_CHECK_V3
-    if (_Str == NULL)
+    if (_str == NULL)
         return 0;
 #endif
 
-    _Ptr = (char_type *)_Str;
-    _End = (char_type *)_Str + _MaxCount;
+    _ptr = (char_type *)_str;
+    _end = (char_type *)_str + _count;
 #if 1
-    n = _MaxCount;
+    n = _count;
     while (--n >= 0) {
-        if (*_Ptr != '\0')
-            ++_Ptr;
+        if (*_ptr != '\0')
+            ++_ptr;
     }
 #else
     n = 0;  // for void warning
-    while ((_Ptr < _End) && (*_Ptr != '\0'))
-        ++_Ptr;
+    while ((_ptr < _end) && (*_ptr != '\0'))
+        ++_ptr;
 #endif
-    return (size_t)(_Ptr - _Str);
+    return (size_t)(_ptr - _str);
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strcpy_unsafe(char_type *_Dest, const char_type *_Source)
+inline char_type *char_traits<char_type>::strcpy_unsafe(char_type *_dest, const char_type *_src)
 {
     char_type *dest, *src;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Dest == NULL || _Source == NULL)
-        return _Dest;
+    if (_dest == NULL || _src == NULL)
+        return _dest;
 #endif
 
-    dest = (char_type *)_Dest;
-    src  = (char_type *)_Source;
+    dest = (char_type *)_dest;
+    src  = (char_type *)_src;
 
     while (*dest = *src) {
         if (*dest == '\0')
-            return _Dest;
+            return _dest;
 
         ++dest;
         ++src;
     }
 
     *dest = '\0';
-    return _Dest;
+    return _dest;
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strncpy_unsafe(char_type *_Dest, const char_type *_Source, size_t _MaxCount)
+inline char_type *char_traits<char_type>::strncpy_unsafe(char_type *_dest, const char_type *_src, size_t _count)
 {
     char_type *dest, *src;
     int n;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Dest == NULL || _Source == NULL)
-        return _Dest;
+    if (_dest == NULL || _src == NULL)
+        return _dest;
 #endif
 
-    dest = (char_type *)_Dest;
-    src  = (char_type *)_Source;
+    dest = (char_type *)_dest;
+    src  = (char_type *)_src;
 
-    n = _MaxCount;
+    n = _count;
 
     while (--n >= 0) {
         *dest = *src;
@@ -174,26 +174,26 @@ inline char_type *char_traits<char_type>::strncpy_unsafe(char_type *_Dest, const
         ++src;
     }
 
-    return _Dest;
+    return _dest;
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strncpy_unsafe2(char_type *_Dest, const char_type *_Source, size_t _MaxCount)
+inline char_type *char_traits<char_type>::strncpy_unsafe2(char_type *_dest, const char_type *_src, size_t _count)
 {
     char_type *dest, *src;
     int n;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Dest == NULL || _Source == NULL)
-        return _Dest;
+    if (_dest == NULL || _src == NULL)
+        return _dest;
 #endif
 
-    dest = (char_type *)_Dest;
-    src  = (char_type *)_Source;
+    dest = (char_type *)_dest;
+    src  = (char_type *)_src;
 
-    n = _MaxCount;
+    n = _count;
     if (n == 0)
-        return _Dest;
+        return _dest;
 
     do {
         *dest = *src;
@@ -202,24 +202,24 @@ inline char_type *char_traits<char_type>::strncpy_unsafe2(char_type *_Dest, cons
         ++src;
     } while (--n > 0);
 
-    return _Dest;
+    return _dest;
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strlcpy_unsafe(char_type *_Dest, const char_type *_Source, size_t _MaxCount)
+inline char_type *char_traits<char_type>::strlcpy_unsafe(char_type *_dest, const char_type *_src, size_t _count)
 {
     char_type *dest, *src;
     int n;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Dest == NULL || _Source == NULL)
-        return _Dest;
+    if (_dest == NULL || _src == NULL)
+        return _dest;
 #endif
 
-    dest = (char_type *)_Dest;
-    src  = (char_type *)_Source;
+    dest = (char_type *)_dest;
+    src  = (char_type *)_src;
 
-    n = _MaxCount;
+    n = _count;
 
     while (--n >= 0) {
         *dest = *src;
@@ -236,55 +236,55 @@ inline char_type *char_traits<char_type>::strlcpy_unsafe(char_type *_Dest, const
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strcpy(char_type *_Dest, size_t _NumberOfElements,
-                                                 const char_type *_Source)
+inline char_type *char_traits<char_type>::strcpy(char_type *_dest, size_t numberOfElements,
+                                                 const char_type *_src)
 {
     char_type *dest, *src;
     int n;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Dest == NULL || _Source == NULL)
-        return _Dest;
+    if (_dest == NULL || _src == NULL)
+        return _dest;
 #endif
 
-    dest = (char_type *)_Dest;
-    src  = (char_type *)_Source;
+    dest = (char_type *)_dest;
+    src  = (char_type *)_src;
 
-    if (_NumberOfElements <= 0)
-        return _Dest;
+    if (numberOfElements <= 0)
+        return _dest;
 
-    n = _NumberOfElements - 1;
+    n = numberOfElements - 1;
 
     while (--n >= 0) {
         *dest = *src;
 
         if (*dest == '\0')
-            return _Dest;
+            return _dest;
 
         ++dest;
         ++src;
     }
 
     *dest = '\0';
-    return _Dest;
+    return _dest;
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strncpy(char_type *_Dest, size_t _NumberOfElements,
-                                                  const char_type *_Source, size_t _MaxCount)
+inline char_type *char_traits<char_type>::strncpy(char_type *_dest, size_t numberOfElements,
+                                                  const char_type *_src, size_t _count)
 {
     char_type *dest, *src;
     int n;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Dest == NULL || _Source == NULL)
-        return _Dest;
+    if (_dest == NULL || _src == NULL)
+        return _dest;
 #endif
 
-    dest = (char_type *)_Dest;
-    src  = (char_type *)_Source;
+    dest = (char_type *)_dest;
+    src  = (char_type *)_src;
 
-    n = (int)jimi_min(_MaxCount, _NumberOfElements - 1);
+    n = (int)jimi_min(_count, numberOfElements - 1);
 
     while (--n >= 0) {
         *dest = *src;
@@ -293,59 +293,59 @@ inline char_type *char_traits<char_type>::strncpy(char_type *_Dest, size_t _Numb
         ++src;
     }
 
-    return _Dest;
+    return _dest;
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strlcpy(char_type *_Dest, size_t _NumberOfElements,
-                                                  const char_type *_Source, size_t _MaxCount)
+inline char_type *char_traits<char_type>::strlcpy(char_type *_dest, size_t numberOfElements,
+                                                  const char_type *_src, size_t _count)
 {
     char_type *dest, *src;
     int n;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Dest == NULL || _Source == NULL)
-        return _Dest;
+    if (_dest == NULL || _src == NULL)
+        return _dest;
 #endif
 
-    dest = (char_type *)_Dest;
-    src  = (char_type *)_Source;
+    dest = (char_type *)_dest;
+    src  = (char_type *)_src;
 
-    n = (int)jimi_min(_MaxCount, _NumberOfElements - 1);
+    n = (int)jimi_min(_count, numberOfElements - 1);
 
     while (--n >= 0) {
         *dest = *src;
 
         if (*dest == '\0')
-            return _Dest;
+            return _dest;
 
         ++dest;
         ++src;
     }
 
     *dest = '\0';
-    return _Dest;
+    return _dest;
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strcpy_e(char_type *_Dest, size_t _NumberOfElements,
-                                                   const char_type *_Source)
+inline char_type *char_traits<char_type>::strcpy_e(char_type *_dest, size_t numberOfElements,
+                                                   const char_type *_src)
 {
     char_type *dest, *src;
     int n;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Dest == NULL || _Source == NULL)
-        return _Dest;
+    if (_dest == NULL || _src == NULL)
+        return _dest;
 #endif
 
-    dest = (char_type *)_Dest;
-    src  = (char_type *)_Source;
+    dest = (char_type *)_dest;
+    src  = (char_type *)_src;
 
-    if (_NumberOfElements <= 0)
-        return _Dest;
+    if (numberOfElements <= 0)
+        return _dest;
 
-    n = _NumberOfElements - 1;
+    n = numberOfElements - 1;
 
     while (--n >= 0) {
         *dest = *src;
@@ -362,23 +362,23 @@ inline char_type *char_traits<char_type>::strcpy_e(char_type *_Dest, size_t _Num
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strncpy_e(char_type *_Dest, size_t _NumberOfElements,
-                                                    const char_type *_Source, size_t _MaxCount)
+inline char_type *char_traits<char_type>::strncpy_e(char_type *_dest, size_t numberOfElements,
+                                                    const char_type *_src, size_t _count)
 {
     char_type *dest, *src;
     int n;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Dest == NULL || _Source == NULL)
-        return _Dest;
+    if (_dest == NULL || _src == NULL)
+        return _dest;
 #endif
 
-    dest = (char_type *)_Dest;
-    src  = (char_type *)_Source;
+    dest = (char_type *)_dest;
+    src  = (char_type *)_src;
 
-    n = jimi::jimi_min((int)_MaxCount, (int)(_NumberOfElements - 1));
+    n = jimi::jimi_min((int)_count, (int)(numberOfElements - 1));
     if (n < 0)
-        return _Dest;
+        return _dest;
 
     while (--n > 0) {
         *dest = *src;
@@ -392,21 +392,21 @@ inline char_type *char_traits<char_type>::strncpy_e(char_type *_Dest, size_t _Nu
 }
 
 template <class char_type>
-inline char_type *char_traits<char_type>::strlcpy_e(char_type *_Dest, size_t _NumberOfElements,
-                                                    const char_type *_Source, size_t _MaxCount)
+inline char_type *char_traits<char_type>::strlcpy_e(char_type *_dest, size_t numberOfElements,
+                                                    const char_type *_src, size_t _count)
 {
     char_type *dest, *src;
     int n;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Dest == NULL || _Source == NULL)
-        return _Dest;
+    if (_dest == NULL || _src == NULL)
+        return _dest;
 #endif
 
-    dest = (char_type *)_Dest;
-    src  = (char_type *)_Source;
+    dest = (char_type *)_dest;
+    src  = (char_type *)_src;
 
-    n = (int)jimi_min(_MaxCount, _NumberOfElements - 1);
+    n = (int)jimi_min(_count, numberOfElements - 1);
 
     while (--n >= 0) {
         *dest = *src;
@@ -423,18 +423,18 @@ inline char_type *char_traits<char_type>::strlcpy_e(char_type *_Dest, size_t _Nu
 }
 
 template <class char_type>
-inline int char_traits<char_type>::strcmp(const char_type *_Str1, const char_type *_Str2)
+inline int char_traits<char_type>::strcmp(const char_type *_str1, const char_type *_str2)
 {
     int equal;
     char_type *str1, *str2;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Str1 == NULL || _Str2 == NULL)
-        return (_Str1 != _Str2);
+    if (_str1 == NULL || _str2 == NULL)
+        return (_str1 != _str2);
 #endif
 
-    str1 = (char_type *)_Str1;
-    str2 = (char_type *)_Str2;
+    str1 = (char_type *)_str1;
+    str2 = (char_type *)_str2;
     while (*str1 == *str2) {
         if (*str1 != '\0') {
             ++str1;
@@ -453,24 +453,24 @@ inline int char_traits<char_type>::strcmp(const char_type *_Str1, const char_typ
 }
 
 template <class char_type>
-inline int char_traits<char_type>::strncmp(const char_type *_Str1, const char_type *_Str2,
-                                           size_t _MaxCount)
+inline int char_traits<char_type>::strncmp(const char_type *_str1, const char_type *_str2,
+                                           size_t _count)
 {
     int equal = 0;
     char_type *str1, *str2;
     size_t n;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Str1 == NULL || _Str2 == NULL)
-        return (_Str1 != _Str2);
+    if (_str1 == NULL || _str2 == NULL)
+        return (_str1 != _str2);
 #endif
 
-    n = _MaxCount;
+    n = _count;
     if (n == 0)
         return 0;
 
-    str1 = (char_type *)_Str1;
-    str2 = (char_type *)_Str2;
+    str1 = (char_type *)_str1;
+    str2 = (char_type *)_str2;
     do {
         if (*str1 == *str2) {
             if (*str1 != '\0') {
@@ -495,18 +495,18 @@ inline int char_traits<char_type>::strncmp(const char_type *_Str1, const char_ty
 }
 
 template <class char_type>
-inline int char_traits<char_type>::streql(const char_type *_Str1, const char_type *_Str2)
+inline int char_traits<char_type>::streql(const char_type *_str1, const char_type *_str2)
 {
     int equal = 0;
     char_type *str1, *str2;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Str1 == NULL || _Str2 == NULL)
-        return (_Str1 == _Str2);
+    if (_str1 == NULL || _str2 == NULL)
+        return (_str1 == _str2);
 #endif
 
-    str1 = (char_type *)_Str1;
-    str2 = (char_type *)_Str2;
+    str1 = (char_type *)_str1;
+    str2 = (char_type *)_str2;
     while (*str1 == *str2) {
         if (*str1 != '\0') {
             ++str1;
@@ -521,24 +521,24 @@ inline int char_traits<char_type>::streql(const char_type *_Str1, const char_typ
 }
 
 template <class char_type>
-inline int char_traits<char_type>::strneql(const char_type *_Str1, const char_type *_Str2,
-                                           size_t _MaxCount)
+inline int char_traits<char_type>::strneql(const char_type *_str1, const char_type *_str2,
+                                           size_t _count)
 {
     int equal = 1;
     char_type *str1, *str2;
     size_t n;
 
 #if CHAR_TRAITS_STRICT_CHECK
-    if (_Str1 == NULL || _Str2 == NULL)
-        return (_Str1 == _Str2);
+    if (_str1 == NULL || _str2 == NULL)
+        return (_str1 == _str2);
 #endif
     
-    n = _MaxCount;
+    n = _count;
     if (n == 0)
         return 1;
 
-    str1 = (char_type *)_Str1;
-    str2 = (char_type *)_Str2;
+    str1 = (char_type *)_str1;
+    str2 = (char_type *)_str2;
     do {
         if (*str1 == *str2) {
             if (*str1 != '\0') {
