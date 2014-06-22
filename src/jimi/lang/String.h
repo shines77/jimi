@@ -666,6 +666,7 @@ inline bool operator == (const _CharT *lhs, const BASIC_STRING &rhs)
 #undef BASIC_STRING_CLASSES
 #undef BASIC_STRING
 
+typedef basic_string<char> string;
 typedef basic_string<char> String;
 
 NS_JIMI_END

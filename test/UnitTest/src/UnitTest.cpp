@@ -244,8 +244,8 @@ static char jabberwocky[] =
 
 void String_Base_Test()
 {
-    String str1 = "abcdefg";
-    String str2 = "hijklmnop";
+    jimi::string str1 = "abcdefg";
+    jimi::string str2 = "hijklmnop";
     printf("str1.c_str() = %s\n", str1.c_str());
     printf("str2.c_str() = %s\n\n", str2.c_str());
     printf("? (str1 == str2) = %d\n", (str1 == str2));
@@ -274,11 +274,11 @@ void String_Base_Test()
     printf("str2.c_str() = %s\n", str2.c_str());
     printf("\n");
 
-    String str3('a');
+    jimi::string str3('a');
     printf("str3.c_str() = %s\n", str3.c_str());
     printf("\n");
 
-    String str4;
+    jimi::string str4;
     str4 = jabberwocky;
     printf("str4.c_str() = %s\n\n", str4.c_str());
     printf("str4.size()  = %d bytes\n",   str4.size());
@@ -326,8 +326,8 @@ void String_Performance_Test()
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        //jimi::String str = "abcdefghijk";
-        jimi::String str("abcdefghijk", sizeof("abcdefghijk") - 1);
+        //jimi::string str = "abcdefghijk";
+        jimi::string str("abcdefghijk", sizeof("abcdefghijk") - 1);
     }
     sw.stop();
     time3 = sw.getMillisec();
@@ -367,8 +367,8 @@ void String_Performance_Test()
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        //jimi::String str = "abcdefghijklmnopqrstuvwxyz";
-        jimi::String str("abcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyz") - 1);
+        //jimi::string str = "abcdefghijklmnopqrstuvwxyz";
+        jimi::string str("abcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyz") - 1);
     }
     sw.stop();
     time7 = sw.getMillisec();
@@ -385,13 +385,13 @@ void String_Performance_Test()
 
     printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefghijk\";",   time1);
     printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefghijk\";",   time2);
-    printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"abcdefghijk\";",   time3);
     printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefghijk\";",   time4);
+    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"abcdefghijk\";",   time3);
     printf("\n");
     printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefg...xyz\";", time5);
     printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefg...xyz\";", time6);
-    printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"abcdefg...xyz\";", time7);
     printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefg...xyz\";", time8);
+    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"abcdefg...xyz\";", time7);
 
     printf("\n");
 }
@@ -1366,7 +1366,7 @@ int UnitTest_Main(int argc, char *argv[])
     util::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
-        string &strCmdLine = cmdLine.getCmdLine();
+        std::string &strCmdLine = cmdLine.getCmdLine();
         sLog.info(strCmdLine.c_str());
     }
 

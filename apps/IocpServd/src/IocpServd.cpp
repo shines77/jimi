@@ -70,7 +70,7 @@ int IocpServd_main(int argc, char *argv[])
     util::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
-        string &strCmdLine = cmdLine.getCmdLine();
+        std::string &strCmdLine = cmdLine.getCmdLine();
         sLog.info(strCmdLine.c_str());
     }
 

@@ -1115,12 +1115,14 @@ void Logger::log_begin(const char *title)
 {
     log_title_section(title, true);
 
+#if 0
     this->printf("\r\n");
     this->printf("/* Compiler definitions. */\r\n");
     for (int i = 0; i < sizeof(s_compilers) / sizeof(s_compilers[0]); ++i) {
         this->printf("#define %-16s\t%s\r\n", s_compilers[i].name, s_compilers[i].value);
     }
     this->printf("\r\n");
+#endif
 }
 
 void Logger::log_end(const char *title)
