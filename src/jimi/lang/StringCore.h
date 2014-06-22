@@ -494,13 +494,14 @@ STRING_CORE::~string_core()
 template <STRING_CORE_CLASSES>
 inline void STRING_CORE::destroy()
 {
-    if (is_medium()) {
+    flag_type type = getType();
+    if (type == kIsMedium) {
         if (_ml.data != NULL) {
-            delete _ml.data;
+            ::free(_ml.data);
             _ml.data = NULL;
         }
     }
-    else if (is_large()) {
+    else if (type == kIsLarge) {
         if (_ml.data != NULL) {
             refcount_type::release(_ml.data);
             _ml.data = NULL;
@@ -511,24 +512,25 @@ inline void STRING_CORE::destroy()
 template <STRING_CORE_CLASSES>
 inline void STRING_CORE::retail()
 {
-    if (is_large())
-        _ml.type = STRING_TYPE_LARGE;
-    refcount_type::retail(_ml.data);
+    flag_type type = getType();
+    if (type == kIsLarge)
+        refcount_type::retail(_ml.data);
 }
 
 template <STRING_CORE_CLASSES>
 inline void STRING_CORE::release()
 {
-    if (is_medium()) {
+    flag_type type = getType();
+    if (type == kIsMedium) {
         if (_ml.data != NULL) {
-            delete _ml.data;
+            ::free(_ml.data);
             _ml.data = NULL;
         }
         _ml.size = 0;
         _ml.capacity = 0;
         _ml.type = 0;
     }
-    else if (is_large()) {
+    else if (type == kIsLarge) {
         if (_ml.data != NULL) {
             refcount_type::release(_ml.data);
             _ml.data = NULL;
@@ -544,8 +546,12 @@ STRING_CORE & STRING_CORE::operator = (const STRING_CORE &rhs) {
     flag_type type = rhs.getType();
     if (type == kIsSmall)
         small_clone(_small, rhs._small);
-    else
+    else {
         ml_clone(_ml, rhs._ml);
+        type = getType();
+        if (type == kIsLarge)
+            refcount_type::retail(_ml.data);
+    }
     return *this;
 }
 

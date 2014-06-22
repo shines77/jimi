@@ -322,15 +322,16 @@ inline BASIC_STRING &BASIC_STRING::assign(const value_type *s)
 template <BASIC_STRING_CLASSES>
 inline BASIC_STRING &BASIC_STRING::assign(const value_type *s, const size_type n)
 {
-    if (size() >= n) {
+    size_type sz = size();
+    if (sz >= n) {
         std::copy(s, s + n, begin());
         resize(n);
         jimi_assert(size() == n);
     }
     else {
-        const value_type * const s_end = s + size();
+        const value_type * const s_end = s + sz;
         std::copy(s, s_end, begin());
-        append(s_end, n - size());
+        append(s_end, n - sz);
         jimi_assert(size() == n);
     }
     _store.writeNull();
@@ -375,13 +376,7 @@ inline BASIC_STRING &BASIC_STRING::operator = (const value_type *str)
 template <BASIC_STRING_CLASSES>
 inline BASIC_STRING &BASIC_STRING::operator = (const value_type c)
 {
-    size_type type = getType();
-    if (type == kIsSmall) {
-        _store = c;
-    }
-    else if (0) {
-        //
-    }
+    return assign(c);
 }
 
 // Compatibility with std::string

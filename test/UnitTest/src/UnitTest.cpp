@@ -88,7 +88,7 @@
 #ifdef _MSC_VER
 #ifdef _DEBUG
 // 如果你没有安装vld(Visual Leak Detector), 请注释掉这一句.
-#include <vld.h>
+//#include <vld.h>
 #endif  /* _DEBUG */
 #endif  /* _MSC_VER */
 
@@ -204,6 +204,42 @@ void String_Copy_On_Write_Test()
     printf("\n");
 }
 
+static char jabberwocky[] =
+        "'Twas brillig, and the slithy toves\n"
+        "Did gyre and gimble in the wabe:\n"
+        "All mimsy were the borogoves,\n"
+        "And the mome raths outgrabe.\n"
+
+        "Beware the Jabberwock, my son!\n"
+        "The jaws that bite, the claws that catch!\n"
+        "Beware the Jubjub bird, and shun\n"
+        "The frumious Bandersnatch!\n"
+
+        "He took his vorpal sword in hand:\n"
+        "Long time the manxome foe he sought -\n"
+        "So rested he by the Tumturn tree,\n"
+        "And stood awhile in thought.\n"
+
+        "And, as in uffish thought he stood;\n"
+        "The Jabberwock, with eyes of flame,\n"
+        "Came whiffling through the tulgey wood,\n"
+        "And burbled as it came!\n"
+
+        "One, two! One, two! And through and through\n"
+        "The vorpal blade went snicker-snackl\n"
+        "He left it dead, and with its head\n"
+        "He went galumphing back.\n"
+
+        "And hast thou slain the Jabberwock?\n"
+        "Come to my arms, my beamish boy!\n"
+        "O frabjous day! Callooh! Callay!\n"
+        "He chortled in his joy.\n"
+
+        "'Twas brillig, and the slithy toves\n"
+        "Did gyre and gimble in the wabe:\n"
+        "All mimsy were the borogoves,\n"
+        "And the mome raths outgrabe.";
+
 /* String类的基础测试 */
 
 void String_Base_Test()
@@ -240,6 +276,12 @@ void String_Base_Test()
 
     String str3('a');
     printf("str3.c_str() = %s\n", str3.c_str());
+    printf("\n");
+
+    String str4;
+    str4 = jabberwocky;
+    printf("str4.c_str() = %s\n\n", str4.c_str());
+    printf("str4.size()  = %d bytes\n",   str4.size());
     printf("\n");
 }
 
@@ -450,42 +492,6 @@ void Fast_StrLen_Test()
     double time5, time6, time7, time8;
     int i, j = 0, loop_times = 0;
     stop_watch sw;
-
-    char jabberwocky[] =
-        "'Twas brillig, and the slithy toves\n"
-        "Did gyre and gimble in the wabe:\n"
-        "All mimsy were the borogoves,\n"
-        "And the mome raths outgrabe.\n"
-
-        "Beware the Jabberwock, my son!\n"
-        "The jaws that bite, the claws that catch!\n"
-        "Beware the Jubjub bird, and shun\n"
-        "The frumious Bandersnatch!\n"
-
-        "He took his vorpal sword in hand:\n"
-        "Long time the manxome foe he sought -\n"
-        "So rested he by the Tumturn tree,\n"
-        "And stood awhile in thought.\n"
-
-        "And, as in uffish thought he stood;\n"
-        "The Jabberwock, with eyes of flame,\n"
-        "Came whiffling through the tulgey wood,\n"
-        "And burbled as it came!\n"
-
-        "One, two! One, two! And through and through\n"
-        "The vorpal blade went snicker-snackl\n"
-        "He left it dead, and with its head\n"
-        "He went galumphing back.\n"
-
-        "And hast thou slain the Jabberwock?\n"
-        "Come to my arms, my beamish boy!\n"
-        "O frabjous day! Callooh! Callay!\n"
-        "He chortled in his joy.\n"
-
-        "'Twas brillig, and the slithy toves\n"
-        "Did gyre and gimble in the wabe:\n"
-        "All mimsy were the borogoves,\n"
-        "And the mome raths outgrabe.";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
