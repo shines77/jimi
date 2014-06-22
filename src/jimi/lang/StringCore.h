@@ -123,11 +123,11 @@ public:
     static const flag_type  kIsLarge    =  STRING_TYPE_LARGE;
     static const flag_type  kIsConstant =  STRING_TYPE_CONSTANT;
     static const flag_type  kTypeMask   =  STRING_TYPE_MASK;
-    static const flag_type  kSizeMask   = ~(flag_type)STRING_TYPE_MASK;
+    static const flag_type  kRefCntMask = ~(flag_type)STRING_TYPE_MASK;
 
-    static const flag_type  kIsMediumOrLargeMask =
+    static const flag_type  kIsMediumOrLarge =
         STRING_TYPE_MEDIUM | STRING_TYPE_LARGE;
-    static const flag_type  kNotIsSmallMask      =
+    static const flag_type  kNotIsSmall      =
         STRING_TYPE_MASK & (~STRING_TYPE_SMALL) & (~STRING_TYPE_CONSTANT);
 
     static const size_type  kMaxMediumSizeBytes  =
@@ -158,19 +158,19 @@ public:
 protected:
     // Assigment functions
     string_core &assign(const string_core &str);
-    string_core &assign(const value_type c);
-    string_core &assign(const value_type c, size_type n);
-    string_core &assign(const value_type *str);
-    string_core &assign(const value_type *str, const size_type size);
+    string_core &assign(const char_type c);
+    string_core &assign(const char_type c, size_type n);
+    string_core &assign(const char_type *str);
+    string_core &assign(const char_type *str, const size_type size);
+#endif
 
 public:
     // Append operators
-    string_core &append(const string_core &str);
-    string_core &append(const value_type c);
-    string_core &append(const value_type c, size_type n);
-    string_core &append(const value_type *s);
-    string_core &append(const value_type *s, size_type n);
-#endif
+    void append(const string_core &str);
+    void append(const char_type c);
+    void append(const char_type c, size_type n);
+    void append(const char_type *s);
+    void append(const char_type *s, size_type n);
 
     void destroy();
 
@@ -185,6 +185,9 @@ public:
     flag_type getType() const       { return (_ml.type & kTypeMask); }
     flag_type getTypeValue() const  { return _ml.type;               }
     flag_type getTypeMask() const   { return kTypeMask;              }
+
+    flag_type getRefCount() const   { return (_ml.type & kRefCntMask); }
+    flag_type getRefCntMask() const { return kRefCntMask;              }
 
     bool is_small() const       { return STRING_TYPE_IS_SMALL(_ml.type);    }
     bool is_medium() const      { return STRING_TYPE_IS_MEDIUM(_ml.type);   }
@@ -340,9 +343,9 @@ template <STRING_CORE_CLASSES>
 STRING_CORE::string_core(const string_core &rhs)
 {
     jimi_assert(&rhs != this);
-    flag_type type = rhs.getType();
+    flag_type rhs_type = rhs.getType();
     /* small string optimized */
-    if (type == kIsSmall) {
+    if (rhs_type == kIsSmall) {
 #if 0
         _small.info.type = rhs._small.info.type;
         _small.info.size = rhs._small.info.size;
@@ -352,8 +355,8 @@ STRING_CORE::string_core(const string_core &rhs)
         jimi_assert(rhs._small.info.size < kMaxSmallSize);
         if (_small.info.size < kMaxSmallSize) {
             //traits_type::strncpy(&_small.buf[0], kMaxSmallSize, &rhs._small.buf[0], _small.info.size);
-            //traits_type::strncpy_unsafe(&_small.buf[0], &rhs._small.buf[0], _small.info.size);
-            string_detail::pod_copy(&_small.buf[0], &rhs._small.buf[0], _small.info.size);
+            string_detail::pod_copy(&_small.buf[0], &rhs._small.buf[0], _small.info.size + 1);
+            // No need for writeNull() here, we copied one extra element just above.
         }
         else {
             sLog.error("string_core(const string_core &src): data = %s, type = 0x%04X, size = %d.",
@@ -362,16 +365,14 @@ STRING_CORE::string_core(const string_core &rhs)
         jimi_assert(getType() == kIsSmall && this->size() == rhs.size());
     }
     /* eager copy */
-    else if (type == kIsMedium) {
+    else if (rhs_type == kIsMedium) {
         // Medium strings are copied eagerly. Don't forget to allocate
         // one extra Char for the null terminator.
         jimi_assert(rhs._ml.capacity == kMaxMediumSize - 1);
         char_type *newData = traits_type::mem_alloc(kMaxMediumSize);
-        //traits_type::strncpy(_ml.data, kMaxMediumSize, rhs._ml.data, rhs._ml.size);
-        //traits_type::strncpy_unsafe(newData, rhs._ml.data, rhs._ml.size);
+        //traits_type::strncpy(newData, kMaxMediumSize, rhs._ml.data, rhs._ml.size);
         string_detail::pod_copy(newData, rhs._ml.data, rhs._ml.size + 1);
-        // No need for writeNull() here, we copied one extra
-        // element just above.
+        // No need for writeNull() here, we copied one extra element just above.
         _ml.data     = newData;
         _ml.size     = rhs._ml.size;
         _ml.capacity = kMaxMediumSize - 1;
@@ -380,7 +381,7 @@ STRING_CORE::string_core(const string_core &rhs)
         jimi_assert(getType() == kIsMedium);
     }
     /* copy-on-write */
-    else if (type == kIsLarge) {
+    else if (rhs_type == kIsLarge) {
         // Large strings are just refcounted
         _ml.data     = rhs._ml.data;
         _ml.size     = rhs._ml.size;
@@ -388,12 +389,15 @@ STRING_CORE::string_core(const string_core &rhs)
         _ml.type     = STRING_TYPE_LARGE;
 
         refcount_type::retail(_ml.data);
-        //const_cast<string_core &>(rhs).retail();
         jimi_assert(getType() == kIsLarge && size() == rhs.size());
     }
     /* constant string data */
-    else if (type == kIsConstant) {
+    else if (rhs_type == kIsConstant) {
         // It's a constant string data
+        _ml.data     = rhs._ml.data;
+        _ml.size     = rhs._ml.size;
+        _ml.capacity = rhs._ml.capacity;
+        _ml.type     = STRING_TYPE_CONSTANT;
     }
     /* unknown type */
     else {
@@ -492,7 +496,7 @@ STRING_CORE::~string_core()
 }
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::destroy()
+void STRING_CORE::destroy()
 {
     flag_type type = getType();
     if (type == kIsMedium) {
@@ -510,7 +514,7 @@ inline void STRING_CORE::destroy()
 }
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::retail()
+void STRING_CORE::retail()
 {
     flag_type type = getType();
     if (type == kIsLarge)
@@ -518,7 +522,7 @@ inline void STRING_CORE::retail()
 }
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::release()
+void STRING_CORE::release()
 {
     flag_type type = getType();
     if (type == kIsMedium) {
@@ -542,7 +546,7 @@ inline void STRING_CORE::release()
 }
 
 template <STRING_CORE_CLASSES>
-STRING_CORE & STRING_CORE::operator = (const STRING_CORE &rhs) {
+STRING_CORE & STRING_CORE::operator = (const string_core &rhs) {
     flag_type type = rhs.getType();
     if (type == kIsSmall)
         small_clone(_small, rhs._small);
@@ -555,39 +559,137 @@ STRING_CORE & STRING_CORE::operator = (const STRING_CORE &rhs) {
     return *this;
 }
 
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append(const string_core &str)
+{
+#if defined(_DEBUG) || !defined(NDEBUG)
+    size_type nDesiredSize = size() + str.size();
+#endif
+    append(str.data(), str.size());
+    jimi_assert(size() == nDesiredSize);
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append(const char_type c)
+{
+    push_back(c);
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append(const char_type c, size_type n)
+{
+    resize(size() + n, c);
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append(const char_type *s)
+{
+    append(s, traits_type::length(s));
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append(const char_type *s, size_type n)
+{
+    if (JIMI_UNLIKELY(!n)) {
+        // Unlikely but must be done
+        return;
+    }
+
+    size_type oldSize = size();
+    const char_type *oldData = data();
+    // Check for aliasing (rare). We could use "<=" here but in theory
+    // those do not work for pointers unless the pointers point to
+    // elements in the same array. For that reason we use
+    // std::less_equal, which is guaranteed to offer a total order
+    // over pointers. See discussion at http://goo.gl/Cy2ya for more
+    // info.
+    std::less_equal<const char_type *> le;
+    if (JIMI_UNLIKELY(le(oldData, s) && !le(oldData + oldSize, s))) {
+        jimi_assert(le(s + n, oldData + oldSize));
+        const size_type offset = s - oldData;
+        reserve(oldSize + n);
+        // Restore the source
+        s = data() + offset;
+    }
+    // Warning! Repeated appends with short strings may actually incur
+    // practically quadratic performance. Avoid that by pushing back
+    // the first character (which ensures exponential growth) and then
+    // appending the rest normally. Worst case the append may incur a
+    // second allocation but that will be rare.
+    push_back(*s++);
+    expandTo(oldSize + n);
+    --n;
+    if (n > 0) {
+        ::memcpy((void *)(data() + oldSize + 1), s, n * sizeof(char_type));
+    }
+    writeNullForce();
+    //jimi_assert(size() == oldSize + n);
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::push_back(const char_type c)
+{
+    jimi_assert(capacity() >= size());
+    size_t sz;
+    flag_type type = getType();
+    if (type == kIsSmall) {
+        sz = _small.info.size;
+        if (sz < kMaxSmallSize - 1) {
+            _small.info.size = sz + 1;
+            _small.buf[sz] = c;
+            _small.buf[sz + 1] = '\0';
+            return;
+        }
+        reserve(kMaxMediumSize);
+    }
+    else {
+        sz = _ml.size;
+        if (sz == capacity()) {         // always true for isShared()
+            reserve(sz * 3 / 2 + 1);    // ensures not shared
+        }
+    }
+    jimi_assert(!is_shared());
+    jimi_assert(capacity() >= (sz + 1));
+    // Category can't be small - we took care of that above
+    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
+    _ml.size = sz + 1;
+    _ml.data[sz] = c;
+    _ml.data[sz + 1] = '\0';
+}
+
 // swap below doesn't test whether &rhs == this (and instead
 // potentially does extra work) on the premise that the rarity of
 // that situation actually makes the check more expensive than is
 // worth.
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::swap(STRING_CORE &rhs)
+void STRING_CORE::swap(STRING_CORE &rhs)
 {
 #if 1
-        // 在不同的type下, _ml的有些数据是不必复制的
-        flag_type type = rhs.getType();
-        if (type == kIsSmall) {
-            small_t t;
-            small_clone(t, _small);
-            small_clone(_small, rhs._small);
-            small_clone(rhs._small, t);
-        }
-        else {
-            medium_large t;
-            ml_clone(t, _ml);
-            ml_clone(_ml, rhs._ml);
-            ml_clone(rhs._ml, t);
-        }
+    // 在不同的type下, _ml的有些数据是不必复制的
+    flag_type type = rhs.getType();
+    if (type == kIsSmall) {
+        small_t t;
+        small_clone(t, _small);
+        small_clone(_small, rhs._small);
+        small_clone(rhs._small, t);
+    }
+    else {
+        medium_large t;
+        ml_clone(t, _ml);
+        ml_clone(_ml, rhs._ml);
+        ml_clone(rhs._ml, t);
+    }
 #else
-        // 完全直接复制_ml, 有些复制可能是多余的
-        const medium_large t = _ml;
-        _ml = rhs._ml;
-        rhs._ml = t;
+    // 完全直接复制_ml, 有些复制可能是多余的
+    const medium_large t = _ml;
+    _ml = rhs._ml;
+    rhs._ml = t;
 #endif
 }
 
 template <STRING_CORE_CLASSES>
-inline typename STRING_CORE::size_type STRING_CORE::size() const
+typename STRING_CORE::size_type STRING_CORE::size() const
 {
     if (is_small())
         return _small.info.size;
@@ -608,7 +710,7 @@ typename STRING_CORE::size_type STRING_CORE::capacity() const
 }
 
 template <STRING_CORE_CLASSES>
-inline const typename STRING_CORE::char_type *STRING_CORE::c_str() const
+const typename STRING_CORE::char_type *STRING_CORE::c_str() const
 {
     flag_type type = getType();
     if (type == kIsSmall)
@@ -618,7 +720,7 @@ inline const typename STRING_CORE::char_type *STRING_CORE::c_str() const
 }
 
 template <STRING_CORE_CLASSES>
-inline typename STRING_CORE::char_type *STRING_CORE::mutable_data()
+typename STRING_CORE::char_type *STRING_CORE::mutable_data()
 {
     flag_type type = getType();
     if (type == kIsSmall)
@@ -640,19 +742,19 @@ inline typename STRING_CORE::char_type *STRING_CORE::mutable_data()
 }
 
 template <STRING_CORE_CLASSES>
-inline size_t STRING_CORE::calc_capacity(size_t src_len)
+size_t STRING_CORE::calc_capacity(size_t src_len)
 {
     return (src_len + 1);
 }
 
 template <STRING_CORE_CLASSES>
-inline bool STRING_CORE::equals(const STRING_CORE &rhs) const
+bool STRING_CORE::equals(const STRING_CORE &rhs) const
 {
     return (&rhs == this);
 }
 
 template <STRING_CORE_CLASSES>
-inline int STRING_CORE::compare(const STRING_CORE &rhs) const
+int STRING_CORE::compare(const STRING_CORE &rhs) const
 {
     if (&rhs == this)
         return 0;
@@ -689,7 +791,7 @@ inline int STRING_CORE::compare(const STRING_CORE &rhs) const
 }
 
 template <STRING_CORE_CLASSES>
-inline int STRING_CORE::compare(const char_type *rhs) const
+int STRING_CORE::compare(const char_type *rhs) const
 {
     int equal = -1;
     if (is_small()) {
@@ -712,25 +814,25 @@ inline int STRING_CORE::compare(const char_type *rhs) const
 }
 
 template <STRING_CORE_CLASSES>
-inline int operator == (const STRING_CORE &lhs, const STRING_CORE &rhs)
+int operator == (const STRING_CORE &lhs, const STRING_CORE &rhs)
 {
     return lhs.compare(rhs);
 }
 
 template <STRING_CORE_CLASSES>
-inline int operator == (const STRING_CORE &lhs, const _CharT *rhs)
+int operator == (const STRING_CORE &lhs, const _CharT *rhs)
 {
     return lhs.compare(rhs);
 }
 
 template <STRING_CORE_CLASSES>
-inline int operator == (const _CharT *lhs, const STRING_CORE &rhs)
+int operator == (const _CharT *lhs, const STRING_CORE &rhs)
 {
     return rhs.compare(lhs);
 }
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::reserve(size_t minCapacity)
+void STRING_CORE::reserve(size_t minCapacity)
 {
     size_t type = getType();
     if (type == kIsLarge) {
@@ -748,7 +850,7 @@ inline void STRING_CORE::reserve(size_t minCapacity)
 }
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::large_reserveTo(size_t minCapacity)
+void STRING_CORE::large_reserveTo(size_t minCapacity)
 {
     jimi_assert(getType() == kIsLarge);
     // Ensure unique
@@ -786,7 +888,7 @@ inline void STRING_CORE::large_reserveTo(size_t minCapacity)
 }
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::medium_reserveTo(size_t minCapacity)
+void STRING_CORE::medium_reserveTo(size_t minCapacity)
 {
     // String is not shared
     if (minCapacity <= _ml.capacity) {
@@ -817,7 +919,7 @@ inline void STRING_CORE::medium_reserveTo(size_t minCapacity)
 }
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::small_reserveTo(size_t minCapacity)
+void STRING_CORE::small_reserveTo(size_t minCapacity)
 {
     jimi_assert(getType() == kIsSmall);
     if (minCapacity > kMaxMediumSize) {
@@ -851,7 +953,7 @@ inline void STRING_CORE::small_reserveTo(size_t minCapacity)
 }
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::reserveTo(size_t minCapacity)
+void STRING_CORE::reserveTo(size_t minCapacity)
 {
     size_t type = getType();
     if (type == kIsLarge) {
@@ -870,7 +972,7 @@ inline void STRING_CORE::reserveTo(size_t minCapacity)
 }
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::expandTo(const size_t newSize)
+void STRING_CORE::expandTo(const size_t newSize)
 {
     // Strategy is simple: make room, then change size
     jimi_assert(capacity() >= size());
@@ -910,7 +1012,7 @@ inline void STRING_CORE::expandTo(const size_t newSize)
 }
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::shrinkTo(const size_t newSize)
+void STRING_CORE::shrinkTo(const size_t newSize)
 {
     flag_type type = getType();
     if (type == kIsSmall) {
@@ -938,38 +1040,7 @@ inline void STRING_CORE::shrinkTo(const size_t newSize)
 }
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::push_back(const char_type c)
-{
-    jimi_assert(capacity() >= size());
-    size_t sz;
-    flag_type type = getType();
-    if (type == kIsSmall) {
-        sz = _small.info.size;
-        if (sz < kMaxSmallSize - 1) {
-            _small.info.size = sz + 1;
-            _small.buf[sz] = c;
-            _small.buf[sz + 1] = '\0';
-            return;
-        }
-        reserve(kMaxMediumSize);
-    }
-    else {
-        sz = _ml.size;
-        if (sz == capacity()) {         // always true for isShared()
-            reserve(sz * 3 / 2 + 1);    // ensures not shared
-        }
-    }
-    jimi_assert(!is_shared());
-    jimi_assert(capacity() >= (sz + 1));
-    // Category can't be small - we took care of that above
-    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
-    _ml.size = sz + 1;
-    _ml.data[sz] = c;
-    _ml.data[sz + 1] = '\0';
-}
-
-template <STRING_CORE_CLASSES>
-inline void STRING_CORE::writeNull()
+void STRING_CORE::writeNull()
 {
 #if defined(JIMI_STRING_PERVERSE) || defined(JIMI_STRING_CONSERVATIVE)
     if (getType() == kIsSmall) {
@@ -984,7 +1055,7 @@ inline void STRING_CORE::writeNull()
 }
 
 template <STRING_CORE_CLASSES>
-inline void STRING_CORE::writeNullForce()
+void STRING_CORE::writeNullForce()
 {
     if (getType() == kIsSmall) {
         const size_type _size = _small.info.size;

@@ -295,32 +295,32 @@ BASIC_STRING::~basic_string()
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::assign(const BASIC_STRING &str)
+BASIC_STRING &BASIC_STRING::assign(const BASIC_STRING &str)
 {
     if (&str == this) return *this;
     return assign(str.data(), str.size());
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::assign(const value_type c)
+BASIC_STRING &BASIC_STRING::assign(const value_type c)
 {
     return _store.assign(c);
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::assign(const value_type c, size_type n)
+BASIC_STRING &BASIC_STRING::assign(const value_type c, size_type n)
 {
     return _store.assign(c, n);
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::assign(const value_type *s)
+BASIC_STRING &BASIC_STRING::assign(const value_type *s)
 {
     return assign(s, traits_type::length(s));
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::assign(const value_type *s, const size_type n)
+BASIC_STRING &BASIC_STRING::assign(const value_type *s, const size_type n)
 {
     size_type sz = size();
     if (sz >= n) {
@@ -340,7 +340,7 @@ inline BASIC_STRING &BASIC_STRING::assign(const value_type *s, const size_type n
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &rhs)
+BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &rhs)
 {
     if (&rhs == this)
         return *this;
@@ -368,46 +368,46 @@ inline BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &rhs)
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::operator = (const value_type *str)
+BASIC_STRING &BASIC_STRING::operator = (const value_type *str)
 {
     return assign(str);
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::operator = (const value_type c)
+BASIC_STRING &BASIC_STRING::operator = (const value_type c)
 {
     return assign(c);
 }
 
 // Compatibility with std::string
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::operator = (const std::string &rhs)
+BASIC_STRING &BASIC_STRING::operator = (const std::string &rhs)
 {
     return assign(rhs.data(), rhs.size());
 }
 
 // Compatibility with std::string
 template <BASIC_STRING_CLASSES>
-inline std::string &BASIC_STRING::toStdString() const
+std::string &BASIC_STRING::toStdString() const
 {
     return std::string(data(), size());
 }
 
 template <BASIC_STRING_CLASSES>
-inline void BASIC_STRING::push_back(const value_type c)
+void BASIC_STRING::push_back(const value_type c)
 {
     _store.push_back(c);
 }
 
 template <BASIC_STRING_CLASSES>
-inline void BASIC_STRING::pop_back()
+void BASIC_STRING::pop_back()
 {
     jimi_assert(!empty());
     _store.shrinkTo(size() - 1);
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::append(const basic_string &str)
+BASIC_STRING &BASIC_STRING::append(const basic_string &str)
 {
 #if defined(_DEBUG) || !defined(NDEBUG)
     size_type nDesiredSize = size() + str.size();
@@ -418,27 +418,27 @@ inline BASIC_STRING &BASIC_STRING::append(const basic_string &str)
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::append(const value_type c)
+BASIC_STRING &BASIC_STRING::append(const value_type c)
 {
     push_back(c);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::append(const value_type c, size_type n)
+BASIC_STRING &BASIC_STRING::append(const value_type c, size_type n)
 {
     resize(size() + n, c);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::append(const value_type *s)
+BASIC_STRING &BASIC_STRING::append(const value_type *s)
 {
     return append(s, traits_type::length(s));
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::append(const value_type *s, size_type n)
+BASIC_STRING &BASIC_STRING::append(const value_type *s, size_type n)
 {
     if (JIMI_UNLIKELY(!n)) {
         // Unlikely but must be done
@@ -478,73 +478,73 @@ inline BASIC_STRING &BASIC_STRING::append(const value_type *s, size_type n)
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::iterator BASIC_STRING::begin()
+typename BASIC_STRING::iterator BASIC_STRING::begin()
 {
     return _store.mutable_data();
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::const_iterator BASIC_STRING::begin() const
+typename BASIC_STRING::const_iterator BASIC_STRING::begin() const
 {
     return _store.data();
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::const_iterator BASIC_STRING::cbegin() const
+typename BASIC_STRING::const_iterator BASIC_STRING::cbegin() const
 {
     return _store.mutable_data() + _store.size();
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::iterator BASIC_STRING::end()
+typename BASIC_STRING::iterator BASIC_STRING::end()
 {
     return _store.mutable_data();
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::const_iterator BASIC_STRING::end() const
+typename BASIC_STRING::const_iterator BASIC_STRING::end() const
 {
     return _store.data() + _store.size();
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::const_iterator BASIC_STRING::cend() const
+typename BASIC_STRING::const_iterator BASIC_STRING::cend() const
 {
     return end();
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::reverse_iterator BASIC_STRING::rbegin()
+typename BASIC_STRING::reverse_iterator BASIC_STRING::rbegin()
 {
     return reverse_iterator(end());
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::const_reverse_iterator BASIC_STRING::rbegin() const
+typename BASIC_STRING::const_reverse_iterator BASIC_STRING::rbegin() const
 {
     return const_reverse_iterator(end());
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::const_reverse_iterator BASIC_STRING::crbegin() const
+typename BASIC_STRING::const_reverse_iterator BASIC_STRING::crbegin() const
 {
     return rbegin();
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::reverse_iterator BASIC_STRING::rend()
+typename BASIC_STRING::reverse_iterator BASIC_STRING::rend()
 {
     return reverse_iterator(begin());
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::const_reverse_iterator BASIC_STRING::rend() const
+typename BASIC_STRING::const_reverse_iterator BASIC_STRING::rend() const
 {
     return const_reverse_iterator(begin());
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::const_reverse_iterator BASIC_STRING::crend() const
+typename BASIC_STRING::const_reverse_iterator BASIC_STRING::crend() const
 {
     return rend();
 }
@@ -552,13 +552,13 @@ inline typename BASIC_STRING::const_reverse_iterator BASIC_STRING::crend() const
 // Added by C++11
 // C++11 21.4.5, element access:
 template <BASIC_STRING_CLASSES>
-inline typename const BASIC_STRING::value_type &BASIC_STRING::front() const
+typename const BASIC_STRING::value_type &BASIC_STRING::front() const
 {
     return *begin();
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename const BASIC_STRING::value_type &BASIC_STRING::back() const
+typename const BASIC_STRING::value_type &BASIC_STRING::back() const
 {
     jimi_assert(!empty());
     // Should be begin()[size() - 1], but that branches twice
@@ -566,13 +566,13 @@ inline typename const BASIC_STRING::value_type &BASIC_STRING::back() const
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::value_type &BASIC_STRING::front()
+typename BASIC_STRING::value_type &BASIC_STRING::front()
 {
     return *begin();
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::value_type &BASIC_STRING::back()
+typename BASIC_STRING::value_type &BASIC_STRING::back()
 {
     jimi_assert(!empty());
     // Should be begin()[size() - 1], but that branches twice
@@ -580,13 +580,13 @@ inline typename BASIC_STRING::value_type &BASIC_STRING::back()
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::const_reference BASIC_STRING::operator [](size_type pos) const
+typename BASIC_STRING::const_reference BASIC_STRING::operator [](size_type pos) const
 {
     return *(c_str() + pos);
 }
 
 template <BASIC_STRING_CLASSES>
-inline typename BASIC_STRING::reference BASIC_STRING::operator [](size_type pos)
+typename BASIC_STRING::reference BASIC_STRING::operator [](size_type pos)
 {
 #if 0
     if (pos == size()) {
@@ -598,25 +598,25 @@ inline typename BASIC_STRING::reference BASIC_STRING::operator [](size_type pos)
 }
 
 template <BASIC_STRING_CLASSES>
-inline void BASIC_STRING::destroy()
+void BASIC_STRING::destroy()
 {
     _store.destroy();
 }
 
 template <BASIC_STRING_CLASSES>
-inline void BASIC_STRING::retail()
+void BASIC_STRING::retail()
 {
     _store.retail();
 }
 
 template <BASIC_STRING_CLASSES>
-inline void BASIC_STRING::release()
+void BASIC_STRING::release()
 {
     _store.release();
 }
 
 template <BASIC_STRING_CLASSES>
-inline bool BASIC_STRING::equals(const BASIC_STRING &rhs) const
+bool BASIC_STRING::equals(const BASIC_STRING &rhs) const
 {
     if (&rhs == this)
         return true;
@@ -625,7 +625,7 @@ inline bool BASIC_STRING::equals(const BASIC_STRING &rhs) const
 }
 
 template <BASIC_STRING_CLASSES>
-inline int BASIC_STRING::compare(const BASIC_STRING &rhs) const
+int BASIC_STRING::compare(const BASIC_STRING &rhs) const
 {
     if (&rhs == this)
         return 0;
@@ -634,31 +634,31 @@ inline int BASIC_STRING::compare(const BASIC_STRING &rhs) const
 }
 
 template <BASIC_STRING_CLASSES>
-inline int BASIC_STRING::compare(const value_type *rhs) const
+int BASIC_STRING::compare(const value_type *rhs) const
 {
     return _store.compare(rhs);
 }
 
 template <BASIC_STRING_CLASSES>
-inline void swap(BASIC_STRING &lhs, BASIC_STRING &rhs)
+void swap(BASIC_STRING &lhs, BASIC_STRING &rhs)
 {
     lhs.swap(rhs);
 }
 
 template <BASIC_STRING_CLASSES>
-inline bool operator == (const BASIC_STRING &lhs, const BASIC_STRING &rhs)
+bool operator == (const BASIC_STRING &lhs, const BASIC_STRING &rhs)
 {
     return (lhs.compare(rhs) == 0);
 }
 
 template <BASIC_STRING_CLASSES>
-inline bool operator == (const BASIC_STRING &lhs, const _CharT *rhs)
+bool operator == (const BASIC_STRING &lhs, const _CharT *rhs)
 {
     return (lhs.compare(rhs) == 0);
 }
 
 template <BASIC_STRING_CLASSES>
-inline bool operator == (const _CharT *lhs, const BASIC_STRING &rhs)
+bool operator == (const _CharT *lhs, const BASIC_STRING &rhs)
 {
     return (rhs.compare(lhs) == 0);
 }
