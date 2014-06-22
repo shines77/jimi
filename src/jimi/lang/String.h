@@ -108,11 +108,11 @@ public:
     // Contructor
     basic_string();
     basic_string(const basic_string &src);
+    basic_string(const value_type c);
+    basic_string(const value_type c, size_type n);
     basic_string(const value_type *src);
     basic_string(const value_type *src, size_type size);
     basic_string(const value_type *begin, const value_type *end);
-    basic_string(const value_type c);
-    basic_string(const value_type c, size_type n);
     basic_string(const std::string &src);
 
     // Discontructor
@@ -120,8 +120,8 @@ public:
 
     // Assigment operators
     basic_string &operator = (const basic_string &rhs);
-    basic_string &operator = (const value_type *str);
     basic_string &operator = (const value_type c);
+    basic_string &operator = (const value_type *str);
 
     // Compatibility with std::string
     basic_string &operator = (const std::string &rhs);
@@ -130,24 +130,34 @@ public:
 protected:
     // Assigment functions
     basic_string &assign(const basic_string &str);
-    basic_string &assign(const value_type *str);
-    basic_string &assign(const value_type *str, const size_type size);
     basic_string &assign(const value_type c);
     basic_string &assign(const value_type c, size_type n);
+    basic_string &assign(const value_type *str);
+    basic_string &assign(const value_type *str, const size_type size);
 
 public:
+    // Append operators
+    basic_string &append(const basic_string &str);
+    basic_string &append(const value_type c);
+    basic_string &append(const value_type c, size_type n);
+    basic_string &append(const value_type *s);
+    basic_string &append(const value_type *s, size_type n);
+
+    void push_back(const value_type c);         // primitive
+    void pop_back();
+
 #if 0
     // Concatenation
     basic_string &operator += (const basic_string &rhs);
+    basic_string &operator += (const value_type c);
     basic_string &operator += (const value_type *str);
     basic_string &operator += (value_type *str);
-    basic_string &operator += (const value_type c);
 
     // Equality
     bool operator == (const basic_string &rhs) const;
+    bool operator == (const value_type c) const;
     bool operator == (const value_type *str) const;
     bool operator == (value_type *str) const;
-    bool operator == (const value_type c) const;
 
     // Comparison
     bool operator <  (const basic_string &rhs) const;
@@ -157,20 +167,11 @@ public:
 
     // Inequality
     bool operator != (const basic_string &rhs) const;
+    bool operator != (const value_type c) const;
     bool operator != (const value_type *str) const;
     bool operator != (value_type *str) const;
-    bool operator != (const value_type c) const;
+
 #endif
-
-    // Append operators
-    basic_string &append(const basic_string &str);
-    basic_string &append(const value_type *s);
-    basic_string &append(const value_type *s, size_type n);
-    basic_string &append(const value_type c);
-    basic_string &append(const value_type c, size_type n);
-
-    void push_back(const value_type c);         // primitive
-    void pop_back();
 
     // C++11 21.4.3 iterators:
     iterator begin();
@@ -292,21 +293,47 @@ BASIC_STRING::~basic_string()
 }
 
 template <BASIC_STRING_CLASSES>
-inline void BASIC_STRING::destroy()
+inline BASIC_STRING &BASIC_STRING::assign(const BASIC_STRING &str)
 {
-    _store.destroy();
+    if (&str == this) return *this;
+    return assign(str.data(), str.size());
 }
 
 template <BASIC_STRING_CLASSES>
-inline void BASIC_STRING::retail()
+inline BASIC_STRING &BASIC_STRING::assign(const value_type c)
 {
-    _store.retail();
+    return _store.assign(c);
 }
 
 template <BASIC_STRING_CLASSES>
-inline void BASIC_STRING::release()
+inline BASIC_STRING &BASIC_STRING::assign(const value_type c, size_type n)
 {
-    _store.release();
+    return _store.assign(c, n);
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::assign(const value_type *s)
+{
+    return assign(s, traits_type::length(s));
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::assign(const value_type *s, const size_type n)
+{
+    if (size() >= n) {
+        std::copy(s, s + n, begin());
+        resize(n);
+        jimi_assert(size() == n);
+    }
+    else {
+        const value_type * const s_end = s + size();
+        std::copy(s, s_end, begin());
+        append(s_end, n - size());
+        jimi_assert(size() == n);
+    }
+    _store.writeNull();
+    jimi_assert(size() == n);
+    return *this;
 }
 
 template <BASIC_STRING_CLASSES>
@@ -357,60 +384,100 @@ inline BASIC_STRING &BASIC_STRING::operator = (const value_type c)
 
 // Compatibility with std::string
 template <BASIC_STRING_CLASSES>
-inline std::string &BASIC_STRING::toStdString() const
-{
-    return std::string(data(), size());
-}
-
-// Compatibility with std::string
-template <BASIC_STRING_CLASSES>
 inline BASIC_STRING &BASIC_STRING::operator = (const std::string &rhs)
 {
     return assign(rhs.data(), rhs.size());
 }
 
+// Compatibility with std::string
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::assign(const BASIC_STRING &str)
+inline std::string &BASIC_STRING::toStdString() const
 {
-    if (&str == this) return *this;
-    return assign(str.data(), str.size());
+    return std::string(data(), size());
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::assign(const value_type *s)
+inline void BASIC_STRING::push_back(const value_type c)
 {
-    return assign(s, traits_type::length(s));
+    _store.push_back(c);
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::assign(const value_type *s, const size_type n)
+inline void BASIC_STRING::pop_back()
 {
-    if (size() >= n) {
-        std::copy(s, s + n, begin());
-        resize(n);
-        jimi_assert(size() == n);
-    }
-    else {
-        const value_type * const s_end = s + size();
-        std::copy(s, s_end, begin());
-        append(s_end, n - size());
-        jimi_assert(size() == n);
-    }
-    _store.writeNull();
-    jimi_assert(size() == n);
+    jimi_assert(!empty());
+    _store.shrinkTo(size() - 1);
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::append(const basic_string &str)
+{
+#if defined(_DEBUG) || !defined(NDEBUG)
+    size_type nDesiredSize = size() + str.size();
+#endif
+    append(str.data(), str.size());
+    jimi_assert(size() == nDesiredSize);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::assign(const value_type c)
+inline BASIC_STRING &BASIC_STRING::append(const value_type c)
 {
-    return _store.assign(c);
+    push_back(c);
+    return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::assign(const value_type c, size_type n)
+inline BASIC_STRING &BASIC_STRING::append(const value_type c, size_type n)
 {
-    return _store.assign(c, n);
+    resize(size() + n, c);
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::append(const value_type *s)
+{
+    return append(s, traits_type::length(s));
+}
+
+template <BASIC_STRING_CLASSES>
+inline BASIC_STRING &BASIC_STRING::append(const value_type *s, size_type n)
+{
+    if (JIMI_UNLIKELY(!n)) {
+        // Unlikely but must be done
+        return *this;
+    }
+
+    size_type oldSize = size();
+    const value_type *oldData = data();
+    // Check for aliasing (rare). We could use "<=" here but in theory
+    // those do not work for pointers unless the pointers point to
+    // elements in the same array. For that reason we use
+    // std::less_equal, which is guaranteed to offer a total order
+    // over pointers. See discussion at http://goo.gl/Cy2ya for more
+    // info.
+    std::less_equal<const value_type *> le;
+    if (JIMI_UNLIKELY(le(oldData, s) && !le(oldData + oldSize, s))) {
+        jimi_assert(le(s + n, oldData + oldSize));
+        const size_type offset = s - oldData;
+        _store.reserve(oldSize + n);
+        // Restore the source
+        s = data() + offset;
+    }
+    // Warning! Repeated appends with short strings may actually incur
+    // practically quadratic performance. Avoid that by pushing back
+    // the first character (which ensures exponential growth) and then
+    // appending the rest normally. Worst case the append may incur a
+    // second allocation but that will be rare.
+    push_back(*s++);
+    _store.expandTo(oldSize + n);
+    --n;
+    if (n > 0) {
+        ::memcpy((void *)(data() + oldSize + 1), s, n * sizeof(value_type));
+    }
+    _store.writeNullForce();
+    //jimi_assert(size() == oldSize + n);
+    return *this;
 }
 
 template <BASIC_STRING_CLASSES>
@@ -516,19 +583,6 @@ inline typename BASIC_STRING::value_type &BASIC_STRING::back()
 }
 
 template <BASIC_STRING_CLASSES>
-inline void BASIC_STRING::push_back(const value_type c)
-{
-    _store.push_back(c);
-}
-
-template <BASIC_STRING_CLASSES>
-inline void BASIC_STRING::pop_back()
-{
-    jimi_assert(!empty());
-    _store.shrinkTo(size() - 1);
-}
-
-template <BASIC_STRING_CLASSES>
 inline typename BASIC_STRING::const_reference BASIC_STRING::operator [](size_type pos) const
 {
     return *(c_str() + pos);
@@ -547,74 +601,21 @@ inline typename BASIC_STRING::reference BASIC_STRING::operator [](size_type pos)
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::append(const basic_string &str)
+inline void BASIC_STRING::destroy()
 {
-#if defined(_DEBUG) || !defined(NDEBUG)
-    size_type nDesiredSize = size() + str.size();
-#endif
-    append(str.data(), str.size());
-    jimi_assert(size() == nDesiredSize);
-    return *this;
+    _store.destroy();
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::append(const value_type *s)
+inline void BASIC_STRING::retail()
 {
-    return append(s, traits_type::length(s));
+    _store.retail();
 }
 
 template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::append(const value_type *s, size_type n)
+inline void BASIC_STRING::release()
 {
-    if (JIMI_UNLIKELY(!n)) {
-        // Unlikely but must be done
-        return *this;
-    }
-
-    size_type oldSize = size();
-    const value_type *oldData = data();
-    // Check for aliasing (rare). We could use "<=" here but in theory
-    // those do not work for pointers unless the pointers point to
-    // elements in the same array. For that reason we use
-    // std::less_equal, which is guaranteed to offer a total order
-    // over pointers. See discussion at http://goo.gl/Cy2ya for more
-    // info.
-    std::less_equal<const value_type *> le;
-    if (JIMI_UNLIKELY(le(oldData, s) && !le(oldData + oldSize, s))) {
-        jimi_assert(le(s + n, oldData + oldSize));
-        const size_type offset = s - oldData;
-        _store.reserve(oldSize + n);
-        // Restore the source
-        s = data() + offset;
-    }
-    // Warning! Repeated appends with short strings may actually incur
-    // practically quadratic performance. Avoid that by pushing back
-    // the first character (which ensures exponential growth) and then
-    // appending the rest normally. Worst case the append may incur a
-    // second allocation but that will be rare.
-    push_back(*s++);
-    _store.expandTo(oldSize + n);
-    --n;
-    if (n > 0) {
-        ::memcpy((void *)(data() + oldSize + 1), s, n * sizeof(value_type));
-    }
-    _store.writeNullForce();
-    //jimi_assert(size() == oldSize + n);
-    return *this;
-}
-
-template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::append(const value_type c)
-{
-    push_back(c);
-    return *this;
-}
-
-template <BASIC_STRING_CLASSES>
-inline BASIC_STRING &BASIC_STRING::append(const value_type c, size_type n)
-{
-    resize(size() + n, c);
-    return *this;
+    _store.release();
 }
 
 template <BASIC_STRING_CLASSES>

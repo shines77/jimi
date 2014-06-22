@@ -156,18 +156,18 @@ public:
 protected:
     // Assigment functions
     string_core &assign(const string_core &str);
-    string_core &assign(const value_type *str);
-    string_core &assign(const value_type *str, const size_type size);
     string_core &assign(const value_type c);
     string_core &assign(const value_type c, size_type n);
+    string_core &assign(const value_type *str);
+    string_core &assign(const value_type *str, const size_type size);
 
 public:
     // Append operators
     string_core &append(const string_core &str);
-    string_core &append(const value_type *s);
-    string_core &append(const value_type *s, size_type n);
     string_core &append(const value_type c);
     string_core &append(const value_type c, size_type n);
+    string_core &append(const value_type *s);
+    string_core &append(const value_type *s, size_type n);
 #endif
 
     void destroy();
