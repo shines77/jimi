@@ -35,15 +35,17 @@ NS_JIMI_BEGIN
 
 /// <comment>
 ///
-/// 标准C＋＋类string的Copy-On-Write技术（一）
+/// Reference: 标准C＋＋类string的Copy-On-Write技术（一）
 ///
-/// Reference:
-///    http://haoel.blog.51cto.com/313033/124638
+/// http://haoel.blog.51cto.com/313033/124638
 ///
-/// 漫步Facebook开源C++库folly(1)：string类的设计
+/// Reference: C++ 工程实践(10)：再探std::string
 ///
-/// Reference:
-///    http://www.cnblogs.com/promise6522/archive/2012/06/05/2535530.html
+/// http://www.cnblogs.com/Solstice/archive/2012/03/17/2403335.html
+///
+/// Reference: 漫步Facebook开源C++库folly(1)：string类的设计
+///
+/// http://www.cnblogs.com/promise6522/archive/2012/06/05/2535530.html
 ///
 /// </comment>
 
