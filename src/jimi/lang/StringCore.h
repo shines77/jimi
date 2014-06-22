@@ -174,7 +174,7 @@ public:
 
     void destroy();
 
-    void retail();
+    void retain();
     void release();
 
     bool equals(const string_core &rhs) const;
@@ -388,7 +388,7 @@ STRING_CORE::string_core(const string_core &rhs)
         _ml.capacity = rhs._ml.capacity;
         _ml.type     = STRING_TYPE_LARGE;
 
-        refcount_type::retail(_ml.data);
+        refcount_type::retain(_ml.data);
         jimi_assert(getType() == kIsLarge && size() == rhs.size());
     }
     /* constant string data */
@@ -514,11 +514,11 @@ void STRING_CORE::destroy()
 }
 
 template <STRING_CORE_CLASSES>
-void STRING_CORE::retail()
+void STRING_CORE::retain()
 {
     flag_type type = getType();
     if (type == kIsLarge)
-        refcount_type::retail(_ml.data);
+        refcount_type::retain(_ml.data);
 }
 
 template <STRING_CORE_CLASSES>
@@ -554,7 +554,7 @@ STRING_CORE & STRING_CORE::operator = (const string_core &rhs) {
         ml_clone(_ml, rhs._ml);
         type = getType();
         if (type == kIsLarge)
-            refcount_type::retail(_ml.data);
+            refcount_type::retain(_ml.data);
     }
     return *this;
 }

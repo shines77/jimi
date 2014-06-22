@@ -241,7 +241,7 @@ public:
     const_reference operator [](size_type pos) const;
     reference operator [](size_type pos);
 
-    void retail();
+    void retain();
     void release();
 
     bool equals(const basic_string &rhs) const;
@@ -641,9 +641,9 @@ void BASIC_STRING::destroy()
 }
 
 template <BASIC_STRING_CLASSES>
-void BASIC_STRING::retail()
+void BASIC_STRING::retain()
 {
-    _store.retail();
+    _store.retain();
 }
 
 template <BASIC_STRING_CLASSES>

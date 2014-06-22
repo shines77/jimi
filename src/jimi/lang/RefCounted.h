@@ -44,7 +44,7 @@ public:
         return fromData(p)->_refcount.load(0);
     }
 
-    static void retail(char_type *p)  {
+    static void retain(char_type *p)  {
         //++_refcount;
         fromData(p)->_refcount.fetch_add(1, 0);
     }
