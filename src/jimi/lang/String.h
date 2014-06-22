@@ -65,6 +65,43 @@ inline void pod_copy2(Pod *dest, const Pod *src, const Pod *end) {
     ::memcpy(dest, src, (end - src) * sizeof(Pod));
 }
 
+/*
+ * Lightly structured memmove, simplifies copying PODs and introduces
+ * some asserts
+ */
+template <class Pod>
+inline void pod_move(Pod *dest, const Pod *src, size_t size) {
+    jimi_assert(size >= 0);
+    jimi_assert(dest >= (src + size) || (dest + size) <= src);
+    ::memmove(dest, src, size * sizeof(Pod));
+}
+
+template <class Pod, class T>
+inline void pod_fill(Pod *dest, size_t size, T c) {
+    jimi_assert(dest && size > 0);
+    if (sizeof(T) == 1) {   /*static*/
+        ::memset(dest, c, size);
+    }
+    else {
+        const Pod *ee = dest + (size & ~(size_t)7u);
+        for (; dest != ee; dest += 8) {
+            dest[0] = c;
+            dest[1] = c;
+            dest[2] = c;
+            dest[3] = c;
+            dest[4] = c;
+            dest[5] = c;
+            dest[6] = c;
+            dest[7] = c;
+        }
+        // Leftovers
+        const Pod *end = dest + size;
+        for (; dest != end; ++dest) {
+            *dest = c;
+        }
+    }
+}
+
 }  /* end of the namespace string_detail */
 
 #undef BASIC_STRING_CLASSES
