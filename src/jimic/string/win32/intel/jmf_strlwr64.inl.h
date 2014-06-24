@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_STRING_INTEL_JMF_STRLWR64_H_
-#define _JIMIC_STRING_INTEL_JMF_STRLWR64_H_
+#ifndef _JIMIC_STRING_INTEL_JMF_STRLEN64_H_
+#define _JIMIC_STRING_INTEL_JMF_STRLEN64_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -75,7 +75,7 @@ size_t __FASTCALL jmf_strlen(const char *str);
 
 JIMI_INLINE
 __declspec(naked)
-size_t __FASTCALL jmf_strlen(const char *str)
+size_t __FASTCALL jmf_strlwr(const char *str)
 {
     __asm {
 #if defined(ARGS) && (ARGS > 0)
@@ -218,9 +218,9 @@ strlen_386:
 #include <jimic/string/jm_strings.h>
 
 JIMI_INLINE __CDECL
-size_t __cdecl jmf_strlen(const char *str)
+size_t __cdecl jmf_strlwr(const char *str)
 {
-    return ::jm_strlen(str);
+    return ::jm_strlwr(str);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -229,4 +229,4 @@ size_t __cdecl jmf_strlen(const char *str)
 
 #endif  /* JIMI_IS_WIN64 */
 
-#endif  /* _JIMIC_STRING_INTEL_JMF_STRLWR64_H_ */
+#endif  /* _JIMIC_STRING_INTEL_JMF_STRLEN64_H_ */

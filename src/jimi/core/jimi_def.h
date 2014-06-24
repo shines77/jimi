@@ -25,7 +25,7 @@
 
 // Define integer types with known size: int32_t, uint32_t, int64_t, uint64_t.
 // If this doesn't work then insert compiler-specific definitions here:
-// (stdint.h defined from visual studio 2010)
+// (stdint.h defined from visual studio 2010 (_MSC_VER == 1600))
 #if defined(JIMI_IS_GNUC) || (defined(JIMI_MSC_VER) && JIMI_MSC_VER >= 1600)
   // Compilers supporting C99 or C++0x have stdint.h defining these integer types
   #include <stdint.h>

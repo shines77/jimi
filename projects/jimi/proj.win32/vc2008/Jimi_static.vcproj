@@ -457,6 +457,14 @@
 								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.inl.h"
 								>
 							</File>
+							<File
+								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.inl.h"
+								>
+							</File>
+							<File
+								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.inl.h"
+								>
+							</File>
 						</Filter>
 					</Filter>
 				</Filter>

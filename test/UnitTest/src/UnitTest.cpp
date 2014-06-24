@@ -39,6 +39,7 @@
 #include <jimic/platform/win/fast_memcpy.h>
 #include <jimic/string/jmf_strings.h>
 
+#include <stdlib.h>
 #include <string>
 
 #ifndef _CRT_SECURE_NO_WARNINGS
@@ -280,9 +281,81 @@ void String_Base_Test()
 
     jimi::string str4;
     str4 = jabberwocky;
-    printf("str4.c_str() = %s\n\n", str4.c_str());
-    printf("str4.size()  = %d bytes\n",   str4.size());
+    printf("str4.c_str() = \n%s\n\n", str4.c_str());
+    printf("str4.size()  = %d bytes\n", str4.size());
     printf("\n");
+}
+
+void StrLwr_Test(int nTestLen)
+{
+    int i, loop_times = 200000;
+    int nBufLen, nStrLen;
+    char *tolower_test1, *tolower_test2, *tolower_test3;
+    char *result_str;
+    double time1, time2, time3;
+    stop_watch sw;
+
+    nStrLen = ::jm_strlen(jabberwocky);
+    nBufLen = nTestLen + 1;
+    if (nBufLen < 256)
+        nBufLen = 256;
+
+    tolower_test1 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
+    if (tolower_test1) {
+        ::jm_strncpy(tolower_test1, nBufLen, jabberwocky, nTestLen);
+        tolower_test1[nTestLen] = '\0';
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            result_str = ::strlwr(tolower_test1);
+        }
+        sw.stop();
+        time1 = sw.getMillisec();
+        //printf("tolower_test1.c_str() = \n%s\n\ntolower_test1.size() = %d bytes\n", tolower_test1, ::jm_strlen(tolower_test1));
+    }
+    //printf("\n");
+
+    tolower_test2 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
+    if (tolower_test1) {
+        ::jm_strncpy(tolower_test2, nBufLen, jabberwocky, nTestLen);
+        tolower_test2[nTestLen] = '\0';
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            result_str = ::jm_strlwr(tolower_test2, 1024);
+        }
+        sw.stop();
+        time2 = sw.getMillisec();
+        //printf("tolower_test2.c_str() = \n%s\n\ntolower_test2.size() = %d bytes\n", tolower_test2, ::jm_strlen(tolower_test2));
+    }
+    //printf("\n");
+
+    tolower_test3 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
+    if (tolower_test3) {
+        size_t size;
+        ::jm_strncpy(tolower_test3, nBufLen, jabberwocky, nTestLen);
+        tolower_test3[nTestLen] = '\0';
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            size = ::jmf_strlwr(tolower_test3);
+        }
+        sw.stop();
+        time3 = sw.getMillisec();
+        //printf("tolower_test3.c_str() = \n%s\n\ntolower_test3.size() = %d bytes\n", tolower_test3, size);
+    }
+    //printf("\n");
+
+    printf("str               size = %d bytes\n\n", ::jm_strlen(tolower_test3));
+
+    printf("strlwr(str)       time = %-7.3f ms\n", time1);
+    printf("strlwr_s(str)     time = %-7.3f ms\n", time2);
+    printf("jmf_strlwr(str)   time = %-7.3f ms\n", time3);
+    printf("\n");
+
+    if (tolower_test1)
+        ::_aligned_free(tolower_test1);
+    if (tolower_test2)
+        ::_aligned_free(tolower_test2);
+    if (tolower_test3)
+        ::_aligned_free(tolower_test3);
 }
 
 void String_Performance_Test()
@@ -458,7 +531,7 @@ size_t sse2_strlen(const char* s)
 {
     __m128i zero = _mm_set1_epi8( 0 );
     __m128i *s_aligned = (__m128i*) (((long)s) & -0x10L);
-    uint8 misbits = ((long)s) & 0x0f;
+    uint8_t misbits = ((long)s) & 0x0f;
     __m128i s16cs = _mm_load_si128( s_aligned );
     __m128i bytemask = _mm_cmpeq_epi8( s16cs, zero );
     int bitmask = _mm_movemask_epi8( bytemask );
@@ -543,7 +616,7 @@ strlen_loop1_1:
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        len3 = sse2_strlen(buffer3);
+        len3 = A_strlen(buffer3);
     }
     sw.stop();
     time3 = sw.getMillisec();
@@ -602,7 +675,7 @@ strlen_loop1_5:
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        len7 = sse2_strlen(buffer3);
+        len7 = A_strlen(buffer3);
     }
     sw.stop();
     time7 = sw.getMillisec();
@@ -622,12 +695,12 @@ strlen_loop1_5:
 
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len1, time1);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len2, time2);
-    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::sse2_strlen()",            len3, time3);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len3, time3);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len4, time4);
     printf("\n");
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len5, time5);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
-    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::sse2_strlen()",            len7, time7);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
     printf("\n");
 
@@ -655,6 +728,14 @@ strlen_loop2_1:
         mov     len1, eax
         dec     ebx
         jnz     strlen_loop2_1
+
+#if 0
+		// SSE 指令
+		addss	xmm1, xmmword ptr [eax]
+		// AVX 指令
+		vaddss	xmm1, xmmword ptr [eax]
+#endif
+
         pop     edx
         pop     ebx
     }
@@ -677,7 +758,7 @@ strlen_loop2_1:
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        len3 = sse2_strlen(buffer3);
+        len3 = A_strlen(buffer3);
     }
     sw.stop();
     time3 = sw.getMillisec();
@@ -739,7 +820,7 @@ strlen_loop2_5:
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        len7 = sse2_strlen(buffer3);
+        len7 = A_strlen(buffer3);
     }
     sw.stop();
     time7 = sw.getMillisec();
@@ -760,12 +841,12 @@ strlen_loop2_5:
 
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len1, time1);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len2, time2);
-    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::sse2_strlen()",            len3, time3);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len3, time3);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len4, time4);
     printf("\n");
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len5, time5);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
-    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::sse2_strlen()",            len7, time7);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
     printf("\n");
 
@@ -827,7 +908,7 @@ strlen_loop3_5:
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        len7 = sse2_strlen(buffer3);
+        len7 = A_strlen(buffer3);
     }
     sw.stop();
     time7 = sw.getMillisec();
@@ -851,7 +932,7 @@ strlen_loop3_5:
 
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len5, time5);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
-    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::sse2_strlen()",            len7, time7);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
     printf("\n");
 
@@ -901,7 +982,7 @@ strlen_loop4_5:
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        len7 = sse2_strlen(buffer3);
+        len7 = A_strlen(buffer3);
     }
     sw.stop();
     time7 = sw.getMillisec();
@@ -921,7 +1002,7 @@ strlen_loop4_5:
 
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "::strlen()",                    len5, time5);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "char_traits<char>::strlen()",   len6, time6);
-    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::sse2_strlen()",            len7, time7);
+    printf("%-30s bytes = %d, time = %0.5f ms.\n", "asmlib::A_strlen()",            len7, time7);
     printf("%-30s bytes = %d, time = %0.5f ms.\n", "jimi::jmf_strlen()",            len8, time8);
     printf("\n");
 
@@ -966,7 +1047,7 @@ strlen_loop4_1:
 
         sw.restart();
         for (i = 0; i < 1000; ++i) {
-            len2 = ::sse2_strlen(str2);
+            len2 = ::A_strlen(str2);
         }
         sw.stop();
         time2 = sw.getMillisec();
@@ -994,12 +1075,12 @@ strlen_loop4_1:
     get_bytes_display(bufsize_text3, jm_countof(bufsize_text3), len3);
 
     printf("%-30s bytes = %5s, time = %0.5f ms.\n", "::strlen()",         bufsize_text1, time1);
-    printf("%-30s bytes = %5s, time = %0.5f ms.\n", "asmlib::sse2_strlen()", bufsize_text2, time2);
+    printf("%-30s bytes = %5s, time = %0.5f ms.\n", "asmlib::A_strlen()", bufsize_text2, time2);
     printf("%-30s bytes = %5s, time = %0.5f ms.\n", "jimi::jmf_strlen()", bufsize_text3, time3);
     printf("\n");
 
     printf("jimi::jmf_strlen() use time is ::strlen()         use time : %0.3f %%.\n", time3 / time1 * 100.0);
-    printf("jimi::jmf_strlen() use time is asmlib::sse2_strlen() use time : %0.3f %%.\n", time3 / time2 * 100.0);
+    printf("jimi::jmf_strlen() use time is asmlib::A_strlen() use time : %0.3f %%.\n", time3 / time2 * 100.0);
     printf("\n");
 
     if (str1) ::free(str1);
@@ -1386,6 +1467,13 @@ int UnitTest_Main(int argc, char *argv[])
     String_Performance_Test();
 
     Fast_StrLen_Test();
+
+    StrLwr_Test(16);
+    StrLwr_Test(32);
+    StrLwr_Test(64);
+    StrLwr_Test(128);
+    StrLwr_Test(256);
+    StrLwr_Test(1024);
 
 #if 0
     // char_traits<T>相关字符串函数的测试

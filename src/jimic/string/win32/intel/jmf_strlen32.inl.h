@@ -99,7 +99,6 @@ strlen_SSE2:
         shl         edx,  cl                        ; shift back again
         bsf         edx,  edx                       ; find first 1-bit
         jnz         L300
-        //sub         eax,  0x10
         and         eax,  0xFFFFFFE0                ; align pointer by 32 bytes
         jmp         L200
 
