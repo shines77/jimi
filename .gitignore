@@ -65,6 +65,8 @@
 
 # For Visual Studio Update File
 UpgradeLog.XML
+UpgradeLog.htm
+/Backup
 
 # For log file
 *.log
