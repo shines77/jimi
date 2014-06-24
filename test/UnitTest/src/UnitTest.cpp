@@ -286,18 +286,115 @@ void String_Base_Test()
     printf("\n");
 }
 
+static const unsigned char s_toUpper[] =
+{
+    0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  15,
+    16,  17,  18,  19,  20,  21,  22,  23,  24,  25,  26,  27,  28,  29,  30,  31,
+    32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,  44,  45,  46,  47,
+    48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,
+    64,  65,  66,  67,  68,  69,  70,  71,  72,  73,  74,  75,  76,  77,  78,  79,
+    80,  81,  82,  83,  84,  85,  86,  87,  88,  89,  90,  91,  92,  93,  94,  95,
+    96,  65,  66,  67,  68,  69,  70,  71,  72,  73,  74,  75,  76,  77,  78,  79,
+    80,  81,  82,  83,  84,  85,  86,  87,  88,  89,  90,  123, 124, 125, 126, 127,
+    128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143,
+    144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159,
+    160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175,
+    176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191,
+    192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207,
+    208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 
+    224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239,
+    240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255,
+};
+
+template <typename T>
+void strupr_table(T *str)
+{
+    while (*str != NULL) {
+        *str = static_cast<T>(s_toUpper[static_cast<unsigned char>(*str)]);
+        ++str;
+    }
+}
+
+static const unsigned char s_toLower[] =
+{
+    0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  15,
+    16,  17,  18,  19,  20,  21,  22,  23,  24,  25,  26,  27,  28,  29,  30,  31,
+    32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,  44,  45,  46,  47,
+    48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,
+    64,  97,  98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+    112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 91,  92,  93,  94,  95,
+    96,  97,  98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+    112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
+    128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143,
+    144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159,
+    160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175,
+    176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191,
+    192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207,
+    208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223,
+    224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239,
+    240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255,
+};
+
+//
+// C++ (coverting lowercase to uppercase without the 'toupper' function)??!
+//
+// From: http://arstechnica.com/civis/viewtopic.php?f=20&t=696922
+//
+template <typename T>
+void strlwr_table(T *str)
+{
+    while (*str != NULL) {
+        *str = static_cast<T>(s_toLower[static_cast<unsigned char>(*str)]);
+        ++str;
+    }
+}
+
+template <typename T>
+void strlwr_std(T *str)
+{
+    T c;
+    while ((c = *str) != NULL) {
+        if (c >= static_cast<T>('A') && c <= static_cast<T>('Z')) {
+            c |= 0x20;
+            *str = c;
+        }
+        ++str;
+    }
+}
+
+#define ngx_tolower(c)      (unsigned char) ((c >= 'A' && c <= 'Z') ? (c |  0x20) : c)
+#define ngx_toupper(c)      (unsigned char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
+
+void ngx_strlwr(unsigned char *str)
+{
+    while (*str != NULL) {
+        *str = ngx_tolower(*str);
+        str++;
+    }
+}
+
+void ngx_strlow(unsigned char *dest, unsigned char *src, size_t n)
+{
+    while (n) {
+        *dest = ngx_tolower(*src);
+        dest++;
+        src++;
+        n--;
+    }
+}
+
 void StrLwr_Test(int nTestLen)
 {
     int i;
 #if 1
-    int loop_times = 200000;
+    const int loop_times = 200000;
 #else
-    int loop_times = 4;
+    const int loop_times = 4;
 #endif
     int nBufLen, nStrLen;
-    char *tolower_test1, *tolower_test2, *tolower_test3;
+    char *tolower_test1, *tolower_test2, *tolower_test3, *tolower_test4, *tolower_test5, *tolower_test6;
     char *result_str;
-    double time1, time2, time3;
+    double time1, time2, time3, time4, time5, time6;
     stop_watch sw;
 
     nStrLen = ::jm_strlen(jabberwocky);
@@ -320,7 +417,7 @@ void StrLwr_Test(int nTestLen)
     //printf("\n");
 
     tolower_test2 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
-    if (tolower_test1) {
+    if (tolower_test2) {
         ::jm_strncpy(tolower_test2, nBufLen, jabberwocky, nTestLen);
         tolower_test2[nTestLen] = '\0';
         sw.restart();
@@ -335,24 +432,79 @@ void StrLwr_Test(int nTestLen)
 
     tolower_test3 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
     if (tolower_test3) {
-        size_t size;
         ::jm_strncpy(tolower_test3, nBufLen, jabberwocky, nTestLen);
         tolower_test3[nTestLen] = '\0';
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            size = ::jmf_strlwr(tolower_test3);
+            ngx_strlwr((unsigned char *)tolower_test3);
         }
         sw.stop();
         time3 = sw.getMillisec();
-        //printf("tolower_test3.c_str() = \n%s\n\ntolower_test3.size() = %d bytes\n", tolower_test3, size);
+        //printf("tolower_test3.c_str() = \n%s\n\tolower_test3.size() = %d bytes\n", tolower_test3, ::jm_strlen(tolower_test3));
     }
     //printf("\n");
 
-    printf("str               size = %d bytes\n\n", ::jm_strlen(tolower_test3));
+    tolower_test4 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
+    if (tolower_test4) {
+        ::jm_strncpy(tolower_test4, nBufLen, jabberwocky, nTestLen);
+        tolower_test4[nTestLen] = '\0';
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strlwr_std(tolower_test4);
+        }
+        sw.stop();
+        time4 = sw.getMillisec();
+        //printf("tolower_test4.c_str() = \n%s\n\tolower_test4.size() = %d bytes\n", tolower_test4, ::jm_strlen(tolower_test4));
+    }
+    //printf("\n");
 
-    printf("strlwr(str)       time = %-9.6f ms\n", time1);
-    printf("strlwr_s(str)     time = %-9.6f ms\n", time2);
-    printf("jmf_strlwr(str)   time = %-9.6f ms\n", time3);
+    tolower_test5 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
+    if (tolower_test5) {
+        ::jm_strncpy(tolower_test5, nBufLen, jabberwocky, nTestLen);
+        tolower_test5[nTestLen] = '\0';
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strlwr_table(tolower_test5);
+        }
+        sw.stop();
+        time5 = sw.getMillisec();
+        //printf("tolower_test5.c_str() = \n%s\n\tolower_test5.size() = %d bytes\n", tolower_test5, ::jm_strlen(tolower_test5));
+    }
+    //printf("\n");
+
+    tolower_test6 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
+    if (tolower_test6) {
+        size_t size;
+        ::jm_strncpy(tolower_test6, nBufLen, jabberwocky, nTestLen);
+        tolower_test6[nTestLen] = '\0';
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            size = ::jmf_strlwr(tolower_test6);
+        }
+        sw.stop();
+        time6 = sw.getMillisec();
+        //printf("tolower_test6.c_str() = \n%s\n\tolower_test6.size() = %d bytes\n", tolower_test6, size);
+    }
+    //printf("\n");
+
+    printf("str               size = %d bytes\n\n", ::jm_strlen(tolower_test5));
+
+    if (loop_times > 100) {
+        printf("strlwr(str)       time = %-7.3f ms\n", time1);
+        printf("strlwr_s(str)     time = %-7.3f ms\n", time2);
+        printf("ngx_strlwr(str)   time = %-7.3f ms\n", time3);
+        printf("strlwr_std(str)   time = %-7.3f ms\n", time4);
+        printf("strlwr_table(str) time = %-7.3f ms\n", time5);
+        printf("jmf_strlwr(str)   time = %-7.3f ms\n", time6);
+    }
+    else {
+        printf("strlwr(str)       time = %-9.6f ms\n", time1);
+        printf("strlwr_s(str)     time = %-9.6f ms\n", time2);
+        printf("ngx_strlwr(str)   time = %-9.6f ms\n", time3);
+        printf("strlwr_std(str)   time = %-9.6f ms\n", time4);
+        printf("strlwr_table(str) time = %-9.6f ms\n", time5);
+        printf("jmf_strlwr(str)   time = %-9.6f ms\n", time6);
+    }
     printf("\n");
 
     if (tolower_test1)
@@ -361,6 +513,12 @@ void StrLwr_Test(int nTestLen)
         ::_aligned_free(tolower_test2);
     if (tolower_test3)
         ::_aligned_free(tolower_test3);
+    if (tolower_test4)
+        ::_aligned_free(tolower_test4);
+    if (tolower_test5)
+        ::_aligned_free(tolower_test5);
+    if (tolower_test6)
+        ::_aligned_free(tolower_test6);
 }
 
 void String_Performance_Test()

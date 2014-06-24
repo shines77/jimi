@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 JIMI_INLINE
-size_t __FASTCALL jmf_strlen(const char *str);
+size_t __FASTCALL jmf_strlen(char *str);
 
 #ifdef __cplusplus
 }
@@ -218,7 +218,7 @@ strlen_386:
 #include <jimic/string/jm_strings.h>
 
 JIMI_INLINE __CDECL
-size_t __cdecl jmf_strlwr(const char *str)
+size_t __cdecl jmf_strlwr(char *str)
 {
     return ::jm_strlwr(str);
 }

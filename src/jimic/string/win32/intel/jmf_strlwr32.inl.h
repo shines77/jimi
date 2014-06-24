@@ -73,7 +73,7 @@ static const uint64_t   LOWER_CHAR_MAGIC_SIGN   = 0x2020202020202020ULL;
 
 JIMI_INLINE
 __declspec(naked)
-size_t __CDECL jmf_strlwr(const char *str)
+size_t __CDECL jmf_strlwr(char *str)
 {
     __asm {
 #if defined(ARGS) && (ARGS > 0)
@@ -87,10 +87,10 @@ size_t __CDECL jmf_strlwr(const char *str)
         push        ebx
 
 #if 0
-        jmp         strlen_SSE2
+        jmp         strlwr_SSE2
 
         ALIGN_16
-strlen_SSE2:
+strlwr_SSE2:
 #endif
         mov         eax,  ARG_1                     ; get pointer to string
         mov         ecx,  eax                       ; copy pointer
@@ -281,10 +281,10 @@ L600:
 
 #if 0
         ALIGN_16
-strlen_386:
+strlwr_386:
         mov         eax, 0
 
-        jnz         strlen_386
+        jnz         strlwr_386
 #endif
 
         pop         ebx
@@ -332,7 +332,7 @@ strlen_386:
 #include <jimic/string/jm_strings.h>
 
 JIMI_INLINE __CDECL
-size_t __cdecl jmf_strlwr(const char *str)
+size_t __cdecl jmf_strlwr(char *str)
 {
     return ::jm_strlwr(str);
 }
