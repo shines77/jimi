@@ -288,7 +288,12 @@ void String_Base_Test()
 
 void StrLwr_Test(int nTestLen)
 {
-    int i, loop_times = 200000;
+    int i;
+#if 1
+    int loop_times = 200000;
+#else
+    int loop_times = 4;
+#endif
     int nBufLen, nStrLen;
     char *tolower_test1, *tolower_test2, *tolower_test3;
     char *result_str;
@@ -297,8 +302,8 @@ void StrLwr_Test(int nTestLen)
 
     nStrLen = ::jm_strlen(jabberwocky);
     nBufLen = nTestLen + 1;
-    if (nBufLen < 256)
-        nBufLen = 256;
+    if (nBufLen < 64)
+        nBufLen = 64;
 
     tolower_test1 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
     if (tolower_test1) {
@@ -320,7 +325,7 @@ void StrLwr_Test(int nTestLen)
         tolower_test2[nTestLen] = '\0';
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            result_str = ::jm_strlwr(tolower_test2, 1024);
+            result_str = ::jm_strlwr(tolower_test2, nBufLen);
         }
         sw.stop();
         time2 = sw.getMillisec();
@@ -345,9 +350,9 @@ void StrLwr_Test(int nTestLen)
 
     printf("str               size = %d bytes\n\n", ::jm_strlen(tolower_test3));
 
-    printf("strlwr(str)       time = %-7.3f ms\n", time1);
-    printf("strlwr_s(str)     time = %-7.3f ms\n", time2);
-    printf("jmf_strlwr(str)   time = %-7.3f ms\n", time3);
+    printf("strlwr(str)       time = %-9.6f ms\n", time1);
+    printf("strlwr_s(str)     time = %-9.6f ms\n", time2);
+    printf("jmf_strlwr(str)   time = %-9.6f ms\n", time3);
     printf("\n");
 
     if (tolower_test1)
