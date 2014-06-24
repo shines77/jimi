@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{6CC87659-079A-4DF7-852E-8AF52192504D}</ProjectGuid>
+    <RootNamespace>Jimi_static</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="ProjEnv\ProjEnvProperty_32.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="ProjEnv\ProjEnvProperty_32.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)\</OutDir>
+    <IntDir>$(SolutionDir)gen\tmp\$(MsvcPlatformToolset)\$(ProjectName)\$(MsvcPlatformShortName)-$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)\</OutDir>
+    <IntDir>$(SolutionDir)gen\tmp\$(MsvcPlatformToolset)\$(ProjectName)\$(MsvcPlatformShortName)-$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;$(SolutionDir)src;$(SolutionDir)include;.\src;.\include;.\test;.\deps;$(ProjectDir)src;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;JIMI_LIB;JIMI_USE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)_debug.lib</OutputFile>
+      <AdditionalLibraryDirectories>..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);..\..\..\..\lib;..\..\..\..\deps;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);$(SolutionDir)lib;$(SolutionDir)deps;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);.\lib;.\deps;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);$(ProjectDir)lib;$(ProjectDir)deps;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;$(SolutionDir)src;$(SolutionDir)include;.\src;.\include;.\test;.\deps;$(ProjectDir)src;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;JIMI_LIB;JIMI_USE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);..\..\..\..\lib;..\..\..\..\deps;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);$(SolutionDir)lib;$(SolutionDir)deps;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);.\lib;.\deps;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);$(ProjectDir)lib;$(ProjectDir)deps;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\asmlib\asmlib.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_asm.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_export.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\win32\jimic_config.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\win32\vs_stdint.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\jimic_all.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\platform\jimic_targetver.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\platform\linux\fast_memcpy.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\platform\win\fast_memcpy.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\jm_strings.h">
+      <FileType>CppCode</FileType>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\jm_strings.inl.h">
+      <FileType>CppCode</FileType>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_common.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_export.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\win32\jimi_config.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\win32\vs_stdint.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\fs\FileSystem.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\io\Closeable.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\io\IOException.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\io\Serializable.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\jimi_all.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Allocator.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\AutoCloseable.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Char_Traits.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Cloneable.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\CloneNotSupportedException.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Exception.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Object.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\ObjectBase.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\RefCounted.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\String.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\String.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\StringCore.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\StringUtils.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Throwable.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\log\log.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\log\Logger.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\log\log_config.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\log\log_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\machine\windows_api.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_compiler_config.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_platform_config.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_targetver.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\system\mutex.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\system\scoped_lock.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\system\stop_watch.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\system\WinService.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\thread\Atomic.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\thread\Event.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\thread\Thread.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\thread\thread_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\thread\WaitHandle.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\util\cmd_line.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\jimi\fs\FileSystem.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimi\log\Logger.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimi\system\scoped_lock.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimi\util\cmd_line.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

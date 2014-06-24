@@ -16,6 +16,9 @@
 
 #include <string>
 #include <limits>
+#if (defined(_MSC_VER) && (_MSC_VER >= 1700)) || defined(__GNUC__)
+#include <functional>   // std::less_equal, std::bind2nd
+#endif
 using namespace std;
 
 NS_JIMI_BEGIN

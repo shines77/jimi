@@ -1,0 +1,290 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="src\jimi">
+      <UniqueIdentifier>{6f3c01a1-113f-4be3-89b3-90385d3a404f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\core">
+      <UniqueIdentifier>{7663ef20-e9a1-4f37-866c-659505a87f58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\core\win32">
+      <UniqueIdentifier>{8cd83cfb-9948-417a-aa06-90b94b291032}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\platform">
+      <UniqueIdentifier>{a4ebad8a-b30d-4dbb-9cad-999e46645c2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\lang">
+      <UniqueIdentifier>{efb133b1-6237-46f5-ab5a-02588c13ff97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\thread">
+      <UniqueIdentifier>{a72ebe95-a493-4a5d-8372-e1f8a25f9901}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\math">
+      <UniqueIdentifier>{83c138ea-65ee-44b8-bf94-4f3170a3f6f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\system">
+      <UniqueIdentifier>{ef3c2337-8d49-4e62-ab0f-798e799615a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\internal">
+      <UniqueIdentifier>{07801ddb-689c-4def-b545-d83136090814}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\util">
+      <UniqueIdentifier>{3a3418db-11ef-48ba-b09b-e95ab53d015f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\machine">
+      <UniqueIdentifier>{b1e21361-01e0-453f-907a-f68072470435}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\log">
+      <UniqueIdentifier>{0e283fb5-371a-4c4b-8453-dd76013fcdd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\iocp">
+      <UniqueIdentifier>{dae08f6a-47b7-41ee-b293-fdaa8a72aec1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\fs">
+      <UniqueIdentifier>{ba9ebdd6-6d56-4d7c-87e2-538d3c4b5375}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\io">
+      <UniqueIdentifier>{1d30307c-9dde-4e3a-abae-8770b7287822}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimic">
+      <UniqueIdentifier>{c697fa3e-0af9-42ab-b3f5-e5c3855b5a68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimic\string">
+      <UniqueIdentifier>{ce9e656f-b915-4cf6-ac11-142b4a485c5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimic\string\win32">
+      <UniqueIdentifier>{06d0d69a-e1c4-4785-962a-a8a9c189289f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimic\string\win32\intel">
+      <UniqueIdentifier>{fe4bfa24-8da7-43a4-a69c-0188ef6c6ec3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimic\core">
+      <UniqueIdentifier>{97eef0b6-9ab0-4c06-aa9b-522ae2c5eb37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimic\core\win32">
+      <UniqueIdentifier>{7d04dab6-281b-4571-aad0-68a3d7e12152}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimic\platform">
+      <UniqueIdentifier>{1c7b3b5b-6a30-4a2e-ad23-80d7ad927ec4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimic\platform\linux">
+      <UniqueIdentifier>{5875e047-df90-442b-aa6f-263556c51916}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimic\platform\win">
+      <UniqueIdentifier>{1dd85b26-b40d-4d6d-87c7-0918a85fe33d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\asmlib">
+      <UniqueIdentifier>{2360db79-4011-4f6a-9713-95d63c92f72f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\jimi\jimi_all.h">
+      <Filter>src\jimi\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_common.h">
+      <Filter>src\jimi\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_def.h">
+      <Filter>src\jimi\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_export.h">
+      <Filter>src\jimi\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\win32\jimi_config.h">
+      <Filter>src\jimi\core\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\win32\vs_stdint.h">
+      <Filter>src\jimi\core\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_compiler_config.h">
+      <Filter>src\jimi\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_platform_config.h">
+      <Filter>src\jimi\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_targetver.h">
+      <Filter>src\jimi\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Allocator.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\AutoCloseable.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Char_Traits.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Cloneable.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\CloneNotSupportedException.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Exception.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Object.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\ObjectBase.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\RefCounted.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\String.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\String.inl.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\StringCore.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\StringUtils.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Throwable.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\thread\Atomic.h">
+      <Filter>src\jimi\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\thread\Event.h">
+      <Filter>src\jimi\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\system\mutex.h">
+      <Filter>src\jimi\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\system\scoped_lock.h">
+      <Filter>src\jimi\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\thread\Thread.h">
+      <Filter>src\jimi\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\thread\thread_def.h">
+      <Filter>src\jimi\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\thread\WaitHandle.h">
+      <Filter>src\jimi\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\system\stop_watch.h">
+      <Filter>src\jimi\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\system\WinService.h">
+      <Filter>src\jimi\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\util\cmd_line.h">
+      <Filter>src\jimi\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\machine\windows_api.h">
+      <Filter>src\jimi\machine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\log\log.h">
+      <Filter>src\jimi\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\log\log_config.h">
+      <Filter>src\jimi\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\log\log_def.h">
+      <Filter>src\jimi\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\log\Logger.h">
+      <Filter>src\jimi\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\fs\FileSystem.h">
+      <Filter>src\jimi\fs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\io\Closeable.h">
+      <Filter>src\jimi\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\io\IOException.h">
+      <Filter>src\jimi\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\io\Serializable.h">
+      <Filter>src\jimi\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.inl.h">
+      <Filter>src\jimic\string\win32\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.inl.h">
+      <Filter>src\jimic\string\win32\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.inl.h">
+      <Filter>src\jimic\string\win32\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.inl.h">
+      <Filter>src\jimic\string\win32\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\jimic_all.h">
+      <Filter>src\jimic\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_asm.h">
+      <Filter>src\jimic\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_def.h">
+      <Filter>src\jimic\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_export.h">
+      <Filter>src\jimic\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\win32\jimic_config.h">
+      <Filter>src\jimic\core\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\win32\vs_stdint.h">
+      <Filter>src\jimic\core\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\platform\jimic_targetver.h">
+      <Filter>src\jimic\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\platform\linux\fast_memcpy.h">
+      <Filter>src\jimic\platform\linux</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\platform\win\fast_memcpy.h">
+      <Filter>src\jimic\platform\win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\asmlib\asmlib.h">
+      <Filter>src\asmlib</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">
+      <Filter>src\jimi\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimi\system\scoped_lock.cpp">
+      <Filter>src\jimi\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">
+      <Filter>src\jimi\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimi\util\cmd_line.cpp">
+      <Filter>src\jimi\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimi\log\Logger.cpp">
+      <Filter>src\jimi\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimi\fs\FileSystem.cpp">
+      <Filter>src\jimi\fs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\jm_strings.h">
+      <Filter>src\jimic\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\jm_strings.inl.h">
+      <Filter>src\jimic\string</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+</Project>
