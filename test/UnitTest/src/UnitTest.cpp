@@ -386,10 +386,11 @@ void ngx_strlow(unsigned char *dest, unsigned char *src, size_t n)
 void StrLwr_Test(int nTestLen)
 {
     int i;
+    static const int alignment = 4;
 #if 1
-    const int loop_times = 200000;
+    static const int loop_times = 200000;
 #else
-    const int loop_times = 4;
+    static const int loop_times = 4;
 #endif
     int nBufLen, nStrLen;
     char *tolower_test1, *tolower_test2, *tolower_test3, *tolower_test4, *tolower_test5, *tolower_test6;
@@ -402,7 +403,7 @@ void StrLwr_Test(int nTestLen)
     if (nBufLen < 64)
         nBufLen = 64;
 
-    tolower_test1 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
+    tolower_test1 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
     if (tolower_test1) {
         ::jm_strncpy(tolower_test1, nBufLen, jabberwocky, nTestLen);
         tolower_test1[nTestLen] = '\0';
@@ -416,7 +417,7 @@ void StrLwr_Test(int nTestLen)
     }
     //printf("\n");
 
-    tolower_test2 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
+    tolower_test2 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
     if (tolower_test2) {
         ::jm_strncpy(tolower_test2, nBufLen, jabberwocky, nTestLen);
         tolower_test2[nTestLen] = '\0';
@@ -430,7 +431,7 @@ void StrLwr_Test(int nTestLen)
     }
     //printf("\n");
 
-    tolower_test3 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
+    tolower_test3 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
     if (tolower_test3) {
         ::jm_strncpy(tolower_test3, nBufLen, jabberwocky, nTestLen);
         tolower_test3[nTestLen] = '\0';
@@ -444,7 +445,7 @@ void StrLwr_Test(int nTestLen)
     }
     //printf("\n");
 
-    tolower_test4 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
+    tolower_test4 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
     if (tolower_test4) {
         ::jm_strncpy(tolower_test4, nBufLen, jabberwocky, nTestLen);
         tolower_test4[nTestLen] = '\0';
@@ -458,7 +459,7 @@ void StrLwr_Test(int nTestLen)
     }
     //printf("\n");
 
-    tolower_test5 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
+    tolower_test5 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
     if (tolower_test5) {
         ::jm_strncpy(tolower_test5, nBufLen, jabberwocky, nTestLen);
         tolower_test5[nTestLen] = '\0';
@@ -472,14 +473,14 @@ void StrLwr_Test(int nTestLen)
     }
     //printf("\n");
 
-    tolower_test6 = (char *)::_aligned_malloc(nBufLen * sizeof(char), 64);
+    tolower_test6 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
     if (tolower_test6) {
         size_t size;
         ::jm_strncpy(tolower_test6, nBufLen, jabberwocky, nTestLen);
         tolower_test6[nTestLen] = '\0';
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            size = ::jmf_strlwr(tolower_test6);
+            size = ::jmf_strlwr(tolower_test6 + 4);
         }
         sw.stop();
         time6 = sw.getMillisec();
