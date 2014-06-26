@@ -386,7 +386,7 @@ void ngx_strlow(unsigned char *dest, unsigned char *src, size_t n)
 void StrLwr_Test(int nTestLen)
 {
     int i;
-    static const int alignment = 4;
+    static const int alignment = 32;
 #if 1
     static const int loop_times = 200000;
 #else
@@ -473,14 +473,19 @@ void StrLwr_Test(int nTestLen)
     }
     //printf("\n");
 
+#if 0
+    tolower_test6 = (char *)::_aligned_offset_malloc(nBufLen * sizeof(char), alignment, (alignment - 10));
+#else
     tolower_test6 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
+#endif
     if (tolower_test6) {
         size_t size;
         ::jm_strncpy(tolower_test6, nBufLen, jabberwocky, nTestLen);
         tolower_test6[nTestLen] = '\0';
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            size = ::jmf_strlwr(tolower_test6 + 4);
+            size = ::jmf_strlwr(tolower_test6);
+            //size = ::jmf_strlen(tolower_test6);
         }
         sw.stop();
         time6 = sw.getMillisec();

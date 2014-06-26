@@ -94,17 +94,17 @@ strlwr_SSE2:
 #endif
         mov         eax,  ARG_1                     ; get pointer to string
         mov         ecx,  eax                       ; copy pointer
-        movq        xmm0, LOWER_CHAR_A_FIRST        ; char[] of '@@@@@@@@'
-        movq        xmm1, LOWER_CHAR_Z_LAST         ; char[] of '[[[[[[[['
-        movq        xmm6, LOWER_CHAR_MAGIC_SIGN     ; char[] of '        '
+        movq        xmm0, LOWER_CHAR_A_FIRST        ; string of '@@@@@@@@'
+        movq        xmm1, LOWER_CHAR_Z_LAST         ; string of '[[[[[[[['
+        movq        xmm6, LOWER_CHAR_MAGIC_SIGN     ; string of '        '
         punpcklqdq  xmm0, xmm0                      ;
         punpcklqdq  xmm1, xmm1                      ;
         punpcklqdq  xmm6, xmm6                      ;
         pxor        xmm7, xmm7                      ; all set to bit "0"
         and         ecx,  0x0000001F                ; lower 5 bits indicate misalignment
         jz          L220                            ;
-        cmp         ecx,  0x00000010                ; > 16 bytes ?
-        ja          L100
+        cmp         ecx,  0x00000010                ; < 16 bytes ?
+        jb          L100
 
         and         ecx,  0x0000000F                ; lower 4 bits indicate misalignment
         and         eax,  0xFFFFFFF0                ; align pointer by 16 bytes
@@ -116,6 +116,8 @@ strlwr_SSE2:
         shl         edx,  cl                        ; shift back again
         bsf         edx,  edx                       ; find first 1-bit
         jnz         L400
+
+//      pshufd      xmm4, xmm4, 0x00                ; 复制4份低32位到128位
 
         /* start_tolower32 */
         movdqa      xmm2, xmm4                      ;
@@ -132,8 +134,16 @@ strlwr_SSE2:
         jae         L050                            ;
 
         /* when (ecx = [0, 64)) */
-        psrlq       xmm3, ecx                       ;
+        movdqa      xmm4, xmm3                      ; copy to spare register
+        pcmpeqb     mm0,  mm0                       ; all set to bit "1"
+        movd        mm1,  ecx                       ;
+//      movdq2q     mm0,  xmm3                      ;
+        psllq       mm0,  mm1                       ;
+        movq2dq     xmm3, mm0                       ;
+        unpcklpd    xmm3, xmm4                      ; 取xmm4的低64位 + xmm3的低64位(高位在前, 下同)
+
         pand        xmm2, xmm3                      ;
+
         /* save_string */
         por         xmm5, xmm2                      ;
         movq        qword ptr [eax], xmm5           ;
@@ -145,34 +155,44 @@ L050:
         /* when (ecx = [64, 128)) */
         sub         ecx,  64                        ;
 
-        movdqa      xmm4, xmm3                      ;
-        psrlq       xmm3, ecx                       ;
+        pcmpeqb     mm0,  mm0                       ; all set to bit "1"
+        movd        mm1,  ecx                       ;
+//      movdq2q     mm0,  xmm3                      ;
+        psllq       mm0,  mm1                       ;
+        movq2dq     xmm3, mm0                       ;
+        pslldq      xmm3, 8                         ;
+
+#if 1
+        pand        xmm2, xmm3                      ;
+#else
+        pcmpeqb     xmm4, xmm4                      ; all set to bit "1"
 //      shufpd      xmm4, xmm3, 0x02                ; 取xmm3的高64位 + xmm4的高64位
-        unpckhpd    xmm4, xmm3						; 取xmm3的高64位 + xmm4的高64位(高位在前, 下同)
+        unpckhpd    xmm4, xmm3                      ; 取xmm3的高64位 + xmm4的高64位(高位在前, 下同)
         pand        xmm2, xmm4                      ;
+#endif
+
         /* save_string */
         por         xmm5, xmm2                      ;
+#if 1
+        movdqa      xmmword ptr [eax], xmm5         ;
+#else
+        psrldq      xmm5, 8                         ;
         movq        qword ptr [eax], xmm5           ;
+#endif
 
         and         eax,  0xFFFFFFE0                ; align pointer by 32 bytes
         jmp         L200                            ;
-
-#if 0
-L088:
-        sub         eax,  0x20                      ; decrement pointer by 32
-        jmp         L200							;
-#endif
 
         ALIGN_16
 L100:
         and         eax,  0xFFFFFFE0                ; align pointer by 32 bytes
         movdqa      xmm3, xmmword ptr [eax + 16]    ; read from nearest preceding boundary
         movdqa      xmm2, xmmword ptr [eax]         ; read from nearest preceding boundary
-        movdqa      xmm5, xmm3						;
+        movdqa      xmm5, xmm3                      ;
         movdqa      xmm4, xmm2                      ;
-        pcmpeqb     xmm3, xmm7						; compare high 16 bytes with zero
+        pcmpeqb     xmm3, xmm7                      ; compare high 16 bytes with zero
         pcmpeqb     xmm2, xmm7                      ; compare low  16 bytes with zero
-        pmovmskb    ebx,  xmm3						; get one bit for each byte result
+        pmovmskb    ebx,  xmm3                      ; get one bit for each byte result
         pmovmskb    edx,  xmm2                      ; get one bit for each byte result
         shl         ebx,  16                        ; high 16 bits result
         or          edx,  ebx                       ; combined into the result 32 bits
@@ -196,14 +216,22 @@ L100:
         pcmpeqb     xmm5, xmm5                      ; all set to bit "1"
 
         shl         ecx,  3                         ; ecx = ecx * 8
-        cmp         ecx,  0x000000C0                ; when (ecx >= 192 bytes) ?
+        cmp         ecx,  0x00000040                ; when (ecx >= 64 bytes) ?
         jae         L150                            ;
 
-        /* when (ecx = [128, 192)) */
-        sub         ecx,  128                       ;
+        /* when (ecx = [0, 64)) */
+//      sub         ecx,  128                       ;
 
-        psrlq       xmm5, ecx                       ;
+        movdqa      xmm4, xmm5                      ; copy to spare register
+        pcmpeqb     mm0,  mm0                       ; all set to bit "1"
+        movd        mm1,  ecx                       ;
+//      movdq2q     mm0,  xmm5                      ;
+        psllq       mm0,  mm1                       ;
+        movq2dq     xmm5, mm0                       ;
+        unpcklpd    xmm5, xmm4                      ; 取xmm4的低64位 + xmm5的低64位(高位在前, 下同)
+
         pand        xmm3, xmm5                      ;
+
         /* save_string */
         movdqa      xmm4, xmmword ptr [eax]         ; read from nearest preceding boundary
         movdqa      xmm5, xmmword ptr [eax + 16]    ; read from nearest preceding boundary
@@ -216,14 +244,24 @@ L100:
         jmp         L200                            ;
 
 L150:
-        /* when (ecx = [192, 256)) */
-        sub         ecx,  192                       ;
+        /* when (ecx = [64, 128)) */
+        sub         ecx,  64                        ;
 
+        pcmpeqb     mm0,  mm0                       ; all set to bit "1"
+        movd        mm1,  ecx                       ;
+//      movdq2q     mm0,  xmm5                      ;
+        psllq       mm0,  mm1                       ;
+        movq2dq     xmm5, mm0                       ;
+        pslldq      xmm5, 8                         ;
+
+#if 1
+        pand        xmm3, xmm5                      ;
+#else
         movdqa      xmm4, xmm5                      ;
-        psrlq       xmm4, ecx                       ;
 //      shufpd      xmm5, xmm4, 0x02                ; 取xmm4的高64位 + xmm5的高64位
         unpckhpd    xmm5, xmm4                      ; 取xmm4的高64位 + xmm5的高64位
         pand        xmm3, xmm5                      ;
+#endif
 
         /* save_string */
         movdqa      xmm4, xmmword ptr [eax]         ; read from nearest preceding boundary
@@ -242,7 +280,7 @@ L200:
 L220:
         movdqa      xmm3, xmmword ptr [eax + 16]    ; read from nearest preceding boundary
         movdqa      xmm2, xmmword ptr [eax]         ; read from nearest preceding boundary
-        movdqa      xmm5, xmm3						;
+        movdqa      xmm5, xmm3                      ;
         movdqa      xmm4, xmm2                      ;
         pcmpeqb     xmm3, xmm7                      ; compare high 16 bytes with zero
         pcmpeqb     xmm2, xmm7                      ; compare low  16 bytes with zero
@@ -316,7 +354,7 @@ L450:
         movdqa      xmm3, xmm7                      ;
         psrlq       xmm3, ecx                       ;
 //      shufpd      xmm7, xmm3, 0x02                ; 取xmm3的高64位 + xmm7的高64位
-        unpckhpd    xmm7, xmm3						; 取xmm3的高64位 + xmm7的高64位(高位在前, 下同)
+        unpckhpd    xmm7, xmm3                      ; 取xmm3的高64位 + xmm7的高64位(高位在前, 下同)
         pand        xmm2, xmm7                      ;
         /* save_string */
         por         xmm5, xmm2                      ;
@@ -375,6 +413,10 @@ L600:
         ; Zero-byte found. Compute string length
         sub         eax, ARG_1                      ; subtract start address
         add         eax, edx                        ; add byte index
+
+#if 1
+        emms                                        ; clear mmx state
+#endif
 
 #if 0
         ALIGN_16
