@@ -95,10 +95,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\encoding\codepage.cpp" />
     <ClCompile Include="..\..\src\FastMemcpy.cpp" />
     <ClCompile Include="..\..\src\UnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\encoding\conv.hpp" />
     <ClInclude Include="..\..\src\FastMemcpy.h" />
     <ClInclude Include="..\..\src\SampleThread.h" />
     <ClInclude Include="..\..\src\targetver.h" />
@@ -112,6 +114,11 @@
       <Project>{6cc87659-079a-4df7-852e-8af52192504d}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\encoding\iconv_codepage.ipp" />
+    <None Include="..\..\src\encoding\uconv_codepage.ipp" />
+    <None Include="..\..\src\encoding\wconv_codepage.ipp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -49,6 +49,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)\</OutDir>
     <IntDir>$(SolutionDir)gen\tmp\$(MsvcPlatformToolset)\$(ProjectName)\$(MsvcPlatformShortName)-$(Configuration)\</IntDir>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -94,7 +96,9 @@
     <ClInclude Include="..\..\..\..\src\jimic\platform\jimic_targetver.h" />
     <ClInclude Include="..\..\..\..\src\jimic\platform\linux\fast_memcpy.h" />
     <ClInclude Include="..\..\..\..\src\jimic\platform\win\fast_memcpy.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.cpp" />
     <ClCompile Include="..\..\..\..\src\jimic\string\jm_strings.h">
       <FileType>CppCode</FileType>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>

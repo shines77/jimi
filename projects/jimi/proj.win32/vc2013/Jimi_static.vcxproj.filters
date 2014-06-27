@@ -257,6 +257,9 @@
     <ClInclude Include="..\..\..\..\src\asmlib\asmlib.h">
       <Filter>src\asmlib</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">
@@ -281,6 +284,9 @@
       <Filter>src\jimic\string</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\string\jm_strings.inl.h">
+      <Filter>src\jimic\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.cpp">
       <Filter>src\jimic\string</Filter>
     </ClCompile>
   </ItemGroup>

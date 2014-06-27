@@ -38,9 +38,16 @@
 
 #include <jimic/platform/win/fast_memcpy.h>
 #include <jimic/string/jmf_strings.h>
+#include <jimic/string/iconv_win.h>
 
 #include <stdlib.h>
 #include <string>
+#include <locale>
+
+#include <boost/locale.hpp>
+#include <boost/locale/encoding.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
+#include <iostream>
 
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -52,6 +59,7 @@
  * for asmlib
  */
 #pragma comment(lib, "libacof32.lib")
+#pragma comment(lib, "libboost_locale-vc120-mt-gd-1_55.lib")
 
 /* 基于CRT的内存泄漏检测 */
 #if USE_CRTDBG_CHECK
@@ -94,6 +102,8 @@
 #endif  /* _MSC_VER */
 
 using namespace std;
+//using namespace boost;
+//using namespace boost::locale;
 
 USING_NS_JIMI;
 USING_NS_JIMI_LOG;
@@ -1606,6 +1616,93 @@ void Char_Traits_Test()
     if (pstr4) free(pstr4);
 }
 
+void win_iconv_ansi2unicode_test()
+{
+    stop_watch sw;
+#ifdef _DEBUG
+    const int loop_times = 2000;
+#else
+    const int loop_times = 200000;
+#endif
+    int i;
+    wchar_t *unicode_str;
+    char *ansi_str, *utf8_str;
+    int ansi_size, utf8_size, unicode_size;
+    double time1, time2;
+
+    setlocale(LC_ALL, "chs");
+
+    std::string source = "23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
+        "英雄所见略同, 不经历风雨怎么见彩虹???jfkljdl4348972949384iyjdhfjdgjfg3h4eih3k19283变形金刚4, 变形金刚四⑦⑦";
+    std::string to_encoding, from_encoding;
+    std::string utf8_string;
+    std::wstring w_string;
+    to_encoding = "utf8";
+    from_encoding = "gbk";
+
+    utf8_size = iconv_ansi_to_utf8_auto(source.c_str(), source.size(), &utf8_str);
+    if (utf8_str != NULL && utf8_size >= 0) {
+        utf8_str[utf8_size] = '\0';
+    }
+
+    w_string = boost::locale::conv::to_utf<wchar_t>(source, "gbk");
+    sw.restart();
+    for (i = 0; i < loop_times; ++i) {
+        //std::string ssss = boost::locale::conv::between(source, to_encoding, from_encoding);
+        //utf8_string = boost::locale::conv::to_utf<char>(source, "gbk");
+        //w_string = boost::locale::conv::utf_to_utf<wchar_t>(utf8_string);
+        w_string = boost::locale::conv::to_utf<wchar_t>(source, "gbk");
+    }
+    sw.stop();
+    time1 = sw.getElapsedTime();
+
+    printf("ansi str = \n%s\n\n", source.c_str());
+    wprintf(L"unicode str = \n%s\n\n", w_string.c_str());
+    printf("\n");
+
+    ansi_size = 512;
+    ansi_str = (char *)malloc(ansi_size * sizeof(char));
+    jm_strcpy(ansi_str, ansi_size, "23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
+        "英雄所见略同, 不经历风雨怎么见彩虹???jfkljdl4348972949384iyjdhfjdgjfg3h4eih3k19283变形金刚4, 变形金刚四⑦⑦");
+    ansi_size = jm_strlen(ansi_str);
+    unicode_size = iconv_ansi_to_unicode_auto(ansi_str, ansi_size, &unicode_str);
+#if 0
+    if (unicode_str)
+        iconv_free(unicode_str);
+#endif
+
+    sw.restart();
+    for (i = 0; i < loop_times; ++i) {
+        //unicode_size = iconv_ansi_to_unicode_auto(ansi_str, ansi_size, &unicode_str);
+        unicode_size = iconv_ansi_to_unicode(ansi_str, ansi_size, unicode_str, unicode_size + 1);
+        //unicode_size = iconv_utf8_to_unicode_auto(utf8_str, utf8_size, &unicode_str);
+        /*
+        if (unicode_size >= 0) {
+            unicode_str[unicode_size] = '\0';
+        }
+        //*/
+    }
+    sw.stop();
+    time2 = sw.getElapsedTime();
+
+    printf("boost::locale::conv::to_utf()   time = %0.3f ms\n", time1);
+    printf("iconv_ansi_to_unicode_auto()    time = %0.3f ms\n", time2);
+
+    printf("\n");
+    printf(  "ansi str = \n%s\n\n", ansi_str);
+    wprintf(L"unicode str = \n%s\n\n", unicode_str);
+    printf("\n");
+
+    if (ansi_str)
+        free(ansi_str);
+
+    if (utf8_str)
+        iconv_free(utf8_str);
+
+    if (unicode_str)
+        iconv_free(unicode_str);
+}
+
 int UnitTest_Main(int argc, char *argv[])
 {
     // 设置CRTDBG的环境(Debug模式下, 检查内存越界和内存泄漏问题)
@@ -1613,7 +1710,7 @@ int UnitTest_Main(int argc, char *argv[])
 
     sLog.log_begin();
 
-    util::CommandLine cmdLine;
+    jimi::util::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
         std::string &strCmdLine = cmdLine.getCmdLine();
@@ -1624,6 +1721,14 @@ int UnitTest_Main(int argc, char *argv[])
 
     // CPU 唤醒/预热
     jimi_cpu_warmup();
+
+    win_iconv_ansi2unicode_test();
+
+    ::system("pause");
+    {
+        sLog.log_end();
+        return 0;
+    }
 
     // 测试std::string是否使用了COW(Copy On Write)
     //String_Copy_On_Write_Test();
