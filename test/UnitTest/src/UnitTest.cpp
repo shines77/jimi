@@ -134,12 +134,13 @@ void set_crtdbg_env()
 
 /* 预热时间至少要大于500毫秒, 如果还不够, 可以自行增加最小预热时间 */
 
-void jimi_cpu_warmup()
+void jimi_cpu_warmup(int delayTime)
 {
 #ifndef _DEBUG
     stop_watch sw;
     volatile int sum = 0;
     double elapsedTime = 0.0;
+    double delayTimeLimit = (double)delayTime;
     printf("CPU warm up start ...\n");
     do {
         sw.restart();
@@ -153,10 +154,10 @@ void jimi_cpu_warmup()
         }
         sw.stop();
         elapsedTime += sw.getMillisec();
-    } while (elapsedTime < 500.0);
+    } while (elapsedTime < delayTimeLimit);
     // 输出sum的值只是为了防止编译器把循环优化掉
     printf("sum = %u, time: %0.3f ms\n", sum, elapsedTime);
-    printf("CPU warm up done ... \n\n");
+    printf("CPU warm up done  ... \n\n");
 #endif
 }
 
@@ -1616,7 +1617,7 @@ void Char_Traits_Test()
     if (pstr4) free(pstr4);
 }
 
-void win_iconv_ansi2unicode_test()
+void win_iconv_ansi2unicode_test(const char *szTest, bool echo_result)
 {
     stop_watch sw;
 #ifdef _DEBUG
@@ -1634,10 +1635,8 @@ void win_iconv_ansi2unicode_test()
 
     printf("repeat times: %d 次\n\n", loop_times);
 
-    std::string source = "23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
-        "英雄所见略同, 不经历风雨怎么见彩虹???jfkljdl4348972949384iyjdhfjdgjfg3h4eih3k19283变形金刚4, 变形金刚四⑦⑦";
+    std::string source = szTest;
     std::string to_encoding, from_encoding;
-    std::string utf8_string;
     std::wstring w_string;
     to_encoding = "utf8";
     from_encoding = "gbk";
@@ -1647,7 +1646,8 @@ void win_iconv_ansi2unicode_test()
         utf8_str[utf8_size] = '\0';
     }
 
-    printf("boost::locale::conv::to_utf()\n\n");
+    if (echo_result)
+        printf("boost::locale::conv::to_utf()\n\n");
 
     w_string = boost::locale::conv::to_utf<wchar_t>(source, "gbk");
     sw.restart();
@@ -1660,14 +1660,15 @@ void win_iconv_ansi2unicode_test()
     sw.stop();
     time1 = sw.getElapsedTime();
 
-    printf("ansi str = \n%s\n\n", source.c_str());
-    wprintf(L"unicode str = \n%s\n\n", w_string.c_str());
-    printf("\n");
+    if (echo_result) {
+        printf("ansi str = \n%s\n\n", source.c_str());
+        wprintf(L"unicode str = \n%s\n\n", w_string.c_str());
+        printf("\n");
+    }
 
-    ansi_size = 512;
+    ansi_size = jm_strlen(szTest) + 1;
     ansi_str = (char *)malloc(ansi_size * sizeof(char));
-    jm_strcpy(ansi_str, ansi_size, "23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
-        "英雄所见略同, 不经历风雨怎么见彩虹???jfkljdl4348972949384iyjdhfjdgjfg3h4eih3k19283变形金刚4, 变形金刚四⑦⑦");
+    jm_strcpy(ansi_str, ansi_size, szTest);
     ansi_size = jm_strlen(ansi_str);
     unicode_size = iconv_ansi_to_unicode_auto(ansi_str, ansi_size, &unicode_str);
 #if 0
@@ -1675,7 +1676,8 @@ void win_iconv_ansi2unicode_test()
         iconv_free(unicode_str);
 #endif
 
-    printf("iconv_ansi_to_unicode()\n\n");
+    if (echo_result)
+        printf("iconv_ansi_to_unicode()\n\n");
 
     sw.restart();
     for (i = 0; i < loop_times; ++i) {
@@ -1691,17 +1693,19 @@ void win_iconv_ansi2unicode_test()
     sw.stop();
     time2 = sw.getElapsedTime();
 
-    printf("ansi str = \n%s\n\n", ansi_str);
-    wprintf(L"unicode str = \n%s\n\n", unicode_str);
-    printf("\n");
+    if (echo_result) {
+        printf("ansi str = \n%s\n\n", ansi_str);
+        wprintf(L"unicode str = \n%s\n\n", unicode_str);
+        printf("\n");
+    }
 
-    ansi_size = 512;
-    jm_strcpy(ansi_str, ansi_size, "23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
-        "英雄所见略同, 不经历风雨怎么见彩虹???jfkljdl4348972949384iyjdhfjdgjfg3h4eih3k19283变形金刚4, 变形金刚四⑦⑦");
+    ansi_size = jm_strlen(szTest) + 1;
+    jm_strcpy(ansi_str, ansi_size, szTest);
     ansi_size = jm_strlen(ansi_str);
     unicode_size2 = iconv_ansi_to_unicode_auto(ansi_str, ansi_size, &unicode_str2);
 
-    printf("mbstowcs()\n\n");
+    if (echo_result)
+        printf("mbstowcs()\n\n");
 
     sw.restart();
     for (i = 0; i < loop_times; ++i) {
@@ -1710,25 +1714,30 @@ void win_iconv_ansi2unicode_test()
     sw.stop();
     time3 = sw.getElapsedTime();
 
-    printf("ansi str = \n%s\n\n", ansi_str);
-    wprintf(L"unicode str = \n%s\n\n", unicode_str2);
-    printf("\n");
+    if (echo_result) {
+        printf("ansi str = \n%s\n\n", ansi_str);
+        wprintf(L"unicode str = \n%s\n\n", unicode_str2);
+        printf("\n");
+    }
 
-    printf("mbstowcs_s()\n\n");
+    if (echo_result)
+        printf("mbstowcs_s()\n\n");
 
     errno_t err;
     sw.restart();
     for (i = 0; i < loop_times; ++i) {
-        err = mbstowcs_s((size_t *)&unicode_size2, unicode_str2, unicode_size + 1, ansi_str, ansi_size);
+        err = mbstowcs_s((size_t *)&unicode_size2, unicode_str2, unicode_size + 1, ansi_str, ansi_size * sizeof(char));
     }
     sw.stop();
     time4 = sw.getElapsedTime();
 
-    printf("ansi str = \n%s\n\n", ansi_str);
-    wprintf(L"unicode str = \n%s\n\n", unicode_str2);
-    printf("\n");
+    if (echo_result) {
+        printf("ansi str = \n%s\n\n", ansi_str);
+        wprintf(L"unicode str = \n%s\n\n", unicode_str2);
+        printf("\n");
+    }
 
-    printf("test ansi ==> unicode\n\n");
+    printf("test ansi ==> unicode,          size = %d bytes\n\n", jm_strlen(szTest));
 
     printf("boost::locale::conv::to_utf()   time = %0.3f ms\n", time1);
     printf("iconv_ansi_to_unicode()         time = %0.3f ms\n", time2);
@@ -1749,7 +1758,7 @@ void win_iconv_ansi2unicode_test()
         iconv_free(unicode_str2);
 }
 
-void win_iconv_unicode2ansi_test()
+void win_iconv_unicode2ansi_test(const wchar_t *szTest, bool echo_result)
 {
     stop_watch sw;
 #ifdef _DEBUG
@@ -1767,10 +1776,8 @@ void win_iconv_unicode2ansi_test()
 
     printf("repeat times: %d 次\n\n", loop_times);
 
-    std::wstring source = L"23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
-        L"英雄所见略同, 不经历风雨怎么见彩虹???jfkljdl4348972949384iyjdhfjdgjfg3h4eih3k19283变形金刚4, 变形金刚四⑦⑦";
+    std::wstring source = szTest;
     std::string to_encoding, from_encoding;
-    std::string utf8_string;
     std::string a_string;
     to_encoding = "utf8";
     from_encoding = "gbk";
@@ -1780,7 +1787,8 @@ void win_iconv_unicode2ansi_test()
         utf8_str[utf8_size] = '\0';
     }
 
-    printf("boost::locale::conv::from_utf()\n\n");
+    if (echo_result)
+        printf("boost::locale::conv::from_utf()\n\n");
 
     a_string = boost::locale::conv::from_utf<wchar_t>(source, from_encoding);
     sw.restart();
@@ -1793,14 +1801,15 @@ void win_iconv_unicode2ansi_test()
     sw.stop();
     time1 = sw.getElapsedTime();
 
-    wprintf(L"unicode str = \n%s\n\n", source.c_str());
-    printf("ansi str = \n%s\n\n", a_string.c_str());
-    printf("\n");
+    if (echo_result) {
+        wprintf(L"unicode str = \n%s\n\n", source.c_str());
+        printf("ansi str = \n%s\n\n", a_string.c_str());
+        printf("\n");
+    }
 
-    unicode_size = 512;
+    unicode_size = jm_wcslen(szTest) + 1;
     unicode_str = (wchar_t *)malloc(unicode_size * sizeof(wchar_t));
-    jm_wcscpy(unicode_str, unicode_size, L"23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
-        L"英雄所见略同, 不经历风雨怎么见彩虹???jfkljdl4348972949384iyjdhfjdgjfg3h4eih3k19283变形金刚4, 变形金刚四⑦⑦");
+    jm_wcscpy(unicode_str, unicode_size, szTest);
     unicode_size = jm_wcslen(unicode_str);
     ansi_size = iconv_unicode_to_ansi_auto(unicode_str, unicode_size, &ansi_str);
 #if 0
@@ -1808,7 +1817,8 @@ void win_iconv_unicode2ansi_test()
         iconv_free(unicode_str);
 #endif
 
-    printf("iconv_unicode_to_ansi()\n\n");
+    if (echo_result)
+        printf("iconv_unicode_to_ansi()\n\n");
 
     sw.restart();
     for (i = 0; i < loop_times; ++i) {
@@ -1817,18 +1827,20 @@ void win_iconv_unicode2ansi_test()
     sw.stop();
     time2 = sw.getElapsedTime();
 
-    wprintf(L"unicode str = \n%s\n\n", unicode_str);
-    printf("ansi str = \n%s\n\n", ansi_str);
-    printf("\n");
+    if (echo_result) {
+        wprintf(L"unicode str = \n%s\n\n", unicode_str);
+        printf("ansi str = \n%s\n\n", ansi_str);
+        printf("\n");
+    }
 
-    unicode_size = 512;
+    unicode_size = jm_wcslen(szTest) + 1;
     unicode_str = (wchar_t *)malloc(unicode_size * sizeof(wchar_t));
-    jm_wcscpy(unicode_str, unicode_size, L"23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
-        L"英雄所见略同, 不经历风雨怎么见彩虹???jfkljdl4348972949384iyjdhfjdgjfg3h4eih3k19283变形金刚4, 变形金刚四⑦⑦");
+    jm_wcscpy(unicode_str, unicode_size, szTest);
     unicode_size = jm_wcslen(unicode_str);
     ansi_size2 = iconv_unicode_to_ansi_auto(unicode_str, unicode_size, &ansi_str2);
 
-    printf("wcstombs()\n\n");
+    if (echo_result)
+        printf("wcstombs()\n\n");
 
     sw.restart();
     for (i = 0; i < loop_times; ++i) {
@@ -1837,25 +1849,42 @@ void win_iconv_unicode2ansi_test()
     sw.stop();
     time3 = sw.getElapsedTime();
 
-    wprintf(L"unicode str = \n%s\n\n", unicode_str);
-    printf("ansi str = \n%s\n\n", ansi_str2);
-    printf("\n");
+    if (echo_result) {
+        wprintf(L"unicode str = \n%s\n\n", unicode_str);
+        printf("ansi str = \n%s\n\n", ansi_str2);
+        printf("\n");
+    }
 
-    printf("wcstombs_s()\n\n");
+    if (echo_result)
+        printf("wcstombs_s()\n\n");
+
+#if 0
+    if (ansi_str2)
+        iconv_free(ansi_str2);
+
+    ansi_size = ansi_size + 32;
+    //ansi_str2 = (char *)malloc(ansi_size * sizeof(char));
+    ansi_str2 = iconv_malloc(ansi_size, char);
+    ansi_size--;
+#endif
+
+    //setlocale(LC_CTYPE, 0);
 
     errno_t err;
     sw.restart();
     for (i = 0; i < loop_times; ++i) {
-        err = wcstombs_s((size_t *)&ansi_size2, ansi_str2, ansi_size + 1, unicode_str, unicode_size);
+        err = wcstombs_s((size_t *)&ansi_size2, ansi_str2, ansi_size + 1, unicode_str, unicode_size * sizeof(wchar_t));
     }
     sw.stop();
     time4 = sw.getElapsedTime();
 
-    wprintf(L"unicode str = \n%s\n\n", unicode_str);
-    printf("ansi str = \n%s\n\n", ansi_str2);
-    printf("\n");
+    if (echo_result) {
+        wprintf(L"unicode str = \n%s\n\n", unicode_str);
+        printf("ansi str = \n%s\n\n", ansi_str2);
+        printf("\n");
+    }
 
-    printf("test unicode ==> ansi\n\n");
+    printf("test unicode ==> ansi,          size = %d words\n\n", jm_wcslen(szTest));
 
     printf("boost::locale::conv::from_utf() time = %0.3f ms\n", time1);
     printf("iconv_unicode_to_ansi()         time = %0.3f ms\n", time2);
@@ -1874,7 +1903,6 @@ void win_iconv_unicode2ansi_test()
 
     if (unicode_str)
         iconv_free(unicode_str);
-
 }
 
 int UnitTest_Main(int argc, char *argv[])
@@ -1887,21 +1915,43 @@ int UnitTest_Main(int argc, char *argv[])
     jimi::util::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
-        std::string &strCmdLine = cmdLine.getCmdLine();
+        std::string strCmdLine = cmdLine.getCmdLine();
         sLog.info(strCmdLine.c_str());
     }
 
     printf("\n");
 
-    // CPU 唤醒/预热
-    jimi_cpu_warmup();
+    // CPU 唤醒/预热 500毫秒
+    jimi_cpu_warmup(500);
 
-    win_iconv_ansi2unicode_test();
+    bool echo_result = false;
+
+    char *szAnsi_Test1 = "23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
+        "英雄所见略同, 不经历风雨怎么见彩虹???jfkljdl4348972949384iyjdhfjdgjfg3h4eih3k19283变形金刚4, 变形金刚四⑦⑦";
+    wchar_t *szUtf16_Test1 = L"23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
+        L"英雄所见略同, 不经历风雨怎么见彩虹???jfkljdl4348972949384iyjdhfjdgjfg3h4eih3k19283变形金刚4, 变形金刚四⑦⑦";
+
+    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
+
+    win_iconv_ansi2unicode_test(szAnsi_Test1, echo_result);
+    //::system("pause");
+
+    win_iconv_unicode2ansi_test(szUtf16_Test1, echo_result);
+    //::system("pause");
+
+    char *szAnsi_Test2 = "我们都是中国人, 我们都是地球人";
+    wchar_t *szUtf16_Test2 = L"我们都是中国人, 我们都是地球人";
+
+    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
+
+    win_iconv_ansi2unicode_test(szAnsi_Test2, echo_result);
+    //::system("pause");
+
+    win_iconv_unicode2ansi_test(szUtf16_Test2, echo_result);
+
+    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
+
     ::system("pause");
-
-    win_iconv_unicode2ansi_test();
-    ::system("pause");
-
     if (true) {
         sLog.log_end();
         return 0;

@@ -24,17 +24,18 @@
 #else
 
 #define WIN_ICONV_MALLOC(size, type) \
-    (##type##*)malloc((size) * sizeof(type))
+    (##type##*)malloc((size_t)(size) * sizeof(type))
 
 #define WIN_ICONV_MALLOC_EX(size, type, alignment, offset) \
-    (##type##*)malloc((size) * sizeof(type))
+    (##type##*)malloc((size_t)(size) * sizeof(type))
 
 #define WIN_ICONV_FREE(p)   \
-    free(p)
+    free((void *)(p))
 
 #endif
 
-#define iconv_free(p)   WIN_ICONV_FREE(p)
+#define iconv_malloc(size, type)    WIN_ICONV_MALLOC(size, type)
+#define iconv_free(p)               WIN_ICONV_FREE(p)
 
 /**
  * win_iconv: for inline and noinline define

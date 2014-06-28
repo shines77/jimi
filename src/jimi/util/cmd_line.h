@@ -196,8 +196,8 @@ public:
     int setTokens(const string &_tokens) { tokens = _tokens; };
     int addToken(const char *_token);
 
-    string get_cmdline();
-    string getCmdLine();
+    std::string get_cmdline();
+    std::string getCmdLine();
 
     int parse(int _argc, char **_argv);
 
