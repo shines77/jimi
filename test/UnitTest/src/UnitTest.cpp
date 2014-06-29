@@ -41,6 +41,7 @@
 #include <jimic/string/iconv_win.h>
 
 #include <stdlib.h>
+#include <conio.h>
 #include <string>
 #include <locale>
 
@@ -397,20 +398,23 @@ void ngx_strlow(unsigned char *dest, unsigned char *src, size_t n)
 void StrLwr_Test(int nTestLen)
 {
     int i;
-    static const int alignment = 32;
-#if 1
+    static const int alignment = 8;
+#if defined(_DEBUG) || 0
     static const int loop_times = 200000;
 #else
-    static const int loop_times = 4;
+    static const int loop_times = 200000;
 #endif
     int nBufLen, nStrLen;
-    char *tolower_test1, *tolower_test2, *tolower_test3, *tolower_test4, *tolower_test5, *tolower_test6;
+    char *tolower_test1, *tolower_test2, *tolower_test3;
+    char *tolower_test4, *tolower_test5, *tolower_test6;
     char *result_str;
     double time1, time2, time3, time4, time5, time6;
     stop_watch sw;
 
     nStrLen = ::jm_strlen(jabberwocky);
-    nBufLen = nTestLen + 1;
+    if (nTestLen > nStrLen)
+        nTestLen = nStrLen;
+    nBufLen = nTestLen + 32;
     if (nBufLen < 64)
         nBufLen = 64;
 
@@ -484,8 +488,8 @@ void StrLwr_Test(int nTestLen)
     }
     //printf("\n");
 
-#if 0
-    tolower_test6 = (char *)::_aligned_offset_malloc(nBufLen * sizeof(char), alignment, (alignment - 10));
+#if 1
+    tolower_test6 = (char *)::_aligned_offset_malloc(nBufLen * sizeof(char), alignment, (alignment - 0));
 #else
     tolower_test6 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
 #endif
@@ -536,6 +540,80 @@ void StrLwr_Test(int nTestLen)
         ::_aligned_free(tolower_test5);
     if (tolower_test6)
         ::_aligned_free(tolower_test6);
+}
+
+void Jm_StrLwr_Verify()
+{
+    int i, l = 0;
+    int ch, errors = 0;
+    size_t size, bufSize, str_len;
+    int alignment, offset;
+    char *buffer1, *buffer2, *buffer3, *buffer4;
+    char *strTest1, *strTest2, *temp;
+    char checkCharList[] = { '@', 'A', 'Q', 'Z', '[', 'a', 'q', 'z', '0', ' ', '\b' };
+    int sizeCharList = jm_countof(checkCharList);
+
+    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
+    printf("Jm_StrLwr_Verify() start...\n\n");
+#if 1
+    for (ch = 1; ch < 256; ++ch) {
+#else
+    for (l = 0; l < sizeCharList; ++l) {
+        ch = checkCharList[l];
+#endif
+        // 校验头部32字节
+        alignment = 32;
+        bufSize = 160 * sizeof(char);
+        buffer1 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
+        buffer2 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
+        buffer3 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
+        buffer4 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
+        for (i = 0; i < (int)bufSize; ++i) {
+            buffer1[i] = ngx_toupper(ch);
+            buffer2[i] = ngx_toupper(ch);
+        }
+        buffer1[bufSize - 1] = '\0';
+        buffer2[bufSize - 1] = '\0';
+        for (offset = 32; offset < 64; ++offset) {
+            for (str_len = 0; str_len < 64; ++str_len) {
+                memcpy(buffer3, buffer1, bufSize);
+                memcpy(buffer4, buffer2, bufSize);
+
+                strTest1 = buffer3 + offset;
+                strTest1[str_len] = '\0';
+                temp = jm_strlwr(strTest1, str_len + 1);
+
+                if (ch == 'A' && offset == 33 && str_len == 24) {
+                    ch = ch;
+                }
+
+                strTest2 = buffer4 + offset;
+                strTest2[str_len] = '\0';
+                size = jmf_strlwr(strTest2);
+
+                if (memcmp(buffer3, buffer4, bufSize) != 0) {
+                    // got some errors
+                    printf("Error at char of: \'%c\', offset = %d, strlen = %d\n", ch, offset, str_len);
+                    printf("strTest1 = %s\n", strTest1);
+                    printf("strTest2 = %s\n", strTest2);
+                    errors++;
+                    _getch();
+                    printf("\n");
+                }
+            }
+        }
+        if (buffer1) _aligned_free(buffer1);
+        if (buffer2) _aligned_free(buffer2);
+        if (buffer3) _aligned_free(buffer3);
+        if (buffer4) _aligned_free(buffer4);
+    }
+
+    if (errors == 0)
+        printf("All verify is passed ...\n");
+
+    printf("\n");
+    printf("Jm_StrLwr_Verify() done...\n\n");
+    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
 }
 
 void String_Performance_Test()
@@ -692,6 +770,18 @@ l1:
         add     cl,  cl                ; test first byte 
         sbb     eax, edx               ; compute length 
 	}
+}
+
+__declspec(naked)
+inline int __cdecl __builtin_clz(int bitmask)
+{
+    __asm {
+        mov eax, dword ptr [esp + 4]
+        bsr eax, eax
+        neg eax
+        add eax, 31
+        ret
+    }
 }
 
 __declspec(naked)
@@ -1833,6 +1923,9 @@ void win_iconv_unicode2ansi_test(const wchar_t *szTest, bool echo_result)
         printf("\n");
     }
 
+    if (unicode_str)
+        free(unicode_str);
+
     unicode_size = jm_wcslen(szTest) + 1;
     unicode_str = (wchar_t *)malloc(unicode_size * sizeof(wchar_t));
     jm_wcscpy(unicode_str, unicode_size, szTest);
@@ -1893,7 +1986,7 @@ void win_iconv_unicode2ansi_test(const wchar_t *szTest, bool echo_result)
     printf("\n");
 
     if (ansi_str)
-        free(ansi_str);
+        iconv_free(ansi_str);
 
     if (ansi_str2)
         iconv_free(ansi_str2);
@@ -1902,28 +1995,11 @@ void win_iconv_unicode2ansi_test(const wchar_t *szTest, bool echo_result)
         iconv_free(utf8_str);
 
     if (unicode_str)
-        iconv_free(unicode_str);
+        free(unicode_str);
 }
 
-int UnitTest_Main(int argc, char *argv[])
+bool win_iconv_test()
 {
-    // 设置CRTDBG的环境(Debug模式下, 检查内存越界和内存泄漏问题)
-    set_crtdbg_env();
-
-    sLog.log_begin();
-
-    jimi::util::CommandLine cmdLine;
-    int cnt;
-    if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
-        std::string strCmdLine = cmdLine.getCmdLine();
-        sLog.info(strCmdLine.c_str());
-    }
-
-    printf("\n");
-
-    // CPU 唤醒/预热 500毫秒
-    jimi_cpu_warmup(500);
-
     bool echo_result = false;
 
     char *szAnsi_Test1 = "23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
@@ -1950,12 +2026,86 @@ int UnitTest_Main(int argc, char *argv[])
     win_iconv_unicode2ansi_test(szUtf16_Test2, echo_result);
 
     printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
+    return true;
+}
 
-    ::system("pause");
-    if (true) {
+#include <intrin.h>
+
+int UnitTest_Main(int argc, char *argv[])
+{
+    // 设置CRTDBG的环境(Debug模式下, 检查内存越界和内存泄漏问题)
+    set_crtdbg_env();
+
+    sLog.log_begin();
+
+    jimi::util::CommandLine cmdLine;
+    int cnt;
+    if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
+        std::string strCmdLine = cmdLine.getCmdLine();
+        sLog.info(strCmdLine.c_str());
+    }
+
+    printf("\n");
+
+    // CPU 唤醒/预热 500毫秒
+    jimi_cpu_warmup(500);
+
+#if 0
+    int cpuinfo[4] = { 0 };
+    __cpuid(cpuinfo, 0x80000001);
+
+    unsigned int n = 0;
+
+    for (n = 0; n < 16; ++n) {
+        printf("__lzcnt(%d)   = %d\n", n, __lzcnt(n));
+        printf("__lzcnt16(%d) = %d\n", n, __lzcnt16(n));
+        //printf("__lzcnt64(%d) = %d\n", n, __lzcnt64(n));
+    }
+
+    n = 0xffff;
+
+    printf("__lzcnt(%d)   = %d\n", n, __lzcnt(n));
+    printf("__lzcnt16(%d) = %d\n", n, __lzcnt16(n));
+    //printf("__lzcnt64(%d) = %d\n", n, __lzcnt64(n));
+    printf("\n");
+
+    for (n = 0; n < 16; ++n) {
+        printf("__builtin_clz(%5d) [BSR] = %d\n", n, __builtin_clz(n));
+    }
+
+    n = 0xff00;
+    printf("__builtin_clz(%5d) [BSR] = %d\n", n, __builtin_clz(n));
+
+    n = 0;
+    printf("__builtin_clz(%5d) [BSR] = %d\n", n, __builtin_clz(n));
+    printf("\n");
+
+    for (n = 0; n < 16; ++n) {
+        printf("__builtin_ctz(%5d) [BSF] = %d\n", n, __builtin_ctz(n));
+    }
+
+    n = 0xff00;
+    printf("__builtin_ctz(%5d) [BSF] = %d\n", n, __builtin_ctz(n));
+
+    n = 0;
+    printf("__builtin_ctz(%5d) [BSF] = %d\n", n, __builtin_ctz(n));
+    printf("\n");
+
+    if (true && 1) {
+        ::system("pause");
         sLog.log_end();
         return 0;
     }
+#endif
+
+#if 0
+    bool result = win_iconv_test();
+    if (result && 0) {
+        ::system("pause");
+        sLog.log_end();
+        return 0;
+    }
+#endif
 
     // 测试std::string是否使用了COW(Copy On Write)
     //String_Copy_On_Write_Test();
@@ -1963,18 +2113,33 @@ int UnitTest_Main(int argc, char *argv[])
     // Memcpy 内存复制测试
     //Memcpy_Test();
 
+#if 1
     String_Base_Test();
+#endif
 
+#if 1
     String_Performance_Test();
+#endif
 
     Fast_StrLen_Test();
 
+    //::system("pause");
+
+    Jm_StrLwr_Verify();
+
+#if 1
+    StrLwr_Test(4);
+    StrLwr_Test(8);
+    StrLwr_Test(10);
+    StrLwr_Test(12);
     StrLwr_Test(16);
+    StrLwr_Test(24);
     StrLwr_Test(32);
     StrLwr_Test(64);
     StrLwr_Test(128);
     StrLwr_Test(256);
     StrLwr_Test(1024);
+#endif
 
 #if 0
     // char_traits<T>相关字符串函数的测试

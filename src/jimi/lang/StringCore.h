@@ -326,8 +326,10 @@ template <STRING_CORE_CLASSES>
 STRING_CORE::string_core()
 {
 #if 1
+    (*(uint32_t *)(&_small.buf[0])) = (uint32_t)0;
     _ml.type = STRING_TYPE_SMALL;
-    (*(size_t *)(&_small.buf[0])) = (size_t)0;
+    //_ml.size = 0;
+    //_ml.capacity = 0;
 #else
     _ml.data = NULL;
     _ml.size = 0;
@@ -335,7 +337,7 @@ STRING_CORE::string_core()
     _ml.type = 0;
 
     // init sso buffer
-    (*(size_t *)(&_ml.buf[0])) = (size_t)0;
+    (*(uint32_t *)(&_ml.buf[0])) = (uint32_t)0;
 #endif
 }
 

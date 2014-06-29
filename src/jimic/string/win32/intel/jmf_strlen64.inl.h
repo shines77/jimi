@@ -108,8 +108,8 @@ strlen_SSE2:
         pxor        xmm0, xmm0                      ; set xmm0 to zero
         xor         rdx,  rdx                       ; set rdx to zero
         and         ecx,  0x0000001F                ; lower 5 bits indicate misalignment
-        cmp         ecx,  0x00000010                ; > 16 bytes ?
-        ja          L100
+        cmp         ecx,  0x00000010                ; < 16 bytes ?
+        jb          L100
 
         and         ecx,  0x0000000F                ; lower 4 bits indicate misalignment
         and         rax,  0xFFFFFFFFFFFFFFF0        ; align pointer by 16 bytes
