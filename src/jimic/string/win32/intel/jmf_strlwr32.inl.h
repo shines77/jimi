@@ -120,7 +120,7 @@ strlwr_SSE2:
         shr         edx,  cl                        ; shift out false bits
         shl         edx,  cl                        ; shift back again
         bsf         edx,  edx                       ; find first 1-bit
-        jnz         L180
+        jnz         L600
 
 //      pshufd      xmm4, xmm4, 0x00                ; 复制4份低32位到128位
 
@@ -161,7 +161,6 @@ strlwr_SSE2:
         ALIGN_16
 L050:
         /* when (ecx = [0, 64)) */
-//      sub         ecx,  64                        ;
 
         pcmpeqb     xmm3, xmm3                      ; all set to bit "1"
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
@@ -199,7 +198,7 @@ L100:
         shr         edx,  cl                        ; shift out false bits
         shl         edx,  cl                        ; shift back again
         bsf         edx,  edx                       ; find first 1-bit
-        jnz         L180
+        jnz         L600
 
         /* start_tolower32 */
         movdqa      xmm2, xmm4                      ;
@@ -244,7 +243,6 @@ L100:
         ALIGN_16
 L150:
         /* when (ecx = [0, 64)) */
-//      sub         ecx,  64                        ;
 
         pcmpeqb     xmm4, xmm4                      ; all set to bit "1"
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
@@ -267,25 +265,6 @@ L150:
 
         xor         ecx,  ecx                       ;
         and         eax,  0xFFFFFFE0                ; align pointer by 32 bytes
-        jmp         L200                            ;
-
-        ALIGN_16
-L180:
-        shl         ecx,  3                         ; ecx = ecx * 8
-        cmp         ecx,  0x00000040                ; when (ecx >= 64 bytes) ?
-        jae         L185                            ;
-
-        movd        mm5,  ecx                       ;        
-        psllq       mm2,  mm5                       ;
-        mov         ecx,  ebx                       ;
-        jmp         L400                            ;
-L185:
-        pxor        mm2,  mm2                       ;
-        sub         ecx,  64                        ;
-        movd        mm5,  ecx                       ;
-        psllq       mm3,  mm5                       ;
-        mov         ecx,  ebx                       ;
-        jmp         L400                            ;
 
         ALIGN_16
 L200:
@@ -332,9 +311,10 @@ L300:
         jmp         L200                            ; jump to Main loop
 
         /* the remain of less 32 bytes */
+        ALIGN_16
 L400:
         cmp         edx,  0                         ;
-        jz          L600                            ;
+        jz          L999                            ;
 
         mov         ebx,  32                        ;
         sub         ebx,  edx                       ;
@@ -368,7 +348,7 @@ L400:
         /* save_string */
         por         xmm5, xmm2                      ;
         movq        qword ptr [eax], xmm5           ;
-        jmp         L600                            ;
+        jmp         L999                            ;
 
         ALIGN_16
 L450:
@@ -394,7 +374,7 @@ L450:
         /* save_string */
         por         xmm5, xmm2                      ;
         movdqa      xmmword ptr [eax], xmm5         ;
-        jmp         L600                            ;
+        jmp         L999                            ;
 
         ALIGN_16
 L500:
@@ -443,7 +423,7 @@ L530:
         por         xmm5, xmm3                      ;
         movdqa      xmmword ptr [eax], xmm4         ;
         movq        qword ptr [eax + 16], xmm5      ;
-        jmp         L600                            ;
+        jmp         L999                            ;
 
         ALIGN_16
 L550:
@@ -479,8 +459,174 @@ L580:
         por         xmm5, xmm3                      ;
         movdqa      xmmword ptr [eax], xmm4         ;
         movdqa      xmmword ptr [eax + 16], xmm5    ;
+        jmp         L999                            ;
 
+        /* the first line and the remain of less 32 bytes */
+        ALIGN_16
 L600:
+        cmp         edx,  0                         ;
+        jz          L999                            ;
+
+        shl         ecx,  3                         ; ecx = ecx * 8
+        cmp         ecx,  0x00000040                ; when (ecx >= 64 bytes) ?
+        jae         L610                            ;
+
+        movd        mm5,  ecx                       ;        
+        psllq       mm2,  mm5                       ;
+        mov         ecx,  ebx                       ;
+        jmp         L620                            ;
+L610:
+        pxor        mm2,  mm2                       ;
+        sub         ecx,  64                        ;
+        movd        mm5,  ecx                       ;
+        psllq       mm3,  mm5                       ;
+        mov         ecx,  ebx                       ;
+L620:
+        mov         ebx,  32                        ;
+        sub         ebx,  edx                       ;
+        shl         ebx,  3                         ; ebx = (32 - edx) * 8
+        cmp         ebx,  0x00000080                ; when (ebx < 128 bytes, edx > 16) ?
+        jb          L700                            ;
+
+        /* start_tolower32 */
+        movdqa      xmm2, xmm4                      ;
+        movdqa      xmm5, xmm4                      ;
+        pcmpgtb     xmm2, xmm1                      ; great than 'ZZZZZZZZ' ?
+        pcmpgtb     xmm4, xmm0                      ; great than '@@@@@@@@' ?
+        pandn       xmm2, xmm4                      ;
+        pand        xmm2, xmm6                      ; and the bits of 0x20202020202020202020202020202020ULL
+
+        cmp         ebx,  0x000000C0                ; when (ebx < 192 bytes, edx > 8) ?
+        jb          L650                            ;
+
+        /* when (ebx = [192, 256), edx = (0, 8]) */
+        sub         ebx,  192                       ;
+
+        pcmpeqb     mm0,  mm0                       ; all set to bit "1"
+//      movdq2q     mm0,  xmm7                      ;
+        movd        mm1,  ebx                       ;
+        psrlq       mm0,  mm1                       ;
+        pand        mm0,  mm2                       ;
+        movq2dq     xmm3, mm0                       ;
+
+        pand        xmm2, xmm3                      ;
+
+        /* save_string */
+        por         xmm5, xmm2                      ;
+        movq        qword ptr [eax], xmm5           ;
+        jmp         L999                            ;
+
+        ALIGN_16
+L650:
+        /* when (ebx = [128, 192), edx = (8, 16]) */
+        sub         ebx,  128                       ;
+
+        pcmpeqb     xmm3, xmm3                      ; all set to bit "1"
+        pcmpeqb     mm0,  mm0                       ; all set to bit "1"
+//      movdq2q     mm0,  xmm3                      ;
+        movd        mm1,  ebx                       ;
+        psrlq       mm0,  mm1                       ;
+        movq2dq     xmm4, mm0                       ;
+//      shufpd      xmm3, xmm4, 0x00                ; 取xmm4的低64位 + xmm3的低64位
+        unpcklpd    xmm3, xmm4                      ; 取xmm4的低64位 + xmm3的低64位(高位在前, 下同)
+
+        movq2dq     xmm6, mm2                       ;
+        movq2dq     xmm7, mm3                       ;
+        unpcklpd    xmm6, xmm7                      ; 取xmm7的低64位 + xmm6的低64位(高位在前, 下同)
+
+        pand        xmm2, xmm3                      ;
+        pand        xmm2, xmm6                      ;
+
+        /* save_string */
+        por         xmm5, xmm2                      ;
+        movdqa      xmmword ptr [eax], xmm5         ;
+        jmp         L999                            ;
+
+        ALIGN_16
+L700:
+        /* start_tolower32 */
+        movdqa      xmm2, xmm4                      ;
+        movdqa      xmm3, xmm5                      ;
+        pcmpgtb     xmm2, xmm1                      ; great than 'ZZZZZZZZ' ?
+        pcmpgtb     xmm3, xmm1                      ; great than 'ZZZZZZZZ' ?
+        pcmpgtb     xmm4, xmm0                      ; great than '@@@@@@@@' ?
+        pcmpgtb     xmm5, xmm0                      ; great than '@@@@@@@@' ?
+        pandn       xmm2, xmm4                      ;
+        pandn       xmm3, xmm5                      ;
+        pand        xmm2, xmm6                      ; and the bits of 0x20202020202020202020202020202020ULL
+        pand        xmm3, xmm6                      ; and the bits of 0x20202020202020202020202020202020ULL
+
+        cmp         ebx,  0x00000040                ; when (ebx < 64 bytes, edx > 24) ?
+        jb          L750                            ;
+
+        /* when (ebx = [64, 128), edx = (16, 24]) */
+        sub         ebx,  64                        ;
+
+        pcmpeqb     mm0,  mm0                       ; all set to bit "1"
+//      movdq2q     mm0,  xmm6                      ;
+        movd        mm1,  ebx                       ;
+        psrlq       mm0,  mm1                       ;
+        movq2dq     xmm5, mm0                       ;
+
+        movq2dq     xmm6, mm2                       ;
+        movq2dq     xmm4, mm3                       ;
+        unpcklpd    xmm6, xmm4                      ; 取xmm4的低64位 + xmm6的低64位(高位在前, 下同)
+
+        pand        xmm3, xmm5                      ;
+
+        cmp         ecx,  16                        ; ecx >= 16 ?
+        jae         L720                            ;
+        pand        xmm2, xmm6                      ;
+        jmp         L730                            ;
+L720:
+        pand        xmm3, xmm6                      ;
+L730:
+
+        /* save_string */
+        movdqa      xmm4, xmmword ptr [eax]         ; read from nearest preceding boundary
+        movdqa      xmm5, xmmword ptr [eax + 16]    ; read from nearest preceding boundary
+        por         xmm4, xmm2                      ;
+        por         xmm5, xmm3                      ;
+        movdqa      xmmword ptr [eax], xmm4         ;
+        movq        qword ptr [eax + 16], xmm5      ;
+        jmp         L999                            ;
+
+        ALIGN_16
+L750:
+        /* when (ebx = [0, 64), edx = (24, 32]) */
+        pcmpeqb     xmm7, xmm7                      ; all set to bit "1"
+
+        pcmpeqb     mm0,  mm0                       ; all set to bit "1"
+        movd        mm1,  ebx                       ;
+//      movdq2q     mm0,  xmm6                      ;
+        psrlq       mm0,  mm1                       ;
+        movq2dq     xmm6, mm0                       ;
+//      shufpd      xmm7, xmm6, 0x00                ; 取xmm6的低64位 + xmm7的低64位
+        unpcklpd    xmm7, xmm6                      ; 取xmm6的低64位 + xmm7的低64位(高位在前, 下同)
+
+        movq2dq     xmm5, mm2                       ;
+        movq2dq     xmm4, mm3                       ;
+        unpcklpd    xmm5, xmm4                      ; 取xmm4的低64位 + xmm5的低64位(高位在前, 下同)
+
+        pand        xmm3, xmm7                      ;
+
+        cmp         ecx,  16                        ; ecx >= 16 ?
+        jae         L770                            ;
+        pand        xmm2, xmm5                      ;
+        jmp         L780                            ;
+L770:
+        pand        xmm3, xmm5                      ;
+L780:
+
+        /* save_string */
+        movdqa      xmm4, xmmword ptr [eax]         ; read from nearest preceding boundary
+        movdqa      xmm5, xmmword ptr [eax + 16]    ; read from nearest preceding boundary
+        por         xmm4, xmm2                      ;
+        por         xmm5, xmm3                      ;
+        movdqa      xmmword ptr [eax], xmm4         ;
+        movdqa      xmmword ptr [eax + 16], xmm5    ;
+
+L999:
         ; Zero-byte found. Compute string length
         sub         eax, ARG_1                      ; subtract start address
         add         eax, edx                        ; add byte index

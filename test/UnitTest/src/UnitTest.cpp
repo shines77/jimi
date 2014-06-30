@@ -42,6 +42,7 @@
 
 #include <stdlib.h>
 #include <conio.h>
+#include <intrin.h>
 #include <string>
 #include <locale>
 
@@ -395,10 +396,88 @@ void ngx_strlow(unsigned char *dest, unsigned char *src, size_t n)
     }
 }
 
+void Jm_StrLwr_Verify()
+{
+    int i, l = 0;
+    int ch, errors = 0;
+    size_t size, bufSize, str_len;
+    int alignment, offset;
+    char *buffer1, *buffer2, *buffer3, *buffer4;
+    char *strTest1, *strTest2, *temp;
+    char checkCharList[] = { '@', 'A', 'Q', 'Z', '[', 'a', 'q', 'z', '0', ' ', '\b' };
+    int sizeCharList = jm_countof(checkCharList);
+
+    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
+    printf("Jm_StrLwr_Verify() start...\n\n");
+#if 1
+    for (ch = 1; ch < 256; ++ch) {
+#else
+    for (l = 0; l < sizeCharList; ++l) {
+        ch = checkCharList[l];
+#endif
+        // 校验头部32字节
+        alignment = 32;
+        bufSize = 256 * sizeof(char);
+        buffer1 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
+        buffer2 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
+        buffer3 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
+        buffer4 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
+        for (i = 0; i < (int)bufSize; ++i) {
+            buffer1[i] = ngx_toupper(ch);
+            buffer2[i] = ngx_toupper(ch);
+        }
+        buffer1[bufSize - 1] = '\0';
+        buffer2[bufSize - 1] = '\0';
+        for (offset = 32; offset < 64; ++offset) {
+            for (str_len = 0; str_len < 128; ++str_len) {
+                memcpy(buffer3, buffer1, bufSize);
+                memcpy(buffer4, buffer2, bufSize);
+
+                strTest1 = buffer3 + offset;
+                strTest1[str_len] = '\0';
+                temp = jm_strlwr(strTest1, str_len + 1);
+                //temp = strlwr(strTest1);
+
+                if (ch == 'A' && offset == 33 && str_len == 25) {
+                    ch = ch;
+                }
+
+                strTest2 = buffer4 + offset;
+                strTest2[str_len] = '\0';
+                size = jmf_strlwr(strTest2);
+
+                if (memcmp(buffer3, buffer4, bufSize) != 0) {
+                    // got some errors
+                    printf("Error at char of: \'%c\', offset = %d, strlen = %d\n", ch, offset, str_len);
+                    printf("strTest1 = %s\n", strTest1);
+                    printf("strTest2 = %s\n", strTest2);
+                    errors++;
+                    _getch();
+                    printf("\n");
+                }
+            }
+        }
+        if (buffer1) _aligned_free(buffer1);
+        if (buffer2) _aligned_free(buffer2);
+        if (buffer3) _aligned_free(buffer3);
+        if (buffer4) _aligned_free(buffer4);
+    }
+
+    if (errors == 0)
+        printf("All verify is passed ...\n");
+
+    printf("\n");
+    printf("Jm_StrLwr_Verify() done...\n\n");
+    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
+}
+
+/* 每次进行strlwr转换时是否重新还原字符串到初始状态? */
+#define STRLWR_RECOPY_EVERY_TIME        0
+
 void StrLwr_Test(int nTestLen)
 {
     int i;
-    static const int alignment = 8;
+    static const int alignment = 4;
 #if defined(_DEBUG) || 0
     static const int loop_times = 200000;
 #else
@@ -424,6 +503,10 @@ void StrLwr_Test(int nTestLen)
         tolower_test1[nTestLen] = '\0';
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
+#if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            ::jm_strncpy(tolower_test1, nBufLen, jabberwocky, nTestLen);
+            tolower_test1[nTestLen] = '\0';
+#endif
             result_str = ::strlwr(tolower_test1);
         }
         sw.stop();
@@ -438,6 +521,10 @@ void StrLwr_Test(int nTestLen)
         tolower_test2[nTestLen] = '\0';
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
+#if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            ::jm_strncpy(tolower_test2, nBufLen, jabberwocky, nTestLen);
+            tolower_test2[nTestLen] = '\0';
+#endif
             result_str = ::jm_strlwr(tolower_test2, nBufLen);
         }
         sw.stop();
@@ -452,6 +539,10 @@ void StrLwr_Test(int nTestLen)
         tolower_test3[nTestLen] = '\0';
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
+#if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            ::jm_strncpy(tolower_test3, nBufLen, jabberwocky, nTestLen);
+            tolower_test3[nTestLen] = '\0';
+#endif
             ngx_strlwr((unsigned char *)tolower_test3);
         }
         sw.stop();
@@ -466,6 +557,10 @@ void StrLwr_Test(int nTestLen)
         tolower_test4[nTestLen] = '\0';
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
+#if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            ::jm_strncpy(tolower_test4, nBufLen, jabberwocky, nTestLen);
+            tolower_test4[nTestLen] = '\0';
+#endif
             strlwr_std(tolower_test4);
         }
         sw.stop();
@@ -480,6 +575,10 @@ void StrLwr_Test(int nTestLen)
         tolower_test5[nTestLen] = '\0';
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
+#if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            ::jm_strncpy(tolower_test5, nBufLen, jabberwocky, nTestLen);
+            tolower_test5[nTestLen] = '\0';
+#endif
             strlwr_table(tolower_test5);
         }
         sw.stop();
@@ -488,8 +587,8 @@ void StrLwr_Test(int nTestLen)
     }
     //printf("\n");
 
-#if 1
-    tolower_test6 = (char *)::_aligned_offset_malloc(nBufLen * sizeof(char), alignment, (alignment - 0));
+#if 0
+    tolower_test6 = (char *)::_aligned_offset_malloc(nBufLen * sizeof(char), alignment, (alignment - 4));
 #else
     tolower_test6 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
 #endif
@@ -499,6 +598,10 @@ void StrLwr_Test(int nTestLen)
         tolower_test6[nTestLen] = '\0';
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
+#if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            ::jm_strncpy(tolower_test6, nBufLen, jabberwocky, nTestLen);
+            tolower_test6[nTestLen] = '\0';
+#endif
             size = ::jmf_strlwr(tolower_test6);
             //size = ::jmf_strlen(tolower_test6);
         }
@@ -540,80 +643,6 @@ void StrLwr_Test(int nTestLen)
         ::_aligned_free(tolower_test5);
     if (tolower_test6)
         ::_aligned_free(tolower_test6);
-}
-
-void Jm_StrLwr_Verify()
-{
-    int i, l = 0;
-    int ch, errors = 0;
-    size_t size, bufSize, str_len;
-    int alignment, offset;
-    char *buffer1, *buffer2, *buffer3, *buffer4;
-    char *strTest1, *strTest2, *temp;
-    char checkCharList[] = { '@', 'A', 'Q', 'Z', '[', 'a', 'q', 'z', '0', ' ', '\b' };
-    int sizeCharList = jm_countof(checkCharList);
-
-    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
-    printf("Jm_StrLwr_Verify() start...\n\n");
-#if 1
-    for (ch = 1; ch < 256; ++ch) {
-#else
-    for (l = 0; l < sizeCharList; ++l) {
-        ch = checkCharList[l];
-#endif
-        // 校验头部32字节
-        alignment = 32;
-        bufSize = 160 * sizeof(char);
-        buffer1 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
-        buffer2 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
-        buffer3 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
-        buffer4 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
-        for (i = 0; i < (int)bufSize; ++i) {
-            buffer1[i] = ngx_toupper(ch);
-            buffer2[i] = ngx_toupper(ch);
-        }
-        buffer1[bufSize - 1] = '\0';
-        buffer2[bufSize - 1] = '\0';
-        for (offset = 32; offset < 64; ++offset) {
-            for (str_len = 0; str_len < 64; ++str_len) {
-                memcpy(buffer3, buffer1, bufSize);
-                memcpy(buffer4, buffer2, bufSize);
-
-                strTest1 = buffer3 + offset;
-                strTest1[str_len] = '\0';
-                temp = jm_strlwr(strTest1, str_len + 1);
-
-                if (ch == 'A' && offset == 33 && str_len == 24) {
-                    ch = ch;
-                }
-
-                strTest2 = buffer4 + offset;
-                strTest2[str_len] = '\0';
-                size = jmf_strlwr(strTest2);
-
-                if (memcmp(buffer3, buffer4, bufSize) != 0) {
-                    // got some errors
-                    printf("Error at char of: \'%c\', offset = %d, strlen = %d\n", ch, offset, str_len);
-                    printf("strTest1 = %s\n", strTest1);
-                    printf("strTest2 = %s\n", strTest2);
-                    errors++;
-                    _getch();
-                    printf("\n");
-                }
-            }
-        }
-        if (buffer1) _aligned_free(buffer1);
-        if (buffer2) _aligned_free(buffer2);
-        if (buffer3) _aligned_free(buffer3);
-        if (buffer4) _aligned_free(buffer4);
-    }
-
-    if (errors == 0)
-        printf("All verify is passed ...\n");
-
-    printf("\n");
-    printf("Jm_StrLwr_Verify() done...\n\n");
-    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
 }
 
 void String_Performance_Test()
@@ -2029,7 +2058,62 @@ bool win_iconv_test()
     return true;
 }
 
-#include <intrin.h>
+class resA
+{
+public:
+    resA()  { std::cout << "resA"  << std::endl; }
+    ~resA() { std::cout << "~resA" << std::endl; }
+};
+
+class resB
+{
+public:
+    resB()  { std::cout << "resB"  << std::endl; }
+    ~resB() { std::cout << "~resB" << std::endl; }
+};
+
+template<class T>
+class A
+{
+public:
+    A()  { std::cout << "A" << std::endl; }
+    ~A() {
+        std::cout << "~A" << std::endl;
+        Destroy(true);
+    }
+    void Destroy(bool isDestructor = false) {
+        T* pThis = static_cast<T *>(this);
+        if (pThis && !pThis->hasDisposed()) {
+            pThis->setDisposed();
+            if (isDestructor)
+                pThis->~T();
+            else
+                delete pThis;
+        }
+    }
+private:
+    resA resA;
+};
+
+class B : public A<B>
+{
+public:
+    B() : hasDisposed_(false) { std::cout << "B" << std::endl; }
+    ~B() { std::cout << "~B" << std::endl; }
+    bool hasDisposed() { return hasDisposed_; };
+    void setDisposed() { hasDisposed_ = true; };
+
+private:
+    bool hasDisposed_;
+    resB resB;
+};
+
+void template_inherit_test()
+{
+    A<B>* a = new B();
+    a->Destroy();
+    //delete a;
+}
 
 int UnitTest_Main(int argc, char *argv[])
 {
@@ -2045,7 +2129,12 @@ int UnitTest_Main(int argc, char *argv[])
         sLog.info(strCmdLine.c_str());
     }
 
-    printf("\n");
+    //template_inherit_test();
+    if (true && 0) {
+        ::system("pause");
+        sLog.log_end();
+        return 0;
+    }
 
     // CPU 唤醒/预热 500毫秒
     jimi_cpu_warmup(500);
