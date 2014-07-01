@@ -42,6 +42,7 @@
 
 #include <stdlib.h>
 #include <conio.h>
+#include <time.h>
 #include <intrin.h>
 #include <string>
 #include <locale>
@@ -73,7 +74,7 @@
 //
 
 #ifdef _DEBUG
-  #define DEBUG_CLIENTBLOCK  new( _CLIENT_BLOCK, __FILE__, __LINE__)
+  #define DEBUG_CLIENTBLOCK  new(_CLIENT_BLOCK, __FILE__, __LINE__)
 #else
   #define DEBUG_CLIENTBLOCK
 #endif
@@ -98,8 +99,8 @@
  **********************************************************/
 #ifdef _MSC_VER
 #ifdef _DEBUG
-// 如果你没有安装vld(Visual Leak Detector), 请注释掉这一句.
-//#include <vld.h>
+// 如果你没有安装vld(Visual Leak Detector), 请注释掉这一句. vld的官网请看上面.
+#include <vld.h>
 #endif  /* _DEBUG */
 #endif  /* _MSC_VER */
 
@@ -408,7 +409,7 @@ void Jm_StrLwr_Verify()
     int sizeCharList = jm_countof(checkCharList);
 
     printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
-    printf("Jm_StrLwr_Verify() start...\n\n");
+    printf("Jm_StrLwr_Verify() start ...\n\n");
 #if 1
     for (ch = 1; ch < 256; ++ch) {
 #else
@@ -416,27 +417,40 @@ void Jm_StrLwr_Verify()
         ch = checkCharList[l];
 #endif
         // 校验头部32字节
-        alignment = 32;
+        alignment = 4;
         bufSize = 256 * sizeof(char);
         buffer1 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
         buffer2 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
         buffer3 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
         buffer4 = (char *)_aligned_offset_malloc(bufSize, alignment, 0);
         for (i = 0; i < (int)bufSize; ++i) {
-            buffer1[i] = ngx_toupper(ch);
-            buffer2[i] = ngx_toupper(ch);
+            //buffer1[i] = ngx_toupper(ch);
+            //buffer2[i] = ngx_toupper(ch);
+            buffer1[i] = 'A' + (ch & 15);
+            buffer2[i] = 'A' + (ch & 15);
         }
         buffer1[bufSize - 1] = '\0';
         buffer2[bufSize - 1] = '\0';
-        for (offset = 32; offset < 64; ++offset) {
+        for (offset = 0; offset < 64; ++offset) {
             for (str_len = 0; str_len < 128; ++str_len) {
                 memcpy(buffer3, buffer1, bufSize);
                 memcpy(buffer4, buffer2, bufSize);
 
                 strTest1 = buffer3 + offset;
+                memset((void *)strTest1, ch, str_len);
                 strTest1[str_len] = '\0';
                 temp = jm_strlwr(strTest1, str_len + 1);
                 //temp = strlwr(strTest1);
+
+                if (ch == 1 && offset == 0 && str_len == 20) {
+                    //_getch();
+                    ch = ch;
+                }
+
+                if (ch == 'A' && offset == 28 && str_len == 24) {
+                    //_getch();
+                    ch = ch;
+                }
 
                 if (ch == 'A' && offset == 33 && str_len == 25) {
                     ch = ch;
@@ -447,12 +461,13 @@ void Jm_StrLwr_Verify()
                 }
 
                 strTest2 = buffer4 + offset;
+                memset((void *)strTest2, ch, str_len);
                 strTest2[str_len] = '\0';
                 size = jmf_strlwr(strTest2);
 
                 if (memcmp(buffer3, buffer4, bufSize) != 0) {
                     // got some errors
-                    printf("Error at char of: \'%c\', offset = %d, strlen = %d\n", ch, offset, str_len);
+                    printf("Error at char of: \'%c\', ch = %d, offset = %d, strlen = %d\n", ch, ch, offset, str_len);
                     printf("strTest1 = %s\n", strTest1);
                     printf("strTest2 = %s\n", strTest2);
                     errors++;
@@ -471,7 +486,7 @@ void Jm_StrLwr_Verify()
         printf("All verify is passed ...\n");
 
     printf("\n");
-    printf("Jm_StrLwr_Verify() done...\n\n");
+    printf("Jm_StrLwr_Verify() done ...\n\n");
     printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
 }
 
@@ -490,9 +505,21 @@ void StrLwr_Test(int nTestLen)
     int nBufLen, nStrLen;
     char *tolower_test1, *tolower_test2, *tolower_test3;
     char *tolower_test4, *tolower_test5, *tolower_test6;
-    char *result_str;
+    char *result_str = NULL;
     double time1, time2, time3, time4, time5, time6;
     stop_watch_ex sw;
+
+    tolower_test1 = NULL;
+    tolower_test2 = NULL;
+    tolower_test3 = NULL;
+    tolower_test4 = NULL;
+    tolower_test5 = NULL;
+
+    time1 = 0.0;
+    time2 = 0.0;
+    time3 = 0.0;
+    time4 = 0.0;
+    time5 = 0.0;
 
     nStrLen = ::jm_strlen(jabberwocky);
     if (nTestLen > nStrLen)
@@ -501,6 +528,7 @@ void StrLwr_Test(int nTestLen)
     if (nBufLen < 64)
         nBufLen = 64;
 
+#if 1
     tolower_test1 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
     if (tolower_test1) {
         ::jm_strncpy(tolower_test1, nBufLen, jabberwocky, nTestLen);
@@ -606,6 +634,7 @@ void StrLwr_Test(int nTestLen)
         //printf("tolower_test5.c_str() = \n%s\n\tolower_test5.size() = %d bytes\n", tolower_test5, ::jm_strlen(tolower_test5));
     }
     //printf("\n");
+#endif
 
 #if 0
     tolower_test6 = (char *)::_aligned_offset_malloc(nBufLen * sizeof(char), alignment, (alignment - 4));
@@ -614,14 +643,14 @@ void StrLwr_Test(int nTestLen)
 #endif
     if (tolower_test6) {
         size_t size;
-        ::jm_strncpy(tolower_test6, nBufLen, jabberwocky, nTestLen);
+        ::jm_strncpy(tolower_test6, nBufLen - 1, jabberwocky, nTestLen);
         tolower_test6[nTestLen] = '\0';
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
 #if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
             sw.suspend();
-            ::jm_strncpy(tolower_test6, nBufLen, jabberwocky, nTestLen);
-            tolower_test6[nTestLen] = '\0';
+            if (::jm_strncpy(tolower_test6, nBufLen - 1, jabberwocky, nTestLen))
+                tolower_test6[nTestLen] = '\0';
             sw.resume();
 #endif
             size = ::jmf_strlwr(tolower_test6);
@@ -642,7 +671,8 @@ void StrLwr_Test(int nTestLen)
         printf("ngx_strlwr(str)   time = %-7.3f ms\n", time3);
         printf("strlwr_std(str)   time = %-7.3f ms\n", time4);
         printf("strlwr_table(str) time = %-7.3f ms\n", time5);
-        printf("jmf_strlwr(str)   time = %-7.3f ms, size = %d\n", time6, jm_strlen(tolower_test6));
+        printf("jmf_strlwr(str)   time = %-7.3f ms\n", time6);
+        //printf("jmf_strlwr(str)   time = %-7.3f ms, size = %d\n", time6, jm_strlen(tolower_test6));
     }
     else {
         printf("strlwr(str)       time = %-9.6f ms\n", time1);
@@ -675,6 +705,16 @@ void StrLwr_Test(int nTestLen)
         tolower_test5 = NULL;
     }
     if (tolower_test6) {
+#if 0
+        uintptr_t pv = (uintptr_t)tolower_test6;
+        pv = (pv + (sizeof(uintptr_t) - 1)) & ~(sizeof(uintptr_t) - 1);
+        uintptr_t *pvReal = (uintptr_t *)pv - 1;
+#ifdef _DEBUG
+        pvReal--;
+#endif
+        printf("pv = 0x%08X, pvReal = 0x%08X, *pvReal = 0x%08X\n\n", pv, pvReal, *pvReal);
+        ::system("pause");
+#endif
         ::_aligned_free(tolower_test6);
         tolower_test6 = NULL;
     }
@@ -2093,6 +2133,30 @@ bool win_iconv_test()
     return true;
 }
 
+void malloc_addr_test()
+{
+    int i;
+    void *p;
+    size_t size;
+    void *list[256];
+    srand((unsigned)time(NULL));
+    for (i = 0; i < 256; ++i) {
+        size = rand();
+        p = ::malloc(size);
+        list[i] = p;
+        printf("p = 0x%08X, size = %d\n", p, size);
+    }
+
+    for (i = 0; i < 256; ++i) {
+        if (list[i]) {
+            free(list[i]);
+            list[i] = NULL;
+        }
+    }
+
+    printf("\n");
+}
+
 class resA
 {
 public:
@@ -2157,7 +2221,7 @@ int UnitTest_Main(int argc, char *argv[])
 
     sLog.log_begin();
 
-    /*
+    ///*
     jimi::util::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
@@ -2166,15 +2230,24 @@ int UnitTest_Main(int argc, char *argv[])
     }
     //*/
 
-    //template_inherit_test();
-    if (true && 0) {
+#if 0
+    if (true) {
+        template_inherit_test();
         ::system("pause");
         sLog.log_end();
         return 0;
     }
+#endif
 
     // CPU 唤醒/预热 500毫秒
     jimi_cpu_warmup(500);
+
+#if 0
+    malloc_addr_test();
+
+    ::system("pause");
+    return 0;
+#endif
 
 #if 0
     int cpuinfo[4] = { 0 };
@@ -2247,7 +2320,9 @@ int UnitTest_Main(int argc, char *argv[])
     String_Performance_Test();
 #endif
 
+#if 1
     Fast_StrLen_Test();
+#endif
 
     //::system("pause");
 

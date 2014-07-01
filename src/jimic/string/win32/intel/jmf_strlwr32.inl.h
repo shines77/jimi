@@ -82,9 +82,9 @@ size_t __CDECL jmf_strlwr(char *str)
         sub         esp, ARGS      // # Generate Stack Frame
 #endif
 #if 0
-        push        ebp
         push        edi
         push        esi
+        push        ebp
 #endif
         push        ebx
 
@@ -103,8 +103,6 @@ strlwr_SSE2:
         punpcklqdq  xmm1, xmm1                      ;
         punpcklqdq  xmm6, xmm6                      ;
         pxor        xmm7, xmm7                      ; all set to bit "0"
-        pcmpeqb     mm2,  mm2                       ; all set to bit "1"
-        pcmpeqb     mm3,  mm3                       ; all set to bit "1"
         and         ecx,  0x0000001F                ; lower 5 bits indicate misalignment
         jz          L220                            ;
         cmp         ecx,  0x00000010                ; < 16 bytes ?
@@ -141,7 +139,6 @@ strlwr_SSE2:
 
         pxor        xmm3, xmm3                      ; all set to bit "0"
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
-//      movdq2q     mm0,  xmm3                      ;
         movd        mm1,  ecx                       ;
         psllq       mm0,  mm1                       ;
         movq2dq     xmm4, mm0                       ;
@@ -157,13 +154,12 @@ strlwr_SSE2:
         and         eax,  0xFFFFFFE0                ; align pointer by 32 bytes
         jmp         L200                            ;
 
-        ALIGN_16
+//      ALIGN_16
 L050:
         /* when (ecx = [0, 64)) */
 
         pcmpeqb     xmm3, xmm3                      ; all set to bit "1"
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
-//      movdq2q     mm0,  xmm3                      ;
         movd        mm1,  ecx                       ;
         psllq       mm0,  mm1                       ;
         movq2dq     xmm4, mm0                       ;
@@ -217,12 +213,12 @@ L100:
         /* when (ecx = [64, 128)) */
         sub         ecx,  64                        ;
 
+        pxor        xmm5, xmm5                      ; all set to bit "0"
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
-//      movdq2q     mm0,  xmm5                      ;
         movd        mm1,  ecx                       ;
         psllq       mm0,  mm1                       ;
-        movq2dq     xmm5, mm0                       ;
-//      unpcklpd    xmm5, xmm4                      ; 取xmm4的低64位 + xmm5的低64位(高位在前, 下同)
+        movq2dq     xmm4, mm0                       ;
+        unpcklpd    xmm5, xmm4                      ; 取xmm4的低64位 + xmm5的低64位(高位在前, 下同)
 
         pand        xmm2, xmm5                      ;
 
@@ -231,23 +227,24 @@ L100:
         movdqa      xmm5, xmmword ptr [eax + 16]    ; read from nearest preceding boundary
         por         xmm4, xmm2                      ;
         por         xmm5, xmm3                      ;
-        movq        qword ptr [eax + 8], xmm4       ;
+//      unpcklpd    xmm4, xmm4                      ;
+//      movq        qword ptr [eax + 8], xmm4       ;
+        movdqa      xmmword ptr [eax], xmm4         ;
         movdqa      xmmword ptr [eax + 16], xmm5    ;
 
         jmp         L200                            ;
 
-        ALIGN_16
+//      ALIGN_16
 L150:
         /* when (ecx = [0, 64)) */
 
         pcmpeqb     xmm4, xmm4                      ; all set to bit "1"
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
         movd        mm1,  ecx                       ;
-//      movdq2q     mm0,  xmm5                      ;
         psllq       mm0,  mm1                       ;
         movq2dq     xmm5, mm0                       ;
-//      shufpd      xmm5, xmm4, 0x00                ; 取xmm4的低64位 + xmm4的低64位
-        unpcklpd    xmm5, xmm4                      ; 取xmm4的低64位 + xmm4的低64位(高位在前, 下同)
+//      shufpd      xmm5, xmm4, 0x00                ; 取xmm4的低64位 + xmm5的低64位
+        unpcklpd    xmm5, xmm4                      ; 取xmm4的低64位 + xmm5的低64位(高位在前, 下同)
 
         pand        xmm2, xmm5                      ;
 
@@ -258,8 +255,6 @@ L150:
         por         xmm5, xmm3                      ;
         movdqa      xmmword ptr [eax], xmm4         ;
         movdqa      xmmword ptr [eax + 16], xmm5    ;
-
-        jmp         L200                            ;
 
         ALIGN_16
 L200:
@@ -343,14 +338,13 @@ L400:
         movq        qword ptr [eax], xmm5           ;
         jmp         L999                            ;
 
-        ALIGN_16
+//      ALIGN_16
 L450:
         /* when (ebx = [128, 192), edx = (8, 16]) */
         sub         ebx,  128                       ;
 
         pcmpeqb     xmm3, xmm3                      ; all set to bit "1"
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
-//      movdq2q     mm0,  xmm3                      ;
         movd        mm1,  ebx                       ;
         psrlq       mm0,  mm1                       ;
         movq2dq     xmm4, mm0                       ;
@@ -385,7 +379,6 @@ L500:
         sub         ebx,  64                        ;
 
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
-//      movdq2q     mm0,  xmm6                      ;
         movd        mm1,  ebx                       ;
         psrlq       mm0,  mm1                       ;
         movq2dq     xmm5, mm0                       ;
@@ -401,14 +394,13 @@ L500:
         movq        qword ptr [eax + 16], xmm5      ;
         jmp         L999                            ;
 
-        ALIGN_16
+//      ALIGN_16
 L550:
         /* when (ebx = [0, 64), edx = (24, 32]) */
         pcmpeqb     xmm7, xmm7                      ; all set to bit "1"
 
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
         movd        mm1,  ebx                       ;
-//      movdq2q     mm0,  xmm6                      ;
         psrlq       mm0,  mm1                       ;
         movq2dq     xmm6, mm0                       ;
 //      shufpd      xmm7, xmm6, 0x00                ; 取xmm6的低64位 + xmm7的低64位
@@ -484,14 +476,13 @@ L630:
         movq        qword ptr [eax], xmm5           ;
         jmp         L999                            ;
 
-        ALIGN_16
+//      ALIGN_16
 L650:
         /* when (ebx = [128, 192), edx = (8, 16]) */
         sub         ebx,  128                       ;
 
         pcmpeqb     xmm3, xmm3                      ; all set to bit "1"
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
-//      movdq2q     mm0,  xmm3                      ;
         movd        mm1,  ebx                       ;
         psrlq       mm0,  mm1                       ;
         movq2dq     xmm4, mm0                       ;
@@ -531,7 +522,6 @@ L700:
         sub         ebx,  64                        ;
 
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
-//      movdq2q     mm0,  xmm6                      ;
         movd        mm1,  ebx                       ;
         psrlq       mm0,  mm1                       ;
         movq2dq     xmm5, mm0                       ;
@@ -559,14 +549,13 @@ L730:
         movq        qword ptr [eax + 16], xmm5      ;
         jmp         L999                            ;
 
-        ALIGN_16
+//      ALIGN_16
 L750:
         /* when (ebx = [0, 64), edx = (24, 32]) */
         pcmpeqb     xmm7, xmm7                      ; all set to bit "1"
 
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
         movd        mm1,  ebx                       ;
-//      movdq2q     mm0,  xmm6                      ;
         psrlq       mm0,  mm1                       ;
         movq2dq     xmm6, mm0                       ;
 //      shufpd      xmm7, xmm6, 0x00                ; 取xmm6的低64位 + xmm7的低64位
@@ -593,7 +582,9 @@ L780:
         por         xmm5, xmm3                      ;
         movdqa      xmmword ptr [eax], xmm4         ;
         movdqa      xmmword ptr [eax + 16], xmm5    ;
+        jmp         L999                            ;
 
+        ALIGN_16
 L999:
         ; Zero-byte found. Compute string length
         sub         eax, ARG_1                      ; subtract start address
@@ -613,9 +604,9 @@ strlwr_386:
 
         pop         ebx
 #if 0
+        pop         ebp
         pop         esi
         pop         edi
-        pop         ebp
 #endif
 
 #if defined(ARGS) && (ARGS > 0)

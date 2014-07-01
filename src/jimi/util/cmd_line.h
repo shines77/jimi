@@ -51,21 +51,21 @@ typedef enum Param_Type
 //
 struct ci_char_traits : public char_traits<char> {
 
-    static bool eq(char c1, char c2) { return toupper(c1) == toupper(c2); }
-    static bool ne(char c1, char c2) { return toupper(c1) != toupper(c2); }
-    static bool lt(char c1, char c2) { return toupper(c1) <  toupper(c2); }
+    static bool eq(char c1, char c2) { return ::toupper(c1) == ::toupper(c2); }
+    static bool ne(char c1, char c2) { return ::toupper(c1) != ::toupper(c2); }
+    static bool lt(char c1, char c2) { return ::toupper(c1) <  ::toupper(c2); }
 
     static int compare(const char* s1, const char* s2, size_t n) {
         while (n-- != 0) {
-            if (toupper(*s1) < toupper(*s2)) return -1;
-            if (toupper(*s1) > toupper(*s2)) return 1;
+            if (::toupper(*s1) < ::toupper(*s2)) return -1;
+            if (::toupper(*s1) > ::toupper(*s2)) return 1;
             ++s1; ++s2;
         }
         return 0;
     }
 
     static const char* find(const char* s, int n, char a) {
-        while (n-- > 0 && toupper(*s) != toupper(a)) {
+        while (n-- > 0 && ::toupper(*s) != ::toupper(a)) {
             ++s;
         }
         return s;
@@ -87,7 +87,7 @@ public:
 	{
 		// Initialize values
 		name = "";
-		values.clear();
+		//values.clear();
 		valueExpected = true;
 		type = PARAM_TYPE_UNKNOWN;
 	}
@@ -96,19 +96,13 @@ public:
 	{
 		// Initialize values
 		name = _name;
-		values.clear();
+		//values.clear();
 		valueExpected = true;
 		type = PARAM_TYPE_UNKNOWN;
 	}
 
     ~cmd_param()
     {
-        /*
-        std::vector<std::string>::iterator it;
-        for (it = values.begin(); it != values.end(); ++it) {
-            delete (*it);
-        }
-        //*/
         values.clear();
     }
 
@@ -132,13 +126,12 @@ public:
     // From: http://stackoverflow.com/questions/11635/case-insensitive-string-comparison-in-c
     //
     inline bool i_strcmp(const std::string& str1, const std::string& str2) {
-        if (str1.size() != str2.size()) {
+        if (str1.size() != str2.size())
             return false;
-        }
+
         for (std::string::const_iterator c1 = str1.begin(), c2 = str2.begin(); c1 != str1.end(); ++c1, ++c2) {
-            if (*c1 != tolower(*c2)) {
+            if (*c1 != ::tolower(*c2))
                 return false;
-            }
         }
         return true;
     }
@@ -156,16 +149,14 @@ public:
             std::string ivalue = value;
             std::transform(value.begin(), value.end(), ivalue.begin(), ::tolower);
             for (it = values.begin(); it != values.end(); ++it) {
-                if (i_strcmp(ivalue, (*it))) {
+                if (i_strcmp(ivalue, (*it)))
                     return (*it);
-                }
             }
         }
         else {
             for (it = values.begin(); it != values.end(); ++it) {
-                if ((*it) == value) {
+                if ((*it) == value)
                     return value;
-                }
             }
         }
         return retval;
