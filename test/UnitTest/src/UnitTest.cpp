@@ -442,6 +442,10 @@ void Jm_StrLwr_Verify()
                     ch = ch;
                 }
 
+                if (ch == 'A' && offset == 32 && str_len == 24) {
+                    ch = ch;
+                }
+
                 strTest2 = buffer4 + offset;
                 strTest2[str_len] = '\0';
                 size = jmf_strlwr(strTest2);
@@ -472,12 +476,12 @@ void Jm_StrLwr_Verify()
 }
 
 /* 每次进行strlwr转换时是否重新还原字符串到初始状态? */
-#define STRLWR_RECOPY_EVERY_TIME        0
+#define STRLWR_RECOPY_EVERY_TIME        1
 
 void StrLwr_Test(int nTestLen)
 {
     int i;
-    static const int alignment = 4;
+    static const int alignment = 8;
 #if defined(_DEBUG) || 0
     static const int loop_times = 200000;
 #else
@@ -488,7 +492,7 @@ void StrLwr_Test(int nTestLen)
     char *tolower_test4, *tolower_test5, *tolower_test6;
     char *result_str;
     double time1, time2, time3, time4, time5, time6;
-    stop_watch sw;
+    stop_watch_ex sw;
 
     nStrLen = ::jm_strlen(jabberwocky);
     if (nTestLen > nStrLen)
@@ -504,13 +508,16 @@ void StrLwr_Test(int nTestLen)
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
 #if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            sw.suspend();
             ::jm_strncpy(tolower_test1, nBufLen, jabberwocky, nTestLen);
             tolower_test1[nTestLen] = '\0';
+            sw.resume();
 #endif
             result_str = ::strlwr(tolower_test1);
         }
         sw.stop();
         time1 = sw.getMillisec();
+        //time1 = sw.getTotalMillisec();
         //printf("tolower_test1.c_str() = \n%s\n\ntolower_test1.size() = %d bytes\n", tolower_test1, ::jm_strlen(tolower_test1));
     }
     //printf("\n");
@@ -519,16 +526,20 @@ void StrLwr_Test(int nTestLen)
     if (tolower_test2) {
         ::jm_strncpy(tolower_test2, nBufLen, jabberwocky, nTestLen);
         tolower_test2[nTestLen] = '\0';
+        int str_len = ::jm_strlen(tolower_test2) + 1;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
 #if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            sw.suspend();
             ::jm_strncpy(tolower_test2, nBufLen, jabberwocky, nTestLen);
             tolower_test2[nTestLen] = '\0';
+            sw.resume();
 #endif
-            result_str = ::jm_strlwr(tolower_test2, nBufLen);
+            result_str = ::jm_strlwr(tolower_test2, str_len);
         }
         sw.stop();
         time2 = sw.getMillisec();
+        //time2 = sw.getTotalMillisec();
         //printf("tolower_test2.c_str() = \n%s\n\ntolower_test2.size() = %d bytes\n", tolower_test2, ::jm_strlen(tolower_test2));
     }
     //printf("\n");
@@ -540,13 +551,16 @@ void StrLwr_Test(int nTestLen)
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
 #if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            sw.suspend();
             ::jm_strncpy(tolower_test3, nBufLen, jabberwocky, nTestLen);
             tolower_test3[nTestLen] = '\0';
+            sw.resume();
 #endif
             ngx_strlwr((unsigned char *)tolower_test3);
         }
         sw.stop();
         time3 = sw.getMillisec();
+        //time3 = sw.getTotalMillisec();
         //printf("tolower_test3.c_str() = \n%s\n\tolower_test3.size() = %d bytes\n", tolower_test3, ::jm_strlen(tolower_test3));
     }
     //printf("\n");
@@ -558,13 +572,16 @@ void StrLwr_Test(int nTestLen)
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
 #if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            sw.suspend();
             ::jm_strncpy(tolower_test4, nBufLen, jabberwocky, nTestLen);
             tolower_test4[nTestLen] = '\0';
+            sw.resume();
 #endif
             strlwr_std(tolower_test4);
         }
         sw.stop();
         time4 = sw.getMillisec();
+        //time4 = sw.getTotalMillisec();
         //printf("tolower_test4.c_str() = \n%s\n\tolower_test4.size() = %d bytes\n", tolower_test4, ::jm_strlen(tolower_test4));
     }
     //printf("\n");
@@ -576,13 +593,16 @@ void StrLwr_Test(int nTestLen)
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
 #if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            sw.suspend();
             ::jm_strncpy(tolower_test5, nBufLen, jabberwocky, nTestLen);
             tolower_test5[nTestLen] = '\0';
+            sw.resume();
 #endif
             strlwr_table(tolower_test5);
         }
         sw.stop();
         time5 = sw.getMillisec();
+        //time5 = sw.getTotalMillisec();
         //printf("tolower_test5.c_str() = \n%s\n\tolower_test5.size() = %d bytes\n", tolower_test5, ::jm_strlen(tolower_test5));
     }
     //printf("\n");
@@ -599,19 +619,22 @@ void StrLwr_Test(int nTestLen)
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
 #if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            sw.suspend();
             ::jm_strncpy(tolower_test6, nBufLen, jabberwocky, nTestLen);
             tolower_test6[nTestLen] = '\0';
+            sw.resume();
 #endif
             size = ::jmf_strlwr(tolower_test6);
             //size = ::jmf_strlen(tolower_test6);
         }
         sw.stop();
         time6 = sw.getMillisec();
+        //time6 = sw.getTotalMillisec();
         //printf("tolower_test6.c_str() = \n%s\n\tolower_test6.size() = %d bytes\n", tolower_test6, size);
     }
     //printf("\n");
 
-    printf("str               size = %d bytes\n\n", ::jm_strlen(tolower_test5));
+    printf("str               size = %d bytes\n\n", nTestLen);
 
     if (loop_times > 100) {
         printf("strlwr(str)       time = %-7.3f ms\n", time1);
@@ -619,7 +642,7 @@ void StrLwr_Test(int nTestLen)
         printf("ngx_strlwr(str)   time = %-7.3f ms\n", time3);
         printf("strlwr_std(str)   time = %-7.3f ms\n", time4);
         printf("strlwr_table(str) time = %-7.3f ms\n", time5);
-        printf("jmf_strlwr(str)   time = %-7.3f ms\n", time6);
+        printf("jmf_strlwr(str)   time = %-7.3f ms, size = %d\n", time6, jm_strlen(tolower_test6));
     }
     else {
         printf("strlwr(str)       time = %-9.6f ms\n", time1);
@@ -631,18 +654,30 @@ void StrLwr_Test(int nTestLen)
     }
     printf("\n");
 
-    if (tolower_test1)
+    if (tolower_test1) {
         ::_aligned_free(tolower_test1);
-    if (tolower_test2)
+        tolower_test1 = NULL;
+    }
+    if (tolower_test2) {
         ::_aligned_free(tolower_test2);
-    if (tolower_test3)
+        tolower_test2 = NULL;
+    }
+    if (tolower_test3) {
         ::_aligned_free(tolower_test3);
-    if (tolower_test4)
+        tolower_test3 = NULL;
+    }
+    if (tolower_test4) {
         ::_aligned_free(tolower_test4);
-    if (tolower_test5)
+        tolower_test4 = NULL;
+    }
+    if (tolower_test5) {
         ::_aligned_free(tolower_test5);
-    if (tolower_test6)
+        tolower_test5 = NULL;
+    }
+    if (tolower_test6) {
         ::_aligned_free(tolower_test6);
+        tolower_test6 = NULL;
+    }
 }
 
 void String_Performance_Test()
@@ -2122,12 +2157,14 @@ int UnitTest_Main(int argc, char *argv[])
 
     sLog.log_begin();
 
+    /*
     jimi::util::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
         std::string strCmdLine = cmdLine.getCmdLine();
         sLog.info(strCmdLine.c_str());
     }
+    //*/
 
     //template_inherit_test();
     if (true && 0) {

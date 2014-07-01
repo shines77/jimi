@@ -52,7 +52,7 @@ cmd_line &cmd_line::getInstance()
 
 std::string cmd_line::get_cmdline()
 {
-    string str_cmdline;
+    std::string str_cmdline;
     str_cmdline = cmd_exe + " " + cmd_opts;
     return str_cmdline;
 }
@@ -62,11 +62,11 @@ std::string cmd_line::getCmdLine()
     return get_cmdline();
 }
 
-bool cmd_line::hasArgument(const string &strArgument)
+bool cmd_line::hasArgument(const std::string &strArgument)
 {
     cmd_param_map::iterator it;
     if (!caseSensitive) {
-        string strArgumentL = strArgument;
+        std::string strArgumentL = strArgument;
         std::transform(strArgument.begin(), strArgument.end(), strArgumentL.begin(), ::tolower);
         it = params.find(strArgumentL);
     }
@@ -77,11 +77,11 @@ bool cmd_line::hasArgument(const string &strArgument)
     return (it != params.end());
 }
 
-cmd_param *cmd_line::getArgument(const string &strArgument)
+cmd_param *cmd_line::getArgument(const std::string &strArgument)
 {
     cmd_param_map::iterator iter;
     if (!caseSensitive) {
-        string strArgumentL = strArgument;
+        std::string strArgumentL = strArgument;
         std::transform(strArgument.begin(), strArgument.end(), strArgumentL.begin(), ::tolower);
         iter = params.find(strArgumentL);
     }
@@ -109,7 +109,7 @@ int cmd_line::parse(int _argc, char **_argv)
     argv = _argv;
 
     char *arg;
-    string opt, _cmd_opt;
+    std::string opt, _cmd_opt;
     cmd_param *paramLast = NULL;
     bool isFirstParam = true;
     _cmd_opt = "";
@@ -127,7 +127,7 @@ int cmd_line::parse(int _argc, char **_argv)
                     params.insert(cmd_param_pair(opt, param));
                 }
                 else {
-                    string opt_lower = opt;
+                    std::string opt_lower = opt;
                     std::transform(opt.begin(), opt.end(), opt_lower.begin(), ::tolower);
                     params.insert(cmd_param_pair(opt_lower, param));
                 }
@@ -156,9 +156,9 @@ int cmd_line::parse(int _argc, char **_argv)
     return param_count;
 }
 
-int cmd_line::checkToken(int n, const char *arg, string &opt)
+int cmd_line::checkToken(int n, const char *arg, std::string &opt)
 {
-    std::vector<string>::iterator it;
+    std::vector<std::string>::iterator it;
     size_t len = strlen(arg);
     size_t l_pos, r_pos;
     if (len == 0)

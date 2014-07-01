@@ -92,7 +92,7 @@ public:
 		type = PARAM_TYPE_UNKNOWN;
 	}
 
-	cmd_param(const string &_name)
+	cmd_param(const std::string &_name)
 	{
 		// Initialize values
 		name = _name;
@@ -104,7 +104,7 @@ public:
     ~cmd_param()
     {
         /*
-        std::vector<string>::iterator it;
+        std::vector<std::string>::iterator it;
         for (it = values.begin(); it != values.end(); ++it) {
             delete (*it);
         }
@@ -116,7 +116,7 @@ public:
         return values.size();
     }
 
-    int addValue(string value)
+    int addValue(std::string value)
     {
         values.push_back(value);
         return values.size();
@@ -131,11 +131,11 @@ public:
     // Case insensitive string comparison in C++
     // From: http://stackoverflow.com/questions/11635/case-insensitive-string-comparison-in-c
     //
-    inline bool i_strcmp(const string& str1, const string& str2) {
+    inline bool i_strcmp(const std::string& str1, const std::string& str2) {
         if (str1.size() != str2.size()) {
             return false;
         }
-        for (string::const_iterator c1 = str1.begin(), c2 = str2.begin(); c1 != str1.end(); ++c1, ++c2) {
+        for (std::string::const_iterator c1 = str1.begin(), c2 = str2.begin(); c1 != str1.end(); ++c1, ++c2) {
             if (*c1 != tolower(*c2)) {
                 return false;
             }
@@ -143,17 +143,17 @@ public:
         return true;
     }
 
-    string findValue(string &value, bool caseSensitive = false)
+    std::string findValue(std::string &value, bool caseSensitive = false)
     {
         return getValue(value, caseSensitive);
     }
 
-    string getValue(string &value, bool caseSensitive = false)
+    std::string getValue(std::string &value, bool caseSensitive = false)
     {
-        string retval = "";
-        std::vector<string>::iterator it;
+        std::string retval = "";
+        std::vector<std::string>::iterator it;
         if (!caseSensitive) {
-            string ivalue = value;
+            std::string ivalue = value;
             std::transform(value.begin(), value.end(), ivalue.begin(), ::tolower);
             for (it = values.begin(); it != values.end(); ++it) {
                 if (i_strcmp(ivalue, (*it))) {
@@ -172,9 +172,9 @@ public:
     }
 };
 
-typedef std::pair<string, cmd_param *>  cmd_param_pair;
-typedef std::map<string, cmd_param *>   cmd_param_map;
-typedef std::pair<std::map<string, cmd_param *>::iterator, bool> cmd_param_pair_result;
+typedef std::pair<std::string, cmd_param *>  cmd_param_pair;
+typedef std::map<std::string, cmd_param *>   cmd_param_map;
+typedef std::pair<std::map<std::string, cmd_param *>::iterator, bool> cmd_param_pair_result;
 
 class JIMI_API cmd_line
 {
@@ -192,8 +192,8 @@ public:
     static cmd_line *s_cmd_line;
     static cmd_line &getInstance();
 
-    int checkToken(int n, const char *_arg, string &opt);
-    int setTokens(const string &_tokens) { tokens = _tokens; };
+    int checkToken(int n, const char *_arg, std::string &opt);
+    int setTokens(const std::string &_tokens) { tokens = _tokens; };
     int addToken(const char *_token);
 
     std::string get_cmdline();
@@ -201,13 +201,13 @@ public:
 
     int parse(int _argc, char **_argv);
 
-    bool        hasArgument(const string &strArgument);
-    cmd_param  *getArgument(const string &strArgument);
+    bool        hasArgument(const std::string &strArgument);
+    cmd_param  *getArgument(const std::string &strArgument);
 
 public:
-    string          tokens;
-    string          cmd_exe;
-    string          cmd_opts;
+    std::string     tokens;
+    std::string     cmd_exe;
+    std::string     cmd_opts;
     int             argc;
     char            **argv;
     bool            caseSensitive;

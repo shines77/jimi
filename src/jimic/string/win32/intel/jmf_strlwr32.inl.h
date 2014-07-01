@@ -154,7 +154,6 @@ strlwr_SSE2:
         por         xmm5, xmm2                      ;
         movdqa      xmmword ptr [eax], xmm5         ;
 
-        xor         ecx,  ecx                       ;
         and         eax,  0xFFFFFFE0                ; align pointer by 32 bytes
         jmp         L200                            ;
 
@@ -177,7 +176,6 @@ L050:
         por         xmm5, xmm2                      ;
         movdqa      xmmword ptr [eax], xmm5         ;
 
-        xor         ecx,  ecx                       ;
         and         eax,  0xFFFFFFE0                ; align pointer by 32 bytes
         jmp         L200                            ;
 
@@ -236,8 +234,6 @@ L100:
         movq        qword ptr [eax + 8], xmm4       ;
         movdqa      xmmword ptr [eax + 16], xmm5    ;
 
-        xor         ecx,  ecx                       ;
-        and         eax,  0xFFFFFFE0                ; align pointer by 32 bytes
         jmp         L200                            ;
 
         ALIGN_16
@@ -263,8 +259,7 @@ L150:
         movdqa      xmmword ptr [eax], xmm4         ;
         movdqa      xmmword ptr [eax + 16], xmm5    ;
 
-        xor         ecx,  ecx                       ;
-        and         eax,  0xFFFFFFE0                ; align pointer by 32 bytes
+        jmp         L200                            ;
 
         ALIGN_16
 L200:
@@ -337,10 +332,8 @@ L400:
         sub         ebx,  192                       ;
 
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
-//      movdq2q     mm0,  xmm7                      ;
         movd        mm1,  ebx                       ;
         psrlq       mm0,  mm1                       ;
-        pand        mm0,  mm2                       ;
         movq2dq     xmm3, mm0                       ;
 
         pand        xmm2, xmm3                      ;
@@ -364,12 +357,7 @@ L450:
 //      shufpd      xmm3, xmm4, 0x00                ; 取xmm4的低64位 + xmm3的低64位
         unpcklpd    xmm3, xmm4                      ; 取xmm4的低64位 + xmm3的低64位(高位在前, 下同)
 
-        movq2dq     xmm6, mm2                       ;
-        movq2dq     xmm7, mm3                       ;
-        unpcklpd    xmm6, xmm7                      ; 取xmm7的低64位 + xmm6的低64位(高位在前, 下同)
-
         pand        xmm2, xmm3                      ;
-        pand        xmm2, xmm6                      ;
 
         /* save_string */
         por         xmm5, xmm2                      ;
@@ -402,19 +390,7 @@ L500:
         psrlq       mm0,  mm1                       ;
         movq2dq     xmm5, mm0                       ;
 
-        movq2dq     xmm6, mm2                       ;
-        movq2dq     xmm4, mm3                       ;
-        unpcklpd    xmm6, xmm4                      ; 取xmm4的低64位 + xmm6的低64位(高位在前, 下同)
-
         pand        xmm3, xmm5                      ;
-
-        cmp         ecx,  16                        ; ecx >= 16 ?
-        jae         L520                            ;
-        pand        xmm2, xmm6                      ;
-        jmp         L530                            ;
-L520:
-        pand        xmm3, xmm6                      ;
-L530:
 
         /* save_string */
         movdqa      xmm4, xmmword ptr [eax]         ; read from nearest preceding boundary
@@ -438,19 +414,7 @@ L550:
 //      shufpd      xmm7, xmm6, 0x00                ; 取xmm6的低64位 + xmm7的低64位
         unpcklpd    xmm7, xmm6                      ; 取xmm6的低64位 + xmm7的低64位(高位在前, 下同)
 
-        movq2dq     xmm5, mm2                       ;
-        movq2dq     xmm4, mm3                       ;
-        unpcklpd    xmm5, xmm4                      ; 取xmm4的低64位 + xmm5的低64位(高位在前, 下同)
-
         pand        xmm3, xmm7                      ;
-
-        cmp         ecx,  16                        ; ecx >= 16 ?
-        jae         L570                            ;
-        pand        xmm2, xmm5                      ;
-        jmp         L580                            ;
-L570:
-        pand        xmm3, xmm5                      ;
-L580:
 
         /* save_string */
         movdqa      xmm4, xmmword ptr [eax]         ; read from nearest preceding boundary
@@ -467,21 +431,26 @@ L600:
         cmp         edx,  0                         ;
         jz          L999                            ;
 
+        pcmpeqb     mm2,  mm2                       ; all set to bit "1"
+        pcmpeqb     mm3,  mm3                       ; all set to bit "1"
+
         shl         ecx,  3                         ; ecx = ecx * 8
         cmp         ecx,  0x00000040                ; when (ecx >= 64 bytes) ?
-        jae         L610                            ;
+        jae         L620                            ;
 
         movd        mm5,  ecx                       ;        
         psllq       mm2,  mm5                       ;
-        mov         ecx,  ebx                       ;
-        jmp         L620                            ;
-L610:
+        jmp         L630                            ;
+
+L620:
         pxor        mm2,  mm2                       ;
         sub         ecx,  64                        ;
         movd        mm5,  ecx                       ;
         psllq       mm3,  mm5                       ;
+
+L630:
         mov         ecx,  ebx                       ;
-L620:
+
         mov         ebx,  32                        ;
         sub         ebx,  edx                       ;
         shl         ebx,  3                         ; ebx = (32 - edx) * 8
@@ -503,7 +472,6 @@ L620:
         sub         ebx,  192                       ;
 
         pcmpeqb     mm0,  mm0                       ; all set to bit "1"
-//      movdq2q     mm0,  xmm7                      ;
         movd        mm1,  ebx                       ;
         psrlq       mm0,  mm1                       ;
         pand        mm0,  mm2                       ;
