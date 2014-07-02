@@ -222,6 +222,121 @@ void String_Copy_On_Write_Test()
     printf("\n");
 }
 
+void String_Performance_Test()
+{
+#ifndef _DEBUG
+    const int LOOP_TIMES = 1000000;
+#else
+    const int LOOP_TIMES = 200000;
+#endif
+    //char *str1, *str2;
+    size_t len1, len2;
+    char buffer1[512];
+    char buffer2[512];
+    double time1, time2, time3, time4;
+    double time5, time6, time7, time8;
+    int i, j = 0, loop_times = 0;
+    stop_watch sw;
+
+    sw.restart();
+    for (i = 0; i < (LOOP_TIMES >> 0); ++i) {
+        strcpy(buffer1, "abcdefghijk");
+        //strcpy(buffer1 + (i & 2), "abcdefghijk");
+        /*
+        strcpy(buffer1 + 0, "abcdefghijk");
+        strcpy(buffer1 + 4, "abcdefghijk");
+        strcpy(buffer1 + 0, "abcdefghijk");
+        strcpy(buffer1 + 4, "abcdefghijk");
+        //*/
+        len1 = strlen(buffer1);
+    }
+    sw.stop();
+    time1 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        strcpy_s(buffer2, 32, "abcdefghijk");
+        len2 = strlen("abcdefghijk");
+    }
+    sw.stop();
+    time2 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        //jimi::string str = "abcdefghijk";
+        //jimi::string str("abcdefghijk", sizeof("abcdefghijk") - 1);
+        jimi::string str("abcdefghijk");
+    }
+    sw.stop();
+    time3 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        //std::string str = "abcdefghijk";
+        //std::string str("abcdefghijk", sizeof("abcdefghijk") - 1);
+        std::string str("abcdefghijk");
+    }
+    sw.stop();
+    time4 = sw.getMillisec();
+
+    printf("buffer1 = %s, len1 = %d, len2 = %d\n\n", buffer1, len1, len2);
+
+    sw.restart();
+    for (i = 0; i < (LOOP_TIMES >> 0); ++i) {
+        strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz");
+        //strcpy(buffer1 + (i & 2), "abcdefghijklmnopqrstuvwxyz");
+        /*
+        strcpy(buffer1 + 0, "abcdefghijklmnopqrstuvwxyz");
+        strcpy(buffer1 + 4, "abcdefghijklmnopqrstuvwxyz");
+        strcpy(buffer1 + 0, "abcdefghijklmnopqrstuvwxyz");
+        strcpy(buffer1 + 4, "abcdefghijklmnopqrstuvwxyz");
+        //*/
+        len1 = strlen(buffer1);
+    }
+    sw.stop();
+    time5 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        strcpy_s(buffer2, 32, "abcdefghijklmnopqrstuvwxyz");
+        len2 = strlen(buffer2);
+    }
+    sw.stop();
+    time6 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        //jimi::string str = "abcdefghijklmnopqrstuvwxyz";
+        //jimi::string str("abcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyz") - 1);
+        jimi::string str("abcdefghijklmnopqrstuvwxyz");
+    }
+    sw.stop();
+    time7 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        //std::string str = "abcdefghijklmnopqrstuvwxyz";
+        //std::string str("abcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyz") - 1);
+        std::string str("abcdefghijklmnopqrstuvwxyz");
+    }
+    sw.stop();
+    time8 = sw.getMillisec();
+
+    printf("buffer1 = %s, len1 = %d, len2 = %d\n\n", buffer1, len1, len2);
+
+    printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefghijk\";",   time1);
+    printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefghijk\";",   time2);
+    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefghijk\";",   time4);
+    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"abcdefghijk\";",   time3);
+    printf("\n");
+    printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefg...xyz\";", time5);
+    printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefg...xyz\";", time6);
+    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefg...xyz\";", time8);
+    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"abcdefg...xyz\";", time7);
+
+    printf("\n");
+}
+
 static char jabberwocky[] =
         "'Twas brillig, and the slithy toves\n"
         "Did gyre and gimble in the wabe:\n"
@@ -301,6 +416,9 @@ void String_Base_Test()
     printf("str4.c_str() = \n%s\n\n", str4.c_str());
     printf("str4.size()  = %d bytes\n", str4.size());
     printf("\n");
+
+    std::string std_str;
+    std_str.append("a");
 }
 
 static const unsigned char s_toUpper[] =
@@ -815,117 +933,6 @@ void StrLwr_Test(int nTestLen)
         ::_aligned_free(tolower_test7);
         tolower_test7 = NULL;
     }
-}
-
-void String_Performance_Test()
-{
-#ifndef _DEBUG
-    const int LOOP_TIMES = 1000000;
-#else
-    const int LOOP_TIMES = 200000;
-#endif
-    //char *str1, *str2;
-    size_t len1, len2;
-    char buffer1[512];
-    char buffer2[512];
-    double time1, time2, time3, time4;
-    double time5, time6, time7, time8;
-    int i, j = 0, loop_times = 0;
-    stop_watch sw;
-
-    sw.restart();
-    for (i = 0; i < (LOOP_TIMES >> 0); ++i) {
-        strcpy(buffer1, "abcdefghijk");
-        //strcpy(buffer1 + (i & 2), "abcdefghijk");
-        /*
-        strcpy(buffer1 + 0, "abcdefghijk");
-        strcpy(buffer1 + 4, "abcdefghijk");
-        strcpy(buffer1 + 0, "abcdefghijk");
-        strcpy(buffer1 + 4, "abcdefghijk");
-        //*/
-        len1 = strlen(buffer1);
-    }
-    sw.stop();
-    time1 = sw.getMillisec();
-
-    sw.restart();
-    for (i = 0; i < LOOP_TIMES; ++i) {
-        strcpy_s(buffer2, 32, "abcdefghijk");
-        len2 = strlen("abcdefghijk");
-    }
-    sw.stop();
-    time2 = sw.getMillisec();
-
-    sw.restart();
-    for (i = 0; i < LOOP_TIMES; ++i) {
-        //jimi::string str = "abcdefghijk";
-        jimi::string str("abcdefghijk", sizeof("abcdefghijk") - 1);
-    }
-    sw.stop();
-    time3 = sw.getMillisec();
-
-    sw.restart();
-    for (i = 0; i < LOOP_TIMES; ++i) {
-        //std::string str = "abcdefghijk";
-        std::string str("abcdefghijk", sizeof("abcdefghijk") - 1);
-    }
-    sw.stop();
-    time4 = sw.getMillisec();
-
-    printf("buffer1 = %s, len1 = %d, len2 = %d\n\n", buffer1, len1, len2);
-
-    sw.restart();
-    for (i = 0; i < (LOOP_TIMES >> 0); ++i) {
-        strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz");
-        //strcpy(buffer1 + (i & 2), "abcdefghijklmnopqrstuvwxyz");
-        /*
-        strcpy(buffer1 + 0, "abcdefghijklmnopqrstuvwxyz");
-        strcpy(buffer1 + 4, "abcdefghijklmnopqrstuvwxyz");
-        strcpy(buffer1 + 0, "abcdefghijklmnopqrstuvwxyz");
-        strcpy(buffer1 + 4, "abcdefghijklmnopqrstuvwxyz");
-        //*/
-        len1 = strlen(buffer1);
-    }
-    sw.stop();
-    time5 = sw.getMillisec();
-
-    sw.restart();
-    for (i = 0; i < LOOP_TIMES; ++i) {
-        strcpy_s(buffer2, 32, "abcdefghijklmnopqrstuvwxyz");
-        len2 = strlen(buffer2);
-    }
-    sw.stop();
-    time6 = sw.getMillisec();
-
-    sw.restart();
-    for (i = 0; i < LOOP_TIMES; ++i) {
-        //jimi::string str = "abcdefghijklmnopqrstuvwxyz";
-        jimi::string str("abcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyz") - 1);
-    }
-    sw.stop();
-    time7 = sw.getMillisec();
-
-    sw.restart();
-    for (i = 0; i < LOOP_TIMES; ++i) {
-        //std::string str = "abcdefghijklmnopqrstuvwxyz";
-        std::string str("abcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyz") - 1);
-    }
-    sw.stop();
-    time8 = sw.getMillisec();
-
-    printf("buffer1 = %s, len1 = %d, len2 = %d\n\n", buffer1, len1, len2);
-
-    printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefghijk\";",   time1);
-    printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefghijk\";",   time2);
-    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefghijk\";",   time4);
-    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"abcdefghijk\";",   time3);
-    printf("\n");
-    printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefg...xyz\";", time5);
-    printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefg...xyz\";", time6);
-    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefg...xyz\";", time8);
-    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"abcdefg...xyz\";", time7);
-
-    printf("\n");
 }
 
 //

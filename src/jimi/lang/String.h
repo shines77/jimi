@@ -188,13 +188,14 @@ public:
     void push_back(const value_type c);         // primitive
     void pop_back();
 
-#if 0
+    // C++11 21.4.6 modifiers:
     // Concatenation
     basic_string &operator += (const basic_string &rhs);
     basic_string &operator += (const value_type c);
     basic_string &operator += (const value_type *str);
     basic_string &operator += (value_type *str);
 
+#if 0
     // Equality
     bool operator == (const basic_string &rhs) const;
     bool operator == (const value_type c) const;
@@ -337,20 +338,23 @@ BASIC_STRING::~basic_string()
 template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::assign(const BASIC_STRING &str)
 {
-    if (&str == this) return *this;
+    if (&str == this)
+        return *this;
     return assign(str.data(), str.size());
 }
 
 template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::assign(const value_type c)
 {
-    return _store.assign(c);
+    _store.assign(c);
+    return *this;
 }
 
 template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::assign(const value_type c, size_type n)
 {
-    return _store.assign(c, n);
+    _store.assign(c, n);
+    return *this;
 }
 
 template <BASIC_STRING_CLASSES>
@@ -362,19 +366,19 @@ BASIC_STRING &BASIC_STRING::assign(const value_type *s)
 template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::assign(const value_type *s, const size_type n)
 {
-    size_type sz = size();
-    if (sz >= n) {
+    size_type _size = size();
+    if (_size >= n) {
         std::copy(s, s + n, begin());
         resize(n);
         jimi_assert(size() == n);
+        _store.writeNullForce();
     }
     else {
-        const value_type * const s_end = s + sz;
+        const value_type * const s_end = s + _size;
         std::copy(s, s_end, begin());
-        append(s_end, n - sz);
+        append(s_end, n - _size);
         jimi_assert(size() == n);
     }
-    _store.writeNull();
     jimi_assert(size() == n);
     return *this;
 }
@@ -515,6 +519,31 @@ BASIC_STRING &BASIC_STRING::append(const value_type *s, size_type n)
     _store.writeNullForce();
     //jimi_assert(size() == oldSize + n);
     return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::operator += (const basic_string &rhs)
+{
+    return append(str);
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::operator += (const value_type c)
+{
+    push_back(c);
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::operator += (const value_type *str)
+{
+    return append(s);
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::operator += (value_type *str)
+{
+    return append(s);
 }
 
 template <BASIC_STRING_CLASSES>
@@ -680,7 +709,7 @@ int BASIC_STRING::compare(const value_type *rhs) const
 }
 
 template <BASIC_STRING_CLASSES>
-void swap(BASIC_STRING &lhs, BASIC_STRING &rhs)
+inline void swap(BASIC_STRING &lhs, BASIC_STRING &rhs)
 {
     lhs.swap(rhs);
 }

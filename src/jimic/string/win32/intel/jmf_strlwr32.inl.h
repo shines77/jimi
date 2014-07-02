@@ -348,7 +348,6 @@ L300:
         ALIGN_16
         /* the remain of less 32 bytes */
 L400:
-
 #endif
         cmp         edx,  0                         ;
         jz          L999                            ;
