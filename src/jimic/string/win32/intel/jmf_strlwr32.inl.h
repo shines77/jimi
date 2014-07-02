@@ -95,10 +95,10 @@ size_t __CDECL jmf_strlwr(char *str)
 strlwr_SSE2:
 #endif
         mov         eax,  ARG_1                     ; get pointer to string
-        mov         ecx,  eax                       ; copy pointer
         movq        xmm0, LOWER_CHAR_A_FIRST        ; string of '@@@@@@@@'
         movq        xmm1, LOWER_CHAR_Z              ; string of 'ZZZZZZZZ'
         movq        xmm6, LOWER_CHAR_MAGIC_SIGN     ; string of '        '
+        mov         ecx,  eax                       ; copy pointer
         punpcklqdq  xmm0, xmm0                      ;
         punpcklqdq  xmm1, xmm1                      ;
         punpcklqdq  xmm6, xmm6                      ;
@@ -109,8 +109,8 @@ strlwr_SSE2:
         jb          L100
 
         mov         ebx,  ecx                       ;
-        and         ecx,  0x0000000F                ; lower 4 bits indicate misalignment
         and         eax,  0xFFFFFFF0                ; align pointer by 16 bytes
+        and         ecx,  0x0000000F                ; lower 4 bits indicate misalignment
         movdqa      xmm2, xmmword ptr [eax]         ; read from nearest preceding boundary
         movdqa      xmm4, xmm2                      ;
         pcmpeqb     xmm2, xmm7                      ; compare low  16 bytes with zero
@@ -256,6 +256,51 @@ L150:
         movdqa      xmmword ptr [eax], xmm4         ;
         movdqa      xmmword ptr [eax + 16], xmm5    ;
 
+#if 0
+        ALIGN_16
+L200:
+        ; Main loop, search 32 bytes at a time
+        sub         eax,  -0x20                     ; increment pointer by 32
+L220:
+        movdqa      xmm3, xmmword ptr [eax + 16]    ; read from nearest preceding boundary
+        movdqa      xmm2, xmmword ptr [eax]         ; read from nearest preceding boundary
+        movdqa      xmm5, xmm3                      ;
+        movdqa      xmm4, xmm2                      ;
+        pcmpeqb     xmm3, xmm7                      ; compare high 16 bytes with zero
+        pcmpeqb     xmm2, xmm7                      ; compare low  16 bytes with zero
+        pmovmskb    ebx,  xmm3                      ; get one bit for each byte result
+        pmovmskb    edx,  xmm2                      ; get one bit for each byte result
+        shl         ebx,  16                        ; high 16 bits result
+        or          edx,  ebx                       ; combined into the result 32 bits
+        jnz         L350                            ; if is not zero goto end, otherwise goto tolower
+L300:
+        /* start_tolower32 */
+        movdqa      xmm2, xmm4                      ;
+        movdqa      xmm3, xmm5                      ;
+        pcmpgtb     xmm2, xmm1                      ; great than 'ZZZZZZZZ' ?
+        pcmpgtb     xmm3, xmm1                      ; great than 'ZZZZZZZZ' ?
+        pcmpgtb     xmm4, xmm0                      ; great than '@@@@@@@@' ?
+        pcmpgtb     xmm5, xmm0                      ; great than '@@@@@@@@' ?
+        pandn       xmm2, xmm4                      ;
+        pandn       xmm3, xmm5                      ;
+        movdqa      xmm4, xmmword ptr [eax]         ; read from nearest preceding boundary
+        movdqa      xmm5, xmmword ptr [eax + 16]    ; read from nearest preceding boundary
+        pand        xmm2, xmm6                      ; and the bits of 0x20202020202020202020202020202020ULL
+        pand        xmm3, xmm6                      ; and the bits of 0x20202020202020202020202020202020ULL
+
+        /* save_string */
+        por         xmm4, xmm2                      ;
+        por         xmm5, xmm3                      ;
+        movdqa      xmmword ptr [eax], xmm4         ;
+        movdqa      xmmword ptr [eax + 16], xmm5    ;
+        jmp         L200                            ; jump to Main loop
+
+L350:
+        bsf         edx,  edx                       ; find first 1-bit
+        ; (moving the bsf out of the loop and using test here would be faster for long strings on old processors,
+        ;  but we are assuming that most strings are short, and newer processors have higher priority)
+        jz          L300                            ; loop if not found
+#else
         ALIGN_16
 L200:
         ; Main loop, search 32 bytes at a time
@@ -300,9 +345,11 @@ L300:
         movdqa      xmmword ptr [eax + 16], xmm5    ;
         jmp         L200                            ; jump to Main loop
 
-        /* the remain of less 32 bytes */
         ALIGN_16
+        /* the remain of less 32 bytes */
 L400:
+
+#endif
         cmp         edx,  0                         ;
         jz          L999                            ;
 
@@ -423,23 +470,21 @@ L600:
         cmp         edx,  0                         ;
         jz          L999                            ;
 
-        pcmpeqb     mm2,  mm2                       ; all set to bit "1"
         pcmpeqb     mm3,  mm3                       ; all set to bit "1"
 
         shl         ecx,  3                         ; ecx = ecx * 8
         cmp         ecx,  0x00000040                ; when (ecx >= 64 bytes) ?
         jae         L620                            ;
 
+        pcmpeqb     mm2,  mm2                       ; all set to bit "1"
         movd        mm5,  ecx                       ;        
         psllq       mm2,  mm5                       ;
         jmp         L630                            ;
-
 L620:
-        pxor        mm2,  mm2                       ;
         sub         ecx,  64                        ;
+        pxor        mm2,  mm2                       ;
         movd        mm5,  ecx                       ;
         psllq       mm3,  mm5                       ;
-
 L630:
         mov         ecx,  ebx                       ;
 
@@ -534,6 +579,7 @@ L700:
 
         cmp         ecx,  16                        ; ecx >= 16 ?
         jae         L720                            ;
+
         pand        xmm2, xmm6                      ;
         jmp         L730                            ;
 L720:
@@ -569,6 +615,7 @@ L750:
 
         cmp         ecx,  16                        ; ecx >= 16 ?
         jae         L770                            ;
+
         pand        xmm2, xmm5                      ;
         jmp         L780                            ;
 L770:

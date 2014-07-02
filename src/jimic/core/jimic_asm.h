@@ -59,12 +59,16 @@
 #define ALIGN_64
 #endif
 
+//
+// Intel x86 0x2E/0x3E Prefix Branch Prediction actually used?
+// Reference: http://stackoverflow.com/questions/14332848/intel-x86-0x2e-0x3e-prefix-branch-prediction-actually-used
+//
 #if defined(__GNUC__)
     #define BRANCH		.byte 0x3e
     #define NOBRANCH	.byte 0x2e
     #define PADDING		.byte 0x66;
     #define HALT	    hlt
-#elif defined(_MSC_VER)
+#elif defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
     #define BRANCH		_emit 0x3e
     #define NOBRANCH	_emit 0x2e
     #define PADDING		_emit 0x66;

@@ -46,6 +46,9 @@
 #include <intrin.h>
 #include <string>
 #include <locale>
+#include <algorithm>
+#include <functional>
+#include <cctype>
 
 #include <boost/locale.hpp>
 #include <boost/locale/encoding.hpp>
@@ -354,14 +357,37 @@ static const unsigned char s_toLower[] =
 //
 // From: http://arstechnica.com/civis/viewtopic.php?f=20&t=696922
 //
-template <typename T>
-void strlwr_table(T *str)
+
+#define ngx_tolower(c)      (unsigned char) ((c >= 'A' && c <= 'Z') ? (c |  0x20) : c)
+#define ngx_toupper(c)      (unsigned char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
+
+void ngx_strlwr(unsigned char *str)
 {
     while (*str != NULL) {
-        *str = static_cast<T>(s_toLower[static_cast<unsigned char>(*str)]);
-        ++str;
+        *str = ngx_tolower(*str);
+        str++;
     }
 }
+
+/*
+template <class T>
+void stl_tolower_(T *begin, T *end)
+{
+    std::for_each(begin, end, std::tolower);
+}
+
+template <class T, class Func>
+void stl_tolower(std::basic_string<T> &str)
+{
+    std::for_each(str.begin(), str.end(), std::tolower);
+}
+
+template <class T, class Func>
+void stl_toupper(std::string& s)
+{
+    std::for_each(s.begin(), s.end(), std::toupper);
+}
+//*/
 
 template <typename T>
 void strlwr_std(T *str)
@@ -376,15 +402,26 @@ void strlwr_std(T *str)
     }
 }
 
-#define ngx_tolower(c)      (unsigned char) ((c >= 'A' && c <= 'Z') ? (c |  0x20) : c)
-#define ngx_toupper(c)      (unsigned char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
-
-void ngx_strlwr(unsigned char *str)
+template <typename T>
+void strlwr_table(T *str)
 {
     while (*str != NULL) {
-        *str = ngx_tolower(*str);
-        str++;
+        *str = static_cast<T>(s_toLower[static_cast<unsigned char>(*str)]);
+        ++str;
     }
+}
+
+template <class T>
+inline T my_tolower(T _ch)
+{
+    static std::locale _loc;
+    return std::tolower(_ch, _loc);
+}
+
+//template <class T>
+inline char my_stl_tolower(char _ch, const std::locale _loc)
+{
+    return std::tolower(_ch, _loc);
 }
 
 void ngx_strlow(unsigned char *dest, unsigned char *src, size_t n)
@@ -405,11 +442,14 @@ void Jm_StrLwr_Verify()
     int alignment, offset;
     char *buffer1, *buffer2, *buffer3, *buffer4;
     char *strTest1, *strTest2, *temp;
+    stop_watch sw;
     char checkCharList[] = { '@', 'A', 'Q', 'Z', '[', 'a', 'q', 'z', '0', ' ', '\b' };
     int sizeCharList = jm_countof(checkCharList);
 
     printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
     printf("Jm_StrLwr_Verify() start ...\n\n");
+
+    sw.restart();
 #if 1
     for (ch = 1; ch < 256; ++ch) {
 #else
@@ -481,9 +521,10 @@ void Jm_StrLwr_Verify()
         if (buffer3) _aligned_free(buffer3);
         if (buffer4) _aligned_free(buffer4);
     }
+    sw.stop();
 
     if (errors == 0)
-        printf("All verify is passed ...\n");
+        printf("All verify is passed ... [time = %0.3f ms]\n", sw.getMillisec());
 
     printf("\n");
     printf("Jm_StrLwr_Verify() done ...\n\n");
@@ -491,7 +532,7 @@ void Jm_StrLwr_Verify()
 }
 
 /* 每次进行strlwr转换时是否重新还原字符串到初始状态? */
-#define STRLWR_RECOPY_EVERY_TIME        1
+#define STRLWR_RECOPY_EVERY_TIME        0
 
 void StrLwr_Test(int nTestLen)
 {
@@ -504,9 +545,9 @@ void StrLwr_Test(int nTestLen)
 #endif
     int nBufLen, nStrLen;
     char *tolower_test1, *tolower_test2, *tolower_test3;
-    char *tolower_test4, *tolower_test5, *tolower_test6;
+    char *tolower_test4, *tolower_test5, *tolower_test6, *tolower_test7;
     char *result_str = NULL;
-    double time1, time2, time3, time4, time5, time6;
+    double time1, time2, time3, time4, time5, time6, time7;
     stop_watch_ex sw;
 
     tolower_test1 = NULL;
@@ -514,12 +555,14 @@ void StrLwr_Test(int nTestLen)
     tolower_test3 = NULL;
     tolower_test4 = NULL;
     tolower_test5 = NULL;
+    tolower_test6 = NULL;
 
     time1 = 0.0;
     time2 = 0.0;
     time3 = 0.0;
     time4 = 0.0;
     time5 = 0.0;
+    time6 = 0.0;
 
     nStrLen = ::jm_strlen(jabberwocky);
     if (nTestLen > nStrLen)
@@ -634,32 +677,80 @@ void StrLwr_Test(int nTestLen)
         //printf("tolower_test5.c_str() = \n%s\n\tolower_test5.size() = %d bytes\n", tolower_test5, ::jm_strlen(tolower_test5));
     }
     //printf("\n");
-#endif
 
-#if 0
-    tolower_test6 = (char *)::_aligned_offset_malloc(nBufLen * sizeof(char), alignment, (alignment - 4));
-#else
+#if 1
+    using namespace std::placeholders; 
     tolower_test6 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
-#endif
     if (tolower_test6) {
-        size_t size;
-        ::jm_strncpy(tolower_test6, nBufLen - 1, jabberwocky, nTestLen);
+        char *begin, *end;
+        ::jm_strncpy(tolower_test6, nBufLen, jabberwocky, nTestLen);
         tolower_test6[nTestLen] = '\0';
+        begin = tolower_test6;
+        end = tolower_test6 + jm_strlen(tolower_test6);
+        std::string strlow = tolower_test6;
+        std::locale loc;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
 #if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
             sw.suspend();
-            if (::jm_strncpy(tolower_test6, nBufLen - 1, jabberwocky, nTestLen))
-                tolower_test6[nTestLen] = '\0';
+            ::jm_strncpy(tolower_test6, nBufLen, jabberwocky, nTestLen);
+            tolower_test6[nTestLen] = '\0';
             sw.resume();
 #endif
-            size = ::jmf_strlwr(tolower_test6);
-            //size = ::jmf_strlen(tolower_test6);
+            //std::for_each(strlow.begin(), strlow.end(), std::bind(std::tolower<char>, _1, loc));
+            //std::for_each(strlow.begin(), strlow.end(), std::bind(std::toupper<char>, _1, loc));
+            std::for_each(strlow.begin(), strlow.end(), std::tolower);
+            //std::transform(strlow.begin(), strlow.end(), strlow.begin(), ::tolower);
         }
         sw.stop();
         time6 = sw.getMillisec();
+        //time5 = sw.getTotalMillisec();
+        //printf("tolower_test6.c_str() = \n%s\n\tolower_test6.size() = %d bytes\n", tolower_test6, ::jm_strlen(tolower_test6));
+#if 0
+            //stl_tolower<char>(begin, end);
+            typedef char (*fn_tolower)(char _Ch, const std::locale& _Loc);
+            typedef char (*fn_tolower2)(char _Ch);
+            typedef std::function<char (char, const std::locale&)> fcn_tolower;
+            //fn_tolower pfn_tolower = &std::tolower;
+            //stl_tolower<char, fn_tolower>(strlow);
+            //fn_tolower2 pfn_tolower = &my_tolower;
+            //std::for_each<std::string::const_iterator, fn_tolower2>(strlow.begin(), strlow.end(), pfn_tolower);
+            //std::for_each<std::string::const_iterator, fcn_tolower>(strlow.begin(), strlow.end(), std::bind(my_stl_tolower, _1, loc));
+            //std::for_each(strlow.begin(), strlow.end(), std::bind(my_stl_tolower, _1, loc));
+            std::for_each(strlow.begin(), strlow.end(), std::bind(std::tolower<char>, _1, loc));
+            //std::transform(strlow.begin(), strlow.end(), strlow.begin(), ::tolower);
+            //std::transform(strlow.begin(), strlow.end(), strlow.begin(), std::tolower);
+#endif
+    }
+    //printf("\n");
+#endif
+
+#endif
+
+#if 0
+    tolower_test7 = (char *)::_aligned_offset_malloc(nBufLen * sizeof(char), alignment, (alignment - 4));
+#else
+    tolower_test7 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
+#endif
+    if (tolower_test7) {
+        size_t size;
+        ::jm_strncpy(tolower_test7, nBufLen - 1, jabberwocky, nTestLen);
+        tolower_test7[nTestLen] = '\0';
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+#if defined(STRLWR_RECOPY_EVERY_TIME) && (STRLWR_RECOPY_EVERY_TIME != 0)
+            sw.suspend();
+            if (::jm_strncpy(tolower_test7, nBufLen - 1, jabberwocky, nTestLen))
+                tolower_test7[nTestLen] = '\0';
+            sw.resume();
+#endif
+            size = ::jmf_strlwr(tolower_test7);
+            //size = ::jmf_strlen(tolower_test7);
+        }
+        sw.stop();
+        time7 = sw.getMillisec();
         //time6 = sw.getTotalMillisec();
-        //printf("tolower_test6.c_str() = \n%s\n\tolower_test6.size() = %d bytes\n", tolower_test6, size);
+        //printf("tolower_test7.c_str() = \n%s\n\tolower_test7.size() = %d bytes\n", tolower_test7, size);
     }
     //printf("\n");
 
@@ -669,18 +760,20 @@ void StrLwr_Test(int nTestLen)
         printf("strlwr(str)       time = %-7.3f ms\n", time1);
         printf("strlwr_s(str)     time = %-7.3f ms\n", time2);
         printf("ngx_strlwr(str)   time = %-7.3f ms\n", time3);
+        printf("stl_tolower(str)  time = %-7.3f ms\n", time6);
         printf("strlwr_std(str)   time = %-7.3f ms\n", time4);
         printf("strlwr_table(str) time = %-7.3f ms\n", time5);
-        printf("jmf_strlwr(str)   time = %-7.3f ms\n", time6);
-        //printf("jmf_strlwr(str)   time = %-7.3f ms, size = %d\n", time6, jm_strlen(tolower_test6));
+        printf("jmf_strlwr(str)   time = %-7.3f ms\n", time7);
+        //printf("jmf_strlwr(str)   time = %-7.3f ms, size = %d\n", time7, jm_strlen(tolower_test7));
     }
     else {
         printf("strlwr(str)       time = %-9.6f ms\n", time1);
         printf("strlwr_s(str)     time = %-9.6f ms\n", time2);
         printf("ngx_strlwr(str)   time = %-9.6f ms\n", time3);
+        printf("stl_tolower(str)  time = %-7.3f ms\n", time6);
         printf("strlwr_std(str)   time = %-9.6f ms\n", time4);
         printf("strlwr_table(str) time = %-9.6f ms\n", time5);
-        printf("jmf_strlwr(str)   time = %-9.6f ms\n", time6);
+        printf("jmf_strlwr(str)   time = %-9.6f ms\n", time7);
     }
     printf("\n");
 
@@ -705,8 +798,12 @@ void StrLwr_Test(int nTestLen)
         tolower_test5 = NULL;
     }
     if (tolower_test6) {
+        ::_aligned_free(tolower_test6);
+        tolower_test6 = NULL;
+    }
+    if (tolower_test7) {
 #if 0
-        uintptr_t pv = (uintptr_t)tolower_test6;
+        uintptr_t pv = (uintptr_t)tolower_test7;
         pv = (pv + (sizeof(uintptr_t) - 1)) & ~(sizeof(uintptr_t) - 1);
         uintptr_t *pvReal = (uintptr_t *)pv - 1;
 #ifdef _DEBUG
@@ -715,8 +812,8 @@ void StrLwr_Test(int nTestLen)
         printf("pv = 0x%08X, pvReal = 0x%08X, *pvReal = 0x%08X\n\n", pv, pvReal, *pvReal);
         ::system("pause");
 #endif
-        ::_aligned_free(tolower_test6);
-        tolower_test6 = NULL;
+        ::_aligned_free(tolower_test7);
+        tolower_test7 = NULL;
     }
 }
 
