@@ -31,6 +31,8 @@
 
 #include <jimi/log/Logger.h>
 #include <jimi/system/stop_watch.h>
+#include <jimi/system/Program.h>
+#include <jimi/system/Console.h>
 
 #include <asmlib/asmlib.h>
 #include "SampleThread.h"
@@ -657,7 +659,7 @@ void StrLwr_Test(int nTestLen)
     int i;
     static const int alignment = 8;
 #if defined(_DEBUG) || 0
-    static const int loop_times = 200000;
+    static const int loop_times = 8;
 #else
     static const int loop_times = 200000;
 #endif
@@ -2520,29 +2522,50 @@ int UnitTest_Main(int argc, char *argv[])
 
     sLog.log_end();
 
-    ::system("pause");
+    //::system("pause");
+    //Console::ReadKey();
+    Console.ReadKey();
     return 0;
 }
 
 NS_UNITEST_END
 
-#include <jimi/internal/NonCopyable.h>
-
 NS_JIMI_BEGIN
 
-class Program : public jimi::NonCopyable
+class MyProgram : public jimi::Program
 {
 public:
-    int Run(int argc, char *argv[])    { return 0; };
-    int Run(int argc, wchar_t *argv[]) { return 0; };
+    void Main(int argc, char *argv[]) {
+        UnitTest_Main(argc, argv);
+    }
+
+    void Main(int argc, wchar_t *argv[]) {
+        // TODO:
+    }
+
+    void Main(Program::StringArray args) {
+        size_t size = args.size();
+        printf("args.size() = %d\n\n", size);
+        printf("Press any key to continue ...\n");
+    }
+
+    void Main(Program::WStringArray args) {
+        // TODO:
+    }
 };
 
 NS_JIMI_END
 
 int main(int argc, char *argv[])
 {
+#if 0
+    jimi::MyProgram program;
+#else
+    //jimi::Program program(&UnitTest_Main, 0);
     jimi::Program program;
+    program.SetMain(&UnitTest_Main);
+    program.SetReturnValue(1);
+#endif
     int nResult = program.Run(argc, argv);
-
-    return UnitTest_Main(argc, argv);
+    return nResult;
 }

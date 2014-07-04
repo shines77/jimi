@@ -146,7 +146,9 @@
     <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_compiler_config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_platform_config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_targetver.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\system\Console.h" />
     <ClInclude Include="..\..\..\..\src\jimi\system\mutex.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\system\Program.h" />
     <ClInclude Include="..\..\..\..\src\jimi\system\scoped_lock.h" />
     <ClInclude Include="..\..\..\..\src\jimi\system\stop_watch.h" />
     <ClInclude Include="..\..\..\..\src\jimi\system\WinService.h" />

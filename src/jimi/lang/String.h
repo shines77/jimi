@@ -738,6 +738,9 @@ bool operator == (const _CharT *lhs, const BASIC_STRING &rhs)
 typedef basic_string<char> string;
 typedef basic_string<char> String;
 
+typedef basic_string<wchar_t> wstring;
+typedef basic_string<wchar_t> WString;
+
 NS_JIMI_END
 
 #endif  /* _JIMI_LANG_STRING_H_ */

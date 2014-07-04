@@ -269,6 +269,12 @@
     <ClInclude Include="..\..\..\..\src\jimi\internal\NonAssignable.h">
       <Filter>src\jimi\internal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\system\Program.h">
+      <Filter>src\jimi\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\system\Console.h">
+      <Filter>src\jimi\system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">
