@@ -2526,16 +2526,22 @@ int UnitTest_Main(int argc, char *argv[])
 
 NS_UNITEST_END
 
-class JimiProgram
+#include <jimi/internal/NonCopyable.h>
+
+NS_JIMI_BEGIN
+
+class Program : public jimi::NonCopyable
 {
 public:
     int Run(int argc, char *argv[])    { return 0; };
     int Run(int argc, wchar_t *argv[]) { return 0; };
 };
 
+NS_JIMI_END
+
 int main(int argc, char *argv[])
 {
-    JimiProgram program;
+    jimi::Program program;
     int nResult = program.Run(argc, argv);
 
     return UnitTest_Main(argc, argv);

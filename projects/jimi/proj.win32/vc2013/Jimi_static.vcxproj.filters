@@ -260,6 +260,15 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h">
       <Filter>src\jimic\string</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\internal\NonCopyable.h">
+      <Filter>src\jimi\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\internal\Copyable.h">
+      <Filter>src\jimi\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\internal\NonAssignable.h">
+      <Filter>src\jimi\internal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">

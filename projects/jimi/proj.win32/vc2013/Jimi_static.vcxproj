@@ -117,6 +117,9 @@
     <ClInclude Include="..\..\..\..\src\jimi\core\win32\jimi_config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\win32\vs_stdint.h" />
     <ClInclude Include="..\..\..\..\src\jimi\fs\FileSystem.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\internal\Copyable.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\internal\NonAssignable.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\internal\NonCopyable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\io\Closeable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\io\IOException.h" />
     <ClInclude Include="..\..\..\..\src\jimi\io\Serializable.h" />

@@ -13,8 +13,13 @@ NS_JIMI_BEGIN
 class Serializable
 {
 public:
+#if defined(JIMI_HAS_DEFAULTED_FUNCTIONS) && (JIMI_HAS_DEFAULTED_FUNCTIONS != 0)
+    Serializable() = default;
+    ~Serializable() = default;
+#else
     Serializable() {};
     ~Serializable() {};
+#endif
 };
 
 NS_JIMI_END

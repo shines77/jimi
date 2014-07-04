@@ -219,8 +219,8 @@ namespace internal {
 
 //! Base class for types that should not be assigned.
 class no_assign {
-    // Deny assignment
-    void operator= (const no_assign &);
+    //! Deny assignment
+    void operator = (const no_assign &);
 public:
 #if __GNUC__
     //! Explicitly define default construction, because otherwise gcc issues gratuitous warning.
