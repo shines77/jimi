@@ -63,9 +63,6 @@ public:
     void SetMain(func_modern_wmain pfnMain) { ClearMain(); m_pfnModernWMain = pfnMain; m_nMode = ModernMode; }
 
     int GetMode() { return m_nMode; }
-    void SetMode(int mode) {
-        m_nMode = mode;
-    }
 
     int GetReturnValue() { return m_nReturnValue; }
     void SetReturnValue(int value) {
@@ -152,6 +149,10 @@ protected:
     void ClearMain() {
         m_pfnMainVoid = NULL; m_pfnWMainVoid = NULL;  m_pfnMainInt = NULL;
         m_pfnWMainInt = NULL; m_pfnModernMain = NULL; m_pfnModernWMain = NULL;
+    }
+
+    void SetMode(int mode) {
+        m_nMode = mode;
     }
 
 private:

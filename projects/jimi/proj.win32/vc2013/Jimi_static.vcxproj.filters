@@ -104,12 +104,6 @@
     <ClInclude Include="..\..\..\..\src\jimi\core\win32\vs_stdint.h">
       <Filter>src\jimi\core\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_compiler_config.h">
-      <Filter>src\jimi\platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_platform_config.h">
-      <Filter>src\jimi\platform</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_targetver.h">
       <Filter>src\jimi\platform</Filter>
     </ClInclude>
@@ -274,6 +268,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\system\Console.h">
       <Filter>src\jimi\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_compiler_def.h">
+      <Filter>src\jimi\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_platform_def.h">
+      <Filter>src\jimi\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\platform\jimi_compiler_def.h">
+      <Filter>src\jimic\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\platform\jimi_platform_def.h">
+      <Filter>src\jimic\platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

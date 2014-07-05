@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include <jimi/platform/jimi_platform_config.h>
-#include <jimi/platform/jimi_compiler_config.h>
+#include <jimi/platform/jimi_platform_def.h>
+#include <jimi/platform/jimi_compiler_def.h>
 
 #if defined(BUILD_DLL) || defined(JIMI_BUILD_DLL) || defined(_USRDLL) \
     || defined(JIMI_EXPORT) || defined(JIMI_DECLARE_EXPORT) || defined(DECLARE_EXPORT) \

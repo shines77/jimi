@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include <jimi/platform/jimi_platform_config.h>
-#include <jimi/platform/jimi_compiler_config.h>
+#include <jimi/platform/jimi_platform_def.h>
+#include <jimi/platform/jimi_compiler_def.h>
 
 #if JIMI_IS_WINDOWS
     #include <jimi/platform/jimi_targetver.h>

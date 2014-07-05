@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include <jimi/platform/jimi_platform_config.h>
+#include <jimi/platform/jimi_platform_def.h>
 
 #if defined(JIMI_IS_WINDOWS)
 #include <tchar.h>

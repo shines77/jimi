@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include <jimi/platform/jimi_platform_config.h>
+#include <jimi/platform/jimi_platform_def.h>
 
 #include <jimic/core/jimic_def.h>
 #include <jimic/core/jimic_asm.h>

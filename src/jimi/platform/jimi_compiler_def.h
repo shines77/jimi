@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_COMPILER_CONFIG_H_
-#define _JIMI_COMPILER_CONFIG_H_
+#ifndef _JIMI_COMPILER_DEF_H_
+#define _JIMI_COMPILER_DEF_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -183,6 +183,9 @@
     #elif defined(_LLVM)        // LLVM
         #undef  JIMI_TARGET_COMPILER
         #define JIMI_TARGET_COMPILER        JIMI_COMPILER_GCC_LLVM
+        #ifndef JIMI_IS_LLVM
+        #define JIMI_IS_LLVM        1
+        #endif
     #else
         #undef  JIMI_TARGET_COMPILER
         #define JIMI_TARGET_COMPILER        JIMI_COMPILER_GCC
@@ -240,4 +243,4 @@
     #error "Cannot recognize the target compiler; are you targeting an unsupported compiler?"
 #endif
 
-#endif  /* _JIMI_COMPILER_CONFIG_H_ */
+#endif  /* _JIMI_COMPILER_DEF_H_ */
