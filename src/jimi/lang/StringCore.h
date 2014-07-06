@@ -146,6 +146,7 @@ public:
     // Contructor
     string_core();
     string_core(const string_core &rhs);
+    string_core(const size_t _capacity);
     string_core(const char_type * const src);
     string_core(const char_type * const src, const size_t size);
     string_core(const char_type c);
@@ -228,7 +229,6 @@ protected:
     size_t calc_capacity(const size_t minCapacity);
 
 private:
-
     void small_clone(small_t &dest, const small_t &src) {
 #if 1
         // 优化版本, 如果内存地址对齐4/8字节, 一次拷贝4/8字节
@@ -248,6 +248,20 @@ private:
         dest.size = src.size;
         dest.capacity = src.capacity;
         dest.type = src.type;
+    }
+
+    void small_swap(small_t &dest, small_t &src) {
+        small_t t;
+        small_clone(t, dest);
+        small_clone(dest, src);
+        small_clone(src, t);
+    }
+
+    void ml_swap(medium_large &dest, medium_large &src) {
+        medium_large t;
+        ml_clone(t, dest);
+        ml_clone(dest, src);
+        ml_clone(src, t);
     }
 
 protected:
@@ -351,8 +365,10 @@ STRING_CORE::string_core(const string_core &rhs)
             // No need for writeNull() here, we copied one extra element just above.
         }
         else {
+#ifdef _DEBUG
             sLog.error("string_core(const string_core &src): data = %s, type = 0x%04X, size = %d.",
                 &_small.buf[0], _small.info.type, _small.info.size);
+#endif
         }
         jimi_assert(getType() == kIsSmall && this->size() == rhs.size());
     }
@@ -398,17 +414,79 @@ STRING_CORE::string_core(const string_core &rhs)
 }
 
 template <STRING_CORE_CLASSES>
+STRING_CORE::string_core(const size_t _capacity)
+{
+    if (_capacity < kMaxSmallSize) {
+        // Small: small string optimized
+        (*(size_t *)(&_small.buf[0])) = (size_t)0;
+        _ml.type = STRING_TYPE_SMALL;
+    }
+    else if (_capacity < kMaxMediumSize) {
+        // Medium: eager copy
+        size_type capacitySize = calc_capacity(_capacity);
+        char_type *newData = traits_type::mem_alloc(capacitySize);
+        newData[0] = '\0';
+        _ml.data = newData;
+        _ml.size = 0;
+        _ml.capacity = _capacity;
+        _ml.type = STRING_TYPE_MEDIUM;
+    }
+    else {
+        // Large: copy-on-write
+        size_type effectiveCapacity = calc_capacity(_capacity);
+        refcount_type *newRC = refcount_type::create(&effectiveCapacity);
+        char_type *newData = newRC->data();
+        newData[0] = '\0';
+        _ml.data = newData;
+        _ml.size = 0;
+        _ml.capacity = _capacity;
+        _ml.type = STRING_TYPE_LARGE;
+    }
+}
+
+template <STRING_CORE_CLASSES>
 STRING_CORE::string_core(const char_type c)
 {
-    (*(size_t *)(&_small.buf[0])) = (size_t)c;
-    _ml.type = STRING_TYPE_SMALL;
+    _small.buf[0] = c;
+    _small.buf[1] = '\0';
+    _small.info.size = 1;
+    _small.info.type = STRING_TYPE_SMALL_X;
+    //_ml.type = STRING_TYPE_SMALL;
 }
 
 template <STRING_CORE_CLASSES>
 STRING_CORE::string_core(const char_type c, size_type n)
 {
-    (*(size_t *)(&_small.buf[0])) = (size_t)c;
-    _ml.type = STRING_TYPE_SMALL;
+    if (_capacity < kMaxSmallSize) {
+        // Small: small string optimized
+        ::memset((void *)&_small.buf[0], c, n * sizeof(char_type));
+        _small.buf[n] = '\0';
+        _small.info.size = n;
+        _small.info.type = STRING_TYPE_SMALL_X;
+    }
+    else if (_capacity < kMaxMediumSize) {
+        // Medium: eager copy
+        size_type capacitySize = calc_capacity(_capacity);
+        char_type *newData = traits_type::mem_alloc(capacitySize);
+        ::memset((void *)newData, c, n * sizeof(char_type));
+        newData[n] = '\0';
+        _ml.data = newData;
+        _ml.size = 0;
+        _ml.capacity = _capacity;
+        _ml.type = STRING_TYPE_MEDIUM;
+    }
+    else {
+        // Large: copy-on-write
+        size_type effectiveCapacity = calc_capacity(_capacity);
+        refcount_type *newRC = refcount_type::create(&effectiveCapacity);
+        char_type *newData = newRC->data();
+        ::memset((void *)newData, c, n * sizeof(char_type));
+        newData[n] = '\0';
+        _ml.data = newData;
+        _ml.size = 0;
+        _ml.capacity = _capacity;
+        _ml.type = STRING_TYPE_LARGE;
+    }
 }
 
 template <STRING_CORE_CLASSES>
@@ -660,16 +738,10 @@ void STRING_CORE::swap(STRING_CORE &rhs)
     // 在不同的type下, _ml的有些数据是不必复制的
     flag_type type = rhs.getType();
     if (type == kIsSmall) {
-        small_t t;
-        small_clone(t, _small);
-        small_clone(_small, rhs._small);
-        small_clone(rhs._small, t);
+        small_swap(_small, rhs._small);
     }
     else {
-        medium_large t;
-        ml_clone(t, _ml);
-        ml_clone(_ml, rhs._ml);
-        ml_clone(rhs._ml, t);
+        ml_swap(_ml, rhs._ml);
     }
 #else
     // 完全直接复制_ml, 有些复制可能是多余的

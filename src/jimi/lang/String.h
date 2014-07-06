@@ -14,6 +14,7 @@
 #include <jimi/lang/StringCore.h>
 #include <jimic/string/jm_strings.h>
 
+#include <vadefs.h>
 #include <string>
 #include <limits>
 #if (defined(_MSC_VER) && (_MSC_VER >= 1700)) || defined(__GNUC__)
@@ -150,6 +151,7 @@ public:
     // Contructor
     basic_string();
     basic_string(const basic_string &src);
+    basic_string(const size_t _capacity);
     basic_string(const value_type c);
     basic_string(const value_type c, size_type n);
     basic_string(const value_type *src);
@@ -184,6 +186,20 @@ public:
     basic_string &append(const value_type c, size_type n);
     basic_string &append(const value_type *s);
     basic_string &append(const value_type *s, size_type n);
+
+    basic_string &append(const int n)      { return *this; }
+    basic_string &append(const long l)     { return *this; }
+    basic_string &append(const int64_t i)  { return *this; }
+    basic_string &append(const uint32_t u) { return *this; }
+    basic_string &append(const uint64_t u) { return *this; }
+    basic_string &append(const float f)    { return *this; }
+    basic_string &append(const double d)   { return *this; }
+    basic_string &append(const void * p)   { return *this; }
+
+    int append_hex(uint32_t hex);
+    int append_hex(uint64_t hex);
+    int append_format(const char *format, ...);
+    int append_format(char *format, ...);
 
     void push_back(const value_type c);         // primitive
     void pop_back();
@@ -291,8 +307,26 @@ BASIC_STRING::basic_string(const basic_string &src)
 }
 
 template <BASIC_STRING_CLASSES>
+BASIC_STRING::basic_string(const size_t _capacity)
+: _store(_capacity)
+{
+}
+
+template <BASIC_STRING_CLASSES>
 BASIC_STRING::basic_string(const std::string &src)
 : _store(src.data(), src.size())
+{
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING::basic_string(const value_type c)
+: _store(c)
+{
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING::basic_string(const value_type c, size_type n)
+: _store(c, n)
 {
 }
 
@@ -314,18 +348,6 @@ BASIC_STRING::basic_string(const value_type *src, size_type size)
 template <BASIC_STRING_CLASSES>
 BASIC_STRING::basic_string(const value_type *begin, const value_type *end)
 : store_(begin, end - begin)
-{
-}
-
-template <BASIC_STRING_CLASSES>
-BASIC_STRING::basic_string(const value_type c)
-: _store(c)
-{
-}
-
-template <BASIC_STRING_CLASSES>
-BASIC_STRING::basic_string(const value_type c, size_type n)
-: _store(c, n)
 {
 }
 
@@ -707,6 +729,265 @@ int BASIC_STRING::compare(const value_type *rhs) const
 {
     return _store.compare(rhs);
 }
+
+FORCEINLINE int hex_to_string(const char *buf, uint32_t hex)
+{
+    jimi_assert(buf != 0);
+    return 10;
+}
+
+FORCEINLINE int hex_to_string(const char *buf, uint64_t hex)
+{
+    jimi_assert(buf != 0);
+    return 18;
+}
+
+template <BASIC_STRING_CLASSES>
+FORCEINLINE int BASIC_STRING::append_hex(uint32_t hex)
+{
+    char buf[32];
+    buf[0] = '\0';
+    int len = hex_to_string(buf, hex);
+    append(buf, len);
+    return len;
+}
+
+template <BASIC_STRING_CLASSES>
+FORCEINLINE int BASIC_STRING::append_hex(uint64_t hex)
+{
+    char buf[32];
+    buf[0] = '\0';
+    int len = hex_to_string(buf, hex);
+    append(buf, len);
+    return len;
+}
+
+template <BASIC_STRING_CLASSES>
+FORCEINLINE int BASIC_STRING::append_format(char *format, ...)
+{
+    return 0;
+}
+
+
+#if 1
+template <BASIC_STRING_CLASSES>
+FORCEINLINE int BASIC_STRING::append_format(const char *format, ...)
+{
+    int delta = 0;
+    int offset = 0;
+    char c;
+    va_list arg_list;
+    char *arg_ptr;
+    int guess_delta = 0;
+    va_start(arg_list, format);
+    arg_ptr = (char *)arg_list;
+    while ((c = format[offset++]) != '\0') {
+        if (c == '%') {
+            c = format[offset++];
+            switch (c) {
+                case 'b': {
+                    // bool
+                    bool b = static_cast<bool>(va_arg(arg_ptr, bool));
+                    guess_delta += 1;
+                    append(b);
+                    break;
+                }
+                case 'c': {
+                    // char
+                    char c = static_cast<char>(va_arg(arg_ptr, char));
+                    guess_delta += 4;
+                    append(c);
+                    break;
+                }
+                case 'd': {
+                    // int
+                    int n = static_cast<int>(va_arg(arg_ptr, int));
+                    guess_delta += 11;
+                    append(n);
+                    break;
+                }
+                case 'f': {
+                    // float or double
+                    double d = static_cast<double>(va_arg(arg_ptr, double));
+                    guess_delta += 20;
+                    append(d);
+                    break;
+                }
+                case 'g': {
+                    // float
+                    float f = static_cast<float>(va_arg(arg_ptr, float));
+                    guess_delta += 20;
+                    append(f);
+                    break;
+                }
+                case 'i': {
+                    // __int64(long long)
+                    int64_t i64 = static_cast<int64_t>(va_arg(arg_ptr, int64_t));
+                    guess_delta += 21;
+                    append(i64);
+                    break;
+                }
+                case 'l': {
+                    // long
+                    long l = static_cast<long>(va_arg(arg_ptr, long));
+                    guess_delta += 11;
+                    append(l);
+                    break;
+                }
+                case 'p': {
+                    // pointer(void *)
+                    void * p = static_cast<void *>(va_arg(arg_ptr, void *));
+                    if (sizeof(void *) == 8)
+                        guess_delta += 18;
+                    else
+                        guess_delta += 10;
+                    append(p);
+                    break;
+                }
+                case 's': {
+                    // string
+                    char * s = static_cast<char *>(va_arg(arg_ptr, char *));
+                    size_t len = jm_strlen(s);
+                    guess_delta += len;
+                    append(s, len);
+                    break;
+                }
+                case 'u': {
+                    // unsigned int
+                    uint32_t u = static_cast<uint32_t>(va_arg(arg_ptr, uint32_t));
+                    guess_delta += 10;
+                    append(u);
+                    break;
+                }
+                case 'x': {
+                    // hex(uint32_t)
+                    uint32_t hex = static_cast<uint32_t>(va_arg(arg_ptr, uint32_t));
+                    guess_delta += 10;
+                    int hex_len = append_hex(hex);
+                    break;
+                }
+                default: {
+                    if (c == 'X') {
+                        // hex(uint64_t)
+                        uint64_t hex = static_cast<uint64_t>(va_arg(arg_ptr, uint64_t));
+                        guess_delta += 18;
+                        int hex_len = append_hex(hex);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    va_end(arg_list);
+    //printf("guess_delta = %d\n\n", guess_delta);
+    delta = guess_delta;
+    return delta;
+}
+#else
+template <BASIC_STRING_CLASSES>
+FORCEINLINE int BASIC_STRING::append_format(const char *format, ...)
+{
+    int delta = 0;
+    int offset = 0;
+    char c;
+    va_list arg_list;
+    char *arg_ptr;
+    int guess_delta = 0;
+    va_start(arg_list, format);
+    arg_ptr = (char *)arg_list;
+    while ((c = format[offset]) != '\0') {
+        if (c == '%') {
+            c = format[++offset];
+            if (c == 'X') {
+                // hex(uint64_t)
+                uint64_t hex = static_cast<uint64_t>(va_arg(arg_ptr, uint64_t));
+                guess_delta += 18;
+                int hex_len = append_hex(hex);
+            }
+            else if (c >= 'a' && c <= 'z') {
+                if (c == 'b') {
+                    // bool
+                    bool b = static_cast<bool>(va_arg(arg_ptr, bool));
+                    guess_delta += 1;
+                    append(b);
+                }
+                else if (c == 'c') {
+                    // char
+                    char c = static_cast<char>(va_arg(arg_ptr, char));
+                    guess_delta += 4;
+                    append(c);
+                }
+                else if (c == 'd') {
+                    // int
+                    int n = static_cast<int>(va_arg(arg_ptr, int));
+                    guess_delta += 11;
+                    append(n);
+                }
+                else if (c == 'f') {
+                    // float or double
+                    double d = static_cast<double>(va_arg(arg_ptr, double));
+                    guess_delta += 20;
+                    append(d);
+                }
+                else if (c == 'g') {
+                    // float
+                    float f = static_cast<float>(va_arg(arg_ptr, float));
+                    guess_delta += 20;
+                    append(f);
+                }
+                else if (c == 'i') {
+                    // __int64(long long)
+                    int64_t i64 = static_cast<int64_t>(va_arg(arg_ptr, int64_t));
+                    guess_delta += 21;
+                    append(i64);
+                }
+                else if (c == 'l') {
+                    // long
+                    long l = static_cast<long>(va_arg(arg_ptr, long));
+                    guess_delta += 11;
+                    append(l);
+                }
+                else if (c == 'p') {
+                    // pointer(void *)
+                    void * p = static_cast<void *>(va_arg(arg_ptr, void *));
+                    if (sizeof(void *) == 8)
+                        guess_delta += 18;
+                    else
+                        guess_delta += 10;
+                    append(p);
+                }
+                else if (c == 's') {
+                    // string
+                    char * s = static_cast<char *>(va_arg(arg_ptr, char *));
+                    size_t len = jm_strlen(s);
+                    guess_delta += len;
+                    append(s, len);
+                }
+                else if (c == 'u') {
+                    // unsigned int
+                    uint32_t u = static_cast<uint32_t>(va_arg(arg_ptr, uint32_t));
+                    guess_delta += 10;
+                    append(u);
+                }
+                else if (c == 'x') {
+                    // hex(uint32_t)
+                    uint32_t hex = static_cast<uint32_t>(va_arg(arg_ptr, uint32_t));
+                    guess_delta += 10;
+                    int hex_len = append_hex(hex);
+                }
+                else {
+                    // unknown format
+                }
+            }
+        }
+        ++offset;
+    }
+    va_end(arg_list);
+    printf("guess_delta = %d\n\n", guess_delta);
+    delta = guess_delta;
+    return delta;
+}
+#endif
 
 template <BASIC_STRING_CLASSES>
 inline void swap(BASIC_STRING &lhs, BASIC_STRING &rhs)

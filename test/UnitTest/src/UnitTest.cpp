@@ -91,7 +91,9 @@
 #include <crtdbg.h>
 
 #ifdef _DEBUG
-  #define new DEBUG_CLIENTBLOCK
+  #ifndef new
+    #define new DEBUG_CLIENTBLOCK
+  #endif
 #endif
 
 #endif  /* USE_CRTDBG_CHECK */
@@ -111,7 +113,6 @@
 
 using namespace std;
 //using namespace boost;
-//using namespace boost::locale;
 
 USING_NS_JIMI;
 USING_NS_JIMI_LOG;
@@ -128,14 +129,19 @@ void set_crtdbg_env()
 /* 使用CRTDBG将会检查内存越界问题, 如果你使用了vld, 内存泄漏信息可关闭 */
 #if USE_CRTDBG_CHECK
 
+#ifdef _DEBUG
+
     // 设置 CRT 报告模式
     _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 
     // 如果已经引用vld.h, 则不显示crtdbg的内存泄漏信息
 #ifndef VLD_RPTHOOK_INSTALL
     // 进程退出时, 显示内存泄漏信息
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    // _CRTDBG_CHECK_ALWAYS_DF 表示每次分配/释放内存时, 系统会自动调用_CrtCheckMemory(), 检查内存越界情况
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
 #endif  /* VLD_RPTHOOK_INSTALL */
+
+#endif  /* _DEBUG */
 
 #endif  /* USE_CRTDBG_CHECK */
 }
@@ -379,6 +385,10 @@ static char jabberwocky[] =
 
 void String_Base_Test()
 {
+    int i;
+    double time;
+    stop_watch sw;
+
     jimi::string str1 = "abcdefg";
     jimi::string str2 = "hijklmnop";
     printf("str1.c_str() = %s\n", str1.c_str());
@@ -417,6 +427,25 @@ void String_Base_Test()
     str4 = jabberwocky;
     printf("str4.c_str() = \n%s\n\n", str4.c_str());
     printf("str4.size()  = %d bytes\n", str4.size());
+    printf("\n");
+
+    jimi::string str5;
+    str5.append_format("%d %x %f %u %c %b", 9999, 8888, 10.9999, 10000000, 33, true);
+    printf("str5.c_str() = \n%s\n\n", str5.c_str());
+    printf("str5.size()  = %d bytes\n", str5.size());
+    printf("\n");
+
+    jimi::string strTest((size_t)999999999);
+    int delta;
+    sw.restart();
+    for (i = 0; i < 9999999; ++i) {
+        delta = strTest.append_format("%d %x %f %u %c %b", 9999, 8888, 10.9999, 10000000, 33, true);
+    }
+    sw.stop();
+    time = sw.getMillisec();
+    printf("time = %0.3f ms\n\n", time);
+    printf("strTest.c_str() = \n%s\n\n", str5.c_str());
+    printf("strTest.size()  = %d bytes\n", str5.size());
     printf("\n");
 
     std::string std_str;
