@@ -156,6 +156,7 @@ void jimi_cpu_warmup(int delayTime)
     double elapsedTime = 0.0;
     double delayTimeLimit = (double)delayTime;
     printf("CPU warm up start ...\n");
+    fflush(stdout);
     do {
         sw.restart();
         // 如果有聪明的编译器能发现这是一个固定值就NB了, 应该没有
@@ -172,6 +173,7 @@ void jimi_cpu_warmup(int delayTime)
     // 输出sum的值只是为了防止编译器把循环优化掉
     printf("sum = %u, time: %0.3f ms\n", sum, elapsedTime);
     printf("CPU warm up done  ... \n\n");
+    fflush(stdout);
 #endif
 }
 
@@ -387,6 +389,7 @@ void String_Base_Test()
 {
     int i;
     double time;
+    int loop_times = 9999999;
     stop_watch sw;
 
     jimi::string str1 = "abcdefg";
@@ -435,17 +438,33 @@ void String_Base_Test()
     printf("str5.size()  = %d bytes\n", str5.size());
     printf("\n");
 
-    jimi::string strTest((size_t)999999999);
     int delta;
+    jimi::string strTest((size_t)999999999);
+#ifndef _DEBUG
+    loop_times = 9999999;
+#else
+    loop_times = 9999;
+#endif
     sw.restart();
-    for (i = 0; i < 9999999; ++i) {
-        delta = strTest.append_format("%d %x %f %u %c %b", 9999, 8888, 10.9999, 10000000, 33, true);
+    for (i = 0; i < loop_times; ++i) {
+        delta = strTest.append_format("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
     }
     sw.stop();
     time = sw.getMillisec();
-    printf("time = %0.3f ms\n\n", time);
-    printf("strTest.c_str() = \n%s\n\n", str5.c_str());
-    printf("strTest.size()  = %d bytes\n", str5.size());
+
+    printf("===================================================================================\n\n");
+    printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
+    printf("      delta = str.format(\"%%d, %%s, %%d, {3}, %%s\", 111, \"222erer\", 33333, \"ffffff44\");\n");
+    printf("  }\n\n");
+    printf("===================================================================================\n\n");
+
+    jimi::string strTest2((size_t)128);
+    delta = strTest2.append_format("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
+
+    printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+    printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+    printf("strTest.size()  = %d bytes\n", strTest.size());
     printf("\n");
 
     std::string std_str;
@@ -2375,7 +2394,7 @@ int UnitTest_Main(int argc, char *argv[])
 #endif
 
     // CPU 唤醒/预热 500毫秒
-    jimi_cpu_warmup(500);
+    jimi_cpu_warmup(1000);
 
 #if 0
     malloc_addr_test();
@@ -2449,6 +2468,11 @@ int UnitTest_Main(int argc, char *argv[])
 
 #if 1
     String_Base_Test();
+    if (true && 1) {
+        ::system("pause");
+        sLog.log_end();
+        return 0;
+    }
 #endif
 
 #if 1

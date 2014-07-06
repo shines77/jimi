@@ -1,5 +1,7 @@
 
 #include <jimi/system/mutex.h>
+#include <jimi/lang/aligned_space.h>
+#include <jimi/system/scoped_lock.h>
 
 NS_JIMI_BEGIN
 
@@ -73,8 +75,8 @@ void mutex::internal_destroy() {
 void mutex::lock()
 {
 #if JIMI_USE_ASSERT
-    aligned_space<scoped_lock, 1> tmp;
-    new(tmp.begin()) scoped_lock(*this);
+    aligned_space<scoped_lock<mutex>, 1> tmp;
+    new(tmp.begin()) scoped_lock<mutex>(*this);
 #else
   #if JIMI_IS_WINDOWS
     ::EnterCriticalSection(&impl);
@@ -90,9 +92,9 @@ bool mutex::try_lock(unsigned int spin_count /* =0 */)
 {
     bool bLocked;
 #if JIMI_USE_ASSERT
-    aligned_space<scoped_lock, 1> tmp;
-    scoped_lock& s = *tmp.begin();
-    s.my_mutex = NULL;
+    aligned_space<scoped_lock<mutex>, 1> tmp;
+    scoped_lock<mutex> & s = *tmp.begin();
+    s.set_mutex(NULL);
     bLocked = s.internal_try_acquire(*this);
 #else
   #if JIMI_IS_WINDOWS
@@ -109,10 +111,10 @@ bool mutex::try_lock(unsigned int spin_count /* =0 */)
 void mutex::unlock()
 {
 #if JIMI_USE_ASSERT
-    aligned_space<scoped_lock, 1> tmp;
-    scoped_lock& s = *tmp.begin();
-    s.my_mutex = this;
-    s.internal_release();
+    aligned_space<scoped_lock<mutex>, 1> tmp;
+    scoped_lock<mutex> & s = *tmp.begin();
+    s.set_mutex(NULL);
+    s.internal_release(*this);
 #else
   #if JIMI_IS_WINDOWS
     ::LeaveCriticalSection(&impl);

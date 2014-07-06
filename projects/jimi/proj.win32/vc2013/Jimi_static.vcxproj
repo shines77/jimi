@@ -113,19 +113,26 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.h" />
+    <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert_impl.cpp">
+      <FileType>CppHeader</FileType>
+    </ClCompile>
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_common.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_def.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_export.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_machine.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\win32\jimi_config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\win32\vs_stdint.h" />
     <ClInclude Include="..\..\..\..\src\jimi\fs\FileSystem.h" />
     <ClInclude Include="..\..\..\..\src\jimi\internal\Copyable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\internal\NonAssignable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\internal\NonCopyable.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\internal\pointer_cast.h" />
     <ClInclude Include="..\..\..\..\src\jimi\io\Closeable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\io\IOException.h" />
     <ClInclude Include="..\..\..\..\src\jimi\io\Serializable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\jimi_all.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\aligned_space.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Allocator.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\AutoCloseable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Char_Traits.h" />

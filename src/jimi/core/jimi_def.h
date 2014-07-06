@@ -48,53 +48,12 @@
 
 #include <jimi/core/jimi_common.h>
 
-/**
- * for assert define
- */
-#include <assert.h>
-
-#ifndef JIMI_ASSERT
-#define JIMI_ASSERT_TRUE(predicate)                   assert(!(predicate))
-#define JIMI_ASSERT_FALSE(predicate)                  assert(!!(predicate))
-#define JIMI_ASSERT(predicate)                        JIMI_ASSERT_FALSE(predicate)
-#endif
-
-#ifndef JIMI_ASSERT_EX
-#define JIMI_ASSERT_EX_TRUE(predicate, comment)       assert(!(predicate))
-#define JIMI_ASSERT_EX_FALSE(predicate, comment)      assert(!!(predicate))
-#define JIMI_ASSERT_EX(predicate, comment)            JIMI_ASSERT_EX_FALSE(predicate, comment)
-#endif
-
-#ifndef jimi_assert
-#define jimi_assert_true        JIMI_ASSERT_TRUE
-#define jimi_assert_false       JIMI_ASSERT_FALSE
-#define jimi_assert             JIMI_ASSERT
-#endif
-
-#ifndef jimi_assert_ex
-#define jimi_assert_ex_true     JIMI_ASSERT_EX_TRUE
-#define jimi_assert_ex_false    JIMI_ASSERT_EX_FALSE
-#define jimi_assert_ex          JIMI_ASSERT_EX
-#endif
-
-/**
- * for jimi_winapi
- */
-#if defined(JIMI_IS_MSVC)
-#ifndef __CLR_OR_STD_CALL
-#if defined (_M_CEE) || defined (MRTDLL)
-#define __CLR_OR_STD_CALL   __clrcall
-#else  /* defined (_M_CEE) || defined (MRTDLL) */
-#define __CLR_OR_STD_CALL   __stdcall
-#endif  /* defined (_M_CEE) || defined (MRTDLL) */
-#endif  /* __CLR_OR_STD_CALL */
-
-#define JIMI_WINAPI             __CLR_OR_STD_CALL
-#else
-#define JIMI_WINAPI
-#endif  /* JIMI_IS_MSVC */
-
 #define USING_NS_JIMI           using namespace jimi;
+
+// namespace jimi
+#define NS_JIMI_BEGIN           namespace jimi {
+#define NS_JIMI_END             }
+
 #define USING_NS_JIMI_CORE      using namespace jimi::core;
 #define USING_NS_JIMI_SYSTEM    using namespace jimi::system;
 #define USING_NS_JIMI_IOCP      using namespace jimi::iocp;
@@ -102,10 +61,6 @@
 #define USING_NS_JIMI_IO        using namespace jimi::io;
 
 #define USING_NS_JIMI_SUB(NS)   using namespace jimi::##NS##;
-
-// namespace jimi
-#define NS_JIMI_BEGIN           namespace jimi {
-#define NS_JIMI_END             }
 
 // namespace jimi::internal
 #define NS_JIMI_INTERNAL_BEGIN  namespace internal {
@@ -138,6 +93,29 @@
 // namespace jimi::io
 #define NS_JIMI_IO_BEGIN        namespace io {
 #define NS_JIMI_IO_END          }
+
+/**
+ * for assert defines
+ */
+#include <jimi/core/jimi_assert.h>
+//#include <jimi/core/jimi_assert_impl.h>
+
+/**
+ * for jimi_winapi
+ */
+#if defined(JIMI_IS_MSVC)
+#ifndef __CLR_OR_STD_CALL
+#if defined (_M_CEE) || defined (MRTDLL)
+#define __CLR_OR_STD_CALL   __clrcall
+#else  /* defined (_M_CEE) || defined (MRTDLL) */
+#define __CLR_OR_STD_CALL   __stdcall
+#endif  /* defined (_M_CEE) || defined (MRTDLL) */
+#endif  /* __CLR_OR_STD_CALL */
+
+#define JIMI_WINAPI             __CLR_OR_STD_CALL
+#else
+#define JIMI_WINAPI
+#endif  /* JIMI_IS_MSVC */
 
 #define NOMINMAX
 

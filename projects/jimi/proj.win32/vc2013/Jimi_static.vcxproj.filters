@@ -281,6 +281,21 @@
     <ClInclude Include="..\..\..\..\src\jimic\platform\jimi_platform_def.h">
       <Filter>src\jimic\platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.h">
+      <Filter>src\jimi\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\aligned_space.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\internal\pointer_cast.h">
+      <Filter>src\jimi\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_machine.h">
+      <Filter>src\jimi\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.cpp">
+      <Filter>src\jimi\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">

@@ -21,7 +21,7 @@ public:
     scoped_lock() : _pmutex(NULL) {};
 
     //! Acquire lock on given mutex.
-    scoped_lock(T& mutex) /* : _pmutex(NULL) */ {
+    scoped_lock(T & mutex) /* : _pmutex(NULL) */ {
         acquire_init(mutex);
     }
 
@@ -30,10 +30,13 @@ public:
         release();
     }
 
+    T * get_mutex() { return _pmutex; }
+    void set_mutex(T * pmutex) { _pmutex = pmutex; }
+
     // ISO C++0x compatibility methods
 
     //! Acquire lock on given mutex(use in constructor only).
-    void acquire_init(T& mutex) {
+    void acquire_init(T & mutex) {
 #if JIMI_USE_ASSERT
         internal_acquire(mutex);
 #else
@@ -43,7 +46,7 @@ public:
     }
 
     //! Acquire lock on given mutex.
-    void acquire(T& mutex) {
+    void acquire(T & mutex) {
 #if JIMI_USE_ASSERT
         internal_acquire(mutex);
 #else
@@ -56,7 +59,7 @@ public:
     }
 
     //! Try acquire lock on given mutex.
-    bool try_acquire(T& mutex, unsigned int spin_count = 0) {
+    bool try_acquire(T & mutex, unsigned int spin_count = 0) {
 #if JIMI_USE_ASSERT
         return internal_try_acquire(mutex);
 #else
@@ -82,7 +85,8 @@ public:
     //! Release lock
     void release() {
 #if JIMI_USE_ASSERT
-        internal_release();
+        if (_pmutex)
+            internal_release(*_pmutex);
 #else
         if (_pmutex) {
             _pmutex->unlock();
@@ -91,16 +95,17 @@ public:
 #endif /* JIMI_USE_ASSERT */
     }
 
-private:
+public:
 
+#if JIMI_USE_ASSERT
     //! All checks from acquire using mutex.state were moved here
-    void JIMI_EXPORTED_METHOD internal_acquire(T& mutex)
+    void JIMI_EXPORTED_METHOD internal_acquire(T & mutex)
     {
         //
     }
 
     //! All checks from try_acquire using mutex.state were moved here
-    bool JIMI_EXPORTED_METHOD internal_try_acquire(T& mutex, unsigned int spin_count = 0)
+    bool JIMI_EXPORTED_METHOD internal_try_acquire(T & mutex, unsigned int spin_count = 0)
     {
         return true;
     }
@@ -115,13 +120,15 @@ private:
     }
 
     //! All checks from release using mutex.state were moved here
-    void JIMI_EXPORTED_METHOD internal_release()
+    void JIMI_EXPORTED_METHOD internal_release(T & mutex)
     {
         //
     }
 
+#endif  /* JIMI_USE_ASSERT */
+
     //! The pointer to the current mutex to work
-    T* _pmutex;
+    T * _pmutex;
 };
 
 NS_JIMI_SYSTEM_END

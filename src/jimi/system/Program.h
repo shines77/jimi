@@ -74,7 +74,7 @@ public:
             m_pfnMainVoid(argc, argv);
         }
         else if (m_pfnMainInt) {
-            m_pfnMainInt(argc, argv);
+            m_nReturnValue = m_pfnMainInt(argc, argv);
         }
         else if (m_pfnModernMain) {
             StringArray args;
@@ -104,7 +104,7 @@ public:
             m_pfnWMainVoid(argc, argv);
         }
         else if (m_pfnWMainInt) {
-            m_pfnWMainInt(argc, argv);
+            m_nReturnValue = m_pfnWMainInt(argc, argv);
         }
         else if (m_pfnModernMain) {
             WStringArray args;

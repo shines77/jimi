@@ -187,14 +187,14 @@ public:
     basic_string &append(const value_type *s);
     basic_string &append(const value_type *s, size_type n);
 
-    basic_string &append(const int n)      { return *this; }
-    basic_string &append(const long l)     { return *this; }
-    basic_string &append(const int64_t i)  { return *this; }
-    basic_string &append(const uint32_t u) { return *this; }
-    basic_string &append(const uint64_t u) { return *this; }
-    basic_string &append(const float f)    { return *this; }
-    basic_string &append(const double d)   { return *this; }
-    basic_string &append(const void * p)   { return *this; }
+    basic_string &append(const int n);
+    basic_string &append(const long l);
+    basic_string &append(const int64_t i);
+    basic_string &append(const uint32_t u);
+    basic_string &append(const uint64_t u);
+    basic_string &append(const float f);
+    basic_string &append(const double d);
+    basic_string &append(const void * p);
 
     int append_hex(uint32_t hex);
     int append_hex(uint64_t hex);
@@ -283,9 +283,11 @@ public:
 
     void clear() { resize(0); }
 
-    size_type max_size() const  { return std::numeric_limits<size_type>::max(); }
+    size_type max_size() const { return std::numeric_limits<size_type>::max(); }
 
-    void resize(const size_type newSize, const value_type c = value_type()) {}
+    void reserve(const size_type newCapacity);
+    void reallocate(const size_type newSize);
+    void resize(const size_type newSize, const value_type c = value_type(), bool needInit = true);
 
 private:
     void destroy();
@@ -460,19 +462,6 @@ std::string &BASIC_STRING::toStdString() const
 }
 
 template <BASIC_STRING_CLASSES>
-void BASIC_STRING::push_back(const value_type c)
-{
-    _store.push_back(c);
-}
-
-template <BASIC_STRING_CLASSES>
-void BASIC_STRING::pop_back()
-{
-    jimi_assert(!empty());
-    _store.shrinkTo(size() - 1);
-}
-
-template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::append(const basic_string &str)
 {
 #if defined(_DEBUG) || !defined(NDEBUG)
@@ -493,7 +482,13 @@ BASIC_STRING &BASIC_STRING::append(const value_type c)
 template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::append(const value_type c, size_type n)
 {
+#if 0
     resize(size() + n, c);
+#else
+    char_type *oldDataEnd = _store.expand_noinit(n);
+    string_detail::pod_fill(oldDataEnd, n, c);
+    // No need to call writeNull(), we have done it within expand_noinit().
+#endif
     return *this;
 }
 
@@ -527,19 +522,87 @@ BASIC_STRING &BASIC_STRING::append(const value_type *s, size_type n)
         // Restore the source
         s = data() + offset;
     }
+#if 0
     // Warning! Repeated appends with short strings may actually incur
     // practically quadratic performance. Avoid that by pushing back
     // the first character (which ensures exponential growth) and then
     // appending the rest normally. Worst case the append may incur a
     // second allocation but that will be rare.
     push_back(*s++);
-    _store.expandTo(oldSize + n);
+    _store.expandTo_noinit(oldSize + n);
     --n;
     if (n > 0) {
         ::memcpy((void *)(data() + oldSize + 1), s, n * sizeof(value_type));
     }
     _store.writeNullForce();
-    //jimi_assert(size() == oldSize + n);
+#else
+    _store.expand_and_copy(s, n);
+    //::memcpy((void *)(data() + oldSize), s, n * sizeof(value_type));
+    //_store.writeNull();
+#endif
+    jimi_assert(size() == oldSize + n);
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+void BASIC_STRING::push_back(const value_type c)
+{
+    _store.push_back(c);
+}
+
+template <BASIC_STRING_CLASSES>
+void BASIC_STRING::pop_back()
+{
+    jimi_assert(!empty());
+    _store.shrinkTo(size() - 1);
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::append(const int n)
+{
+    _store.append(n);
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::append(const long l)
+{
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::append(const int64_t i)
+{
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::append(const uint32_t u)
+{
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::append(const uint64_t u)
+{
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::append(const float f)
+{
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::append(const double d)
+{
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::append(const void * p)
+{
     return *this;
 }
 
@@ -566,6 +629,51 @@ template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::operator += (value_type *str)
 {
     return append(s);
+}
+
+template <BASIC_STRING_CLASSES>
+void BASIC_STRING::reserve(const size_type newCapacity)
+{
+    _store.reserve(newCapacity);
+}
+
+template <BASIC_STRING_CLASSES>
+void BASIC_STRING::reallocate(const size_type newSize)
+{
+    size_type oldSize = this->size();
+    if (newSize <= oldSize) {
+        _store.shrinkTo(newSize);
+    }
+    else {
+        size_type capacity = this->capacity();
+        jimi_assert(capacity >= oldSize);
+        if (newSize <= capacity)
+            _store.expandTo_noinit(newSize);
+        else
+            _store.reallocate(newSize);
+    }
+    jimi_assert(this->size() == newSize);
+}
+
+template <BASIC_STRING_CLASSES>
+void BASIC_STRING::resize(const size_type newSize, const value_type c /* = value_type() */,
+                          bool needInit /* = true */)
+{
+    size_type oldSize = this->size();
+    if (newSize <= oldSize) {
+        _store.shrinkTo(newSize);
+    }
+    else {
+        size_type capacity = this->capacity();
+        jimi_assert(capacity >= oldSize);
+        value_type *oldDataEnd = _store.expandTo_noinit(newSize);
+        if (needInit) {
+            string_detail::pod_fill(oldDataEnd, newSize - oldSize, c);
+            // No need to call writeNull(), we have done it within expandTo_noinit().
+            //_store.writeNullForce();
+        }
+    }
+    jimi_assert(this->size() == newSize);
 }
 
 template <BASIC_STRING_CLASSES>
@@ -768,8 +876,7 @@ FORCEINLINE int BASIC_STRING::append_format(char *format, ...)
     return 0;
 }
 
-
-#if 1
+#if 0
 template <BASIC_STRING_CLASSES>
 FORCEINLINE int BASIC_STRING::append_format(const char *format, ...)
 {
@@ -867,7 +974,11 @@ FORCEINLINE int BASIC_STRING::append_format(const char *format, ...)
                     break;
                 }
                 default: {
-                    if (c == 'X') {
+                    if (c == '%') {
+                        // 实现 %%
+                        append('%');
+                    }
+                    else if (c == 'X') {
                         // hex(uint64_t)
                         uint64_t hex = static_cast<uint64_t>(va_arg(arg_ptr, uint64_t));
                         guess_delta += 18;
@@ -876,6 +987,9 @@ FORCEINLINE int BASIC_STRING::append_format(const char *format, ...)
                     break;
                 }
             }
+        }
+        else {
+            append(c);
         }
     }
     va_end(arg_list);
@@ -895,16 +1009,85 @@ FORCEINLINE int BASIC_STRING::append_format(const char *format, ...)
     int guess_delta = 0;
     va_start(arg_list, format);
     arg_ptr = (char *)arg_list;
-    while ((c = format[offset]) != '\0') {
+    while ((c = format[offset++]) != '\0') {
         if (c == '%') {
-            c = format[++offset];
-            if (c == 'X') {
-                // hex(uint64_t)
-                uint64_t hex = static_cast<uint64_t>(va_arg(arg_ptr, uint64_t));
-                guess_delta += 18;
-                int hex_len = append_hex(hex);
-            }
-            else if (c >= 'a' && c <= 'z') {
+            c = format[offset++];
+            if (c >= 'a' && c <= 'z') {
+#if 1
+                if (c == 'd') {
+                    // int
+                    int n = static_cast<int>(va_arg(arg_ptr, int));
+                    guess_delta += 11;
+                    append(n);
+                }
+                else if (c == 's') {
+                    // string
+                    char * s = static_cast<char *>(va_arg(arg_ptr, char *));
+                    size_t len = jm_strlen(s);
+                    guess_delta += len;
+                    append(s, len);
+                }
+                else if (c == 'f') {
+                    // float or double
+                    double d = static_cast<double>(va_arg(arg_ptr, double));
+                    guess_delta += 20;
+                    append(d);
+                }
+                else if (c == 'x') {
+                    // hex(uint32_t)
+                    uint32_t hex = static_cast<uint32_t>(va_arg(arg_ptr, uint32_t));
+                    guess_delta += 10;
+                    int hex_len = append_hex(hex);
+                }
+                else if (c == 'c') {
+                    // char
+                    char c = static_cast<char>(va_arg(arg_ptr, char));
+                    guess_delta += 4;
+                    append(c);
+                }
+                else if (c == 'u') {
+                    // unsigned int
+                    uint32_t u = static_cast<uint32_t>(va_arg(arg_ptr, uint32_t));
+                    guess_delta += 10;
+                    append(u);
+                }
+                else if (c == 'l') {
+                    // long
+                    long l = static_cast<long>(va_arg(arg_ptr, long));
+                    guess_delta += 11;
+                    append(l);
+                }
+                else if (c == 'i') {
+                    // __int64(long long)
+                    int64_t i64 = static_cast<int64_t>(va_arg(arg_ptr, int64_t));
+                    guess_delta += 21;
+                    append(i64);
+                }
+                else if (c == 'g') {
+                    // float
+                    float f = static_cast<float>(va_arg(arg_ptr, float));
+                    guess_delta += 20;
+                    append(f);
+                }
+                else if (c == 'b') {
+                    // bool
+                    bool b = static_cast<bool>(va_arg(arg_ptr, bool));
+                    guess_delta += 1;
+                    append(b);
+                }
+                else if (c == 'p') {
+                    // pointer(void *)
+                    void * p = static_cast<void *>(va_arg(arg_ptr, void *));
+                    if (sizeof(void *) == 8)
+                        guess_delta += 18;
+                    else
+                        guess_delta += 10;
+                    append(p);
+                }
+                else {
+                    // unknown format
+                }
+#else
                 if (c == 'b') {
                     // bool
                     bool b = static_cast<bool>(va_arg(arg_ptr, bool));
@@ -978,12 +1161,25 @@ FORCEINLINE int BASIC_STRING::append_format(const char *format, ...)
                 else {
                     // unknown format
                 }
+#endif
+            }
+            else if (c == '%') {
+                // 实现 %%
+                append('%');
+            }
+            else if (c == 'X') {
+                // hex(uint64_t)
+                uint64_t hex = static_cast<uint64_t>(va_arg(arg_ptr, uint64_t));
+                guess_delta += 18;
+                int hex_len = append_hex(hex);
             }
         }
-        ++offset;
+        else {
+            append(c);
+        }
     }
     va_end(arg_list);
-    printf("guess_delta = %d\n\n", guess_delta);
+    //printf("guess_delta = %d\n\n", guess_delta);
     delta = guess_delta;
     return delta;
 }
