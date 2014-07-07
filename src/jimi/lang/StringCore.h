@@ -743,7 +743,7 @@ void STRING_CORE::push_back(const char_type c)
 }
 
 template<typename char_type>
-inline int jm_itoa_fast(char_type *buf, int val, int offset)
+inline int jm_itoa_radix10_fast(char_type *buf, int val, int offset)
 {
     int digval, digital;
     char_type *cur, *end;
@@ -773,7 +773,7 @@ inline int jm_itoa_fast(char_type *buf, int val, int offset)
 }
 
 template<typename char_type>
-inline int jm_itoa_fast2(char_type *buf, int val)
+inline int jm_itoa_radix10_fast2(char_type *buf, int val)
 {
     int digval, digital;
     char_type *cur;
@@ -782,6 +782,36 @@ inline int jm_itoa_fast2(char_type *buf, int val)
     while (val != 0) {
         digval = val % 10;
         val /= 10;
+
+        *cur++ = (char_type)(digval + '0');
+    }
+
+    digital = cur - digits;
+    if (val < 0) {
+        *buf++ = '-';
+        if (digital == 10) {
+            // do nothing!
+            return digital + 1;
+        }        
+    }
+
+    cur--;
+    while (cur >= digits)
+        *buf++ = *cur--;
+    *buf = '\0';
+    return digital;
+}
+
+template<typename char_type>
+inline int jm_itoa_fast(char_type *buf, int val, const int radix)
+{
+    int digval, digital;
+    char_type *cur;
+    char digits[16];
+    cur = digits;
+    while (val != 0) {
+        digval = val % radix;
+        val /= radix;
 
         *cur++ = (char_type)(digval + '0');
     }
@@ -816,9 +846,10 @@ void STRING_CORE::append(const int n)
         if (newSize < kMaxSmallSize) {
             //_small.info.size = newSize;
 #if 0
-            len = jm_itoa_fast(_small.buf + oldSize, n, delta);
+            len = jm_itoa_radix10_fast(_small.buf + oldSize, n, delta);
 #elif 1
-            len = jm_itoa_fast2(_small.buf + oldSize, n);
+            len = jm_itoa_radix10_fast2(_small.buf + oldSize, n);
+            //len = jm_itoa_fast(_small.buf + oldSize, n, 10);
 #else
             _itoa(n, _small.buf + oldSize, 10);
             len = jm_strlen(_small.buf + oldSize);
@@ -840,9 +871,10 @@ void STRING_CORE::append(const int n)
     jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
     //_ml.size = newSize;
 #if 0
-    len = jm_itoa_fast(_ml.data + oldSize, n, delta);
+    len = jm_itoa_radix10_fast(_ml.data + oldSize, n, delta);
 #elif 1
-    len = jm_itoa_fast2(_ml.data + oldSize, n);
+    len = jm_itoa_radix10_fast2(_ml.data + oldSize, n);
+    //len = jm_itoa_fast(_ml.data + oldSize, n, 10);
 #else
     _itoa(n, _ml.data + oldSize, 10);
     len = jm_strlen(_ml.data + oldSize);

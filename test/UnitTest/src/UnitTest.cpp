@@ -438,6 +438,12 @@ void String_Base_Test()
     printf("str5.size()  = %d bytes\n", str5.size());
     printf("\n");
 
+    jimi::string str6;
+    str6.format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
+    printf("str6.c_str() = \n%s\n\n", str6.c_str());
+    printf("str6.size()  = %d bytes\n", str6.size());
+    printf("\n");
+
     int delta;
     jimi::string strTest((size_t)999999999);
 #ifndef _DEBUG
@@ -445,6 +451,25 @@ void String_Base_Test()
 #else
     loop_times = 9999;
 #endif
+
+#if 1
+    sw.restart();
+    for (i = 0; i < loop_times; ++i) {
+        delta = strTest.format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
+    }
+    sw.stop();
+    time = sw.getMillisec();
+
+    printf("===================================================================================\n\n");
+    printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
+    printf("      delta = str.format(\"{0}, {1}, {2}, {{3}, {3}\", \"%%d %%s %%d %%s\",\n"
+           "                          111, \"222erer\", 33333, \"ffffff44\");\n");
+    printf("  }\n\n");
+    printf("===================================================================================\n\n");
+
+    jimi::string strTest2((size_t)128);
+    delta = strTest2.format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
+#else
     sw.restart();
     for (i = 0; i < loop_times; ++i) {
         delta = strTest.append_format("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
@@ -454,12 +479,14 @@ void String_Base_Test()
 
     printf("===================================================================================\n\n");
     printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
-    printf("      delta = str.format(\"%%d, %%s, %%d, {3}, %%s\", 111, \"222erer\", 33333, \"ffffff44\");\n");
+    printf("      delta = str.format(\"%%d, %%s, %%d, {3}, %%s\",\n"
+           "                          111, \"222erer\", 33333, \"ffffff44\");\n");
     printf("  }\n\n");
     printf("===================================================================================\n\n");
 
     jimi::string strTest2((size_t)128);
     delta = strTest2.append_format("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
+#endif
 
     printf("str.c_str() = %s\n\n", strTest2.c_str());
 

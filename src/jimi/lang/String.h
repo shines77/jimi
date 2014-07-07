@@ -198,8 +198,8 @@ public:
 
     int append_hex(uint32_t hex);
     int append_hex(uint64_t hex);
-    int append_format(const char *format, ...);
-    int append_format(char *format, ...);
+    int append_format(const value_type *format, ...);
+    int format(const value_type *format, const value_type *args, ...);
 
     void push_back(const value_type c);         // primitive
     void pop_back();
@@ -871,21 +871,187 @@ FORCEINLINE int BASIC_STRING::append_hex(uint64_t hex)
 }
 
 template <BASIC_STRING_CLASSES>
-FORCEINLINE int BASIC_STRING::append_format(char *format, ...)
+FORCEINLINE int BASIC_STRING::format(const value_type *format, const value_type *args, ...)
 {
-    return 0;
+    int delta = 0;
+    int offset = 0;
+    value_type c;
+    size_t oldSize;
+    va_list arg_list;
+    int guess_delta = 0;
+    std::vector<jimi::string> strArgList;
+    jimi::string strArg;
+    oldSize = size();
+
+    size_t len_args = jm_strlen(args);
+    strArgList.reserve(len_args / 2 + 1);
+    //strArg.reserve(28);
+
+    va_start(arg_list, args);
+    while ((c = args[offset++]) != '\0') {
+        if (c == '%') {
+            c = args[offset++];
+            if (c >= 'a' && c <= 'z') {
+                strArg.clear();
+                if (c == 'd') {
+                    // int
+                    int n = static_cast<int>(va_arg(arg_list, int));
+                    guess_delta += 11;
+                    strArgList.push_back(strArg.append(n));
+                }
+                else if (c == 's') {
+                    // string
+                    char * s = static_cast<char *>(va_arg(arg_list, char *));
+                    size_t len = jm_strlen(s);
+                    guess_delta += len;
+                    strArgList.push_back(strArg.append(s, len));
+                }
+                else if (c == 'f') {
+                    // float or double
+                    double d = static_cast<double>(va_arg(arg_list, double));
+                    guess_delta += 20;
+                    strArgList.push_back(strArg.append(d));
+                }
+                else if (c == 'x') {
+                    // hex(uint32_t)
+                    uint32_t hex = static_cast<uint32_t>(va_arg(arg_list, uint32_t));
+                    guess_delta += 10;
+                    int hex_len = strArg.append_hex(hex);
+                    strArgList.push_back(strArg);
+                }
+                else if (c == 'c') {
+                    // char
+                    char c = static_cast<char>(va_arg(arg_list, char));
+                    guess_delta += 4;
+                    strArgList.push_back(strArg.append(c));
+                }
+                else if (c == 'u') {
+                    // unsigned int
+                    uint32_t u = static_cast<uint32_t>(va_arg(arg_list, uint32_t));
+                    guess_delta += 10;
+                    strArgList.push_back(strArg.append(u));
+                }
+                else if (c == 'l') {
+                    // long
+                    long l = static_cast<long>(va_arg(arg_list, long));
+                    guess_delta += 11;
+                    strArgList.push_back(strArg.append(l));
+                }
+                else if (c == 'i') {
+                    // __int64(long long)
+                    int64_t i64 = static_cast<int64_t>(va_arg(arg_list, int64_t));
+                    guess_delta += 21;
+                    strArgList.push_back(strArg.append(i64));
+                }
+                else if (c == 'g') {
+                    // float
+                    float f = static_cast<float>(va_arg(arg_list, float));
+                    guess_delta += 20;
+                    strArgList.push_back(strArg.append(f));
+                }
+                else if (c == 'b') {
+                    // bool
+                    bool b = static_cast<bool>(va_arg(arg_list, bool));
+                    guess_delta += 1;
+                    strArgList.push_back(strArg.append(b));
+                }
+                else if (c == 'p') {
+                    // pointer(void *)
+                    void * p = static_cast<void *>(va_arg(arg_list, void *));
+                    if (sizeof(void *) == 8)
+                        guess_delta += 18;
+                    else
+                        guess_delta += 10;
+                    strArgList.push_back(strArg.append(p));
+                }
+                else {
+                    // unknown format
+                }
+            }
+            else if (c == 'X') {
+                // hex(uint64_t)
+                strArg.clear();
+                uint64_t hex = static_cast<uint64_t>(va_arg(arg_list, uint64_t));
+                guess_delta += 18;
+                int hex_len = strArg.append_hex(hex);
+                strArgList.push_back(strArg);
+            }
+        }
+    }
+    va_end(arg_list);
+
+    int index, first;
+    int maxArgs = strArgList.size();
+    offset = 0;
+    while ((c = format[offset++]) != '\0') {
+        if (c == '{') {
+            // number string first pos
+            first = offset - 1;
+            c = format[offset++];
+            if (c == '{') {
+                append(c);
+            }
+            else if (c >= '0' && c <= '9') {
+                index = c - '0';
+                while ((c = format[offset++]) != '\0') {
+                    if (c == '}') {
+                        // end of one number
+                        if (index < maxArgs)
+                            append(strArgList[index]);
+                        break;
+                    }
+                    else if (c >= '0' && c <= '9') {
+                        index = index * 10 + (c - '0');
+                    }
+                    else {
+                        // Get a error num
+                        break;
+                    }
+                    /*
+                    else if (c == ' ') {
+                        // do nothing!
+                    }
+                    else {
+                        // Get a error num, if not found "}" behind 16 bytes, append as a string
+                        while ((c = format[offset++]) != '\0') {
+                            if (c == '}') {
+                                append(format + first, offset - first + 1);
+                                break;
+                            }
+                            else {
+                                if ((offset - first) >= 15) {
+                                    append(format + first, offset - first + 1);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    //*/
+                }
+            }
+        }
+        else {
+            append(c);
+        }
+    }
+
+    delta = size() - oldSize;
+    return delta;
 }
 
 #if 0
 template <BASIC_STRING_CLASSES>
-FORCEINLINE int BASIC_STRING::append_format(const char *format, ...)
+FORCEINLINE int BASIC_STRING::append_format(const value_type *format, ...)
 {
     int delta = 0;
     int offset = 0;
-    char c;
+    value_type c;
+    size_t oldSize;
     va_list arg_list;
     char *arg_ptr;
     int guess_delta = 0;
+    oldSize = size();
     va_start(arg_list, format);
     arg_ptr = (char *)arg_list;
     while ((c = format[offset++]) != '\0') {
@@ -994,19 +1160,21 @@ FORCEINLINE int BASIC_STRING::append_format(const char *format, ...)
     }
     va_end(arg_list);
     //printf("guess_delta = %d\n\n", guess_delta);
-    delta = guess_delta;
+    delta = size() - oldSize;
     return delta;
 }
 #else
 template <BASIC_STRING_CLASSES>
-FORCEINLINE int BASIC_STRING::append_format(const char *format, ...)
+FORCEINLINE int BASIC_STRING::append_format(const value_type *format, ...)
 {
     int delta = 0;
     int offset = 0;
-    char c;
+    value_type c;
+    size_t oldSize;
     va_list arg_list;
     char *arg_ptr;
     int guess_delta = 0;
+    oldSize = size();
     va_start(arg_list, format);
     arg_ptr = (char *)arg_list;
     while ((c = format[offset++]) != '\0') {
@@ -1180,7 +1348,7 @@ FORCEINLINE int BASIC_STRING::append_format(const char *format, ...)
     }
     va_end(arg_list);
     //printf("guess_delta = %d\n\n", guess_delta);
-    delta = guess_delta;
+    delta = size() - oldSize;
     return delta;
 }
 #endif
