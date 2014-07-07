@@ -870,6 +870,199 @@ FORCEINLINE int BASIC_STRING::append_hex(uint64_t hex)
     return len;
 }
 
+#define USE_STRING_ARRAY            1
+
+#if defined(USE_STRING_ARRAY) && (USE_STRING_ARRAY != 0)
+
+template <BASIC_STRING_CLASSES>
+FORCEINLINE int BASIC_STRING::format(const value_type *format, const value_type *args, ...)
+{
+    int delta = 0;
+    int offset = 0;
+    int index, first;
+    value_type c;
+    size_t oldSize;
+    va_list arg_list;
+    int guess_delta = 0;
+    jimi::string *strArgList, *strArg;
+    oldSize = size();
+
+    size_t len_args = jm_strlen(args);
+    //strArgList = (jimi::string *)malloc((len_args / 3 + 1) * sizeof(jimi::string));
+    strArgList = (jimi::string *)alloca((len_args / 3 + 1) * sizeof(jimi::string));
+    strArg = strArgList;
+
+    index = 0;
+    va_start(arg_list, args);
+    while ((c = args[offset++]) != '\0') {
+        if (c == '%') {
+            c = args[offset++];
+            if (c >= 'a' && c <= 'z') {
+                if (c == 'd') {
+                    // int
+                    int n = static_cast<int>(va_arg(arg_list, int));
+                    guess_delta += 11;
+                    new (strArg)jimi::string();
+                    strArg->append(n);
+                    strArg++;
+                    index++;
+                }
+                else if (c == 's') {
+                    // string
+                    char * s = static_cast<char *>(va_arg(arg_list, char *));
+                    size_t len = jm_strlen(s);
+                    guess_delta += len;
+                    new (strArg)jimi::string(s, len);
+                    //strArg->append(s, len);
+                    strArg++;
+                    index++;
+                }
+                else if (c == 'f') {
+                    // float or double
+                    double d = static_cast<double>(va_arg(arg_list, double));
+                    guess_delta += 20;
+                    strArgList[index++].append(d);
+                }
+                else if (c == 'x') {
+                    // hex(uint32_t)
+                    uint32_t hex = static_cast<uint32_t>(va_arg(arg_list, uint32_t));
+                    guess_delta += 10;
+                    int hex_len = strArgList[index++].append_hex(hex);
+                }
+                else if (c == 'c') {
+                    // char
+                    char c = static_cast<char>(va_arg(arg_list, char));
+                    guess_delta += 4;
+                    strArgList[index++].append(c);
+                }
+                else if (c == 'u') {
+                    // unsigned int
+                    uint32_t u = static_cast<uint32_t>(va_arg(arg_list, uint32_t));
+                    guess_delta += 10;
+                    strArgList[index++].append(u);
+                }
+                else if (c == 'l') {
+                    // long
+                    long l = static_cast<long>(va_arg(arg_list, long));
+                    guess_delta += 11;
+                    strArgList[index++].append(l);
+                }
+                else if (c == 'i') {
+                    // __int64(long long)
+                    int64_t i64 = static_cast<int64_t>(va_arg(arg_list, int64_t));
+                    guess_delta += 21;
+                    strArgList[index++].append(i64);
+                }
+#if 0
+                else if (c == 'g') {
+                    // float
+                    float f = static_cast<float>(va_arg(arg_list, float));
+                    guess_delta += 20;
+                    strArgList[index++].append(f);
+                }
+                else if (c == 'b') {
+                    // bool
+                    bool b = static_cast<bool>(va_arg(arg_list, bool));
+                    guess_delta += 1;
+                    strArgList[index++].append(b);
+                }
+                else if (c == 'p') {
+                    // pointer(void *)
+                    void * p = static_cast<void *>(va_arg(arg_list, void *));
+                    if (sizeof(void *) == 8)
+                        guess_delta += 18;
+                    else
+                        guess_delta += 10;
+                    strArgList[index++].append(p);
+                }
+#endif
+                else {
+                    // unknown format
+                }
+            }
+            else if (c == 'X') {
+                // hex(uint64_t)
+                uint64_t hex = static_cast<uint64_t>(va_arg(arg_list, uint64_t));
+                guess_delta += 18;
+                int hex_len = strArgList[index++].append_hex(hex);
+            }
+        }
+    }
+    va_end(arg_list);
+
+    int maxArgs = index;
+    offset = 0;
+    while ((c = format[offset++]) != '\0') {
+        if (c == '{') {
+            // number string first pos
+            first = offset - 1;
+            c = format[offset++];
+            if (c == '{') {
+                append(c);
+            }
+            else if (c >= '0' && c <= '9') {
+                index = c - '0';
+                while ((c = format[offset++]) != '\0') {
+                    if (c == '}') {
+                        // end of one number
+                        if (index < maxArgs)
+                            append(*(strArgList + index));
+                        break;
+                    }
+                    else if (c >= '0' && c <= '9') {
+                        index = index * 10 + (c - '0');
+                    }
+                    else {
+                        // Get a error num
+                        break;
+                    }
+                    /*
+                    else if (c == ' ') {
+                        // do nothing!
+                    }
+                    else {
+                        // Get a error num, if not found "}" behind 16 bytes, append as a string
+                        while ((c = format[offset++]) != '\0') {
+                            if (c == '}') {
+                                append(format + first, offset - first + 1);
+                                break;
+                            }
+                            else {
+                                if ((offset - first) >= 15) {
+                                    append(format + first, offset - first + 1);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    //*/
+                }
+            }
+        }
+        else {
+            append(c);
+        }
+    }
+
+    strArg = strArgList;
+    for (int i = 0; i < maxArgs; ++i) {
+        strArg->~basic_string();
+        strArg++;
+    }
+
+#if 0
+    if (strArgList) {
+        free(strArgList);
+    }
+#endif
+
+    delta = size() - oldSize;
+    return delta;
+}
+
+#else  /* !USE_STRING_ARRAY */
+
 template <BASIC_STRING_CLASSES>
 FORCEINLINE int BASIC_STRING::format(const value_type *format, const value_type *args, ...)
 {
@@ -879,13 +1072,21 @@ FORCEINLINE int BASIC_STRING::format(const value_type *format, const value_type 
     size_t oldSize;
     va_list arg_list;
     int guess_delta = 0;
+#if defined(USE_STRING_ARRAY) && (USE_STRING_ARRAY != 0)
     std::vector<jimi::string> strArgList;
     jimi::string strArg;
+#eles
+    jimi::string *strArgList;
+#endif
     oldSize = size();
 
     size_t len_args = jm_strlen(args);
-    strArgList.reserve(len_args / 2 + 1);
+#if defined(USE_STRING_ARRAY) && (USE_STRING_ARRAY != 0)
+    strArgList.reserve(len_args / 3 + 1);
     //strArg.reserve(28);
+#else
+    strArgList = new jimi::string[len_args / 3 + 1];
+#endif
 
     va_start(arg_list, args);
     while ((c = args[offset++]) != '\0') {
@@ -943,6 +1144,7 @@ FORCEINLINE int BASIC_STRING::format(const value_type *format, const value_type 
                     guess_delta += 21;
                     strArgList.push_back(strArg.append(i64));
                 }
+#if 0
                 else if (c == 'g') {
                     // float
                     float f = static_cast<float>(va_arg(arg_list, float));
@@ -964,6 +1166,7 @@ FORCEINLINE int BASIC_STRING::format(const value_type *format, const value_type 
                         guess_delta += 10;
                     strArgList.push_back(strArg.append(p));
                 }
+#endif
                 else {
                     // unknown format
                 }
@@ -1039,6 +1242,8 @@ FORCEINLINE int BASIC_STRING::format(const value_type *format, const value_type 
     delta = size() - oldSize;
     return delta;
 }
+
+#endif  /* !USE_STRING_ARRAY */
 
 #if 0
 template <BASIC_STRING_CLASSES>
