@@ -198,11 +198,11 @@ public:
 
     int append_hex(uint32_t hex);
     int append_hex(uint64_t hex);
-    int append_format(const value_type *format, ...);
-    int c_format(const value_type *format, const value_type *args, ...);
+    basic_string &append_format(const value_type *fmt, ...);
+    basic_string &c_format(const value_type *fmt, const value_type *args, ...);
 
     template<typename ...Args>
-    int format(const value_type *format, Args const & ...args);
+    basic_string &format(const value_type *fmt, Args const & ...args);
 
     void push_back(const value_type c);         // primitive
     void pop_back();
@@ -900,12 +900,14 @@ inline void format_get_args(S * arg_list, T const & value, Args const & ... args
 template <typename S, typename T, typename ... Args>
 inline void format_get_args(S * arg_list, int & index, T const & value)
 {
+    new (arg_list + index)jimi::string();
     *(arg_list + index).append(value);
 }
 
 template <typename S, typename T, typename ... Args>
 inline void format_get_args(S * arg_list, int & index, T const & value, Args const & ... args)
 {
+    new (arg_list + index)jimi::string();
     *(arg_list + index).append(value);
     index++;
     format_get_args(arg_list, index, args...);
@@ -915,20 +917,23 @@ inline void format_get_args(S * arg_list, int & index, T const & value, Args con
 
 template <BASIC_STRING_CLASSES>
 template <typename ...Args>
-JIMI_INLINE int BASIC_STRING::format(const value_type *format, Args const & ... args)
+JIMI_FORCE_INLINE
+BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
 {
     int delta = 0;
-    int offset = 0;
-    size_t index, first;
+    size_t index;
     value_type c;
-    jimi::string *arg_list, *cur_arg;
+    value_type *current, *first = NULL;
+    jimi::string *arg_list, *cur_arg = NULL;
 #ifdef _DEBUG
     size_t oldSize = size();
 #endif
+    if (fmt == NULL)
+        return *this;
 
     size_t max_args = sizeof...(args);
-    //arg_list = (jimi::string *)malloc((args_len * sizeof(jimi::string));
-    arg_list = (jimi::string *)alloca(max_args * sizeof(jimi::string));
+    arg_list = (jimi::string *)malloc(max_args * sizeof(jimi::string));
+    //arg_list = (jimi::string *)alloca(max_args * sizeof(jimi::string));
 
 #if 1
     format_get_args(arg_list, args...);
@@ -937,19 +942,22 @@ JIMI_INLINE int BASIC_STRING::format(const value_type *format, Args const & ... 
     format_get_args(arg_list, index, args...);
 #endif
 
-    offset = 0;
     index = 0;
-    while ((c = format[offset++]) != '\0') {
+    current = const_cast<value_type *>(fmt);
+    while ((c = *current++) != '\0') {
         if (c == '{') {
             // number string first pos
-            first = offset - 1;
-            c = format[offset++];
+#if 0
+            //first = offset - 1;
+            first = current - 1;
+#endif
+            c = *current++;
             if (c == '{') {
                 append(c);
             }
             else if (c >= '0' && c <= '9') {
                 index = c - '0';
-                while ((c = format[offset++]) != '\0') {
+                while ((c = *current++) != '\0') {
                     if (c == '}') {
                         // end of one number
                         if (index < max_args)
@@ -970,14 +978,14 @@ JIMI_INLINE int BASIC_STRING::format(const value_type *format, Args const & ... 
                     }
                     else {
                         // Get a error num, if not found "}" behind 16 bytes, append as a string
-                        while ((c = format[offset++]) != '\0') {
+                        while ((c = current++) != '\0') {
                             if (c == '}') {
-                                append(format + first, offset - first + 1);
+                                append(first, current - first + 1);
                                 break;
                             }
                             else {
-                                if ((offset - first) >= 15) {
-                                    append(format + first, offset - first + 1);
+                                if ((current - first) >= 15) {
+                                    append(first, current - first + 1);
                                     break;
                                 }
                             }
@@ -993,16 +1001,22 @@ JIMI_INLINE int BASIC_STRING::format(const value_type *format, Args const & ... 
         }
     }
 
+#if 0
     cur_arg = arg_list;
     for (size_t i = 0; i < max_args; ++i) {
         cur_arg->~basic_string();
         cur_arg++;
     }
+#else
+    if (arg_list) {
+        free(arg_list);
+    }
+#endif
 
 #ifdef _DEBUG
     delta = size() - oldSize;
 #endif
-    return delta;
+    return *this;
 }
 
 #define USE_STRING_ARRAY            0
@@ -1011,7 +1025,8 @@ JIMI_INLINE int BASIC_STRING::format(const value_type *format, Args const & ... 
 #if defined(USE_STRING_ARRAY) && (USE_STRING_ARRAY != 0)
 
 template <BASIC_STRING_CLASSES>
-JIMI_INLINE int BASIC_STRING::c_format(const value_type *format, const value_type *args, ...)
+JIMI_INLINE
+BASIC_STRING &BASIC_STRING::c_format(const value_type *format, const value_type *args, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1022,6 +1037,9 @@ JIMI_INLINE int BASIC_STRING::c_format(const value_type *format, const value_typ
     int guess_delta = 0;
     jimi::string strArgList[4];
     oldSize = size();
+
+    if (fmt == NULL || args == NULL)
+        return *this;
 
     //size_t args_len = jm_strlen(args);
     //jimi::string strArgList[args_len / 3 + 1];
@@ -1174,13 +1192,14 @@ JIMI_INLINE int BASIC_STRING::c_format(const value_type *format, const value_typ
     }
 
     delta = size() - oldSize;
-    return delta;
+    return *this;
 }
 
 #elif defined(USE_PLACEMENT_NEW) && (USE_PLACEMENT_NEW != 0)
 
 template <BASIC_STRING_CLASSES>
-JIMI_INLINE int BASIC_STRING::c_format(const value_type *format, const value_type *args, ...)
+JIMI_INLINE
+BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *args, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1191,6 +1210,9 @@ JIMI_INLINE int BASIC_STRING::c_format(const value_type *format, const value_typ
     int guess_delta = 0;
     jimi::string *strArgList, *strArg;
     oldSize = size();
+
+    if (fmt == NULL || args == NULL)
+        return *this;
 
     size_t args_len = jm_strlen(args);
     //strArgList = (jimi::string *)malloc((args_len / 3 + 1) * sizeof(jimi::string));
@@ -1297,17 +1319,17 @@ JIMI_INLINE int BASIC_STRING::c_format(const value_type *format, const value_typ
 
     int maxArgs = index;
     offset = 0;
-    while ((c = format[offset++]) != '\0') {
+    while ((c = fmt[offset++]) != '\0') {
         if (c == '{') {
             // number string first pos
             first = offset - 1;
-            c = format[offset++];
+            c = fmt[offset++];
             if (c == '{') {
                 append(c);
             }
             else if (c >= '0' && c <= '9') {
                 index = c - '0';
-                while ((c = format[offset++]) != '\0') {
+                while ((c = fmt[offset++]) != '\0') {
                     if (c == '}') {
                         // end of one number
                         if (index < maxArgs)
@@ -1328,14 +1350,14 @@ JIMI_INLINE int BASIC_STRING::c_format(const value_type *format, const value_typ
                     }
                     else {
                         // Get a error num, if not found "}" behind 16 bytes, append as a string
-                        while ((c = format[offset++]) != '\0') {
+                        while ((c = fmt[offset++]) != '\0') {
                             if (c == '}') {
-                                append(format + first, offset - first + 1);
+                                append(fmt + first, offset - first + 1);
                                 break;
                             }
                             else {
                                 if ((offset - first) >= 15) {
-                                    append(format + first, offset - first + 1);
+                                    append(fmt + first, offset - first + 1);
                                     break;
                                 }
                             }
@@ -1364,13 +1386,14 @@ JIMI_INLINE int BASIC_STRING::c_format(const value_type *format, const value_typ
 #endif
 
     delta = size() - oldSize;
-    return delta;
+    return *this;
 }
 
 #else  /* !USE_STRING_ARRAY */
 
 template <BASIC_STRING_CLASSES>
-FORCEINLINE int BASIC_STRING::c_format(const value_type *format, const value_type *args, ...)
+FORCEINLINE
+BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *args, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1385,6 +1408,9 @@ FORCEINLINE int BASIC_STRING::c_format(const value_type *format, const value_typ
     jimi::string *strArgList;
 #endif
     oldSize = size();
+
+    if (fmt == NULL || args == NULL)
+        return *this;
 
     size_t args_len = jm_strlen(args);
 #if defined(USE_STRING_ARRAY) && (USE_STRING_ARRAY != 0)
@@ -1492,17 +1518,17 @@ FORCEINLINE int BASIC_STRING::c_format(const value_type *format, const value_typ
     int index, first;
     int maxArgs = strArgList.size();
     offset = 0;
-    while ((c = format[offset++]) != '\0') {
+    while ((c = fmt[offset++]) != '\0') {
         if (c == '{') {
             // number string first pos
             first = offset - 1;
-            c = format[offset++];
+            c = fmt[offset++];
             if (c == '{') {
                 append(c);
             }
             else if (c >= '0' && c <= '9') {
                 index = c - '0';
-                while ((c = format[offset++]) != '\0') {
+                while ((c = fmt[offset++]) != '\0') {
                     if (c == '}') {
                         // end of one number
                         if (index < maxArgs)
@@ -1523,14 +1549,14 @@ FORCEINLINE int BASIC_STRING::c_format(const value_type *format, const value_typ
                     }
                     else {
                         // Get a error num, if not found "}" behind 16 bytes, append as a string
-                        while ((c = format[offset++]) != '\0') {
+                        while ((c = fmt[offset++]) != '\0') {
                             if (c == '}') {
-                                append(format + first, offset - first + 1);
+                                append(fmt + first, offset - first + 1);
                                 break;
                             }
                             else {
                                 if ((offset - first) >= 15) {
-                                    append(format + first, offset - first + 1);
+                                    append(fmt + first, offset - first + 1);
                                     break;
                                 }
                             }
@@ -1547,14 +1573,15 @@ FORCEINLINE int BASIC_STRING::c_format(const value_type *format, const value_typ
     }
 
     delta = size() - oldSize;
-    return delta;
+    return *this;
 }
 
 #endif  /* !USE_STRING_ARRAY */
 
 #if 0
 template <BASIC_STRING_CLASSES>
-FORCEINLINE int BASIC_STRING::append_format(const value_type *format, ...)
+FORCEINLINE
+BASIC_STRING &BASIC_STRING::append_format(const value_type *fmt, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1563,12 +1590,15 @@ FORCEINLINE int BASIC_STRING::append_format(const value_type *format, ...)
     va_list arg_list;
     char *arg_ptr;
     int guess_delta = 0;
+    if (fmt == NULL)
+        return *this;
+
     oldSize = size();
-    va_start(arg_list, format);
+    va_start(arg_list, fmt);
     arg_ptr = (char *)arg_list;
-    while ((c = format[offset++]) != '\0') {
+    while ((c = fmt[offset++]) != '\0') {
         if (c == '%') {
-            c = format[offset++];
+            c = fmt[offset++];
             switch (c) {
                 case 'b': {
                     // bool
@@ -1673,25 +1703,28 @@ FORCEINLINE int BASIC_STRING::append_format(const value_type *format, ...)
     va_end(arg_list);
     //printf("guess_delta = %d\n\n", guess_delta);
     delta = size() - oldSize;
-    return delta;
+    return *this;
 }
 #else
 template <BASIC_STRING_CLASSES>
-FORCEINLINE int BASIC_STRING::append_format(const value_type *format, ...)
+FORCEINLINE
+BASIC_STRING &BASIC_STRING::append_format(const value_type *fmt, ...)
 {
     int delta = 0;
     int offset = 0;
     value_type c;
-    size_t oldSize = 0;
     va_list arg_list;
     char *arg_ptr;
     int guess_delta = 0;
-    //oldSize = size();
-    va_start(arg_list, format);
+
+    if (fmt == NULL)
+        return *this;
+
+    va_start(arg_list, fmt);
     arg_ptr = (char *)arg_list;
-    while ((c = format[offset++]) != '\0') {
+    while ((c = fmt[offset++]) != '\0') {
         if (c == '%') {
-            c = format[offset++];
+            c = fmt[offset++];
             if (c >= 'a' && c <= 'z') {
 #if 1
                 if (c == 'd') {
@@ -1859,9 +1892,7 @@ FORCEINLINE int BASIC_STRING::append_format(const value_type *format, ...)
         }
     }
     va_end(arg_list);
-    //printf("guess_delta = %d\n\n", guess_delta);
-    //delta = size() - oldSize;
-    return delta;
+    return *this;
 }
 #endif
 

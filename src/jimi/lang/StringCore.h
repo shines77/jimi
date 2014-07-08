@@ -749,20 +749,22 @@ inline int jm_itoa_radix10_fast(char_type *buf, int val, int offset)
     char_type *cur, *end;
     end = buf + offset;
     cur = end;
-    while (val != 0) {
+    do {
         digval = val % 10;
         val /= 10;
 
-        *cur-- = (char_type)(digval + '0');
-    }
+        *cur-- = static_cast<char_type>(digval + '0');
+    } while (val != 0);
 
     digital = buf + offset - cur;
     if (val < 0) {
         *buf++ = '-';
+#if 0
         if (digital == 10) {
             // do nothing!
             return digital + 1;
-        }        
+        }
+#endif
     }
 
     cur++;
@@ -779,20 +781,22 @@ inline int jm_itoa_radix10_fast2(char_type *buf, int val)
     char_type *cur;
     char digits[16];
     cur = digits;
-    while (val != 0) {
+    do {
         digval = val % 10;
         val /= 10;
 
-        *cur++ = (char_type)(digval + '0');
-    }
+        *cur++ = static_cast<char_type>(digval + '0');
+    } while (val != 0);
 
     digital = cur - digits;
     if (val < 0) {
         *buf++ = '-';
+#if 0
         if (digital == 10) {
             // do nothing!
             return digital + 1;
-        }        
+        }
+#endif
     }
 
     cur--;
@@ -809,20 +813,22 @@ inline int jm_itoa_fast(char_type *buf, int val, const int radix)
     char_type *cur;
     char digits[16];
     cur = digits;
-    while (val != 0) {
+    do {
         digval = val % radix;
         val /= radix;
 
-        *cur++ = (char_type)(digval + '0');
-    }
+        *cur++ = static_cast<char_type>(digval + '0');
+    } while (val != 0);
 
     digital = cur - digits;
     if (val < 0) {
         *buf++ = '-';
+#if 0
         if (digital == 10) {
             // do nothing!
             return digital + 1;
-        }        
+        }
+#endif
     }
 
     cur--;
