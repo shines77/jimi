@@ -686,10 +686,10 @@ void STRING_CORE::append(const char_type *s, size_type n)
     std::less_equal<const char_type *> le;
     if (JIMI_UNLIKELY(le(oldData, s) && !le(oldData + oldSize, s))) {
         jimi_assert(le(s + n, oldData + oldSize));
-        const size_type offset = s - oldData;
+        const size_type last = s - oldData;
         reserve(oldSize + n);
         // Restore the source
-        s = data() + offset;
+        s = data() + last;
     }
 #if 0
     // Warning! Repeated appends with short strings may actually incur
@@ -743,11 +743,11 @@ void STRING_CORE::push_back(const char_type c)
 }
 
 template<typename char_type>
-inline int jm_itoa_radix10_fast(char_type *buf, int val, int offset)
+inline int jm_itoa_radix10_fast(char_type *buf, int val, int last)
 {
     int digval, digital;
     char_type *cur, *end;
-    end = buf + offset;
+    end = buf + last;
     cur = end;
     do {
         digval = val % 10;
@@ -756,7 +756,7 @@ inline int jm_itoa_radix10_fast(char_type *buf, int val, int offset)
         *cur-- = static_cast<char_type>(digval + '0');
     } while (val != 0);
 
-    digital = buf + offset - cur;
+    digital = end - cur;
     if (val < 0) {
         *buf++ = '-';
 #if 0
