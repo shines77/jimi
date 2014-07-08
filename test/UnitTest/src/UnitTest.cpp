@@ -37,6 +37,7 @@
 #include <asmlib/asmlib.h>
 #include "SampleThread.h"
 #include "FastMemcpy.h"
+#include "cpp11_format.h"
 
 #include <jimic/platform/win/fast_memcpy.h>
 #include <jimic/string/jmf_strings.h>
@@ -439,60 +440,150 @@ void String_Base_Test()
     printf("\n");
 
     jimi::string str6;
-    str6.format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
+    //str6.c_format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
+    str6.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
     printf("str6.c_str() = \n%s\n\n", str6.c_str());
     printf("str6.size()  = %d bytes\n", str6.size());
     printf("\n");
 
-    int delta;
-    jimi::string strTest((size_t)999999999);
+    {
+        int delta;
+        jimi::string strTest((size_t)999999999);
 #ifndef _DEBUG
-    loop_times = 9999999;
+        loop_times = 9999999;
 #else
-    loop_times = 9999;
+        loop_times = 9999;
 #endif
 
 #if 1
-    sw.restart();
-    for (i = 0; i < loop_times; ++i) {
-        delta = strTest.format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
-    }
-    sw.stop();
-    time = sw.getMillisec();
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            delta = strTest.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
+        }
+        sw.stop();
+        time = sw.getMillisec();
 
-    printf("===================================================================================\n\n");
-    printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
-    printf("      delta = str.format(\"{0}, {1}, {2}, {{3}, {3}\", \"%%d %%s %%d %%s\",\n"
-           "                          111, \"222erer\", 33333, \"ffffff44\");\n");
-    printf("  }\n\n");
-    printf("===================================================================================\n\n");
+        printf("===================================================================================\n\n");
+        printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("      delta = str.format(\"{0}, {1}, {2}, {{3}, {3}\",\n"
+               "                          111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("  }\n\n");
+        printf("===================================================================================\n\n");
 
-    jimi::string strTest2((size_t)128);
-    delta = strTest2.format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
+        jimi::string strTest2((size_t)128);
+        delta = strTest2.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
+#elif 1
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            delta = strTest.c_format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("===================================================================================\n\n");
+        printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("      delta = str.c_format(\"{0}, {1}, {2}, {{3}, {3}\", \"%%d %%s %%d %%s\",\n"
+               "                            111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("  }\n\n");
+        printf("===================================================================================\n\n");
+
+        jimi::string strTest2((size_t)128);
+        delta = strTest2.c_format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
 #else
-    sw.restart();
-    for (i = 0; i < loop_times; ++i) {
-        delta = strTest.append_format("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
-    }
-    sw.stop();
-    time = sw.getMillisec();
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            delta = strTest.append_format("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
+        }
+        sw.stop();
+        time = sw.getMillisec();
 
-    printf("===================================================================================\n\n");
-    printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
-    printf("      delta = str.format(\"%%d, %%s, %%d, {3}, %%s\",\n"
-           "                          111, \"222erer\", 33333, \"ffffff44\");\n");
-    printf("  }\n\n");
-    printf("===================================================================================\n\n");
+        printf("===================================================================================\n\n");
+        printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("      delta = str.append_format(\"%%d, %%s, %%d, {3}, %%s\",\n"
+            "                                 111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("  }\n\n");
+        printf("===================================================================================\n\n");
 
-    jimi::string strTest2((size_t)128);
-    delta = strTest2.append_format("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
+        jimi::string strTest2((size_t)128);
+        delta = strTest2.append_format("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
 #endif
 
-    printf("str.c_str() = %s\n\n", strTest2.c_str());
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
 
-    printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
-    printf("strTest.size()  = %d bytes\n", strTest.size());
-    printf("\n");
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+
+    {
+        int delta;
+        std::string str_cpp11;
+        str_cpp11.reserve(999999999);
+
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            //str_cpp11 += 
+                format("{0}, {1}, {2}, $3}, {3}", 111, "222erer", 33333, "ffffff44");
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("===================================================================================\n\n");
+        printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("      str = format(\"{0}, {1}, {2}, $3}, {3}\",\n"
+               "                    111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("  }\n\n");
+        printf("===================================================================================\n\n");
+
+        std::string str_cpp11b;
+        str_cpp11b = format("{0}, {1}, {2}, $3}, {3}", 111, "222erer", 33333, "ffffff44");
+        delta = str_cpp11b.size();
+
+        printf("str_cpp11.c_str() = %s\n\n", str_cpp11b.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("str_cpp11.size()  = %d bytes\n", str_cpp11.size());
+        printf("\n");
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+
+    {
+        int delta;
+        std::string str_cfmt;
+        str_cfmt.reserve(999999999);
+        char buf[256];
+
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            sprintf(buf, "%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
+            //str_cfmt += buf;
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("===================================================================================\n\n");
+        printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("      str = sprintf(buf, \"%%d, %%s, %%d, {3}, %%s\",\n"
+               "                    111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("  }\n\n");
+        printf("===================================================================================\n\n");
+
+        std::string str_cfmt2;
+        sprintf(buf, "%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
+        str_cfmt2 = buf;
+        delta = str_cfmt2.size();
+
+        printf("str_cpp11.c_str() = %s\n\n", str_cfmt2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("str_cpp11.size()  = %d bytes\n", str_cfmt.size());
+        printf("\n");
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
 
     std::string std_str;
     std_str.append("a");

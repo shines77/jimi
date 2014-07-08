@@ -845,9 +845,9 @@ void STRING_CORE::append(const int n)
         newSize = oldSize + delta;
         if (newSize < kMaxSmallSize) {
             //_small.info.size = newSize;
-#if 0
+#if 1
             len = jm_itoa_radix10_fast(_small.buf + oldSize, n, delta);
-#elif 1
+#elif 0
             len = jm_itoa_radix10_fast2(_small.buf + oldSize, n);
             //len = jm_itoa_fast(_small.buf + oldSize, n, 10);
 #else
@@ -870,9 +870,9 @@ void STRING_CORE::append(const int n)
     // Category can't be small - we took care of that above
     jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
     //_ml.size = newSize;
-#if 0
+#if 1
     len = jm_itoa_radix10_fast(_ml.data + oldSize, n, delta);
-#elif 1
+#elif 0
     len = jm_itoa_radix10_fast2(_ml.data + oldSize, n);
     //len = jm_itoa_fast(_ml.data + oldSize, n, 10);
 #else
@@ -1035,8 +1035,10 @@ int STRING_CORE::compare(const char_type *rhs) const
             equal = traits_type::strncmp(_ml.data, rhs, _ml.size);
     }
     else {
+#ifdef _DEBUG
         // Unknown string type
         sLog.error("STRING_CORE::compare(const char_type *rhs) - Error: Unknown string type.");
+#endif
     }
     return equal;
 }

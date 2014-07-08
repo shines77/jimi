@@ -40,6 +40,9 @@
     <ClInclude Include="..\..\src\encoding\conv.hpp">
       <Filter>src\encoding</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\cpp11_format.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

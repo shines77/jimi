@@ -101,6 +101,7 @@
     <ClCompile Include="..\..\src\UnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\cpp11_format.h" />
     <ClInclude Include="..\..\src\encoding\conv.hpp" />
     <ClInclude Include="..\..\src\FastMemcpy.h" />
     <ClInclude Include="..\..\src\SampleThread.h" />
