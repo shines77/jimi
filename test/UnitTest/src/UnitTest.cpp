@@ -464,10 +464,10 @@ void String_Base_Test()
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
-        printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("      str = str.format(\"{0}, {1}, {2}, {{3}, {3}\",\n"
-               "                        111, \"222erer\", 33333, \"ffffff44\");\n");
-        printf("  }\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str = str.format(\"{0}, {1}, {2}, {{3}, {3}\",\n"
+               "                          111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2((size_t)128);
@@ -482,10 +482,10 @@ void String_Base_Test()
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
-        printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("      str = str.c_format(\"{0}, {1}, {2}, {{3}, {3}\", \"%%d %%s %%d %%s\",\n"
-               "                          111, \"222erer\", 33333, \"ffffff44\");\n");
-        printf("  }\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str = str.c_format(\"{0}, {1}, {2}, {{3}, {3}\", \"%%d %%s %%d %%s\",\n"
+               "                            111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2((size_t)128);
@@ -500,10 +500,10 @@ void String_Base_Test()
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
-        printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("      str = str.append_format(\"%%d, %%s, %%d, {3}, %%s\",\n"
-               "                               111, \"222erer\", 33333, \"ffffff44\");\n");
-        printf("  }\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str = str.append_format(\"%%d, %%s, %%d, {3}, %%s\",\n"
+               "                                 111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2((size_t)128);
@@ -534,10 +534,10 @@ void String_Base_Test()
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
-        printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("      str = format(\"{0}, {1}, {2}, $3}, {3}\",\n"
-               "                    111, \"222erer\", 33333, \"ffffff44\");\n");
-        printf("  }\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str = format(\"{0}, {1}, {2}, $3}, {3}\",\n"
+               "                      111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         std::string str_cpp11b;
@@ -568,10 +568,10 @@ void String_Base_Test()
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
-        printf("  for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("      str = sprintf(buf, \"%%d, %%s, %%d, {3}, %%s\",\n"
-               "                    111, \"222erer\", 33333, \"ffffff44\");\n");
-        printf("  }\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str = sprintf(buf, \"%%d, %%s, %%d, {3}, %%s\",\n"
+               "                      111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         std::string str_cfmt2;

@@ -743,7 +743,7 @@ void STRING_CORE::push_back(const char_type c)
 }
 
 template<typename char_type>
-inline int jm_itoa_radix10_fast(char_type *buf, int val, int last)
+inline int jm_utoa_radix10_fast(char_type *buf, int val, int last)
 {
     int digval, digital;
     char_type *cur, *end;
@@ -757,29 +757,38 @@ inline int jm_itoa_radix10_fast(char_type *buf, int val, int last)
     } while (val != 0);
 
     digital = end - cur;
-    if (val < 0) {
-        *buf++ = '-';
-#if 0
-        if (digital == 10) {
-            // do nothing!
-            return digital + 1;
-        }
-#endif
-    }
 
+#if 1
+    do {
+        ++cur;
+        *buf++ = *cur;
+    } while (cur != end);
+#else
     cur++;
     while (cur <= end)
         *buf++ = *cur++;
+#endif
     *buf = '\0';
     return digital;
 }
 
 template<typename char_type>
-inline int jm_itoa_radix10_fast2(char_type *buf, int val)
+inline int jm_itoa_radix10_fast(char_type *buf, int val, int last)
+{
+    if (val < 0) {
+        val = -val;
+        *buf++ = '-';
+    }
+    return jm_utoa_radix10_fast(buf, val, last);
+}
+
+template<typename char_type>
+inline int jm_utoa_radix10(char_type *buf, unsigned int val)
 {
     int digval, digital;
     char_type *cur;
     char digits[16];
+
     cur = digits;
     do {
         digval = val % 10;
@@ -789,25 +798,46 @@ inline int jm_itoa_radix10_fast2(char_type *buf, int val)
     } while (val != 0);
 
     digital = cur - digits;
-    if (val < 0) {
-        *buf++ = '-';
-#if 0
-        if (digital == 10) {
-            // do nothing!
-            return digital + 1;
-        }
-#endif
-    }
 
+#if 0
+    do {
+        --cur;
+        *buf++ = *cur;
+    } while (cur != digits);
+#elif 1
     cur--;
     while (cur >= digits)
         *buf++ = *cur--;
+#elif 0
+    while (--cur >= digits)
+        *buf++ = *cur;
+#else
+    do {
+        --cur;
+        if (cur < digits)
+            break;
+        *buf++ = *cur;
+    } while (1);
+#endif
     *buf = '\0';
+
     return digital;
 }
 
+/* 为什么 jm_itoa_radix10() 和 jm_utoa_radix10() 名字要分开, 因为这样可以较容易适应或改为C版本 */
+
 template<typename char_type>
-inline int jm_itoa_fast(char_type *buf, int val, const int radix)
+inline int jm_itoa_radix10(char_type *buf, int val)
+{
+    if (val < 0) {
+        val = -val;
+        *buf++ = '-';
+    }
+    return jm_utoa_radix10(buf, val);
+}
+
+template<typename char_type>
+inline int jm_utoa(char_type *buf, int val, const unsigned int radix)
 {
     int digval, digital;
     char_type *cur;
@@ -821,21 +851,30 @@ inline int jm_itoa_fast(char_type *buf, int val, const int radix)
     } while (val != 0);
 
     digital = cur - digits;
-    if (val < 0) {
-        *buf++ = '-';
-#if 0
-        if (digital == 10) {
-            // do nothing!
-            return digital + 1;
-        }
-#endif
-    }
 
+#if 1
+    do {
+        --cur;
+        *buf++ = *cur;
+    } while (cur != digits);
+#else
     cur--;
     while (cur >= digits)
         *buf++ = *cur--;
+#endif
     *buf = '\0';
+
     return digital;
+}
+
+template<typename char_type>
+inline int jm_itoa(char_type *buf, int val, const int radix)
+{
+    if (val < 0) {
+        val = -val;
+        *buf++ = '-';
+    }
+    return jm_utoa(buf, val, radix);
 }
 
 template <STRING_CORE_CLASSES>
@@ -851,11 +890,11 @@ void STRING_CORE::append(const int n)
         newSize = oldSize + delta;
         if (newSize < kMaxSmallSize) {
             //_small.info.size = newSize;
-#if 1
+#if 0
             len = jm_itoa_radix10_fast(_small.buf + oldSize, n, delta);
-#elif 0
-            len = jm_itoa_radix10_fast2(_small.buf + oldSize, n);
-            //len = jm_itoa_fast(_small.buf + oldSize, n, 10);
+#elif 1
+            len = jm_itoa_radix10(_small.buf + oldSize, n);
+            //len = jm_itoa(_small.buf + oldSize, n, 10);
 #else
             _itoa(n, _small.buf + oldSize, 10);
             len = jm_strlen(_small.buf + oldSize);
@@ -876,11 +915,11 @@ void STRING_CORE::append(const int n)
     // Category can't be small - we took care of that above
     jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
     //_ml.size = newSize;
-#if 1
+#if 0
     len = jm_itoa_radix10_fast(_ml.data + oldSize, n, delta);
-#elif 0
-    len = jm_itoa_radix10_fast2(_ml.data + oldSize, n);
-    //len = jm_itoa_fast(_ml.data + oldSize, n, 10);
+#elif 1
+    len = jm_itoa_radix10(_ml.data + oldSize, n);
+    //len = jm_itoa(_ml.data + oldSize, n, 10);
 #else
     _itoa(n, _ml.data + oldSize, 10);
     len = jm_strlen(_ml.data + oldSize);
