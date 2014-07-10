@@ -164,7 +164,13 @@ public:
     void append(const char_type *s, size_type n);
 
     void append(const int n);
-    void append(const unsigned int n);
+    void append(const unsigned int u);
+    void append(const long l);
+    void append(const unsigned long ul);
+    void append(const int64_t i64);   
+    void append(const uint64_t u64);
+    void append(const float f);
+    void append(const double d);
 
     void destroy();
 
@@ -809,10 +815,10 @@ void STRING_CORE::append(const unsigned int n)
         if (newSize < kMaxSmallSize) {
             //_small.info.size = newSize;
 #if 0
-            len = jm_uitoa_radix10_fast(_small.buf + oldSize, n, delta);
+            len = traits_type::utoa_radix10_fast(_small.buf + oldSize, n, delta);
 #elif 1
-            len = jm_utoa_radix10(_small.buf + oldSize, n);
-            //len = jm_utoa(_small.buf + oldSize, n, 10);
+            len = traits_type::utoa_radix10(_small.buf + oldSize, n);
+            //len = traits_type::utoa(_small.buf + oldSize, n, 10);
 #else
             _itoa(n, _small.buf + oldSize, 10);
             len = jm_strlen(_small.buf + oldSize);
@@ -834,10 +840,114 @@ void STRING_CORE::append(const unsigned int n)
     jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
     //_ml.size = newSize;
 #if 0
-    len = jm_utoa_radix10_fast(_ml.data + oldSize, n, delta);
+    len = traits_type::utoa_radix10_fast(_ml.data + oldSize, n, delta);
 #elif 1
-    len = jm_utoa_radix10(_ml.data + oldSize, n);
-    //len = jm_utoa(_ml.data + oldSize, n, 10);
+    len = traits_type::utoa_radix10(_ml.data + oldSize, n);
+    //len = traits_type::utoa(_ml.data + oldSize, n, 10);
+#else
+    _itoa(n, _ml.data + oldSize, 10);
+    len = jm_strlen(_ml.data + oldSize);
+#endif
+    _ml.size = oldSize + len;
+    jimi_assert(size() == oldSize + len);
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append(const long n)
+{
+    // Strategy is simple: make room, then change size
+    jimi_assert(capacity() >= size());
+    const int delta = 11;
+    int len;
+    size_type oldSize, newSize;
+    flag_type type = getType();
+    if (type == kIsSmall) {
+        oldSize = _small.info.size;
+        newSize = oldSize + delta;
+        if (newSize < kMaxSmallSize) {
+            //_small.info.size = newSize;
+#if 0
+            len = traits_type::itoa_radix10_fast(_small.buf + oldSize, n, delta);
+#elif 1
+            len = traits_type::ltoa_radix10(_small.buf + oldSize, n);
+            //len = traits_type::itoa(_small.buf + oldSize, n, 10);
+#else
+            _itoa(n, _small.buf + oldSize, 10);
+            len = jm_strlen(_small.buf + oldSize);
+#endif
+            _small.info.size = oldSize + len;
+            jimi_assert(size() == oldSize + len);
+            return;
+        }
+        reserve(newSize);
+    }
+    else {
+        oldSize = _ml.size;
+        newSize = oldSize + delta;
+        if (newSize > capacity())
+            reserve(newSize);
+    }
+    jimi_assert(capacity() >= newSize);
+    // Category can't be small - we took care of that above
+    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
+    //_ml.size = newSize;
+#if 0
+    len = traits_type::itoa_radix10_fast(_ml.data + oldSize, n, delta);
+#elif 1
+    len = traits_type::ltoa_radix10(_ml.data + oldSize, n);
+    //len = traits_type::itoa(_ml.data + oldSize, n, 10);
+#else
+    _itoa(n, _ml.data + oldSize, 10);
+    len = jm_strlen(_ml.data + oldSize);
+#endif
+    _ml.size = oldSize + len;
+    jimi_assert(size() == oldSize + len);
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append(const unsigned long n)
+{
+    // Strategy is simple: make room, then change size
+    jimi_assert(capacity() >= size());
+    const int delta = 11;
+    int len;
+    size_type oldSize, newSize;
+    flag_type type = getType();
+    if (type == kIsSmall) {
+        oldSize = _small.info.size;
+        newSize = oldSize + delta;
+        if (newSize < kMaxSmallSize) {
+            //_small.info.size = newSize;
+#if 0
+            len = traits_type::utoa_radix10_fast(_small.buf + oldSize, n, delta);
+#elif 1
+            len = traits_type::ultoa_radix10(_small.buf + oldSize, n);
+            //len = traits_type::utoa(_small.buf + oldSize, n, 10);
+#else
+            _itoa(n, _small.buf + oldSize, 10);
+            len = jm_strlen(_small.buf + oldSize);
+#endif
+            _small.info.size = oldSize + len;
+            jimi_assert(size() == oldSize + len);
+            return;
+        }
+        reserve(newSize);
+    }
+    else {
+        oldSize = _ml.size;
+        newSize = oldSize + delta;
+        if (newSize > capacity())
+            reserve(newSize);
+    }
+    jimi_assert(capacity() >= newSize);
+    // Category can't be small - we took care of that above
+    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
+    //_ml.size = newSize;
+#if 0
+    len = traits_type::utoa_radix10_fast(_ml.data + oldSize, n, delta);
+#elif 1
+    len = traits_type::ultoa_radix10(_ml.data + oldSize, n);
+    //len = traits_type::utoa(_ml.data + oldSize, n, 10);
 #else
     _itoa(n, _ml.data + oldSize, 10);
     len = jm_strlen(_ml.data + oldSize);

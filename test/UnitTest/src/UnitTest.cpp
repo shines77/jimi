@@ -547,7 +547,7 @@ void String_Base_Test()
     printf("\n");
 
     jimi::string str5;
-    str5.append_format("%d %x %f %u %c %b", 9999, 8888, 10.9999, 10000000, 33, true);
+    str5.append_cformat("%d %x %f %u %c %b", 9999, 8888, 10.9999, 10000000, 33, true);
     printf("str5.c_str() = \n%s\n\n", str5.c_str());
     printf("str5.size()  = %d bytes\n", str5.size());
     printf("\n");
@@ -559,34 +559,56 @@ void String_Base_Test()
     printf("str6.size()  = %d bytes\n", str6.size());
     printf("\n");
 
+    int num1, num2;
+    std::cout << "请输入两个数字: " << std::endl;
+    std::cin  >> num1;
+    std::cin  >> num2;
+    std::cout << std::endl;
+
+    char buf1[256], buf2[256];
+    std::string in_str1, in_str2;
+
+    std::cout << "请输入两个字符串(长度不能大于256): " << std::endl;
+    std::cin  >> in_str1;
+    std::cin  >> in_str2;
+    std::cout << std::endl;
+    std::cout << "done." << std::endl;
+
+    fflush(stdout);
+
+    jm_strcpy(buf1, jm_countof(buf1), in_str1.c_str());
+    jm_strcpy(buf2, jm_countof(buf2), in_str2.c_str());    
+
+#ifndef _DEBUG
+    loop_times = 9999999;
+#else
+    loop_times = 9999;
+#endif
+
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
     {
         int delta;
         jimi::string strTest((size_t)999999999);
-#ifndef _DEBUG
-        loop_times = 9999999;
-#else
-        loop_times = 9999;
-#endif
-
 #if 1
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            strTest.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
+            //strTest.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            strTest.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        str = str.format(\"{0}, {1}, {2}, {{3}, {3}\",\n"
-               "                          111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("        str.format(\"{0}, {1}, {2}, {{3}, {3}\",\n"
+               "                    111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2((size_t)128);
-        strTest2.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
+        //strTest2.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
+        strTest2.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 #elif 0
         sw.restart();
@@ -598,8 +620,8 @@ void String_Base_Test()
 
         printf("===================================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        str = str.c_format(\"{0}, {1}, {2}, {{3}, {3}\", \"%%d %%s %%d %%s\",\n"
-               "                            111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("        str.c_format(\"{0}, {1}, {2}, {{3}, {3}\", \"%%d %%s %%d %%s\",\n"
+               "                      111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
         printf("===================================================================================\n\n");
 
@@ -609,22 +631,82 @@ void String_Base_Test()
 #else
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            str = strTest.append_format("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
+            strTest.append_cformat("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
         }
         sw.stop();
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        str = str.append_format(\"%%d, %%s, %%d, {3}, %%s\",\n"
-               "                                 111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("        str.append_cformat(\"%%d, %%s, %%d, {3}, %%s\",\n"
+               "                            111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2((size_t)128);
-        strTest2.append_format("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
+        strTest2.append_cformat("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
         delta = strTest2.size();
 #endif
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+
+    {
+        int delta;
+        jimi::string strTest((size_t)999999999);
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strTest.append_format((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("===================================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str.append_format(111, \", \", \"222erer\", \", \",\n"
+               "                          33333, \", \", \"{3}, \", \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("===================================================================================\n\n");
+
+        jimi::string strTest2((size_t)128);
+        strTest2.append_format((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+
+    {
+        int delta;
+        jimi::string strTest((size_t)999999999);
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strTest.append_format((unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("===================================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str.append_format(num1, \", \", buf1, \", \",\n"
+               "                          num2, \", \", \"{3}, \", buf2);\n");
+        printf("    }\n\n");
+        printf("===================================================================================\n\n");
+
+        jimi::string strTest2((size_t)128);
+        strTest2.append_format((unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
+        delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
 

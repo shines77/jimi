@@ -126,22 +126,33 @@ public:
     basic_string &append(const value_type *s, size_type n);
 
     basic_string &append(const int n);
+    basic_string &append(const unsigned int u);
     basic_string &append(const long l);
-    basic_string &append(const int64_t i);
-    basic_string &append(const uint32_t u);
-    basic_string &append(const uint64_t u);
+    basic_string &append(const unsigned long ul);
+    basic_string &append(const int64_t i64);   
+    basic_string &append(const uint64_t u64);
     basic_string &append(const float f);
     basic_string &append(const double d);
-    basic_string &append(const void * p);
 
     int append_hex(uint32_t hex);
     int append_hex(uint64_t hex);
-    basic_string &append_format(const value_type *fmt, ...);
+    basic_string &append_cformat(const value_type *fmt, ...);
     basic_string &c_format(const value_type *fmt, const value_type *args, ...);
 
     template<typename ...Args>
     basic_string &format(const value_type *fmt, Args const & ...args);
 
+    template<typename ...Args>
+    basic_string &append_format(Args const & ... args);
+
+private:
+    template<typename T, typename ...Args>
+    void append_format_next(const T & value);
+
+    template<typename T, typename ...Args>
+    void append_format_next(const T & value, Args const & ... args);
+
+public:
     void push_back(const value_type c);         // primitive
     void pop_back();
 
@@ -506,19 +517,28 @@ BASIC_STRING &BASIC_STRING::append(const int n)
 }
 
 template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::append(const unsigned int u)
+{
+    _store.append(u);
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::append(const long l)
 {
+    _store.append(l);
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::append(const unsigned long ul)
+{
+    _store.append(ul);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::append(const int64_t i)
-{
-    return *this;
-}
-
-template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const uint32_t u)
 {
     return *this;
 }
@@ -537,12 +557,6 @@ BASIC_STRING &BASIC_STRING::append(const float f)
 
 template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::append(const double d)
-{
-    return *this;
-}
-
-template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const void * p)
 {
     return *this;
 }
@@ -813,18 +827,20 @@ FORCEINLINE int BASIC_STRING::append_hex(uint64_t hex)
 
 #if 1
 
-template <typename S, typename T, typename ... Args>
-inline void format_get_args(S * arg_list, T const & value)
+template <typename StringType, typename T, typename ... Args>
+inline void format_get_args(StringType * arg_list, const T & value)
 {
+    jimi_assert(arg_list != NULL);
     if (arg_list) {
         new (arg_list)jimi::string();
         arg_list->append(value);
     }
 }
 
-template <typename S, typename T, typename ... Args>
-inline void format_get_args(S * arg_list, T const & value, Args const & ... args)
+template <typename StringType, typename T, typename ... Args>
+inline void format_get_args(StringType * arg_list, const T & value, Args const & ... args)
 {
+    jimi_assert(arg_list != NULL);
     if (arg_list) {
         new (arg_list)jimi::string();
         arg_list->append(value);
@@ -835,27 +851,42 @@ inline void format_get_args(S * arg_list, T const & value, Args const & ... args
 
 #else
 
-template <typename S, typename T, typename ... Args>
-inline void format_get_args(S * arg_list, int & index, T const & value)
+template <typename StringType, typename T, typename ... Args>
+inline void format_get_args(const StringType * arg_list, size_t & index, const T & value)
 {
-    new (arg_list + index)jimi::string();
-    *(arg_list + index).append(value);
+    StringType * arg_value = arg_list + index;
+    jimi_assert(arg_value != NULL);
+    if (arg_value) {
+        new (arg_value)jimi::string();
+        arg_value->append(value);
+    }
 }
 
-template <typename S, typename T, typename ... Args>
-inline void format_get_args(S * arg_list, int & index, T const & value, Args const & ... args)
+template <typename StringType, typename T, typename ... Args>
+inline void format_get_args(const StringType * arg_list, size_t & index, const T & value, Args const & ... args)
 {
-    new (arg_list + index)jimi::string();
-    *(arg_list + index).append(value);
-    index++;
-    format_get_args(arg_list, index, args...);
+    StringType * arg_value = arg_list + index;
+    jimi_assert(arg_value != NULL);
+    if (arg_value) {
+        new (arg_value)jimi::string();
+        arg_value->append(value);
+        index++;
+        format_get_args(arg_list, index, args...);
+    }
 }
 
 #endif
 
+/* format() 是否使用栈上分配 arg_list 内存? */
+#define FORMAT_USE_ALLOCA_ONSTACK       0
+
 template <BASIC_STRING_CLASSES>
 template <typename ...Args>
+#if defined(FORMAT_USE_ALLOCA_ONSTACK) && (FORMAT_USE_ALLOCA_ONSTACK != 0)
+JIMI_INLINE
+#else
 JIMI_FORCE_INLINE
+#endif
 BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
 {
     int delta = 0;
@@ -866,27 +897,28 @@ BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
 #ifdef _DEBUG
     size_t oldSize = size();
 #endif
+
+    jimi_assert(fmt != NULL);
+#if 1
     if (fmt == NULL)
         return *this;
-
-    size_t max_args = sizeof...(args);
-    arg_list = (jimi::string *)malloc(max_args * sizeof(jimi::string));
-    //arg_list = (jimi::string *)alloca(max_args * sizeof(jimi::string));
-
-#if 1
-    format_get_args(arg_list, args...);
-#else
-    index = 0;
-    format_get_args(arg_list, index, args...);
 #endif
+
+    const size_t max_args = sizeof...(args);
+#if defined(FORMAT_USE_ALLOCA_ONSTACK) && (FORMAT_USE_ALLOCA_ONSTACK != 0)
+    arg_list = (jimi::string *)alloca(max_args * sizeof(jimi::string));
+#else
+    arg_list = (jimi::string *)malloc(max_args * sizeof(jimi::string));
+#endif
+
+    format_get_args(arg_list, args...);
 
     index = 0;
     current = const_cast<value_type *>(fmt);
     while ((c = *current++) != '\0') {
         if (c == '{') {
-            // number string first pos
 #if 0
-            //first = offset - 1;
+            // the number string first pos
             first = current - 1;
 #endif
             c = *current++;
@@ -897,7 +929,7 @@ BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
                 index = c - '0';
                 while ((c = *current++) != '\0') {
                     if (c == '}') {
-                        // end of one number
+                        // the end of number
                         if (index < max_args)
                             append(*(arg_list + index));
                         break;
@@ -907,7 +939,7 @@ BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
                     }
 #if 1
                     else {
-                        // Get a error num
+                        // get a error number
                         break;
                     }
 #else
@@ -915,7 +947,7 @@ BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
                         // do nothing!
                     }
                     else {
-                        // Get a error num, if not found "}" behind 16 bytes, append as a string
+                        // get a error number, if not found "}" behind 16 bytes, append as a string
                         while ((c = current++) != '\0') {
                             if (c == '}') {
                                 append(first, current - first + 1);
@@ -939,7 +971,7 @@ BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
         }
     }
 
-#if 0
+#if defined(FORMAT_USE_ALLOCA_ONSTACK) && (FORMAT_USE_ALLOCA_ONSTACK != 0)
     cur_arg = arg_list;
     for (size_t i = 0; i < max_args; ++i) {
         cur_arg->~basic_string();
@@ -950,6 +982,41 @@ BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
         free(arg_list);
     }
 #endif
+
+#ifdef _DEBUG
+    delta = size() - oldSize;
+#endif
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+template <typename T, typename ... Args>
+JIMI_INLINE
+void BASIC_STRING::append_format_next(const T & value)
+{
+    append(value);
+}
+
+template <BASIC_STRING_CLASSES>
+template <typename T, typename ... Args>
+JIMI_INLINE
+void BASIC_STRING::append_format_next(const T & value, Args const & ... args)
+{
+    append(value);
+    append_format_next(args...);
+}
+
+template <BASIC_STRING_CLASSES>
+template <typename ...Args>
+JIMI_FORCE_INLINE
+BASIC_STRING &BASIC_STRING::append_format(Args const & ... args)
+{
+    int delta = 0;
+#ifdef _DEBUG
+    size_t oldSize = size();
+#endif
+
+    append_format_next(args...);
 
 #ifdef _DEBUG
     delta = size() - oldSize;
@@ -1427,15 +1494,6 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
                     guess_delta += 1;
                     strArgList.push_back(strArg.append(b));
                 }
-                else if (c == 'p') {
-                    // pointer(void *)
-                    void * p = static_cast<void *>(va_arg(arg_list, void *));
-                    if (sizeof(void *) == 8)
-                        guess_delta += 18;
-                    else
-                        guess_delta += 10;
-                    strArgList.push_back(strArg.append(p));
-                }
 #endif
                 else {
                     // unknown format
@@ -1516,10 +1574,14 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
 
 #endif  /* !USE_STRING_ARRAY */
 
+/**
+  basic_string::append_cformat(const value_type *fmt, ...);
+ */
+
 #if 0
 template <BASIC_STRING_CLASSES>
 FORCEINLINE
-BASIC_STRING &BASIC_STRING::append_format(const value_type *fmt, ...)
+BASIC_STRING &BASIC_STRING::append_cformat(const value_type *fmt, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1587,16 +1649,6 @@ BASIC_STRING &BASIC_STRING::append_format(const value_type *fmt, ...)
                     append(l);
                     break;
                 }
-                case 'p': {
-                    // pointer(void *)
-                    void * p = static_cast<void *>(va_arg(arg_ptr, void *));
-                    if (sizeof(void *) == 8)
-                        guess_delta += 18;
-                    else
-                        guess_delta += 10;
-                    append(p);
-                    break;
-                }
                 case 's': {
                     // string
                     char * s = static_cast<char *>(va_arg(arg_ptr, char *));
@@ -1646,7 +1698,7 @@ BASIC_STRING &BASIC_STRING::append_format(const value_type *fmt, ...)
 #else
 template <BASIC_STRING_CLASSES>
 FORCEINLINE
-BASIC_STRING &BASIC_STRING::append_format(const value_type *fmt, ...)
+BASIC_STRING &BASIC_STRING::append_cformat(const value_type *fmt, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1698,7 +1750,7 @@ BASIC_STRING &BASIC_STRING::append_format(const value_type *fmt, ...)
                 }
                 else if (c == 'u') {
                     // unsigned int
-                    uint32_t u = static_cast<uint32_t>(va_arg(arg_ptr, uint32_t));
+                    uint32_t u = static_cast<unsigned int>(va_arg(arg_ptr, unsigned int));
                     guess_delta += 10;
                     append(u);
                 }
@@ -1715,7 +1767,7 @@ BASIC_STRING &BASIC_STRING::append_format(const value_type *fmt, ...)
                     append(i64);
                 }
                 else if (c == 'g') {
-                    // float
+                    // double
                     float f = static_cast<float>(va_arg(arg_ptr, double));
                     guess_delta += 20;
                     append(f);
@@ -1725,15 +1777,6 @@ BASIC_STRING &BASIC_STRING::append_format(const value_type *fmt, ...)
                     bool b = static_cast<bool>((va_arg(arg_ptr, int) != 0));
                     guess_delta += 1;
                     append(b);
-                }
-                else if (c == 'p') {
-                    // pointer(void *)
-                    void * p = static_cast<void *>(va_arg(arg_ptr, void *));
-                    if (sizeof(void *) == 8)
-                        guess_delta += 18;
-                    else
-                        guess_delta += 10;
-                    append(p);
                 }
                 else {
                     // unknown format
@@ -1780,15 +1823,6 @@ BASIC_STRING &BASIC_STRING::append_format(const value_type *fmt, ...)
                     long l = static_cast<long>(va_arg(arg_ptr, long));
                     guess_delta += 11;
                     append(l);
-                }
-                else if (c == 'p') {
-                    // pointer(void *)
-                    void * p = static_cast<void *>(va_arg(arg_ptr, void *));
-                    if (sizeof(void *) == 8)
-                        guess_delta += 18;
-                    else
-                        guess_delta += 10;
-                    append(p);
                 }
                 else if (c == 's') {
                     // string
