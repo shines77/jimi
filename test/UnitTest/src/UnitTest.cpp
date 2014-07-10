@@ -240,7 +240,6 @@ void String_Performance_Test()
 #else
     const int LOOP_TIMES = 200000;
 #endif
-    //char *str1, *str2;
     size_t len1, len2;
     char buffer1[512];
     char buffer2[512];
@@ -266,7 +265,7 @@ void String_Performance_Test()
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        strcpy_s(buffer2, 32, "abcdefghijk");
+        strcpy_s(buffer2, jm_countof(buffer2), "abcdefghijk");
         len2 = strlen("abcdefghijk");
     }
     sw.stop();
@@ -309,7 +308,7 @@ void String_Performance_Test()
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        strcpy_s(buffer2, 32, "abcdefghijklmnopqrstuvwxyz");
+        strcpy_s(buffer2, jm_countof(buffer2), "abcdefghijklmnopqrstuvwxyz");
         len2 = strlen(buffer2);
     }
     sw.stop();
@@ -329,6 +328,120 @@ void String_Performance_Test()
         //std::string str = "abcdefghijklmnopqrstuvwxyz";
         //std::string str("abcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyz") - 1);
         std::string str("abcdefghijklmnopqrstuvwxyz");
+    }
+    sw.stop();
+    time8 = sw.getMillisec();
+
+    printf("buffer1 = %s, len1 = %d, len2 = %d\n\n", buffer1, len1, len2);
+
+    printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefghijk\";",   time1);
+    printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefghijk\";",   time2);
+    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefghijk\";",   time4);
+    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"abcdefghijk\";",   time3);
+    printf("\n");
+    printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefg...xyz\";", time5);
+    printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefg...xyz\";", time6);
+    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefg...xyz\";", time8);
+    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"abcdefg...xyz\";", time7);
+
+    printf("\n");
+}
+
+void String_Performance_Test2()
+{
+#ifndef _DEBUG
+    const int LOOP_TIMES = 1000000;
+#else
+    const int LOOP_TIMES = 200000;
+#endif
+    size_t len1, len2;
+    char buffer1[512];
+    char buffer2[512];
+    double time1, time2, time3, time4;
+    double time5, time6, time7, time8;
+    int i, j = 0, loop_times = 0;
+    stop_watch sw;
+
+    sw.restart();
+    for (i = 0; i < (LOOP_TIMES >> 0); ++i) {
+        strcpy(buffer1, "abcdefghijk");
+        //strcpy(buffer1 + (i & 2), "abcdefghijk");
+        /*
+        strcpy(buffer1 + 0, "abcdefghijk");
+        strcpy(buffer1 + 4, "abcdefghijk");
+        strcpy(buffer1 + 0, "abcdefghijk");
+        strcpy(buffer1 + 4, "abcdefghijk");
+        //*/
+        len1 = strlen(buffer1);
+    }
+    sw.stop();
+    time1 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        strcpy_s(buffer2, jm_countof(buffer2), "abcdefghijk");
+        len2 = strlen("abcdefghijk");
+    }
+    sw.stop();
+    time2 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        //jimi::string str = "abcdefghijk";
+        //jimi::string str("abcdefghijk", sizeof("abcdefghijk") - 1);
+        jimi::string str("abcdefghijk");
+    }
+    sw.stop();
+    time3 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        //std::string str = "abcdefghijk";
+        //std::string str("abcdefghijk", sizeof("abcdefghijk") - 1);
+        std::string str("abcdefghijk");
+    }
+    sw.stop();
+    time4 = sw.getMillisec();
+
+    printf("buffer1 = %s, len1 = %d, len2 = %d\n\n", buffer1, len1, len2);
+
+    sw.restart();
+    for (i = 0; i < (LOOP_TIMES >> 0); ++i) {
+        strcpy(buffer1, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+        //strcpy(buffer1 + (i & 2), "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+        /*
+        strcpy(buffer1 + 0, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+        strcpy(buffer1 + 4, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+        strcpy(buffer1 + 0, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+        strcpy(buffer1 + 4, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+        //*/
+        len1 = strlen(buffer1);
+    }
+    sw.stop();
+    time5 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        strcpy_s(buffer2, jm_countof(buffer2), "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+        len2 = strlen(buffer2);
+    }
+    sw.stop();
+    time6 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        //jimi::string str = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+        //jimi::string str("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz") - 1);
+        jimi::string str("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+    }
+    sw.stop();
+    time7 = sw.getMillisec();
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        //std::string str = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+        //std::string str("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz") - 1);
+        std::string str("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
     }
     sw.stop();
     time8 = sw.getMillisec();
@@ -446,6 +559,8 @@ void String_Base_Test()
     printf("str6.size()  = %d bytes\n", str6.size());
     printf("\n");
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+
     {
         int delta;
         jimi::string strTest((size_t)999999999);
@@ -473,7 +588,7 @@ void String_Base_Test()
         jimi::string strTest2((size_t)128);
         strTest2.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
         delta = strTest2.size();
-#elif 1
+#elif 0
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.c_format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
@@ -520,6 +635,7 @@ void String_Base_Test()
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
+#if 0
     {
         int delta;
         std::string str_cpp11;
@@ -550,9 +666,11 @@ void String_Base_Test()
         printf("str_cpp11.size()  = %d bytes\n", str_cpp11.size());
         printf("\n");
     }
+#endif
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
+#if 0
     {
         int delta;
         std::string str_cfmt;
@@ -585,11 +703,12 @@ void String_Base_Test()
         printf("str_cpp11.size()  = %d bytes\n", str_cfmt.size());
         printf("\n");
     }
+#endif
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
-    std::string std_str;
-    std_str.append("a");
+    std::string stdstr;
+    stdstr.append("a");
 }
 
 static const unsigned char s_toUpper[] =
@@ -2515,7 +2634,7 @@ int UnitTest_Main(int argc, char *argv[])
 #endif
 
     // CPU »½ÐÑ/Ô¤ÈÈ 500ºÁÃë
-    jimi_cpu_warmup(1000);
+    jimi_cpu_warmup(500);
 
 #if 0
     malloc_addr_test();
@@ -2598,6 +2717,7 @@ int UnitTest_Main(int argc, char *argv[])
 
 #if 1
     String_Performance_Test();
+    String_Performance_Test2();
 #endif
 
 #if 1

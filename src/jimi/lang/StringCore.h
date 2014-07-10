@@ -11,7 +11,7 @@
 #include <jimi/thread/Atomic.h>
 #include <jimi/lang/Char_Traits.h>
 #include <jimi/lang/RefCounted.h>
-#include <jimi/lang/StringCore.h>
+#include <jimi/lang/StringDetail.h>
 #include <jimic/string/jm_strings.h>
 #include <jimic/string/jmf_strings.h>
 
@@ -742,147 +742,13 @@ void STRING_CORE::push_back(const char_type c)
     _ml.data[_size + 1] = '\0';
 }
 
-template<typename char_type>
-inline int jm_utoa_radix10_fast(char_type *buf, int val, int last)
-{
-    int digval, digital;
-    char_type *cur, *end;
-    end = buf + last;
-    cur = end;
-    do {
-        digval = val % 10;
-        val /= 10;
-
-        *cur-- = static_cast<char_type>(digval + '0');
-    } while (val != 0);
-
-    digital = end - cur;
-
-#if 1
-    do {
-        ++cur;
-        *buf++ = *cur;
-    } while (cur != end);
-#else
-    cur++;
-    while (cur <= end)
-        *buf++ = *cur++;
-#endif
-    *buf = '\0';
-    return digital;
-}
-
-template<typename char_type>
-inline int jm_itoa_radix10_fast(char_type *buf, int val, int last)
-{
-    if (val < 0) {
-        val = -val;
-        *buf++ = '-';
-    }
-    return jm_utoa_radix10_fast(buf, val, last);
-}
-
-template<typename char_type>
-inline int jm_utoa_radix10(char_type *buf, unsigned int val)
-{
-    int digval, digital;
-    char_type *cur;
-    char digits[16];
-
-    cur = digits;
-    do {
-        digval = val % 10;
-        val /= 10;
-
-        *cur++ = static_cast<char_type>(digval + '0');
-    } while (val != 0);
-
-    digital = cur - digits;
-
-#if 0
-    do {
-        --cur;
-        *buf++ = *cur;
-    } while (cur != digits);
-#elif 1
-    cur--;
-    while (cur >= digits)
-        *buf++ = *cur--;
-#elif 0
-    while (--cur >= digits)
-        *buf++ = *cur;
-#else
-    do {
-        --cur;
-        if (cur < digits)
-            break;
-        *buf++ = *cur;
-    } while (1);
-#endif
-    *buf = '\0';
-
-    return digital;
-}
-
-/* 为什么 jm_itoa_radix10() 和 jm_utoa_radix10() 名字要分开, 因为这样可以较容易适应或改为C版本 */
-
-template<typename char_type>
-inline int jm_itoa_radix10(char_type *buf, int val)
-{
-    if (val < 0) {
-        val = -val;
-        *buf++ = '-';
-    }
-    return jm_utoa_radix10(buf, val);
-}
-
-template<typename char_type>
-inline int jm_utoa(char_type *buf, int val, const unsigned int radix)
-{
-    int digval, digital;
-    char_type *cur;
-    char digits[16];
-    cur = digits;
-    do {
-        digval = val % radix;
-        val /= radix;
-
-        *cur++ = static_cast<char_type>(digval + '0');
-    } while (val != 0);
-
-    digital = cur - digits;
-
-#if 1
-    do {
-        --cur;
-        *buf++ = *cur;
-    } while (cur != digits);
-#else
-    cur--;
-    while (cur >= digits)
-        *buf++ = *cur--;
-#endif
-    *buf = '\0';
-
-    return digital;
-}
-
-template<typename char_type>
-inline int jm_itoa(char_type *buf, int val, const int radix)
-{
-    if (val < 0) {
-        val = -val;
-        *buf++ = '-';
-    }
-    return jm_utoa(buf, val, radix);
-}
-
 template <STRING_CORE_CLASSES>
 void STRING_CORE::append(const int n)
 {
     // Strategy is simple: make room, then change size
     jimi_assert(capacity() >= size());
-    const int delta = 11; int len;
+    const int delta = 11;
+    int len;
     size_type oldSize, newSize;
     flag_type type = getType();
     if (type == kIsSmall) {
@@ -891,10 +757,10 @@ void STRING_CORE::append(const int n)
         if (newSize < kMaxSmallSize) {
             //_small.info.size = newSize;
 #if 0
-            len = jm_itoa_radix10_fast(_small.buf + oldSize, n, delta);
+            len = traits_type::itoa_radix10_fast(_small.buf + oldSize, n, delta);
 #elif 1
-            len = jm_itoa_radix10(_small.buf + oldSize, n);
-            //len = jm_itoa(_small.buf + oldSize, n, 10);
+            len = traits_type::itoa_radix10(_small.buf + oldSize, n);
+            //len = traits_type::itoa(_small.buf + oldSize, n, 10);
 #else
             _itoa(n, _small.buf + oldSize, 10);
             len = jm_strlen(_small.buf + oldSize);
@@ -916,10 +782,10 @@ void STRING_CORE::append(const int n)
     jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
     //_ml.size = newSize;
 #if 0
-    len = jm_itoa_radix10_fast(_ml.data + oldSize, n, delta);
+    len = traits_type::itoa_radix10_fast(_ml.data + oldSize, n, delta);
 #elif 1
-    len = jm_itoa_radix10(_ml.data + oldSize, n);
-    //len = jm_itoa(_ml.data + oldSize, n, 10);
+    len = traits_type::itoa_radix10(_ml.data + oldSize, n);
+    //len = traits_type::itoa(_ml.data + oldSize, n, 10);
 #else
     _itoa(n, _ml.data + oldSize, 10);
     len = jm_strlen(_ml.data + oldSize);
@@ -931,7 +797,53 @@ void STRING_CORE::append(const int n)
 template <STRING_CORE_CLASSES>
 void STRING_CORE::append(const unsigned int n)
 {
-    //
+    // Strategy is simple: make room, then change size
+    jimi_assert(capacity() >= size());
+    const int delta = 11;
+    int len;
+    size_type oldSize, newSize;
+    flag_type type = getType();
+    if (type == kIsSmall) {
+        oldSize = _small.info.size;
+        newSize = oldSize + delta;
+        if (newSize < kMaxSmallSize) {
+            //_small.info.size = newSize;
+#if 0
+            len = jm_uitoa_radix10_fast(_small.buf + oldSize, n, delta);
+#elif 1
+            len = jm_utoa_radix10(_small.buf + oldSize, n);
+            //len = jm_utoa(_small.buf + oldSize, n, 10);
+#else
+            _itoa(n, _small.buf + oldSize, 10);
+            len = jm_strlen(_small.buf + oldSize);
+#endif
+            _small.info.size = oldSize + len;
+            jimi_assert(size() == oldSize + len);
+            return;
+        }
+        reserve(newSize);
+    }
+    else {
+        oldSize = _ml.size;
+        newSize = oldSize + delta;
+        if (newSize > capacity())
+            reserve(newSize);
+    }
+    jimi_assert(capacity() >= newSize);
+    // Category can't be small - we took care of that above
+    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
+    //_ml.size = newSize;
+#if 0
+    len = jm_utoa_radix10_fast(_ml.data + oldSize, n, delta);
+#elif 1
+    len = jm_utoa_radix10(_ml.data + oldSize, n);
+    //len = jm_utoa(_ml.data + oldSize, n, 10);
+#else
+    _itoa(n, _ml.data + oldSize, 10);
+    len = jm_strlen(_ml.data + oldSize);
+#endif
+    _ml.size = oldSize + len;
+    jimi_assert(size() == oldSize + len);
 }
 
 // swap below doesn't test whether &rhs == this (and instead

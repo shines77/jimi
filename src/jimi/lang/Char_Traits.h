@@ -22,17 +22,20 @@ using namespace std;
 
 NS_JIMI_BEGIN
 
-template <class _CharT>
+template <typename _CharT>
 struct JIMI_API char_traits
 {
     typedef _CharT char_type;
 
+    // malloc()
     static char_type *mem_alloc(size_t size);
-    static size_t length(const char_type *str);
 
+    // strlen(), strnlen()
+    static size_t length(const char_type *str);
     static size_t strlen(const char_type *_str);
     static size_t strnlen(const char_type *_str, size_t _count);
 
+    // strcpy_unsafe(), strncpy_unsafe()
     static char_type *strcpy_unsafe(char_type *_dest, const char_type *_src);
     static char_type *strncpy_unsafe(char_type *_dest, const char_type *_src, size_t _count);
     static char_type *strncpy_unsafe2(char_type *_dest, const char_type *_src, size_t _count);
@@ -41,6 +44,7 @@ struct JIMI_API char_traits
     static char_type *strncpy_align4_unsafe(char_type *_dest, const char_type *_src,
         size_t _count);
 
+    // strcpy(), strncpy()
     static char_type *strcpy(char_type *_dest, size_t numberOfElements,
         const char_type *_src);
     static char_type *strncpy(char_type *_dest, size_t numberOfElements,
@@ -55,39 +59,56 @@ struct JIMI_API char_traits
     static char_type *strlcpy_e(char_type *_dest, size_t numberOfElements,
         const char_type *_src, size_t _count);
 
+    // strcmp()
     static int strcmp(const char_type *_str1, const char_type *_str2);
     static int strncmp(const char_type *_str1, const char_type *_str2, size_t _count);
 
+    // streql()
     static int streql(const char_type *_str1, const char_type *_str2);
     static int strneql(const char_type *_str1, const char_type *_str2, size_t _count);
+
+    // itoa() & utoa()
+    static int itoa(char_type *buf, int val, const int radix);
+    static int utoa(char_type *buf, unsigned int val, const int radix);
+
+    static int itoa_radix10(char_type *buf, int val);
+    static int utoa_radix10(char_type *buf, unsigned int val);
+
+    static int itoa_radix10_fast(char_type *buf, int val, int last);
+    static int utoa_radix10_fast(char_type *buf, unsigned int val, int last);
 };
 
-template <class char_type>
-inline char_type *char_traits<char_type>::mem_alloc(size_t size)
+template <typename char_type>
+JIMI_INLINE
+char_type *char_traits<char_type>::mem_alloc(size_t size)
 {
     return (char_type *)::malloc(size * sizeof(char_type));
 }
 
-template <class char_type>
-inline size_t char_traits<char_type>::length(const char_type *str)
+template <typename char_type>
+JIMI_INLINE
+size_t char_traits<char_type>::length(const char_type *str)
 {
     return char_traits<char_type>::strlen(str);
 }
 
 template <>
-inline size_t char_traits<char>::length(const char *str)
+JIMI_INLINE
+size_t char_traits<char>::length(const char *str)
 {
     return ::jm_strlen(str);
 }
 
 template <>
-inline size_t char_traits<wchar_t>::length(const wchar_t *str)
+JIMI_INLINE
+size_t char_traits<wchar_t>::length(const wchar_t *str)
 {
     return ::jm_wcslen(str);
 }
 
-template <class char_type>
-inline size_t char_traits<char_type>::strlen(const char_type *_str)
+template <typename char_type>
+JIMI_INLINE
+size_t char_traits<char_type>::strlen(const char_type *_str)
 {
     char_type *_ptr;
 
@@ -102,9 +123,10 @@ inline size_t char_traits<char_type>::strlen(const char_type *_str)
     return (size_t)(_ptr - _str);
 }
 
-template <class char_type>
-inline size_t char_traits<char_type>::strnlen(const char_type *_str,
-                                              size_t _count)
+template <typename char_type>
+JIMI_INLINE
+size_t char_traits<char_type>::strnlen(const char_type *_str,
+                                       size_t _count)
 {
     char_type *_ptr, *_end;
     int n;
@@ -130,9 +152,10 @@ inline size_t char_traits<char_type>::strnlen(const char_type *_str,
     return (size_t)(_ptr - _str);
 }
 
-template <class char_type>
-inline char_type *char_traits<char_type>::strcpy_unsafe(char_type *_dest,
-                                                        const char_type *_src)
+template <typename char_type>
+JIMI_INLINE
+char_type *char_traits<char_type>::strcpy_unsafe(char_type *_dest,
+                                                 const char_type *_src)
 {
     char_type *dest, *src;
 
@@ -156,10 +179,11 @@ inline char_type *char_traits<char_type>::strcpy_unsafe(char_type *_dest,
     return _dest;
 }
 
-template <class char_type>
-inline char_type *char_traits<char_type>::strncpy_unsafe(char_type *_dest,
-                                                         const char_type *_src,
-                                                         size_t _count)
+template <typename char_type>
+JIMI_INLINE
+char_type *char_traits<char_type>::strncpy_unsafe(char_type *_dest,
+                                                  const char_type *_src,
+                                                  size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -184,10 +208,11 @@ inline char_type *char_traits<char_type>::strncpy_unsafe(char_type *_dest,
     return _dest;
 }
 
-template <class char_type>
-inline char_type *char_traits<char_type>::strncpy_unsafe2(char_type *_dest,
-                                                          const char_type *_src,
-                                                          size_t _count)
+template <typename char_type>
+JIMI_INLINE
+char_type *char_traits<char_type>::strncpy_unsafe2(char_type *_dest,
+                                                   const char_type *_src,
+                                                   size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -214,10 +239,11 @@ inline char_type *char_traits<char_type>::strncpy_unsafe2(char_type *_dest,
     return _dest;
 }
 
-template <class char_type>
-inline char_type *char_traits<char_type>::strncpy_align4_unsafe(char_type *_dest,
-                                                                const char_type *_src,
-                                                                size_t _count)
+template <typename char_type>
+JIMI_INLINE
+char_type *char_traits<char_type>::strncpy_align4_unsafe(char_type *_dest,
+                                                         const char_type *_src,
+                                                         size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -276,10 +302,11 @@ inline char_type *char_traits<char_type>::strncpy_align4_unsafe(char_type *_dest
     return _dest;
 }
 
-template <class char_type>
-inline char_type *char_traits<char_type>::strlcpy_unsafe(char_type *_dest,
-                                                         const char_type *_src,
-                                                         size_t _count)
+template <typename char_type>
+JIMI_INLINE
+char_type *char_traits<char_type>::strlcpy_unsafe(char_type *_dest,
+                                                  const char_type *_src,
+                                                  size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -308,10 +335,11 @@ inline char_type *char_traits<char_type>::strlcpy_unsafe(char_type *_dest,
     return dest;
 }
 
-template <class char_type>
-inline char_type *char_traits<char_type>::strcpy(char_type *_dest,
-                                                 size_t numberOfElements,
-                                                 const char_type *_src)
+template <typename char_type>
+JIMI_INLINE
+char_type *char_traits<char_type>::strcpy(char_type *_dest,
+                                          size_t numberOfElements,
+                                          const char_type *_src)
 {
     char_type *dest, *src;
     int n;
@@ -343,11 +371,12 @@ inline char_type *char_traits<char_type>::strcpy(char_type *_dest,
     return _dest;
 }
 
-template <class char_type>
-inline char_type *char_traits<char_type>::strncpy(char_type *_dest,
-                                                  size_t numberOfElements,
-                                                  const char_type *_src,
-                                                  size_t _count)
+template <typename char_type>
+JIMI_INLINE
+char_type *char_traits<char_type>::strncpy(char_type *_dest,
+                                           size_t numberOfElements,
+                                           const char_type *_src,
+                                           size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -372,11 +401,12 @@ inline char_type *char_traits<char_type>::strncpy(char_type *_dest,
     return _dest;
 }
 
-template <class char_type>
-inline char_type *char_traits<char_type>::strlcpy(char_type *_dest,
-                                                  size_t numberOfElements,
-                                                  const char_type *_src,
-                                                  size_t _count)
+template <typename char_type>
+JIMI_INLINE
+char_type *char_traits<char_type>::strlcpy(char_type *_dest,
+                                           size_t numberOfElements,
+                                           const char_type *_src,
+                                           size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -405,10 +435,11 @@ inline char_type *char_traits<char_type>::strlcpy(char_type *_dest,
     return _dest;
 }
 
-template <class char_type>
-inline char_type *char_traits<char_type>::strcpy_e(char_type *_dest,
-                                                   size_t numberOfElements,
-                                                   const char_type *_src)
+template <typename char_type>
+JIMI_INLINE
+char_type *char_traits<char_type>::strcpy_e(char_type *_dest,
+                                            size_t numberOfElements,
+                                            const char_type *_src)
 {
     char_type *dest, *src;
     int n;
@@ -440,11 +471,12 @@ inline char_type *char_traits<char_type>::strcpy_e(char_type *_dest,
     return dest;
 }
 
-template <class char_type>
-inline char_type *char_traits<char_type>::strncpy_e(char_type *_dest,
-                                                    size_t numberOfElements,
-                                                    const char_type *_src,
-                                                    size_t _count)
+template <typename char_type>
+JIMI_INLINE
+char_type *char_traits<char_type>::strncpy_e(char_type *_dest,
+                                             size_t numberOfElements,
+                                             const char_type *_src,
+                                             size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -472,11 +504,12 @@ inline char_type *char_traits<char_type>::strncpy_e(char_type *_dest,
     return dest;
 }
 
-template <class char_type>
-inline char_type *char_traits<char_type>::strlcpy_e(char_type *_dest,
-                                                    size_t numberOfElements,
-                                                    const char_type *_src,
-                                                    size_t _count)
+template <typename char_type>
+JIMI_INLINE
+char_type *char_traits<char_type>::strlcpy_e(char_type *_dest,
+                                             size_t numberOfElements,
+                                             const char_type *_src,
+                                             size_t _count)
 {
     char_type *dest, *src;
     int n;
@@ -505,9 +538,10 @@ inline char_type *char_traits<char_type>::strlcpy_e(char_type *_dest,
     return dest;
 }
 
-template <class char_type>
-inline int char_traits<char_type>::strcmp(const char_type *_str1,
-                                          const char_type *_str2)
+template <typename char_type>
+JIMI_INLINE
+int char_traits<char_type>::strcmp(const char_type *_str1,
+                                   const char_type *_str2)
 {
     int equal;
     char_type *str1, *str2;
@@ -536,10 +570,11 @@ inline int char_traits<char_type>::strcmp(const char_type *_str1,
     return equal;
 }
 
-template <class char_type>
-inline int char_traits<char_type>::strncmp(const char_type *_str1,
-                                           const char_type *_str2,
-                                           size_t _count)
+template <typename char_type>
+JIMI_INLINE
+int char_traits<char_type>::strncmp(const char_type *_str1,
+                                    const char_type *_str2,
+                                    size_t _count)
 {
     int equal = 0;
     char_type *str1, *str2;
@@ -579,9 +614,10 @@ inline int char_traits<char_type>::strncmp(const char_type *_str1,
     return equal;
 }
 
-template <class char_type>
-inline int char_traits<char_type>::streql(const char_type *_str1,
-                                          const char_type *_str2)
+template <typename char_type>
+JIMI_INLINE
+int char_traits<char_type>::streql(const char_type *_str1,
+                                   const char_type *_str2)
 {
     int equal = 0;
     char_type *str1, *str2;
@@ -606,8 +642,9 @@ inline int char_traits<char_type>::streql(const char_type *_str1,
     return equal;
 }
 
-template <class char_type>
-inline int char_traits<char_type>::strneql(const char_type *_str1,
+template <typename char_type>
+JIMI_INLINE
+int char_traits<char_type>::strneql(const char_type *_str1,
                                            const char_type *_str2,
                                            size_t _count)
 {
@@ -644,6 +681,145 @@ inline int char_traits<char_type>::strneql(const char_type *_str1,
     } while (--n > 0);
 
     return equal;
+}
+
+template<typename char_type>
+JIMI_INLINE
+int char_traits<char_type>::utoa(char_type *buf, unsigned int val, const int radix)
+{
+    int digval, digital;
+    char_type *cur;
+    char digits[12];
+    cur = digits;
+    do {
+        digval = val % radix;
+        val /= radix;
+
+        *cur++ = static_cast<char_type>(digval + '0');
+    } while (val != 0);
+
+    digital = cur - digits;
+
+#if 1
+    do {
+        --cur;
+        *buf++ = *cur;
+    } while (cur != digits);
+#else
+    cur--;
+    while (cur >= digits)
+        *buf++ = *cur--;
+#endif
+    *buf = '\0';
+
+    return digital;
+}
+
+template<typename char_type>
+JIMI_INLINE
+int char_traits<char_type>::itoa(char_type *buf, int val, const int radix)
+{
+    if (val < 0) {
+        val = -val;
+        *buf++ = '-';
+    }
+    return char_traits<char_type>::utoa(buf, val, radix);
+}
+
+template<typename char_type>
+JIMI_INLINE
+int char_traits<char_type>::utoa_radix10(char_type *buf, unsigned int val)
+{
+    int digval, digital;
+    char_type *cur;
+    char digits[12];
+
+    cur = digits;
+    do {
+        digval = val % 10;
+        val /= 10;
+
+        *cur++ = static_cast<char_type>(digval + '0');
+    } while (val != 0);
+
+    digital = cur - digits;
+
+#if 1
+    do {
+        --cur;
+        *buf++ = *cur;
+    } while (cur != digits);
+#elif 0
+    cur--;
+    while (cur >= digits)
+        *buf++ = *cur--;
+#elif 0
+    while (--cur >= digits)
+        *buf++ = *cur;
+#else
+    do {
+        --cur;
+        if (cur < digits)
+            break;
+        *buf++ = *cur;
+    } while (1);
+#endif
+    *buf = '\0';
+
+    return digital;
+}
+
+template<typename char_type>
+JIMI_INLINE
+int char_traits<char_type>::itoa_radix10(char_type *buf, int val)
+{
+    if (val < 0) {
+        val = -val;
+        *buf++ = '-';
+    }
+    return char_traits<char_type>::utoa_radix10(buf, val);
+}
+
+template<typename char_type>
+JIMI_INLINE
+int char_traits<char_type>::utoa_radix10_fast(char_type *buf, unsigned int val, int last)
+{
+    int digval, digital;
+    char_type *cur, *end;
+    end = buf + last;
+    cur = end;
+    do {
+        digval = val % 10;
+        val /= 10;
+
+        *cur-- = static_cast<char_type>(digval + '0');
+    } while (val != 0);
+
+    digital = end - cur;
+
+#if 1
+    do {
+        ++cur;
+        *buf++ = *cur;
+    } while (cur != end);
+#else
+    cur++;
+    while (cur <= end)
+        *buf++ = *cur++;
+#endif
+    *buf = '\0';
+    return digital;
+}
+
+template<typename char_type>
+JIMI_INLINE
+int char_traits<char_type>::itoa_radix10_fast(char_type *buf, int val, int last)
+{
+    if (val < 0) {
+        val = -val;
+        *buf++ = '-';
+    }
+    return char_traits<char_type>::utoa_radix10_fast(buf, val, last);
 }
 
 NS_JIMI_END

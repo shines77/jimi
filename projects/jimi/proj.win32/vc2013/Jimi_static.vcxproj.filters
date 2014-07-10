@@ -293,8 +293,8 @@
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_machine.h">
       <Filter>src\jimi\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.cpp">
-      <Filter>src\jimi\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\StringDetail.h">
+      <Filter>src\jimi\lang</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -324,6 +324,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.cpp">
       <Filter>src\jimic\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert_impl.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

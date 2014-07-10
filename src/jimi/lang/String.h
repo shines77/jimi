@@ -12,6 +12,7 @@
 #include <jimi/lang/Char_Traits.h>
 #include <jimi/lang/RefCounted.h>
 #include <jimi/lang/StringCore.h>
+#include <jimi/lang/StringDetail.h>
 #include <jimic/string/jm_strings.h>
 
 #include <vadefs.h>
@@ -44,69 +45,6 @@ template <class _PtrT, class _T>
 class JIMI_API normal_iterator
 {
 };
-
-namespace string_detail {
-
-/*
- * Lightly structured memcpy, simplifies copying PODs and introduces
- * some asserts. Unfortunately using this function may cause
- * measurable overhead (presumably because it adjusts from a begin/end
- * convention to a pointer/size convention, so it does some extra
- * arithmetic even though the caller might have done the inverse
- * adaptation outside).
- */
-template <class Pod>
-inline void pod_copy(Pod *dest, const Pod *src, size_t size) {
-    jimi_assert(size >= 0);
-    jimi_assert(dest >= (src + size) || (dest + size) <= src);
-    ::memcpy(dest, src, size * sizeof(Pod));
-}
-
-template <class Pod>
-inline void pod_copy2(Pod *dest, const Pod *src, const Pod *end) {
-    jimi_assert(end >= src);
-    jimi_assert(dest >= end || (dest + (end - src)) <= src);
-    ::memcpy(dest, src, (end - src) * sizeof(Pod));
-}
-
-/*
- * Lightly structured memmove, simplifies copying PODs and introduces
- * some asserts
- */
-template <class Pod>
-inline void pod_move(Pod *dest, const Pod *src, size_t size) {
-    jimi_assert(size >= 0);
-    jimi_assert(dest >= (src + size) || (dest + size) <= src);
-    ::memmove(dest, src, size * sizeof(Pod));
-}
-
-template <class Pod, class T>
-inline void pod_fill(Pod *dest, size_t size, T c) {
-    jimi_assert(dest && size > 0);
-    if (sizeof(T) == 1) {   /*static*/
-        ::memset(dest, c, size);
-    }
-    else {
-        const Pod *ee = dest + (size & ~(size_t)7u);
-        for (; dest != ee; dest += 8) {
-            dest[0] = c;
-            dest[1] = c;
-            dest[2] = c;
-            dest[3] = c;
-            dest[4] = c;
-            dest[5] = c;
-            dest[6] = c;
-            dest[7] = c;
-        }
-        // Leftovers
-        const Pod *end = dest + size;
-        for (; dest != end; ++dest) {
-            *dest = c;
-        }
-    }
-}
-
-}  /* end of the namespace string_detail */
 
 #undef BASIC_STRING_CLASSES
 #undef BASIC_STRING
@@ -1317,7 +1255,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
     }
     va_end(arg_list);
 
-    int maxArgs = index;
+    int max_args = index;
     offset = 0;
     while ((c = fmt[offset++]) != '\0') {
         if (c == '{') {
@@ -1332,7 +1270,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
                 while ((c = fmt[offset++]) != '\0') {
                     if (c == '}') {
                         // end of one number
-                        if (index < maxArgs)
+                        if (index < max_args)
                             append(*(strArgList + index));
                         break;
                     }
@@ -1374,7 +1312,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
     }
 
     strArg = strArgList;
-    for (int i = 0; i < maxArgs; ++i) {
+    for (int i = 0; i < max_args; ++i) {
         strArg->~basic_string();
         strArg++;
     }
