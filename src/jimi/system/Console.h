@@ -43,15 +43,23 @@ public:
         printf("\n");
     }
 
-    static int ReadKey() {
+    static int ReadKey(bool displayTips = true, bool echoInput = false) {
+        int keyCode;
+        if (displayTips) {
 #if 0
-        printf("Press any key to continue ...\n");
+            printf("Press any key to continue ...\n");
 #else
-        printf("按任意键继续 ...\n");
+            printf("按任意键继续 ...\n");
 #endif
-        int keycode = _getch();
-        printf("\n");
-        return keycode;
+            keyCode = _getch();
+            printf("\n");
+        }
+        else {
+            keyCode = _getch();
+            if (echoInput)
+                printf("%c", keyCode);
+        }
+        return keyCode;
     }
 };
 

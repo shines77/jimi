@@ -81,7 +81,7 @@ namespace detail
 
             if (std::isdigit(*p))
             {
-                //push digit
+                // push digit
                 temp[i++] = *p;
                 char next = *(p + 1);
                 if (std::isdigit(next))
@@ -91,7 +91,7 @@ namespace detail
                     continue;
                 }
 
-                //validate arg
+                // validate arg
                 if (!std::isspace(next) && next != '}')
                 {
                     throw std::invalid_argument("invalid argument.");
@@ -126,19 +126,19 @@ inline std::string format(char* src, Args... args)
     {
         if (*p == '{')
         {
-            //copy content befor {
+            // copy content befor {
             last = p - original;
             memcpy(buf, original, last);
             buf += last;
 
-            //format args
+            // format args
             int index = GetIndex(p);
             if (index >= 0)
             {
                 detail::GetArgByIndex<0>(index, tp, buf);
             }
 
-            //skip }
+            // skip }
             original = p + 1;
         }
 

@@ -2633,6 +2633,26 @@ void malloc_addr_test()
     printf("\n");
 }
 
+float __binary32_add_binary64_binary64(double a, double b)
+{
+    return (float)(a + b);
+}
+
+void IEEE754_Double_Test()
+{
+    double a64, b64;
+    float c32;
+    a64 = 1.000000059604644775390625;
+    b64 = 1.1102230246251565404236316680908203125e-16;
+    c32 = __binary32_add_binary64_binary64(a64, b64);
+    printf("The addition result using the libary: %8.8f\n", c32);
+    c32 = a64 + b64;
+    printf("The addition result without the libary: %8.8f\n", c32);
+    printf("\n");
+
+    Console.ReadKey(true, false);
+}
+
 class resA
 {
 public:
@@ -2780,6 +2800,10 @@ int UnitTest_Main(int argc, char *argv[])
         sLog.log_end();
         return 0;
     }
+#endif
+
+#if 1
+    IEEE754_Double_Test();
 #endif
 
     // 测试std::string是否使用了COW(Copy On Write)
