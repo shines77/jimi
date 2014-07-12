@@ -140,7 +140,7 @@ public:
     basic_string &c_format(const value_type *fmt, const value_type *args, ...);
 
     template<typename ...Args>
-    basic_string &format(const value_type *fmt, Args const & ...args);
+    basic_string &format(const value_type *fmt, Args const & ... args);
 
     template<typename ...Args>
     basic_string &append_format(Args const & ... args);

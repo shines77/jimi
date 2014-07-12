@@ -139,6 +139,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\lang\Cloneable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\CloneNotSupportedException.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Exception.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Formatter.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Object.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\ObjectBase.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\RefCounted.h" />

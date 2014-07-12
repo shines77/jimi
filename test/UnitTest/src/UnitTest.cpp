@@ -28,6 +28,7 @@
 #include <jimi/thread/Event.h>
 #include <jimi/lang/Object.h>
 #include <jimi/lang/String.h>
+#include <jimi/lang/Formatter.h>
 
 #include <jimi/log/Logger.h>
 #include <jimi/system/stop_watch.h>
@@ -659,6 +660,37 @@ void String_Base_Test()
 
     {
         int delta;
+        jimi::string strTest((size_t)1024);
+        jimi::formatter<jimi::string> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strTest = formator.format_fast((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("===================================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str = formator.format_fast(111, \", \", \"222erer\", \", \",\n"
+               "                                   33333, \", \", \"{3}, \", \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("===================================================================================\n\n");
+
+        jimi::string strTest2((size_t)128);
+        strTest2 = formator.format_fast((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+
+    {
+        int delta;
         jimi::string strTest((size_t)999999999);
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -726,7 +758,7 @@ void String_Base_Test()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             //str_cpp11 += 
-                format("{0}, {1}, {2}, $3}, {3}", 111, "222erer", 33333, "ffffff44");
+                qicosmos::format("{0}, {1}, {2}, $3}, {3}", 111, "222erer", 33333, "ffffff44");
         }
         sw.stop();
         time = sw.getMillisec();
@@ -739,7 +771,7 @@ void String_Base_Test()
         printf("===================================================================================\n\n");
 
         std::string str_cpp11b;
-        str_cpp11b = format("{0}, {1}, {2}, $3}, {3}", 111, "222erer", 33333, "ffffff44");
+        str_cpp11b = qicosmos::format("{0}, {1}, {2}, $3}, {3}", 111, "222erer", 33333, "ffffff44");
         delta = str_cpp11b.size();
 
         printf("str_cpp11.c_str() = %s\n\n", str_cpp11b.c_str());
@@ -2646,7 +2678,7 @@ void IEEE754_Double_Test()
     b64 = 1.1102230246251565404236316680908203125e-16;
     c32 = __binary32_add_binary64_binary64(a64, b64);
     printf("The addition result using the libary: %8.8f\n", c32);
-    c32 = a64 + b64;
+    c32 = (float)(a64 + b64);
     printf("The addition result without the libary: %8.8f\n", c32);
     printf("\n");
 

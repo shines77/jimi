@@ -15,8 +15,12 @@ using namespace std;
 
 NS_JIMI_BEGIN
 
-//
+namespace string_utils {
+
+    //
+
+}  /* namespace of string_utils */
 
 NS_JIMI_END
 
-#endif  /* _JIMI_LANG_STRINGUTILS_H_ */
+#endif  /* !_JIMI_LANG_STRINGUTILS_H_ */

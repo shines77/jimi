@@ -1,4 +1,11 @@
 
+#ifndef _JIMI_QICOSMOS_FORMATTER_H_
+#define _JIMI_QICOSMOS_FORMATTER_H_
+
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
+#pragma once
+#endif
+
 #include <tuple>
 #include <type_traits>
 #include <string>
@@ -8,8 +15,10 @@
 
 using namespace std;
 
-namespace detail
-{
+namespace qicosmos {
+
+namespace detail {
+
     char g_buf[2000] = {};
     inline void FormatArg(char*& buf, int i)
     {
@@ -103,7 +112,7 @@ namespace detail
 
         return i == 0 ? -1 : std::atoi(temp);
     }
-}
+}  /* namespace of detail */
 
 template<typename... Args>
 inline std::string format(const std::string& src, Args... args)
@@ -149,3 +158,7 @@ inline std::string format(char* src, Args... args)
     memset(g_buf, 0, buf - g_buf);
     return s;
 }
+
+}  /* namespace of qicosmos */
+
+#endif  /* !_JIMI_QICOSMOS_FORMATTER_H_ */

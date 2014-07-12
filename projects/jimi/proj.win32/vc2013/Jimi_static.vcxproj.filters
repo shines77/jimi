@@ -296,6 +296,9 @@
     <ClInclude Include="..\..\..\..\src\jimi\lang\StringDetail.h">
       <Filter>src\jimi\lang</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Formatter.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">
