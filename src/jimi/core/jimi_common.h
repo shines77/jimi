@@ -132,21 +132,21 @@
 #if _MSC_VER || __INTEL_COMPILER
 
 #define JIMI_INLINE              __inline
-#define JIMI_FORCE_INLINE        __forceinline
+#define JIMI_FORCEINLINE         __forceinline
 #define JIMI_RESTRICT            __restrict
 #define JIMI_HAS_INLINE          1
 
 #elif defined(__GNUC__)
 
 #define JIMI_INLINE              inline
-#define JIMI_FORCE_INLINE        inline
+#define JIMI_FORCEINLINE         inline
 #define JIMI_RESTRICT            restrict
 #define JIMI_HAS_INLINE          1
 
 #else
 
 #define JIMI_INLINE              inline
-#define JIMI_FORCE_INLINE        inline
+#define JIMI_FORCEINLINE         inline
 #define JIMI_RESTRICT
 #define JIMI_HAS_INLINE          1
 
@@ -166,13 +166,13 @@
 #if defined(JIMI_MSC_VER) || defined(JIMI_IS_ICC)
 
 #define JMC_INLINE              __inline
-#define JMC_FORCE_INLINE        __forceinline
+#define JMC_FORCEINLINE         __forceinline
 #define JMC_HAS_INLINE          1
 
 #else
 
 #define JMC_INLINE              inline
-#define JMC_FORCE_INLINE        inline
+#define JMC_FORCEINLINE         inline
 #define JMC_HAS_INLINE          1
 
 #endif  /* JIMI_MSC_VER */

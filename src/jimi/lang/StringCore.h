@@ -33,6 +33,8 @@ using namespace std;
 
 NS_JIMI_BEGIN
 
+////////////////////////////////////////////////////////////////////////////////
+
 /// <comment>
 ///
 /// Reference: 标准C＋＋类string的Copy-On-Write技术（一）
@@ -48,6 +50,8 @@ NS_JIMI_BEGIN
 /// http://www.cnblogs.com/promise6522/archive/2012/06/05/2535530.html
 ///
 /// </comment>
+
+////////////////////////////////////////////////////////////////////////////////
 
 #define STRING_SMALL_BYTES      32
 
@@ -88,6 +92,8 @@ typedef enum StringTypeMaskX
 #define STRING_TYPE_IS_MEDIUM_OR_LARGE(type)   \
     ((type & (STRING_TYPE_MEDIUM | STRING_TYPE_LARGE)) != 0)
 
+////////////////////////////////////////////////////////////////////////////////
+
 #undef STRING_CORE_CLASSES
 #undef STRING_CORE
 
@@ -118,7 +124,7 @@ public:
     typedef struct medium_large medium_large;
 
     // Constant
-    static const char_type  kNullChar   = STRING_NULL_CHAR;
+    static const char_type  kNullChar   =  STRING_NULL_CHAR;
 
     static const flag_type  kIsSmall    =  STRING_TYPE_SMALL;
     static const flag_type  kIsMedium   =  STRING_TYPE_MEDIUM;
@@ -175,6 +181,9 @@ public:
     void append(const uint64_t u64);
     void append(const float f);
     void append(const double d);
+
+    void append_hex(const uint32_t hex32, const bool isUpper = true);
+    void append_hex(const uint64_t hex64, const bool isUpper = true);
 
     void destroy();
 
@@ -269,9 +278,11 @@ private:
     void small_clone(small_t &dest, const small_t &src) {
 #if 1
         // 优化版本, 如果内存地址对齐4/8字节, 一次拷贝4/8字节
-        traits_type::strncpy_align4_unsafe(dest.buf, src.buf, src.info.size);
-        dest.info.lastShort = src.info.lastShort;
-        dest.buf[src.info.size] = '\0';
+        traits_type::strncpy_align4_unsafe(dest.buf, src.buf, src.info.size + 1);
+        //dest.info.lastShort = src.info.lastShort;
+        dest.info.size = src.info.size;
+        dest.info.type = src.info.type;
+        //dest.buf[src.info.size] = '\0';
 #else
         // 慢速版本
         traits_type::strncpy_unsafe(dest.buf, src.buf, src.info.size);
@@ -828,7 +839,7 @@ void STRING_CORE::append(const unsigned int n)
 {
     // Strategy is simple: make room, then change size
     jimi_assert(capacity() >= size());
-    const int delta = 11;
+    const int delta = 10;
     int len;
     size_type oldSize, newSize;
     flag_type type = getType();
@@ -932,7 +943,7 @@ void STRING_CORE::append(const unsigned long n)
 {
     // Strategy is simple: make room, then change size
     jimi_assert(capacity() >= size());
-    const int delta = 11;
+    const int delta = 10;
     int len;
     size_type oldSize, newSize;
     flag_type type = getType();
@@ -979,6 +990,42 @@ void STRING_CORE::append(const unsigned long n)
     jimi_assert(size() == oldSize + len);
 }
 
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append(const int64_t i64)
+{
+    //
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append(const uint64_t u64)
+{
+    //
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append(const float f)
+{
+    //
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append(const double d)
+{
+    //
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append_hex(const uint32_t hex32, const bool isUpper /* = true */)
+{
+    //
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::append_hex(const uint64_t hex64, const bool isUpper /* = true */)
+{
+    //
+}
+
 // swap below doesn't test whether &rhs == this (and instead
 // potentially does extra work) on the premise that the rarity of
 // that situation actually makes the check more expensive than is
@@ -987,6 +1034,13 @@ void STRING_CORE::append(const unsigned long n)
 template <STRING_CORE_CLASSES>
 void STRING_CORE::swap(STRING_CORE &rhs)
 {
+    // 因为在内部, 我们要使用swap(rhs)的地方, 都能保证(this != &rhs), 所以这个判断是多余的
+#if 0
+    // same object, do nothing
+    if (this == &rhs)
+        return;
+#endif
+
 #if 0
     // 在不同的type下, _ml的有些数据是不必复制的
 #if 0
@@ -1013,7 +1067,7 @@ void STRING_CORE::swap(STRING_CORE &rhs)
         _ml = rhs._ml;
         rhs._ml = t;
     }
-#elif 0
+#elif 1
     // 完全直接复制_ml, 有些复制可能是多余的
     const medium_large t = _ml;
     _ml = rhs._ml;

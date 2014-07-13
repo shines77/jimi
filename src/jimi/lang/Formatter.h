@@ -197,7 +197,7 @@ void formatter::format_fast_next(jimi::string & result, const T & value, Args co
 }
 
 template <typename ... Args>
-JIMI_FORCE_INLINE
+JIMI_FORCEINLINE
 jimi::string formatter::format_fast(Args const & ... args)
 {
     jimi::string result;
@@ -206,7 +206,7 @@ jimi::string formatter::format_fast(Args const & ... args)
 }
 
 template <typename ... Args>
-JIMI_FORCE_INLINE
+JIMI_FORCEINLINE
 jimi::string formatter::format_l(std::locale loc, Args const & ... args)
 {
     jimi::string result;
@@ -231,7 +231,7 @@ void formatter::format_s_next(jimi::string & result, const T & value, Args const
 //*/
 
 template <typename ... Args>
-JIMI_FORCE_INLINE
+JIMI_FORCEINLINE
 int formatter::format_s(jimi::string & result, Args const & ... args)
 {
     format_fast_next(result, args...);

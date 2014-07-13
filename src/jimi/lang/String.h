@@ -157,8 +157,9 @@ public:
     basic_string &append(const float f);
     basic_string &append(const double d);
 
-    int append_hex(uint32_t hex);
-    int append_hex(uint64_t hex);
+    basic_string &append_hex(const uint32_t hex32, const bool isUpper = true);
+    basic_string &append_hex(const uint64_t hex64, const bool isUpper = true);
+
     basic_string &append_cformat(const value_type *fmt, ...);
     basic_string &c_format(const value_type *fmt, const value_type *args, ...);
 
@@ -399,7 +400,7 @@ BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &rhs)
         //_store = rhs._store;
         //_store._ml = rhs._store._ml;
         jimi_assert(size() == srcSize);
-        //jimi_assert(begin() != rhs.begin());
+        jimi_assert(begin() != rhs.begin());
         string_detail::pod_copy(begin(), rhs.begin(), rhs.size());
         //_store.writeNull();
     }
@@ -561,26 +562,58 @@ BASIC_STRING &BASIC_STRING::append(const unsigned long ul)
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const int64_t i)
+BASIC_STRING &BASIC_STRING::append(const int64_t i64)
 {
+    _store.append(i64);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const uint64_t u)
+BASIC_STRING &BASIC_STRING::append(const uint64_t u64)
 {
+    _store.append(u64);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::append(const float f)
 {
+    _store.append(f);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
 BASIC_STRING &BASIC_STRING::append(const double d)
 {
+    _store.append(d);
+    return *this;
+}
+
+JIMI_FORCEINLINE
+int hex_to_string(const char *buf, uint32_t hex32)
+{
+    jimi_assert(buf != 0);
+    return 10;
+}
+
+JIMI_FORCEINLINE
+int hex_to_string(const char *buf, uint64_t hex64)
+{
+    jimi_assert(buf != 0);
+    return 18;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::append_hex(uint32_t hex32, const bool isUpper /* = true */)
+{
+    _store.append_hex(hex32, isUpper);
+    return *this;
+}
+
+template <BASIC_STRING_CLASSES>
+BASIC_STRING &BASIC_STRING::append_hex(uint64_t hex64, const bool isUpper /* = true */)
+{
+    _store.append_hex(hex64, isUpper);
     return *this;
 }
 
@@ -815,38 +848,6 @@ int BASIC_STRING::compare(const value_type *rhs) const
     return _store.compare(rhs);
 }
 
-FORCEINLINE int hex_to_string(const char *buf, uint32_t hex)
-{
-    jimi_assert(buf != 0);
-    return 10;
-}
-
-FORCEINLINE int hex_to_string(const char *buf, uint64_t hex)
-{
-    jimi_assert(buf != 0);
-    return 18;
-}
-
-template <BASIC_STRING_CLASSES>
-FORCEINLINE int BASIC_STRING::append_hex(uint32_t hex)
-{
-    char buf[32];
-    buf[0] = '\0';
-    int len = hex_to_string(buf, hex);
-    append(buf, len);
-    return len;
-}
-
-template <BASIC_STRING_CLASSES>
-FORCEINLINE int BASIC_STRING::append_hex(uint64_t hex)
-{
-    char buf[32];
-    buf[0] = '\0';
-    int len = hex_to_string(buf, hex);
-    append(buf, len);
-    return len;
-}
-
 #if 1
 
 template <typename StringType, typename T, typename ... Args>
@@ -907,7 +908,7 @@ template <typename ...Args>
 #if defined(FORMAT_USE_ALLOCA_ONSTACK) && (FORMAT_USE_ALLOCA_ONSTACK != 0)
 JIMI_INLINE
 #else
-JIMI_FORCE_INLINE
+JIMI_FORCEINLINE
 #endif
 BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
 {
@@ -1030,7 +1031,7 @@ void BASIC_STRING::append_format_next(const T & value, Args const & ... args)
 
 template <BASIC_STRING_CLASSES>
 template <typename ...Args>
-JIMI_FORCE_INLINE
+JIMI_FORCEINLINE
 BASIC_STRING &BASIC_STRING::append_format(Args const & ... args)
 {
     int delta = 0;
@@ -1760,9 +1761,9 @@ BASIC_STRING &BASIC_STRING::append_cformat(const value_type *fmt, ...)
                 }
                 else if (c == 'x') {
                     // hex(uint32_t)
-                    uint32_t hex = static_cast<uint32_t>(va_arg(arg_ptr, uint32_t));
+                    uint32_t hex32 = static_cast<uint32_t>(va_arg(arg_ptr, uint32_t));
                     guess_delta += 10;
-                    int hex_len = append_hex(hex);
+                    append_hex(hex32);
                 }
                 else if (c == 'c') {
                     // char
@@ -1876,9 +1877,9 @@ BASIC_STRING &BASIC_STRING::append_cformat(const value_type *fmt, ...)
             }
             else if (c == 'X') {
                 // hex(uint64_t)
-                uint64_t hex = static_cast<uint64_t>(va_arg(arg_ptr, uint64_t));
+                uint64_t hex64 = static_cast<uint64_t>(va_arg(arg_ptr, uint64_t));
                 guess_delta += 18;
-                int hex_len = append_hex(hex);
+                append_hex(hex64);
             }
         }
         else {
