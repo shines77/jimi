@@ -987,7 +987,7 @@ void STRING_CORE::append(const unsigned long n)
 template <STRING_CORE_CLASSES>
 void STRING_CORE::swap(STRING_CORE &rhs)
 {
-#if 1
+#if 0
     // 在不同的type下, _ml的有些数据是不必复制的
 #if 0
     flag_type type = getType();
@@ -999,11 +999,12 @@ void STRING_CORE::swap(STRING_CORE &rhs)
         ml_swap(_ml, rhs._ml);
     }
 #else
-    flag_type comb_type = (_ml.type & rhs._ml.type) & kTypeMask;
-    if ((comb_type & kIsSmall) == 0) {
+    flag_type type = _ml.type;
+    flag_type rhs_type = rhs._ml.type;
+    if (((type | rhs_type) & kIsSmall) == 0) {
         ml_swap(_ml, rhs._ml);
     }
-    else if (comb_type == kIsSmall) {
+    else if ((type & rhs_type) == kIsSmall) {
         small_swap(_small, rhs._small);
     }
 #endif
@@ -1012,11 +1013,16 @@ void STRING_CORE::swap(STRING_CORE &rhs)
         _ml = rhs._ml;
         rhs._ml = t;
     }
-#else
+#elif 0
     // 完全直接复制_ml, 有些复制可能是多余的
     const medium_large t = _ml;
     _ml = rhs._ml;
     rhs._ml = t;
+#else
+    medium_large t;
+    memcpy((void *)&t,       (void *)&_ml,      sizeof(medium_large));
+    memcpy((void *)&_ml,     (void *)&rhs._ml,  sizeof(medium_large));
+    memcpy((void *)&rhs._ml, (void *)&t,        sizeof(medium_large));
 #endif
 }
 

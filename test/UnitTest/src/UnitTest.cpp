@@ -507,7 +507,7 @@ void String_Base_Test()
     int loop_times = 9999999;
     stop_watch sw;
 
-#if 0
+#if 1
     jimi::string str1 = "abcdefg";
     jimi::string str2 = "hijklmnop";
     printf("str1.c_str() = %s\n", str1.c_str());
@@ -550,6 +550,7 @@ void String_Base_Test()
 
     jimi::string str5;
     //str5.append_cformat("%d %x %f %u %c %b", 9999, 8888, 10.9999, 10000000, 33, true);
+    str5.append_cformat("%d %s %d %s", 111, "222erer", 33333, "ffffff44");
     printf("str5.c_str() = \n%s\n\n", str5.c_str());
     printf("str5.size()  = %d bytes\n", str5.size());
     printf("\n");
@@ -606,8 +607,8 @@ void String_Base_Test()
 #if 1
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            strTest.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-            //strTest.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+            //strTest.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            strTest.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
@@ -620,8 +621,8 @@ void String_Base_Test()
         printf("===================================================================================\n\n");
 
         jimi::string strTest2((size_t)128);
-        strTest2.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
-        //strTest2.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        //strTest2.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
+        strTest2.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 #elif 0
         sw.restart();

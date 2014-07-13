@@ -114,39 +114,41 @@ public:
     ~formatter() {}
 
 public:
-    //template <typename ... Args>
-    //jimi::string format(const jimi::string & fmt, Args const ... args);
-
-    //template <typename ... Args>
-    //jimi::string format(const char * fmt, Args const ... args);
+    template <typename ... Args>
+    jimi::string format(const jimi::string & fmt, Args const & ... args);
 
     template <typename ... Args>
-    jimi::string format_fast(Args const ... args);
+    jimi::string format(const char * fmt, Args const & ... args);
 
     template <typename ... Args>
-    jimi::string format_l(std::locale loc, Args const ... args);
+    jimi::string format_fast(Args const & ... args);
 
     template <typename ... Args>
-    int format_s(std::string & result, Args const ... args) { return 0; };
+    jimi::string format_l(std::locale loc, Args const & ... args);
 
     template <typename ... Args>
-    int format_s(jimi::string & result, Args const ... args);
+    int format_s(std::string & result, Args const & ... args) { return 0; };
 
     template <typename ... Args>
-    int format_s(char *buffer, size_t countOfElements, Args const ... args) { return 0; };
+    int format_s(jimi::string & result, Args const & ... args);
+
+    template <typename ... Args>
+    int format_s(char *buffer, size_t countOfElements, Args const & ... args) { return 0; };
 
 private:
     template<typename T, typename ... Args>
     void format_fast_next(jimi::string & result, const T & value);
 
     template<typename T, typename ... Args>
-    void format_fast_next(jimi::string & result, const T & value, Args const ... args);
+    void format_fast_next(jimi::string & result, const T & value, Args const & ... args);
 
+    /*
     template<typename T, typename ... Args>
     void format_s_next(jimi::string & result, const T & value);
 
     template<typename T, typename ... Args>
-    void format_s_next(jimi::string & result, const T & value, Args const ... args);
+    void format_s_next(jimi::string & result, const T & value, Args const & ... args);
+    //*/
 
 private:
     float_setting   float_set;
@@ -154,10 +156,9 @@ private:
     string_setting  string_set;
 };
 
-/*
 template <typename ... Args>
 JIMI_INLINE
-jimi::string formatter::format(const jimi::string & fmt, Args const ... args)
+jimi::string formatter::format(const jimi::string & fmt, Args const & ... args)
 {
     jimi::string strResult;
     return strResult;
@@ -165,12 +166,11 @@ jimi::string formatter::format(const jimi::string & fmt, Args const ... args)
 
 template <typename ... Args>
 JIMI_INLINE
-jimi::string formatter::format(const char * fmt, Args const ... args)
+jimi::string formatter::format(const char * fmt, Args const & ... args)
 {
     jimi::string strResult;
     return strResult;
 }
-//*/
 
 /************************************************************************/
 /*                                                                      */
@@ -190,7 +190,7 @@ void formatter::format_fast_next(jimi::string & result, const T & value)
 
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter::format_fast_next(jimi::string & result, const T & value, Args const ... args)
+void formatter::format_fast_next(jimi::string & result, const T & value, Args const & ... args)
 {
     result.append(value);
     format_fast_next(result, args...);
@@ -198,7 +198,7 @@ void formatter::format_fast_next(jimi::string & result, const T & value, Args co
 
 template <typename ... Args>
 JIMI_FORCE_INLINE
-jimi::string formatter::format_fast(Args const ... args)
+jimi::string formatter::format_fast(Args const & ... args)
 {
     jimi::string result;
     format_fast_next(result, args...);
@@ -207,12 +207,13 @@ jimi::string formatter::format_fast(Args const ... args)
 
 template <typename ... Args>
 JIMI_FORCE_INLINE
-jimi::string formatter::format_l(std::locale loc, Args const ... args)
+jimi::string formatter::format_l(std::locale loc, Args const & ... args)
 {
     jimi::string result;
     return result;
 }
 
+/*
 template <typename T, typename ... Args>
 JIMI_INLINE
 void formatter::format_s_next(jimi::string & result, const T & value)
@@ -222,15 +223,16 @@ void formatter::format_s_next(jimi::string & result, const T & value)
 
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter::format_s_next(jimi::string & result, const T & value, Args const ... args)
+void formatter::format_s_next(jimi::string & result, const T & value, Args const & ... args)
 {
     result.append(value);
     format_s_next(result, args...);
 }
+//*/
 
 template <typename ... Args>
 JIMI_FORCE_INLINE
-int formatter::format_s(jimi::string & result, Args const ... args)
+int formatter::format_s(jimi::string & result, Args const & ... args)
 {
     format_fast_next(result, args...);
     return result.size();
