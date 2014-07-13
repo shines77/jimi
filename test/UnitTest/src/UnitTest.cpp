@@ -507,6 +507,7 @@ void String_Base_Test()
     int loop_times = 9999999;
     stop_watch sw;
 
+#if 0
     jimi::string str1 = "abcdefg";
     jimi::string str2 = "hijklmnop";
     printf("str1.c_str() = %s\n", str1.c_str());
@@ -548,7 +549,7 @@ void String_Base_Test()
     printf("\n");
 
     jimi::string str5;
-    str5.append_cformat("%d %x %f %u %c %b", 9999, 8888, 10.9999, 10000000, 33, true);
+    //str5.append_cformat("%d %x %f %u %c %b", 9999, 8888, 10.9999, 10000000, 33, true);
     printf("str5.c_str() = \n%s\n\n", str5.c_str());
     printf("str5.size()  = %d bytes\n", str5.size());
     printf("\n");
@@ -559,6 +560,7 @@ void String_Base_Test()
     printf("str6.c_str() = \n%s\n\n", str6.c_str());
     printf("str6.size()  = %d bytes\n", str6.size());
     printf("\n");
+#endif
 
 #if 0
     int num1, num2;
@@ -668,16 +670,15 @@ void String_Base_Test()
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
+#if 1
     {
         int delta;
-        jimi::string strTest((size_t)1024);
-        //jimi::string strTest;
+        //jimi::string strTest((size_t)1024);
+        jimi::string strTest;
         jimi::formatter formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest = formator.format_fast((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
-            //delta = formator.format_s(strTest, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
-            //strTest.clear();
         }
         sw.stop();
         time = sw.getMillisec();
@@ -699,6 +700,42 @@ void String_Base_Test()
         printf("strTest.size()  = %d bytes\n", strTest.size());
         printf("\n");
     }
+#endif
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+
+#if 1
+    {
+        int delta;
+        //jimi::string strTest((size_t)1024);
+        jimi::string strTest;
+        jimi::formatter formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strTest.clear();
+            delta = formator.format_s(strTest, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("===================================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        n = formator.format_s(str, 111, \", \", \"222erer\", \", \",\n"
+               "                              33333, \", \", \"{3}, \", \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("===================================================================================\n\n");
+
+        jimi::string strTest2;
+        delta = formator.format_s(strTest2, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -833,9 +870,6 @@ void String_Base_Test()
 #endif
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
-
-    std::string stdstr;
-    stdstr.append("a");
 }
 
 static const unsigned char s_toUpper[] =

@@ -88,7 +88,7 @@ public:
 
 public:
     // Contructor
-    basic_string() noexcept;
+    basic_string();
     basic_string(const basic_string &src);
     basic_string(const size_t _capacity);
     basic_string(const value_type c);
@@ -100,13 +100,13 @@ public:
 
 #if defined(JIMI_HAS_CPP11_MOVE_FUNCTIONS) && (JIMI_HAS_CPP11_MOVE_FUNCTIONS != 0)
     // Move constructor
-    basic_string(basic_string && goner) noexcept
+    basic_string(basic_string && goner)
         : _store(std::move(goner._store)) {
         //
     }
 
     // Move assignment
-    basic_string & operator =(basic_string && goner) noexcept {
+    basic_string & operator =(basic_string && goner) {
         if (JIMI_UNLIKELY(&goner == this)) {
             // Compatibility with std::basic_string<>,
             // C++11 21.4.2 [string.cons] / 23 requires self-move-assignment support.
@@ -121,7 +121,7 @@ public:
 #endif
 
     // Discontructor
-    ~basic_string() noexcept;
+    ~basic_string();
 
     // Assigment operators
     basic_string &operator = (const basic_string &rhs);
@@ -272,7 +272,7 @@ protected:
 };
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING::basic_string() noexcept
+BASIC_STRING::basic_string()
 : _store()
 {
 }
@@ -329,7 +329,7 @@ BASIC_STRING::basic_string(const value_type *begin, const value_type *end)
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING::~basic_string() noexcept
+BASIC_STRING::~basic_string()
 {
     destroy();
 }
@@ -399,7 +399,7 @@ BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &rhs)
         //_store = rhs._store;
         //_store._ml = rhs._store._ml;
         jimi_assert(size() == srcSize);
-        jimi_assert(begin() != rhs.begin());
+        //jimi_assert(begin() != rhs.begin());
         string_detail::pod_copy(begin(), rhs.begin(), rhs.size());
         //_store.writeNull();
     }

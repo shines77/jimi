@@ -30,15 +30,16 @@
     defined(__GXX_EXPERIMENTAL_CXX0X__) && __GNUC__ * 10 + __GNUC_MINOR__ >= 46 || \
     defined(_MSC_FULL_VER) && (_MSC_FULL_VER >= 180021114 && _MSC_FULL_VER >= 190021114)
     // support noexcept
+    #define NOEXCEPT        noexcept
 #else  /* ! Is noexcept supported? */
 
-#if defined(_MSC_VER)
-#include <yvals.h>
-#ifndef noexcept
-//#define noexcept    _NOEXCEPT
-#define noexcept
-#endif
-#endif  /* _MSC_VER */
+    #if defined(_MSC_VER)
+      #include <yvals.h>
+      #ifndef NOEXCEPT
+        #define NOEXCEPT    _NOEXCEPT
+        //#define NOEXCEPT
+      #endif
+    #endif  /* _MSC_VER */
 
 #endif  /* Is noexcept supported? */
 

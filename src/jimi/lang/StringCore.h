@@ -148,7 +148,7 @@ public:
 
 public:
     // Contructor
-    string_core() noexcept;
+    string_core();
     string_core(const string_core &rhs);
     string_core(const size_t _capacity);
     string_core(const char_type * const src);
@@ -157,7 +157,7 @@ public:
     string_core(const char_type c, size_type n);
 
     // Discontructor
-    ~string_core() noexcept;
+    ~string_core();
 
 public:
     // Append operators
@@ -221,7 +221,7 @@ public:
     void swap(string_core &rhs);
 
 #if defined(JIMI_HAS_CPP11_MOVE_FUNCTIONS) && (JIMI_HAS_CPP11_MOVE_FUNCTIONS != 0)
-    string_core(string_core && goner) noexcept {
+    string_core(string_core && goner) {
         if (goner.getType() == kIsSmall) {
             // Just copy, leave the goner in peace
             new (this) string_core(goner._small.buf, goner._small.info.size);
@@ -364,7 +364,7 @@ private:
 };
 
 template <STRING_CORE_CLASSES>
-STRING_CORE::string_core() noexcept
+STRING_CORE::string_core()
 {
 #if 1
     (*(size_t *)(&_small.buf[0])) = (size_t)0;
@@ -600,7 +600,7 @@ STRING_CORE::string_core(const char_type * const src, const size_t size)
 }
 
 template <STRING_CORE_CLASSES>
-STRING_CORE::~string_core() noexcept
+STRING_CORE::~string_core()
 {
     destroy();
 }
@@ -989,17 +989,26 @@ void STRING_CORE::swap(STRING_CORE &rhs)
 {
 #if 1
     // 在不同的type下, _ml的有些数据是不必复制的
+#if 0
     flag_type type = getType();
     flag_type rhs_type = rhs.getType();
-    if (type == kIsSmall && rhs_type == kIsSmall) {
+    if ((type == kIsSmall) && (rhs_type == kIsSmall)) {
         small_swap(_small, rhs._small);
     }
-    else if (type != kIsSmall && rhs_type != kIsSmall) {
+    else if ((type != kIsSmall) && (rhs_type != kIsSmall)) {
         ml_swap(_ml, rhs._ml);
     }
+#else
+    flag_type comb_type = (_ml.type & rhs._ml.type) & kTypeMask;
+    if ((comb_type & kIsSmall) == 0) {
+        ml_swap(_ml, rhs._ml);
+    }
+    else if (comb_type == kIsSmall) {
+        small_swap(_small, rhs._small);
+    }
+#endif
     else {
-        medium_large t;
-        t = _ml;
+        const medium_large t = _ml;
         _ml = rhs._ml;
         rhs._ml = t;
     }
