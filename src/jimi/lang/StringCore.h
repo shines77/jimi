@@ -216,12 +216,22 @@ public:
     }
 
     const char_type *data() const { return c_str(); }
+    const char_type *data_small() const { return c_str_small(); }
+    const char_type *data_ml() const { return c_str_ml(); }
+
     const char_type *c_str() const;
+    const char_type *c_str_small() const;
+    const char_type *c_str_ml() const;
 
     char_type *mutable_data();
 
     size_type size() const;
+    size_type size_small() const;
+    size_type size_ml() const;
+
     size_type capacity() const;
+    const size_type capacity_small() const;
+    size_type capacity_ml() const;
 
     // swap below doesn't test whether &rhs == this (and instead
     // potentially does extra work) on the premise that the rarity of
@@ -768,7 +778,7 @@ void STRING_CORE::push_back(const char_type c)
     }
     else {
         _size = _ml.size;
-        if (_size == capacity()) {          // always true for isShared()
+        if (_size == capacity_ml()) {          // always true for isShared()
             //reserve(_size * 3 / 2 + 1);     // ensures not shared
             reserve(_size * 2 + 2);         // ensures not shared
         }
@@ -795,7 +805,6 @@ void STRING_CORE::append(const int n)
         oldSize = _small.info.size;
         newSize = oldSize + delta;
         if (newSize < kMaxSmallSize) {
-            //_small.info.size = newSize;
 #if 0
             len = traits_type::itoa_radix10_fast(_small.buf + oldSize, n, delta);
 #elif 1
@@ -814,13 +823,12 @@ void STRING_CORE::append(const int n)
     else {
         oldSize = _ml.size;
         newSize = oldSize + delta;
-        if (newSize > capacity())
+        if (newSize > capacity_ml())
             reserve(newSize);
     }
     jimi_assert(capacity() >= newSize);
     // Category can't be small - we took care of that above
     jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
-    //_ml.size = newSize;
 #if 0
     len = traits_type::itoa_radix10_fast(_ml.data + oldSize, n, delta);
 #elif 1
@@ -847,10 +855,7 @@ void STRING_CORE::append(const unsigned int n)
         oldSize = _small.info.size;
         newSize = oldSize + delta;
         if (newSize < kMaxSmallSize) {
-            //_small.info.size = newSize;
-#if 0
-            len = traits_type::utoa_radix10_fast(_small.buf + oldSize, n, delta);
-#elif 1
+#if 1
             len = traits_type::utoa_radix10(_small.buf + oldSize, n);
             //len = traits_type::utoa(_small.buf + oldSize, n, 10);
 #else
@@ -866,13 +871,12 @@ void STRING_CORE::append(const unsigned int n)
     else {
         oldSize = _ml.size;
         newSize = oldSize + delta;
-        if (newSize > capacity())
+        if (newSize > capacity_ml())
             reserve(newSize);
     }
     jimi_assert(capacity() >= newSize);
     // Category can't be small - we took care of that above
     jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
-    //_ml.size = newSize;
 #if 0
     len = traits_type::utoa_radix10_fast(_ml.data + oldSize, n, delta);
 #elif 1
@@ -899,7 +903,6 @@ void STRING_CORE::append(const long n)
         oldSize = _small.info.size;
         newSize = oldSize + delta;
         if (newSize < kMaxSmallSize) {
-            //_small.info.size = newSize;
 #if 0
             len = traits_type::itoa_radix10_fast(_small.buf + oldSize, n, delta);
 #elif 1
@@ -918,13 +921,12 @@ void STRING_CORE::append(const long n)
     else {
         oldSize = _ml.size;
         newSize = oldSize + delta;
-        if (newSize > capacity())
+        if (newSize > capacity_ml())
             reserve(newSize);
     }
     jimi_assert(capacity() >= newSize);
     // Category can't be small - we took care of that above
     jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
-    //_ml.size = newSize;
 #if 0
     len = traits_type::itoa_radix10_fast(_ml.data + oldSize, n, delta);
 #elif 1
@@ -951,7 +953,6 @@ void STRING_CORE::append(const unsigned long n)
         oldSize = _small.info.size;
         newSize = oldSize + delta;
         if (newSize < kMaxSmallSize) {
-            //_small.info.size = newSize;
 #if 0
             len = traits_type::utoa_radix10_fast(_small.buf + oldSize, n, delta);
 #elif 1
@@ -970,13 +971,12 @@ void STRING_CORE::append(const unsigned long n)
     else {
         oldSize = _ml.size;
         newSize = oldSize + delta;
-        if (newSize > capacity())
+        if (newSize > capacity_ml())
             reserve(newSize);
     }
     jimi_assert(capacity() >= newSize);
     // Category can't be small - we took care of that above
     jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
-    //_ml.size = newSize;
 #if 0
     len = traits_type::utoa_radix10_fast(_ml.data + oldSize, n, delta);
 #elif 1
@@ -993,13 +993,91 @@ void STRING_CORE::append(const unsigned long n)
 template <STRING_CORE_CLASSES>
 void STRING_CORE::append(const int64_t i64)
 {
-    //
+    // Strategy is simple: make room, then change size
+    jimi_assert(capacity() >= size());
+    const int delta = 21;
+    int len;
+    size_type oldSize, newSize;
+    flag_type type = getType();
+    if (type == kIsSmall) {
+        oldSize = _small.info.size;
+        newSize = oldSize + delta;
+        if (newSize < kMaxSmallSize) {
+#if 1
+            len = traits_type::i64toa_radix10(_small.buf + oldSize, i64);
+            //len = traits_type::i64toa(_small.buf + oldSize, i64, 10);
+#else
+            _i64toa(i64, _small.buf + oldSize, 10);
+            len = jm_strlen(_small.buf + oldSize);
+#endif
+            _small.info.size = oldSize + len;
+            jimi_assert(size() == oldSize + len);
+            return;
+        }
+        reserve(newSize);
+    }
+    else {
+        oldSize = _ml.size;
+        newSize = oldSize + delta;
+        if (newSize > capacity_ml())
+            reserve(newSize);
+    }
+    jimi_assert(capacity() >= newSize);
+    // Category can't be small - we took care of that above
+    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
+#if 1
+    len = traits_type::i64toa_radix10(_ml.data + oldSize, i64);
+#else
+    _i64toa(i64, _ml.data + oldSize, 10);
+    len = jm_strlen(_ml.data + oldSize);
+#endif
+    _ml.size = oldSize + len;
+    jimi_assert(size() == oldSize + len);
 }
 
 template <STRING_CORE_CLASSES>
 void STRING_CORE::append(const uint64_t u64)
 {
-    //
+    // Strategy is simple: make room, then change size
+    jimi_assert(capacity() >= size());
+    const int delta = 20;
+    int len;
+    size_type oldSize, newSize;
+    flag_type type = getType();
+    if (type == kIsSmall) {
+        oldSize = _small.info.size;
+        newSize = oldSize + delta;
+        if (newSize < kMaxSmallSize) {
+#if 1
+            len = traits_type::u64toa_radix10(_small.buf + oldSize, u64);
+            //len = traits_type::u64toa(_small.buf + oldSize, u64, 10);
+#else
+            _u64toa(u64, _small.buf + oldSize, 10);
+            len = jm_strlen(_small.buf + oldSize);
+#endif
+            _small.info.size = oldSize + len;
+            jimi_assert(size() == oldSize + len);
+            return;
+        }
+        reserve(newSize);
+    }
+    else {
+        oldSize = _ml.size;
+        newSize = oldSize + delta;
+        if (newSize > capacity_ml())
+            reserve(newSize);
+    }
+    jimi_assert(capacity() >= newSize);
+    // Category can't be small - we took care of that above
+    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
+#if 1
+    len = traits_type::u64toa_radix10(_ml.data + oldSize, u64);
+#else
+    _u64toa(u64, _ml.data + oldSize, 10);
+    len = jm_strlen(_ml.data + oldSize);
+#endif
+    _ml.size = oldSize + len;
+    jimi_assert(size() == oldSize + len);
 }
 
 template <STRING_CORE_CLASSES>
@@ -1090,15 +1168,41 @@ typename STRING_CORE::size_type STRING_CORE::size() const
 }
 
 template <STRING_CORE_CLASSES>
+typename STRING_CORE::size_type STRING_CORE::size_small() const
+{
+    return _small.info.size;
+}
+
+template <STRING_CORE_CLASSES>
+typename STRING_CORE::size_type STRING_CORE::size_ml() const
+{
+    return _ml.size;
+}
+
+template <STRING_CORE_CLASSES>
 typename STRING_CORE::size_type STRING_CORE::capacity() const
 {
     flag_type type = getType();
     if (type == kIsSmall)
         return kMaxSmallSize - 1;
+    /*
     else if (type == kIsMedium)
         return kMaxMediumSize - 1;
+    //*/
     else
         return _ml.capacity;
+}
+
+template <STRING_CORE_CLASSES>
+const typename STRING_CORE::size_type STRING_CORE::capacity_small() const
+{
+    return kMaxSmallSize - 1;
+}
+
+template <STRING_CORE_CLASSES>
+typename STRING_CORE::size_type STRING_CORE::capacity_ml() const
+{
+    return _ml.capacity;
 }
 
 template <STRING_CORE_CLASSES>
@@ -1109,6 +1213,18 @@ const typename STRING_CORE::char_type *STRING_CORE::c_str() const
         return &_small.buf[0];
     else
         return _ml.data;
+}
+
+template <STRING_CORE_CLASSES>
+const typename STRING_CORE::char_type *STRING_CORE::c_str_small() const
+{
+    return &_small.buf[0];
+}
+
+template <STRING_CORE_CLASSES>
+const typename STRING_CORE::char_type *STRING_CORE::c_str_ml() const
+{
+    return _ml.data;
 }
 
 template <STRING_CORE_CLASSES>
@@ -1238,27 +1354,32 @@ void STRING_CORE::reserveTo_from_small(size_t minCapacity)
     jimi_assert(getType() == kIsSmall);
     if (minCapacity >= kMaxMediumSize) {
         // large
-        refcount_type *newRC = refcount_type::create(&minCapacity);
+        refcount_type * newRC = refcount_type::create(&minCapacity);
         size_type size = _small.info.size;
         jimi_assert(newRC != NULL);
-        string_detail::pod_copy(newRC->data(), _small.buf, size);
+        string_detail::pod_copy(newRC->data(), _small.buf, size + 1);
+        // No need for writeTerminator(), we wrote it above with + 1.
         _ml.data = newRC->data();
         _ml.size = size;
         _ml.capacity = minCapacity;
         _ml.type = kIsLarge;
+        jimi_assert(capacity() >= newCapacity);
     }
     else if (minCapacity >= kMaxSmallSize) {
         // medium
         // Don't forget to allocate one extra Char for the terminating null
-        size_type allocSizeBytes = calc_capacity(minCapacity);
+        size_type newCapacitySize = calc_capacity(minCapacity + 1);
+        size_type allocSizeBytes = newCapacitySize * sizeof(char_type);
         char_type *data = static_cast<char_type *>(::malloc(allocSizeBytes));
         size_type size = _small.info.size;
         jimi_assert(data != NULL);
-        string_detail::pod_copy(data, _small.buf, size);
+        string_detail::pod_copy(data, _small.buf, size + 1);
+        // No need for writeTerminator(), we wrote it above with + 1.
         _ml.data = data;
         _ml.size = size;
-        _ml.capacity = (allocSizeBytes / sizeof(char_type) - 1);
+        _ml.capacity = newCapacitySize - 1;
         _ml.type = kIsMedium;
+        jimi_assert(capacity() >= newCapacity);
     }
     else {
         // small
@@ -1276,23 +1397,26 @@ void STRING_CORE::reserveTo_from_medium(size_t minCapacity)
     if (minCapacity < kMaxMediumSize) {
         // Keep the string at medium size. Don't forget to allocate
         // one extra Char for the terminating null.
-        size_t capacityBytes = (minCapacity + 1) * sizeof(char_type);
+        size_type newCapacitySize = calc_capacity(minCapacity + 1);
+        size_t capacityBytes = newCapacitySize * sizeof(char_type);
         _ml.data = static_cast<char_type *>(
             smartRealloc(_ml.data, _ml.size * sizeof(char_type),
                 (_ml.capacity + 1) * sizeof(char_type),
                 capacityBytes));
-        writeNull();
-        _ml.capacity = (capacityBytes / sizeof(char_type) - 1);
+        writeNull_ml();
+        _ml.capacity = newCapacitySize - 1;
         _ml.type = kIsMedium;
-    } else {
+    }
+    else {
         // Conversion from medium to large string
         string_core nascent;
         // Will recurse to another branch of this function
         nascent.reserve(minCapacity);
         nascent._ml.size = _ml.size;
-        string_detail::pod_copy(nascent._ml.data, _ml.data, _ml.size);
+        string_detail::pod_copy(nascent._ml.data, _ml.data, _ml.size + 1);
+        // Done with the old data. No need to call writeNull(),
         nascent.swap(*this);
-        writeNull();
+        //writeNull_ml();
         jimi_assert(capacity() >= minCapacity);
     }
 }
@@ -1308,17 +1432,17 @@ void STRING_CORE::reserveTo_from_large(size_t minCapacity)
         // people, reserve the new block at current capacity or
         // more. That way, a string's capacity never shrinks after a
         // call to reserve.
-        minCapacity = std::max(minCapacity, _ml.capacity);
-        refcount_type *newRC = refcount_type::create(&minCapacity);
-        char_type *newData = newRC->data();
+        minCapacity = jimi_max(minCapacity, _ml.capacity);
+        refcount_type * newRC = refcount_type::create(&minCapacity);
+        char_type * newData = newRC->data();
         string_detail::pod_copy(newData, _ml.data, _ml.size + 1);
         // Done with the old data. No need to call writeNull(),
         // we have + 1 above.
         refcount_type::release(_ml.data);
         _ml.data = newData;
         _ml.capacity = minCapacity;
-        _ml.type = kIsLarge;
-        // size remains unchanged
+        //_ml.type = kIsLarge;
+        // size and type remains unchanged
     }
     else {
         // String is not shared, so let's try to realloc (if needed)
@@ -1328,8 +1452,8 @@ void STRING_CORE::reserveTo_from_large(size_t minCapacity)
                 refcount_type::reallocate(_ml.data, _ml.size, _ml.capacity, minCapacity);
             _ml.data = newRC->data();
             _ml.capacity = minCapacity;
-            _ml.type = kIsLarge;
-            writeNull();
+            //_ml.type = kIsLarge;
+            writeNull_ml();
         }
         jimi_assert(capacity() >= minCapacity);
     }
@@ -1355,7 +1479,7 @@ void STRING_CORE::expandTo(const size_t newSize)
         //size_type _capacity = kMaxSmallSize - 1;
         if (newSize < kMaxSmallSize) {
             _small.info.size = newSize;
-            //_small.buf[newSize] = STRING_NULL_CHAR;
+            //_small.buf[newSize] = kNullChar;
             return;
         }
         reserveTo_from_small(newSize);
@@ -1370,103 +1494,8 @@ void STRING_CORE::expandTo(const size_t newSize)
     jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
 
     _ml.size = newSize;
-    //_ml.data[newSize] = STRING_NULL_CHAR;
+    //_ml.data[newSize] = kNullChar;
 
-    jimi_assert(size() == newSize);
-}
-
-template <STRING_CORE_CLASSES>
-typename STRING_CORE::char_type *STRING_CORE::expand_noinit(const size_type delta)
-{
-    // Strategy is simple: make room, then change size
-    jimi_assert(capacity() >= size());
-    size_type oldSize, newSize;
-    flag_type type = getType();
-    if (type == kIsSmall) {
-        oldSize = _small.info.size;
-        newSize = oldSize + delta;
-        if (newSize < kMaxSmallSize) {
-            _small.info.size = newSize;
-            writeNull_small();
-            return _small.buf + oldSize;
-        }
-        reserve(newSize);
-    }
-    else {
-        oldSize = _ml.size;
-        newSize = oldSize + delta;
-        if (newSize > capacity())
-            reserve(newSize);
-    }
-    jimi_assert(capacity() >= newSize);
-    // Category can't be small - we took care of that above
-    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
-    _ml.size = newSize;
-    writeNull_ml();
-    jimi_assert(size() == newSize);
-    return _ml.data + oldSize;
-}
-
-template <STRING_CORE_CLASSES>
-typename STRING_CORE::char_type *STRING_CORE::expandTo_noinit(const size_type newSize)
-{
-    // Strategy is simple: make room, then change size
-    jimi_assert(capacity() >= size());
-    size_type oldSize;
-    flag_type type = getType();
-    if (type == kIsSmall) {
-        oldSize = _small.info.size;
-        if (newSize < kMaxSmallSize) {
-            _small.info.size = newSize;
-            writeNull_small();
-            return _small.buf + oldSize;
-        }
-        reserve(newSize);
-    }
-    else {
-        oldSize = _ml.size;
-        if (newSize > capacity())
-            reserve(newSize);
-    }
-    jimi_assert(capacity() >= newSize);
-    // Category can't be small - we took care of that above
-    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
-    _ml.size = newSize;
-    writeNull_ml();
-    jimi_assert(size() == newSize);
-    return _ml.data + oldSize;
-}
-
-template <STRING_CORE_CLASSES>
-void STRING_CORE::expand_and_copy(const char_type *s, size_type n)
-{
-    // Strategy is simple: make room, then change size
-    jimi_assert(capacity() >= size());
-    size_type oldSize, newSize;
-    flag_type type = getType();
-    if (type == kIsSmall) {
-        oldSize = _small.info.size;
-        newSize = oldSize + n;
-        if (newSize < kMaxSmallSize) {
-            ::memcpy((void *)(_small.buf + oldSize), s, n * sizeof(char_type));
-            _small.info.size = newSize;
-            writeNull_small();
-            return;
-        }
-        reserve(newSize);
-    }
-    else {
-        oldSize = _ml.size;
-        newSize = oldSize + n;
-        if (newSize > capacity())
-            reserve(newSize);
-    }
-    jimi_assert(capacity() >= newSize);
-    // Category can't be small - we took care of that above
-    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
-    ::memcpy((void *)(_ml.data + oldSize), s, n * sizeof(char_type));
-    _ml.size = newSize;
-    writeNull_ml();
     jimi_assert(size() == newSize);
 }
 
@@ -1507,6 +1536,101 @@ void STRING_CORE::shrinkTo(const size_t newSize)
 }
 
 template <STRING_CORE_CLASSES>
+typename STRING_CORE::char_type *STRING_CORE::expand_noinit(const size_type delta)
+{
+    // Strategy is simple: make room, then change size
+    jimi_assert(capacity() >= size());
+    size_type oldSize, newSize;
+    flag_type type = getType();
+    if (type == kIsSmall) {
+        oldSize = _small.info.size;
+        newSize = oldSize + delta;
+        if (newSize < kMaxSmallSize) {
+            _small.info.size = newSize;
+            writeNull_small();
+            return _small.buf + oldSize;
+        }
+        reserve(newSize);
+    }
+    else {
+        oldSize = _ml.size;
+        newSize = oldSize + delta;
+        if (newSize > capacity_ml())
+            reserve(newSize);
+    }
+    jimi_assert(capacity() >= newSize);
+    // Category can't be small - we took care of that above
+    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
+    _ml.size = newSize;
+    writeNull_ml();
+    jimi_assert(size() == newSize);
+    return _ml.data + oldSize;
+}
+
+template <STRING_CORE_CLASSES>
+typename STRING_CORE::char_type *STRING_CORE::expandTo_noinit(const size_type newSize)
+{
+    // Strategy is simple: make room, then change size
+    jimi_assert(capacity() >= size());
+    size_type oldSize;
+    flag_type type = getType();
+    if (type == kIsSmall) {
+        oldSize = _small.info.size;
+        if (newSize < kMaxSmallSize) {
+            _small.info.size = newSize;
+            writeNull_small();
+            return _small.buf + oldSize;
+        }
+        reserve(newSize);
+    }
+    else {
+        oldSize = _ml.size;
+        if (newSize > capacity_ml())
+            reserve(newSize);
+    }
+    jimi_assert(capacity() >= newSize);
+    // Category can't be small - we took care of that above
+    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
+    _ml.size = newSize;
+    writeNull_ml();
+    jimi_assert(size() == newSize);
+    return _ml.data + oldSize;
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::expand_and_copy(const char_type *s, size_type n)
+{
+    // Strategy is simple: make room, then change size
+    jimi_assert(capacity() >= size());
+    size_type oldSize, newSize;
+    flag_type type = getType();
+    if (type == kIsSmall) {
+        oldSize = _small.info.size;
+        newSize = oldSize + n;
+        if (newSize < kMaxSmallSize) {
+            ::memcpy((void *)(_small.buf + oldSize), s, n * sizeof(char_type));
+            _small.info.size = newSize;
+            writeNull_small();
+            return;
+        }
+        reserve(newSize);
+    }
+    else {
+        oldSize = _ml.size;
+        newSize = oldSize + n;
+        if (newSize > capacity_ml())
+            reserve(newSize);
+    }
+    jimi_assert(capacity() >= newSize);
+    // Category can't be small - we took care of that above
+    jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
+    ::memcpy((void *)(_ml.data + oldSize), s, n * sizeof(char_type));
+    _ml.size = newSize;
+    writeNull_ml();
+    jimi_assert(size() == newSize);
+}
+
+template <STRING_CORE_CLASSES>
 void STRING_CORE::reserveTo(size_t newCapacity)
 {
     size_t type = getType();
@@ -1539,11 +1663,12 @@ void STRING_CORE::reserve(size_t newCapacity)
             // call to reserve.
             newCapacity = jimi_max(newCapacity, _ml.capacity);
             refcount_type * newRC = refcount_type::create(&newCapacity);
-            string_detail::pod_copy(newRC->data(), _ml.data, _ml.size + 1);
+            char_type * newData = newRC->data();
+            string_detail::pod_copy(newData, _ml.data, _ml.size + 1);
             // Done with the old data. No need to call writeTerminator(),
             // we have + 1 above.
             refcount_type::release(_ml.data);
-            _ml.data = newRC->data();
+            _ml.data = newData;
             _ml.capacity = newCapacity;
             //_ml.type = kIsLarge;
             // size and type remains unchanged
@@ -1599,6 +1724,7 @@ void STRING_CORE::reserve(size_t newCapacity)
             // large
             refcount_type * newRC = refcount_type::create(&newCapacity);
             size_type size = _small.info.size;
+            jimi_assert(newRC != NULL);
             string_detail::pod_copy(newRC->data(), _small.buf, size + 1);
             // No need for writeTerminator(), we wrote it above with + 1.
             _ml.data = newRC->data();
@@ -1614,6 +1740,7 @@ void STRING_CORE::reserve(size_t newCapacity)
             size_type allocSizeBytes = newCapacitySize * sizeof(char_type);
             char_type *data = static_cast<char_type *>(::malloc(allocSizeBytes));
             size_type size = _small.info.size;
+            jimi_assert(data != NULL);
             string_detail::pod_copy(data, _small.buf, size + 1);
             // No need for writeTerminator(), we wrote it above with + 1.
             _ml.data = data;

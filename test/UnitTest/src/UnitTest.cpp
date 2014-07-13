@@ -791,6 +791,8 @@ void String_Base_Test()
         strTest2.append_format((unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
         delta = strTest2.size();
 
+        std::string strStd2 = strTest2.toStdString();
+
         printf("str.c_str() = %s\n\n", strTest2.c_str());
 
         printf("time = %0.3f ms, delta = %d.\n\n", time, delta);

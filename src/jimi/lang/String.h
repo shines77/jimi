@@ -130,7 +130,6 @@ public:
 
     // Compatibility with std::string
     basic_string &operator = (const std::string &rhs);
-    std::string &toStdString() const;
 
 protected:
     // Assigment functions
@@ -249,6 +248,8 @@ public:
 
     const value_type *c_str() const { return _store.c_str(); }
     const value_type *data() const  { return c_str(); }
+    const value_type *toString() const { return c_str(); }
+    std::string toStdString() const;
 
     bool empty() const          { return size() == 0; }
     size_type length() const    { return size(); }
@@ -401,7 +402,7 @@ BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &rhs)
         //_store._ml = rhs._store._ml;
         jimi_assert(size() == srcSize);
         jimi_assert(begin() != rhs.begin());
-        string_detail::pod_copy(begin(), rhs.begin(), rhs.size());
+        string_detail::pod_copy(begin(), rhs.begin(), srcSize + 1);
         //_store.writeNull();
     }
     else {
@@ -432,7 +433,7 @@ BASIC_STRING &BASIC_STRING::operator = (const std::string &rhs)
 
 // Compatibility with std::string
 template <BASIC_STRING_CLASSES>
-std::string &BASIC_STRING::toStdString() const
+std::string BASIC_STRING::toStdString() const
 {
     return std::string(data(), size());
 }
@@ -604,14 +605,16 @@ int hex_to_string(const char *buf, uint64_t hex64)
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append_hex(uint32_t hex32, const bool isUpper /* = true */)
+BASIC_STRING &BASIC_STRING::append_hex(uint32_t hex32,
+                                       const bool isUpper /* = true */)
 {
     _store.append_hex(hex32, isUpper);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append_hex(uint64_t hex64, const bool isUpper /* = true */)
+BASIC_STRING &BASIC_STRING::append_hex(uint64_t hex64,
+                                       const bool isUpper /* = true */)
 {
     _store.append_hex(hex64, isUpper);
     return *this;

@@ -80,6 +80,10 @@ struct JIMI_API char_traits
     // ltoa() & ultoa()
     static int ltoa_radix10(char_type *buf, long val);
     static int ultoa_radix10(char_type *buf, unsigned long val);
+
+    // i64toa() & u64toa()
+    static int i64toa_radix10(char_type *buf, int64_t val);
+    static int u64toa_radix10(char_type *buf, uint64_t val);
 };
 
 template <typename char_type>
@@ -693,7 +697,7 @@ int char_traits<char_type>::utoa(char_type *buf, unsigned int val, const int rad
 {
     int digval, digital;
     char_type *cur;
-    char digits[12];
+    char digits[16];        // 实际最多只会用到10个bytes
     cur = digits;
     do {
         digval = val % radix;
@@ -736,7 +740,7 @@ int char_traits<char_type>::utoa_radix10(char_type *buf, unsigned int val)
 {
     int digval, digital;
     char_type *cur;
-    char digits[12];
+    char digits[16];        // 实际最多只会用到10个bytes
 
     cur = digits;
     do {
@@ -832,7 +836,7 @@ int char_traits<char_type>::ultoa_radix10(char_type *buf, unsigned long val)
 {
     int digval, digital;
     char_type *cur;
-    char digits[12];
+    char digits[16];    // 实际最多只会用到10个bytes
 
     cur = digits;
     do {
@@ -853,16 +857,9 @@ int char_traits<char_type>::ultoa_radix10(char_type *buf, unsigned long val)
     cur--;
     while (cur >= digits)
         *buf++ = *cur--;
-#elif 0
+#else
     while (--cur >= digits)
         *buf++ = *cur;
-#else
-    do {
-        --cur;
-        if (cur < digits)
-            break;
-        *buf++ = *cur;
-    } while (1);
 #endif
     *buf = '\0';
 
@@ -878,6 +875,53 @@ int char_traits<char_type>::ltoa_radix10(char_type *buf, long val)
         *buf++ = '-';
     }
     return char_traits<char_type>::ultoa_radix10(buf, val);
+}
+
+template<typename char_type>
+JIMI_INLINE
+int char_traits<char_type>::u64toa_radix10(char_type *buf, uint64_t val)
+{
+    int digval, digital;
+    char_type *cur;
+    char digits[32];    // 实际最多只会用到20个bytes
+
+    cur = digits;
+    do {
+        digval = val % 10;
+        val /= 10;
+
+        *cur++ = static_cast<char_type>(digval + '0');
+    } while (val != 0);
+
+    digital = cur - digits;
+
+#if 0
+    do {
+        --cur;
+        *buf++ = *cur;
+    } while (cur != digits);
+#elif 1
+    cur--;
+    while (cur >= digits)
+        *buf++ = *cur--;
+#else
+    while (--cur >= digits)
+        *buf++ = *cur;
+#endif
+    *buf = '\0';
+
+    return digital;
+}
+
+template<typename char_type>
+JIMI_INLINE
+int char_traits<char_type>::i64toa_radix10(char_type *buf, int64_t val)
+{
+    if (val < 0) {
+        val = -val;
+        *buf++ = '-';
+    }
+    return char_traits<char_type>::u64toa_radix10(buf, val);
 }
 
 NS_JIMI_END
