@@ -560,6 +560,7 @@ void String_Base_Test()
     printf("str6.size()  = %d bytes\n", str6.size());
     printf("\n");
 
+#if 0
     int num1, num2;
     std::cout << "请输入两个数字: " << std::endl;
     std::cin  >> num1;
@@ -579,6 +580,15 @@ void String_Base_Test()
 
     jm_strcpy(buf1, jm_countof(buf1), in_str1.c_str());
     jm_strcpy(buf2, jm_countof(buf2), in_str2.c_str());    
+#else
+    int num1, num2;
+    num1 = 222;
+    num2 = 33333;
+
+    char buf1[256], buf2[256];
+    jm_strcpy(buf1, jm_countof(buf1), "222erer");
+    jm_strcpy(buf2, jm_countof(buf2), "ffffff44");
+#endif
 
 #ifndef _DEBUG
     loop_times = 9999999;
@@ -594,8 +604,8 @@ void String_Base_Test()
 #if 1
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            //strTest.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-            strTest.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+            strTest.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            //strTest.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
@@ -608,8 +618,8 @@ void String_Base_Test()
         printf("===================================================================================\n\n");
 
         jimi::string strTest2((size_t)128);
-        //strTest2.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
-        strTest2.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        strTest2.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
+        //strTest2.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 #elif 0
         sw.restart();
@@ -661,10 +671,13 @@ void String_Base_Test()
     {
         int delta;
         jimi::string strTest((size_t)1024);
-        jimi::formatter<jimi::string> formator;
+        //jimi::string strTest;
+        jimi::formatter formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest = formator.format_fast((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+            //delta = formator.format_s(strTest, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+            //strTest.clear();
         }
         sw.stop();
         time = sw.getMillisec();
@@ -676,7 +689,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("===================================================================================\n\n");
 
-        jimi::string strTest2((size_t)128);
+        jimi::string strTest2;
         strTest2 = formator.format_fast((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
         delta = strTest2.size();
 
@@ -2834,7 +2847,7 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 1
+#if 0
     IEEE754_Double_Test();
 #endif
 

@@ -65,6 +65,7 @@ template<> struct type_with_alignment<32> { JIMI_machine_type_with_alignment_32 
 template<> struct type_with_alignment<64> { JIMI_machine_type_with_alignment_64 member; };
 
 #if JIMI_ALIGNOF_NOT_INSTANTIATED_TYPES_BROKEN
+
 //! Work around for bug in GNU 3.2 and MSVC compilers.
 /** Bug is that compiler sometimes returns 0 for __alignof(T) when T has not yet been instantiated.
     The work-around forces instantiation by forcing computation of sizeof(T) before __alignof(T). */

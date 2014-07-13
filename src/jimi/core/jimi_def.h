@@ -21,6 +21,27 @@
 #include <stddef.h>
 #endif
 
+#ifndef __has_feature
+#define __has_feature(X)        (0)
+#endif
+
+// Is noexcept supported?
+#if defined(__clang__) && __has_feature(cxx_noexcept) || \
+    defined(__GXX_EXPERIMENTAL_CXX0X__) && __GNUC__ * 10 + __GNUC_MINOR__ >= 46 || \
+    defined(_MSC_FULL_VER) && (_MSC_FULL_VER >= 180021114 && _MSC_FULL_VER >= 190021114)
+    // support noexcept
+#else  /* ! Is noexcept supported? */
+
+#if defined(_MSC_VER)
+#include <yvals.h>
+#ifndef noexcept
+//#define noexcept    _NOEXCEPT
+#define noexcept
+#endif
+#endif  /* _MSC_VER */
+
+#endif  /* Is noexcept supported? */
+
 // linux maybe need #include <sys/types.h>
 
 // Define integer types with known size: int32_t, uint32_t, int64_t, uint64_t.

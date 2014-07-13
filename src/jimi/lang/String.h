@@ -18,6 +18,7 @@
 #include <vadefs.h>
 #include <string>
 #include <limits>
+
 #if (defined(_MSC_VER) && (_MSC_VER >= 1700)) || defined(__GNUC__)
 #include <functional>   // std::less_equal, std::bind2nd
 #endif
@@ -87,7 +88,7 @@ public:
 
 public:
     // Contructor
-    basic_string();
+    basic_string() noexcept;
     basic_string(const basic_string &src);
     basic_string(const size_t _capacity);
     basic_string(const value_type c);
@@ -97,8 +98,30 @@ public:
     basic_string(const value_type *begin, const value_type *end);
     basic_string(const std::string &src);
 
+#if defined(JIMI_HAS_CPP11_MOVE_FUNCTIONS) && (JIMI_HAS_CPP11_MOVE_FUNCTIONS != 0)
+    // Move constructor
+    basic_string(basic_string && goner) noexcept
+        : _store(std::move(goner._store)) {
+        //
+    }
+
+    // Move assignment
+    basic_string & operator =(basic_string && goner) noexcept {
+        if (JIMI_UNLIKELY(&goner == this)) {
+            // Compatibility with std::basic_string<>,
+            // C++11 21.4.2 [string.cons] / 23 requires self-move-assignment support.
+            return *this;
+        }
+        // No need of this anymore
+        this->~basic_string();
+        // Move the goner into this
+        new (&_store) string_core<_CharT>(std::move(goner._store));
+        return *this;
+    }
+#endif
+
     // Discontructor
-    ~basic_string();
+    ~basic_string() noexcept;
 
     // Assigment operators
     basic_string &operator = (const basic_string &rhs);
@@ -249,7 +272,7 @@ protected:
 };
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING::basic_string()
+BASIC_STRING::basic_string() noexcept
 : _store()
 {
 }
@@ -306,7 +329,7 @@ BASIC_STRING::basic_string(const value_type *begin, const value_type *end)
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING::~basic_string()
+BASIC_STRING::~basic_string() noexcept
 {
     destroy();
 }
@@ -372,12 +395,14 @@ BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &rhs)
         ///*
         if (oldSize < srcSize)
             _store.expandTo(srcSize);
-        else
+        else if (oldSize > srcSize)
             _store.shrinkTo(srcSize);
         //*/
         _store = rhs._store;
+        //_store._ml = rhs._store._ml;
         jimi_assert(size() == srcSize);
-        string_detail::pod_copy(begin(), rhs.begin(), rhs.size());
+        jimi_assert(begin() != rhs.begin());
+        string_detail::pod_copy(begin(), rhs.begin(), rhs.size() + 1);
         //_store.writeNull();
     }
     else {
@@ -754,7 +779,6 @@ typename BASIC_STRING::reference BASIC_STRING::operator [](size_type pos)
 template <BASIC_STRING_CLASSES>
 void BASIC_STRING::destroy()
 {
-    _store.destroy();
 }
 
 template <BASIC_STRING_CLASSES>

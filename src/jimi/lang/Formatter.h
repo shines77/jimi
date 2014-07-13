@@ -81,10 +81,11 @@ public:
 
 public:
     integer_setting() : format_setting(kDefaultIntegerAlign, kDefaultIntegerFill),
-        width(kDefaultIntegerWidth) {}
+        width(kDefaultIntegerWidth), resever1(0) {}
     ~integer_setting() {}
 public:
     unsigned short width;
+    unsigned short resever1;
 };
 
 class string_setting : public format_setting
@@ -99,50 +100,47 @@ public:
 
 public:
     string_setting() : format_setting(kDefaultStringAlign, kDefaultStringFill),
-        width(kDefaultStringWidth) {}
+        width(kDefaultStringWidth), resever1(0) {}
     ~string_setting() {}
 public:
     unsigned short width;
+    unsigned short resever1;
 };
 
-template <typename StringType>
 class formatter : public jimi::NonCopyable
 {
-public:
-    /* 对齐方式, 相当于printf()里 "%+05d" 中的 "+", "-" 前缀 */
-    static const int kDefaultAlign = format_setting::ALIGN_NONE;
-    /* 是否填0或填'空格', 相当于printf()里 "%03d" 中的 "0" */
-    static const int kDefaultFill = format_setting::FILL_NONE;
-    /* 显示数据的宽度, 相当于printf()里 "%03d" 中的 "3" */
-    static const int kDefaultWidth = 10;
-    /* 显示数据的精度, 相当于printf()里 "%0.6f" 中的 "6" */
-    static const int kDefaultPrecision = 15;
-
 public:
     formatter() {}
     ~formatter() {}
 
 public:
     template <typename ... Args>
-    StringType format(const StringType & fmt, Args const & ... args);
+    jimi::string format(const jimi::string & fmt, Args const & ... args);
 
     template <typename ... Args>
-    StringType format(const char * fmt, Args const & ... args);
+    jimi::string format(const char * fmt, Args const & ... args);
 
     template <typename ... Args>
-    StringType format_fast(Args const & ... args);
+    jimi::string format_fast(Args const & ... args);
 
     template <typename ... Args>
-    StringType format_l(std::locale loc, Args const & ... args);
+    jimi::string format_l(std::locale loc, Args const & ... args);
 
     template <typename ... Args>
-    int format_s(const std::string & result, Args const & ... args);
+    int format_s(std::string & result, Args const & ... args) { return 0; };
 
     template <typename ... Args>
-    int format_s(const jimi::string & result, Args const & ... args);
+    int format_s(jimi::string & result, Args const & ... args) { return 0; };
 
     template <typename ... Args>
-    int format_s(const char *buffer, size_t countOfElements, Args const & ... args);
+    int format_s(char *buffer, size_t countOfElements, Args const & ... args) { return 0; };
+
+private:
+    template<typename T, typename ... Args>
+    void format_fast_next(jimi::string & result, const T & value);
+
+    template<typename T, typename ... Args>
+    void format_fast_next(jimi::string & result, const T & value, Args const & ... args);
 
 private:
     float_setting   float_set;
@@ -150,37 +148,71 @@ private:
     string_setting  string_set;
 };
 
-template <typename StringType>
 template <typename ... Args>
-StringType formatter<StringType>::format(const StringType & fmt, Args const & ... args)
+JIMI_INLINE
+jimi::string formatter::format(const jimi::string & fmt, Args const & ... args)
 {
-    StringType strResult;
+    jimi::string strResult;
     return strResult;
 }
 
-template <typename StringType>
 template <typename ... Args>
-StringType formatter<StringType>::format(const char * fmt, Args const & ... args)
+JIMI_INLINE
+jimi::string formatter::format(const char * fmt, Args const & ... args)
 {
-    StringType strResult;
+    jimi::string strResult;
     return strResult;
 }
 
-template <typename StringType>
-template <typename ... Args>
-StringType formatter<StringType>::format_fast(Args const & ... args)
+/************************************************************************/
+/*                                                                      */
+/*  Compiler Error: n个重载没有“this”指针的合法转换                   */
+/*                                                                      */
+/*    http://hi.baidu.com/xiaoza1990/item/35e4bf9bc6728c0b924f4195      */
+/*                                                                      */
+/************************************************************************/
+
+template <typename T, typename ... Args>
+JIMI_INLINE
+void formatter::format_fast_next(jimi::string & result, const T & value)
 {
-    StringType strResult;
-    return strResult;
+    result.append(value);
 }
 
-template <typename StringType>
-template <typename ... Args>
-StringType formatter<StringType>::format_l(std::locale loc, Args const & ... args)
+template <typename T, typename ... Args>
+JIMI_INLINE
+void formatter::format_fast_next(jimi::string & result, const T & value, Args const & ... args)
 {
-    StringType strResult;
-    return strResult;
+    result.append(value);
+    format_fast_next(result, args...);
 }
+
+template <typename ... Args>
+JIMI_INLINE
+jimi::string formatter::format_fast(Args const & ... args)
+{
+    jimi::string result;
+    format_fast_next(result, args...);
+    return result;
+}
+
+template <typename ... Args>
+JIMI_FORCE_INLINE
+jimi::string formatter::format_l(std::locale loc, Args const & ... args)
+{
+    jimi::string result;
+    return result;
+}
+
+/*
+template <typename ... Args>
+JIMI_INLINE
+int formatter::format_s(jimi::string & result, Args const & ... args)
+{
+    format_fast_next(result, args...);
+    return result.size();
+}
+//*/
 
 NS_JIMI_END
 
