@@ -368,7 +368,7 @@ STRING_CORE::string_core() noexcept
 {
 #if 1
     (*(size_t *)(&_small.buf[0])) = (size_t)0;
-    _ml.type = STRING_TYPE_SMALL;
+    _ml.type = kIsSmall;
     //_ml.size = 0;
     //_ml.capacity = 0;
 #else

@@ -392,17 +392,15 @@ BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &rhs)
     const size_type srcSize = rhs.size();
     if (capacity() >= srcSize && !_store.is_shared()) {
         // great, just copy the contents
-        ///*
         if (oldSize < srcSize)
             _store.expandTo(srcSize);
-        else if (oldSize > srcSize)
+        else
             _store.shrinkTo(srcSize);
-        //*/
-        _store = rhs._store;
+        //_store = rhs._store;
         //_store._ml = rhs._store._ml;
         jimi_assert(size() == srcSize);
         jimi_assert(begin() != rhs.begin());
-        string_detail::pod_copy(begin(), rhs.begin(), rhs.size() + 1);
+        string_detail::pod_copy(begin(), rhs.begin(), rhs.size());
         //_store.writeNull();
     }
     else {
