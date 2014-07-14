@@ -823,8 +823,8 @@ void String_Base_Test()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
-            //delta = formator.format_fast_to(strTest, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-            delta = formator.format_fast_to(strTest, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+            delta = formator.format_fast_to(strTest, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            //delta = formator.format_fast_to(strTest, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
@@ -837,8 +837,8 @@ void String_Base_Test()
         printf("===================================================================================\n\n");
 
         jimi::string strTest2;
-        //delta = formator.format_fast_to(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-        delta = formator.format_fast_to(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        delta = formator.format_fast_to(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        //delta = formator.format_fast_to(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
@@ -858,8 +858,8 @@ void String_Base_Test()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
-            //delta = formator.format_fast_to2(strTest, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-            delta = formator.format_fast_to2(strTest, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+            delta = formator.format_fast_to2(strTest, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            //delta = formator.format_fast_to2(strTest, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
@@ -872,8 +872,8 @@ void String_Base_Test()
         printf("===================================================================================\n\n");
 
         jimi::string strTest2;
-        //delta = formator.format_fast_to2(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-        delta = formator.format_fast_to2(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        delta = formator.format_fast_to2(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        //delta = formator.format_fast_to2(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
