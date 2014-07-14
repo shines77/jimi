@@ -20,54 +20,54 @@ namespace qicosmos {
 namespace detail {
 
     char g_buf[2000] = {};
-    inline void FormatArg(char*& buf, int i)
+    inline void FormatArg(char* & buf, int i)
     {
         _itoa(i, buf, 10);
         //buf += i<10 ? 1 : 2;
         buf += jm_strlen(buf);
     }
 
-    inline void FormatArg(char*& buf, double i)
+    inline void FormatArg(char* & buf, double i)
     {
         auto r = sprintf(buf, "%.15f", i);
         buf += r;
     }
 
-    inline void FormatArg(char*& buf, int64_t i)
+    inline void FormatArg(char* & buf, int64_t i)
     {
         auto r = sprintf(buf, "%"PRId64, i);
         buf += r;
     }
 
-    inline void FormatArg(char*& buf, uint64_t i)
+    inline void FormatArg(char* & buf, uint64_t i)
     {
         auto r = sprintf(buf, "%"PRIu64, i);
         buf += r;
     }
 
-    inline void FormatArg(char*& buf, const char* p)
+    inline void FormatArg(char* & buf, const char* p)
     {
         int len = strlen(p);
         memcpy(buf, p, len);
         buf += len;
     }
 
-    inline void FormatArg(char*& buf, std::string& s)
+    inline void FormatArg(char* & buf, std::string & s)
     {
         memcpy(buf, s.data(), s.size());
         buf += s.size();
     }
 
     template<size_t k, typename Tuple>
-    typename std::enable_if < (k == std::tuple_size<Tuple>::value)>::type
-    inline GetArgByIndex(size_t, Tuple&, char*&)
+    typename std::enable_if <(k == std::tuple_size<Tuple>::value)>::type
+    inline GetArgByIndex(size_t, Tuple &, char* &)
     {
         throw std::invalid_argument("arg index out of range");
     }
 
     template<size_t k = 0, typename Tuple>
-    typename std::enable_if < (k < std::tuple_size<Tuple>::value)>::type
-    inline GetArgByIndex(size_t index, Tuple& tp, char*& p)
+    typename std::enable_if <(k < std::tuple_size<Tuple>::value)>::type
+    inline GetArgByIndex(size_t index, Tuple & tp, char* & p)
     {
         if (k == index)
         {
@@ -79,7 +79,7 @@ namespace detail {
         }
     }
 
-    inline int GetIndex(char*& p)
+    inline int GetIndex(char* & p)
     {
         char temp[3] = {};
         int i = 0;
@@ -115,7 +115,7 @@ namespace detail {
 }  /* namespace of detail */
 
 template<typename... Args>
-inline std::string format(const std::string& src, Args... args)
+inline std::string format(const std::string & src, Args... args)
 {
     return format((char*) src.c_str(), args...);
 }

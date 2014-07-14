@@ -163,7 +163,7 @@ public:
     basic_string &format_c(const value_type *fmt, const value_type *args, ...);
 
     template<typename ...Args>
-    basic_string &format(const value_type *fmt, Args const & ... args);
+    basic_string &format(const value_type *fmt, Args const ... args);
 
     template<typename ...Args>
     basic_string &append_format(Args const & ... args);
@@ -173,7 +173,7 @@ private:
     void append_format_next(const T & value);
 
     template<typename T, typename ...Args>
-    void append_format_next(const T & value, Args const & ... args);
+    void append_format_next(const T & value, Args const ... args);
 
 public:
     void push_back(const value_type c);         // primitive
@@ -864,7 +864,7 @@ inline void format_next_args(StringType * arg_list, const T & value)
 }
 
 template <typename StringType, typename T, typename ... Args>
-inline void format_next_args(StringType * arg_list, const T & value, Args const & ... args)
+inline void format_next_args(StringType * arg_list, const T & value, Args const ... args)
 {
     jimi_assert(arg_list != NULL);
     if (arg_list) {
@@ -889,7 +889,7 @@ inline void format_next_args(const StringType * arg_list, size_t & index, const 
 }
 
 template <typename StringType, typename T, typename ... Args>
-inline void format_next_args(const StringType * arg_list, size_t & index, const T & value, Args const & ... args)
+inline void format_next_args(const StringType * arg_list, size_t & index, const T & value, Args const ... args)
 {
     StringType * arg_value = arg_list + index;
     jimi_assert(arg_value != NULL);
@@ -914,7 +914,7 @@ JIMI_INLINE
 #else
 JIMI_FORCEINLINE
 #endif
-BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
+BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const ... args)
 {
     int delta = 0;
     size_t index;
@@ -1027,7 +1027,7 @@ void BASIC_STRING::append_format_next(const T & value)
 template <BASIC_STRING_CLASSES>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void BASIC_STRING::append_format_next(const T & value, Args const & ... args)
+void BASIC_STRING::append_format_next(const T & value, Args const ... args)
 {
     append(value);
     append_format_next(args...);

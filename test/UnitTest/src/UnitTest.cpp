@@ -38,7 +38,7 @@
 #include <asmlib/asmlib.h>
 #include "SampleThread.h"
 #include "FastMemcpy.h"
-#include "cpp11_format.h"
+//#include "cpp11_format.h"
 
 #include <jimic/platform/win/fast_memcpy.h>
 #include <jimic/string/jmf_strings.h>
@@ -63,7 +63,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#pragma warning(disable: 4996)
+#if defined(_MSC_VER) && (_MSC_VER != 0)
+#pragma warning(push)
+
+#pragma warning(disable : 4995)         // 禁止不带_s函数的废弃warning信息
+#pragma warning(disable : 4996)
+#endif  /* _MSC_VER */
 
 /**
  * for asmlib
@@ -799,6 +804,76 @@ void String_Base_Test()
         jimi::string strTest2;
         //delta = formator.format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
         delta = formator.format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
+        int delta;
+        //jimi::string strTest((size_t)1024);
+        jimi::string strTest;
+        jimi::formatter<6> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strTest.clear();
+            //delta = formator.format_fast_to(strTest, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            delta = formator.format_fast_to(strTest, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("===================================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        n = formator.format_fast_to(str, \"?, ?, ?, ??3}, ?\",\n"
+               "                                    111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("===================================================================================\n\n");
+
+        jimi::string strTest2;
+        //delta = formator.format_fast_to(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        delta = formator.format_fast_to(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
+        int delta;
+        //jimi::string strTest((size_t)1024);
+        jimi::string strTest;
+        jimi::formatter<6> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strTest.clear();
+            //delta = formator.format_fast_to2(strTest, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            delta = formator.format_fast_to2(strTest, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("===================================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        n = formator.format_fast_to2(str, \"?, ?, ?, ??3}, ?\",\n"
+               "                                     111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("===================================================================================\n\n");
+
+        jimi::string strTest2;
+        //delta = formator.format_fast_to2(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        delta = formator.format_fast_to2(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
@@ -3122,3 +3197,7 @@ int main(int argc, char *argv[])
     int nResult = program.Run(argc, argv);
     return nResult;
 }
+
+#if defined(_MSC_VER) && (_MSC_VER != 0)
+#pragma warning(pop)                    // 恢复warning状态
+#endif

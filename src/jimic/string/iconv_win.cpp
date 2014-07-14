@@ -84,6 +84,13 @@
 #define iconv_strlwr    strlwr
 #endif
 
+#if defined(_MSC_VER) && (_MSC_VER != 0)
+#pragma warning(push)
+
+#pragma warning(disable : 4995)         // 禁止不带_s函数的废弃warning信息
+#pragma warning(disable : 4996)
+#endif  /* _MSC_VER */
+
 #define USE_FAST_TRANSFER_COPY      0
 
 struct iconv_windows_encoding {
@@ -880,5 +887,9 @@ int iconv_utf8_to_ansi_auto(const char *utf8_str, int utf8_size, char **dest_ans
 
     return ansi_size;
 }
+
+#if defined(_MSC_VER) && (_MSC_VER != 0)
+#pragma warning(pop)                    // 恢复warning状态
+#endif
 
 #endif  /* _WIN32 || _WIN64 */

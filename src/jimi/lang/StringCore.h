@@ -15,7 +15,7 @@
 #include <jimic/string/jm_strings.h>
 #include <jimic/string/jmf_strings.h>
 
-#if _MSC_VER
+#if defined(_MSC_VER) && (_MSC_VER != 0)
 #pragma warning(push)
 
 #pragma warning(disable : 4995)         // 禁止不带_s函数的废弃warning信息
@@ -763,33 +763,33 @@ void STRING_CORE::append(const char_type *s, size_type n)
 template <STRING_CORE_CLASSES>
 void STRING_CORE::push_back(const char_type c)
 {
-    jimi_assert(capacity() >= size());
-    size_t _size;
+    jimi_assert(capacity() >= this->size());
+    size_t size;
     flag_type type = getType();
     if (type == kIsSmall) {
-        _size = _small.info.size;
-        if (_size < kMaxSmallSize - 1) {
-            _small.info.size = _size + 1;
-            _small.buf[_size] = c;
-            _small.buf[_size + 1] = '\0';
+        size = _small.info.size;
+        if (size < kMaxSmallSize - 1) {
+            _small.info.size = size + 1;
+            _small.buf[size] = c;
+            _small.buf[size + 1] = '\0';
             return;
         }
         reserve(kMaxMediumSize - 1);
     }
     else {
-        _size = _ml.size;
-        if (_size == capacity_ml()) {          // always true for isShared()
-            //reserve(_size * 3 / 2 + 1);     // ensures not shared
-            reserve(_size * 2 + 2);         // ensures not shared
+        size = _ml.size;
+        if (size == capacity_ml()) {        // always true for isShared()
+            //reserve(_size * 3 / 2 + 1);   // ensures not shared
+            reserve(size * 2 + 2);          // ensures not shared
         }
     }
     jimi_assert(!is_shared());
-    jimi_assert(capacity() >= (_size + 1));
+    jimi_assert(capacity() >= (size + 1));
     // Category can't be small - we took care of that above
     jimi_assert(getType() == kIsMedium || getType() == kIsLarge);
-    _ml.size = _size + 1;
-    _ml.data[_size] = c;
-    _ml.data[_size + 1] = '\0';
+    _ml.size = size + 1;
+    _ml.data[size] = c;
+    _ml.data[size + 1] = '\0';
 }
 
 template <STRING_CORE_CLASSES>
@@ -1363,7 +1363,7 @@ void STRING_CORE::reserveTo_from_small(size_t minCapacity)
         _ml.size = size;
         _ml.capacity = minCapacity;
         _ml.type = kIsLarge;
-        jimi_assert(capacity() >= newCapacity);
+        jimi_assert(capacity() >= minCapacity);
     }
     else if (minCapacity >= kMaxSmallSize) {
         // medium
@@ -1379,7 +1379,7 @@ void STRING_CORE::reserveTo_from_small(size_t minCapacity)
         _ml.size = size;
         _ml.capacity = newCapacitySize - 1;
         _ml.type = kIsMedium;
-        jimi_assert(capacity() >= newCapacity);
+        jimi_assert(capacity() >= minCapacity);
     }
     else {
         // small
@@ -1823,7 +1823,7 @@ void STRING_CORE::writeNullForce()
 
 NS_JIMI_END
 
-#if _MSC_VER
+#if defined(_MSC_VER) && (_MSC_VER != 0)
 #pragma warning(pop)                    // 恢复warning状态
 #endif
 
