@@ -159,8 +159,8 @@ public:
     basic_string &append_hex(const uint32_t hex32, const bool isUpper = true);
     basic_string &append_hex(const uint64_t hex64, const bool isUpper = true);
 
-    basic_string &append_cformat(const value_type *fmt, ...);
-    basic_string &c_format(const value_type *fmt, const value_type *args, ...);
+    basic_string &append_format_c(const value_type *fmt, ...);
+    basic_string &format_c(const value_type *fmt, const value_type *args, ...);
 
     template<typename ...Args>
     basic_string &format(const value_type *fmt, Args const & ... args);
@@ -1058,7 +1058,7 @@ BASIC_STRING &BASIC_STRING::append_format(Args const & ... args)
 
 template <BASIC_STRING_CLASSES>
 JIMI_INLINE
-BASIC_STRING &BASIC_STRING::c_format(const value_type *format, const value_type *args, ...)
+BASIC_STRING &BASIC_STRING::format_c(const value_type *format, const value_type *args, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1232,7 +1232,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *format, const value_type 
 
 template <BASIC_STRING_CLASSES>
 JIMI_INLINE
-BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *args, ...)
+BASIC_STRING &BASIC_STRING::format_c(const value_type *fmt, const value_type *args, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1426,7 +1426,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
 
 template <BASIC_STRING_CLASSES>
 FORCEINLINE
-BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *args, ...)
+BASIC_STRING &BASIC_STRING::format_c(const value_type *fmt, const value_type *args, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1603,13 +1603,13 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
 #endif  /* !USE_STRING_ARRAY */
 
 /**
-  basic_string::append_cformat(const value_type *fmt, ...);
+  basic_string::append_format_c(const value_type *fmt, ...);
  */
 
 #if 0
 template <BASIC_STRING_CLASSES>
 FORCEINLINE
-BASIC_STRING &BASIC_STRING::append_cformat(const value_type *fmt, ...)
+BASIC_STRING &BASIC_STRING::append_format_c(const value_type *fmt, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1726,7 +1726,7 @@ BASIC_STRING &BASIC_STRING::append_cformat(const value_type *fmt, ...)
 #else
 template <BASIC_STRING_CLASSES>
 FORCEINLINE
-BASIC_STRING &BASIC_STRING::append_cformat(const value_type *fmt, ...)
+BASIC_STRING &BASIC_STRING::append_format_c(const value_type *fmt, ...)
 {
     int delta = 0;
     int offset = 0;

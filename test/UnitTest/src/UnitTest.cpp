@@ -549,14 +549,14 @@ void String_Base_Test()
     printf("\n");
 
     jimi::string str5;
-    //str5.append_cformat("%d %x %f %u %c %b", 9999, 8888, 10.9999, 10000000, 33, true);
-    str5.append_cformat("%d %s %d %s", 111, "222erer", 33333, "ffffff44");
+    //str5.append_format_c("%d %x %f %u %c %b", 9999, 8888, 10.9999, 10000000, 33, true);
+    str5.append_format_c("%d %s %d %s", 111, "222erer", 33333, "ffffff44");
     printf("str5.c_str() = \n%s\n\n", str5.c_str());
     printf("str5.size()  = %d bytes\n", str5.size());
     printf("\n");
 
     jimi::string str6;
-    //str6.c_format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
+    //str6.format_c("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
     str6.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
     printf("str6.c_str() = \n%s\n\n", str6.c_str());
     printf("str6.size()  = %d bytes\n", str6.size());
@@ -627,38 +627,38 @@ void String_Base_Test()
 #elif 0
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            strTest.c_format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
+            strTest.format_c("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
         }
         sw.stop();
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        str.c_format(\"{0}, {1}, {2}, {{3}, {3}\", \"%%d %%s %%d %%s\",\n"
+        printf("        str.format_c(\"{0}, {1}, {2}, {{3}, {3}\", \"%%d %%s %%d %%s\",\n"
                "                      111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2((size_t)128);
-        strTest2.c_format("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
+        strTest2.format_c("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
         delta = strTest2.size();
 #else
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            strTest.append_cformat("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
+            strTest.append_format_c("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
         }
         sw.stop();
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        str.append_cformat(\"%%d, %%s, %%d, {3}, %%s\",\n"
+        printf("        str.append_format_c(\"%%d, %%s, %%d, {3}, %%s\",\n"
                "                            111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2((size_t)128);
-        strTest2.append_cformat("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
+        strTest2.append_format_c("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
         delta = strTest2.size();
 #endif
 
