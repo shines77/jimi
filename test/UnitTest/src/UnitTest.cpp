@@ -748,22 +748,22 @@ void String_Base_Test()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
-            //delta = formator.format_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-            delta = formator.format_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+            //strTest = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            strTest = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        n = formator.format_to(str, \"{0}, {1}, {2}, {{3}, {3}\",\n"
-               "                               111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("        str = formator.format(\"{0}, {1}, {2}, {{3}, {3}\",\n"
+               "                              111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2;
-        //delta = formator.format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-        delta = formator.format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        //strTest2 = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        strTest2 = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
@@ -783,22 +783,22 @@ void String_Base_Test()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
-            //strTest = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-            strTest = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+            //delta = formator.format_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            delta = formator.format_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        str = formator.format(\"{0}, {1}, {2}, {{3}, {3}\",\n"
-               "                              111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("        n = formator.format_to(str, \"{0}, {1}, {2}, {{3}, {3}\",\n"
+               "                               111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2;
-        //strTest2 = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-        strTest2 = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        //delta = formator.format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        delta = formator.format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());

@@ -18,7 +18,7 @@ using namespace std;
 
 NS_JIMI_BEGIN
 
-class append_setting : public jimi::NonCopyable
+class format_setting : public jimi::NonCopyable
 {
 public:
     enum fmt_align_e {
@@ -38,30 +38,30 @@ public:
     static const int kDefaultFill = FILL_NONE;
 
 public:
-    append_setting() : align(kDefaultAlign), fill(kDefaultFill) {}
-    append_setting(const unsigned short _align, const unsigned short _fill)
+    format_setting() : align(kDefaultAlign), fill(kDefaultFill) {}
+    format_setting(const unsigned short _align, const unsigned short _fill)
         : align(_align), fill(_fill) {}
-    ~append_setting() {}
+    ~format_setting() {}
 
 public:
     unsigned short align;
     unsigned short fill;
 };
 
-class float_setting : public append_setting
+class float_setting : public format_setting
 {
 public:
     /* 对齐方式, 相当于printf()里 "%+03.6f" 中的 "+", "-" 前缀 */
-    static const int kDefaultFloatAlign = append_setting::ALIGN_NONE;
+    static const int kDefaultFloatAlign = format_setting::ALIGN_NONE;
     /* 是否填0或填'空格', 相当于printf()里 "%03.6f" 中的 "0" */
-    static const int kDefaultFloatFill = append_setting::FILL_NONE;
+    static const int kDefaultFloatFill = format_setting::FILL_NONE;
     /* 显示数据的宽度, 相当于printf()里 "%0.6f" 中的 "0" */
     static const int kDefaultFloatWidth = 0;
     /* 显示数据的精度, 相当于printf()里 "%0.6f" 中的 "6" */
     static const int kDefaultFloatPrecision = 15;
 
 public:
-    float_setting() : append_setting(kDefaultFloatAlign, kDefaultFloatFill),
+    float_setting() : format_setting(kDefaultFloatAlign, kDefaultFloatFill),
         width(kDefaultFloatWidth), precision(kDefaultFloatPrecision) {}
     ~float_setting() {}
 
@@ -77,18 +77,18 @@ public:
     unsigned short precision;
 };
 
-class integer_setting : public append_setting
+class integer_setting : public format_setting
 {
 public:
     /* 对齐方式, 相当于printf()里 "%+05d" 中的 "+", "-" 前缀 */
-    static const int kDefaultIntegerAlign = append_setting::ALIGN_NONE;
+    static const int kDefaultIntegerAlign = format_setting::ALIGN_NONE;
     /* 是否填0或填'空格', 相当于printf()里 "%05d" 中的 "0" */
-    static const int kDefaultIntegerFill = append_setting::FILL_NONE;
+    static const int kDefaultIntegerFill = format_setting::FILL_NONE;
     /* 显示数据的宽度, 相当于printf()里 "%05d" 中的 "5" */
     static const int kDefaultIntegerWidth = 0;
 
 public:
-    integer_setting() : append_setting(kDefaultIntegerAlign, kDefaultIntegerFill),
+    integer_setting() : format_setting(kDefaultIntegerAlign, kDefaultIntegerFill),
         width(kDefaultIntegerWidth) {}
     ~integer_setting() {}
 
@@ -102,18 +102,18 @@ public:
     unsigned int width;
 };
 
-class string_setting : public append_setting
+class string_setting : public format_setting
 {
 public:
     /* 对齐方式, 相当于printf()里 "%+030s" 中的 "+", "-" 前缀 */
-    static const int kDefaultStringAlign = append_setting::ALIGN_NONE;
+    static const int kDefaultStringAlign = format_setting::ALIGN_NONE;
     /* 是否填0或填'空格', 相当于printf()里 "%+030s" 中的 "0" */
-    static const int kDefaultStringFill = append_setting::FILL_NONE;
+    static const int kDefaultStringFill = format_setting::FILL_NONE;
     /* 显示数据的宽度, 相当于printf()里 "%+030s" 中的 "30" */
     static const int kDefaultStringWidth = 0;
 
 public:
-    string_setting() : append_setting(kDefaultStringAlign, kDefaultStringFill),
+    string_setting() : format_setting(kDefaultStringAlign, kDefaultStringFill),
         width(kDefaultStringWidth) {}
     ~string_setting() {}
 
