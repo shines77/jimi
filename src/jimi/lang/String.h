@@ -673,7 +673,7 @@ template <BASIC_STRING_CLASSES>
 void BASIC_STRING::resize(const size_type newSize, const value_type c /* = value_type() */,
                           bool needInit /* = true */)
 {
-    size_type oldSize = this->size();
+    size_type oldSize = size();
     if (newSize <= oldSize) {
         _store.shrinkTo(newSize);
     }
@@ -687,7 +687,7 @@ void BASIC_STRING::resize(const size_type newSize, const value_type c /* = value
             //_store.writeNullForce();
         }
     }
-    jimi_assert(this->size() == newSize);
+    jimi_assert(size() == newSize);
 }
 
 template <BASIC_STRING_CLASSES>
@@ -854,31 +854,31 @@ int BASIC_STRING::compare(const value_type *rhs) const
 #if 1
 
 template <typename StringType, typename T, typename ... Args>
-inline void format_get_args(StringType * arg_list, const T & value)
+inline void format_next_args(StringType * arg_list, const T & value)
 {
     jimi_assert(arg_list != NULL);
     if (arg_list) {
-        new (arg_list)jimi::string();
+        new (arg_list)StringType();
         arg_list->append(value);
     }
 }
 
 template <typename StringType, typename T, typename ... Args>
-inline void format_get_args(StringType * arg_list, const T & value, Args const & ... args)
+inline void format_next_args(StringType * arg_list, const T & value, Args const & ... args)
 {
     jimi_assert(arg_list != NULL);
     if (arg_list) {
-        new (arg_list)jimi::string();
+        new (arg_list)StringType();
         arg_list->append(value);
         arg_list++;
-        format_get_args(arg_list, args...);
+        format_next_args(arg_list, args...);
     }
 }
 
 #else
 
 template <typename StringType, typename T, typename ... Args>
-inline void format_get_args(const StringType * arg_list, size_t & index, const T & value)
+inline void format_next_args(const StringType * arg_list, size_t & index, const T & value)
 {
     StringType * arg_value = arg_list + index;
     jimi_assert(arg_value != NULL);
@@ -889,7 +889,7 @@ inline void format_get_args(const StringType * arg_list, size_t & index, const T
 }
 
 template <typename StringType, typename T, typename ... Args>
-inline void format_get_args(const StringType * arg_list, size_t & index, const T & value, Args const & ... args)
+inline void format_next_args(const StringType * arg_list, size_t & index, const T & value, Args const & ... args)
 {
     StringType * arg_value = arg_list + index;
     jimi_assert(arg_value != NULL);
@@ -897,13 +897,14 @@ inline void format_get_args(const StringType * arg_list, size_t & index, const T
         new (arg_value)jimi::string();
         arg_value->append(value);
         index++;
-        format_get_args(arg_list, index, args...);
+        format_next_args(arg_list, index, args...);
     }
 }
 
 #endif
 
 /* format() 是否使用栈上分配 arg_list 内存? */
+#undef  FORMAT_USE_ALLOCA_ONSTACK
 #define FORMAT_USE_ALLOCA_ONSTACK       0
 
 template <BASIC_STRING_CLASSES>
@@ -918,8 +919,8 @@ BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
     int delta = 0;
     size_t index;
     value_type c;
-    value_type *current, *first = NULL;
-    jimi::string *arg_list, *cur_arg = NULL;
+    value_type *cur, *first = NULL;
+    basic_string *arg_list, *cur_arg = NULL;
 #ifdef _DEBUG
     size_t oldSize = size();
 #endif
@@ -932,28 +933,28 @@ BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
 
     const size_t max_args = sizeof...(args);
 #if defined(FORMAT_USE_ALLOCA_ONSTACK) && (FORMAT_USE_ALLOCA_ONSTACK != 0)
-    arg_list = (jimi::string *)alloca(max_args * sizeof(jimi::string));
+    arg_list = (basic_string *)alloca(max_args * sizeof(basic_string));
 #else
-    arg_list = (jimi::string *)malloc(max_args * sizeof(jimi::string));
+    arg_list = (basic_string *)malloc(max_args * sizeof(basic_string));
 #endif
 
-    format_get_args(arg_list, args...);
+    format_next_args(arg_list, args...);
 
     index = 0;
-    current = const_cast<value_type *>(fmt);
-    while ((c = *current++) != '\0') {
+    cur = const_cast<value_type *>(fmt);
+    while ((c = *cur++) != '\0') {
         if (c == '{') {
 #if 0
             // the number string first pos
-            first = current - 1;
+            first = cur - 1;
 #endif
-            c = *current++;
+            c = *cur++;
             if (c == '{') {
                 append(c);
             }
             else if (c >= '0' && c <= '9') {
                 index = c - '0';
-                while ((c = *current++) != '\0') {
+                while ((c = *cur++) != '\0') {
                     if (c == '}') {
                         // the end of number
                         if (index < max_args)
@@ -974,14 +975,14 @@ BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
                     }
                     else {
                         // get a error number, if not found "}" behind 16 bytes, append as a string
-                        while ((c = current++) != '\0') {
+                        while ((c = *cur++) != '\0') {
                             if (c == '}') {
-                                append(first, current - first + 1);
+                                append(first, cur - first + 1);
                                 break;
                             }
                             else {
-                                if ((current - first) >= 15) {
-                                    append(first, current - first + 1);
+                                if ((cur - first) >= 15) {
+                                    append(first, cur - first + 1);
                                     break;
                                 }
                             }
@@ -1066,7 +1067,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *format, const value_type 
     size_t oldSize;
     va_list arg_list;
     int guess_delta = 0;
-    jimi::string strArgList[4];
+    basic_string strArgList[4];
     oldSize = size();
 
     if (fmt == NULL || args == NULL)
@@ -1189,11 +1190,12 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *format, const value_type 
                     else if (c >= '0' && c <= '9') {
                         index = index * 10 + (c - '0');
                     }
+#if 1
                     else {
                         // Get a error num
                         break;
                     }
-                    /*
+#else
                     else if (c == ' ') {
                         // do nothing!
                     }
@@ -1213,7 +1215,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *format, const value_type 
                         }
                         break;
                     }
-                    //*/
+#endif
                 }
             }
         }
@@ -1239,15 +1241,15 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
     size_t oldSize;
     va_list arg_list;
     int guess_delta = 0;
-    jimi::string *strArgList, *strArg;
+    basic_string *strArgList, *strArg;
     oldSize = size();
 
     if (fmt == NULL || args == NULL)
         return *this;
 
     size_t args_len = jm_strlen(args);
-    //strArgList = (jimi::string *)malloc((args_len / 3 + 1) * sizeof(jimi::string));
-    strArgList = (jimi::string *)alloca((args_len / 3 + 1) * sizeof(jimi::string));
+    //strArgList = (basic_string *)malloc((args_len / 3 + 1) * sizeof(basic_string));
+    strArgList = (basic_string *)alloca((args_len / 3 + 1) * sizeof(basic_string));
     strArg = strArgList;
 
     index = 0;
@@ -1260,7 +1262,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
                     // int
                     int n = static_cast<int>(va_arg(arg_list, int));
                     guess_delta += 11;
-                    new (strArg)jimi::string();
+                    new (strArg)basic_string();
                     strArg->append(n);
                     strArg++;
                     index++;
@@ -1270,7 +1272,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
                     char * s = static_cast<char *>(va_arg(arg_list, char *));
                     size_t len = jm_strlen(s);
                     guess_delta += len;
-                    new (strArg)jimi::string(s, len);
+                    new (strArg)basic_string(s, len);
                     //strArg->append(s, len);
                     strArg++;
                     index++;
@@ -1285,7 +1287,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
                     // hex(uint32_t)
                     uint32_t hex = static_cast<uint32_t>(va_arg(arg_list, uint32_t));
                     guess_delta += 10;
-                    int hex_len = strArgList[index++].append_hex(hex);
+                    strArgList[index++].append_hex(hex);
                 }
                 else if (c == 'c') {
                     // char
@@ -1342,7 +1344,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
                 // hex(uint64_t)
                 uint64_t hex = static_cast<uint64_t>(va_arg(arg_list, uint64_t));
                 guess_delta += 18;
-                int hex_len = strArgList[index++].append_hex(hex);
+                strArgList[index++].append_hex(hex);
             }
         }
     }
@@ -1433,10 +1435,10 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
     va_list arg_list;
     int guess_delta = 0;
 #if defined(USE_STRING_ARRAY) && (USE_STRING_ARRAY != 0)
-    std::vector<jimi::string> strArgList;
-    jimi::string strArg;
+    std::vector<basic_string> strArgList;
+    basic_string strArg;
 #eles
-    jimi::string *strArgList;
+    basic_string *strArgList;
 #endif
     oldSize = size();
 
@@ -1448,7 +1450,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
     strArgList.reserve(args_len / 3 + 1);
     //strArg.reserve(28);
 #else
-    strArgList = new jimi::string[args_len / 3 + 1];
+    strArgList = new basic_string[args_len / 3 + 1];
 #endif
 
     va_start(arg_list, args);
@@ -1480,7 +1482,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
                     // hex(uint32_t)
                     uint32_t hex = static_cast<uint32_t>(va_arg(arg_list, uint32_t));
                     guess_delta += 10;
-                    int hex_len = strArg.append_hex(hex);
+                    strArg.append_hex(hex);
                     strArgList.push_back(strArg);
                 }
                 else if (c == 'c') {
@@ -1530,7 +1532,7 @@ BASIC_STRING &BASIC_STRING::c_format(const value_type *fmt, const value_type *ar
                 strArg.clear();
                 uint64_t hex = static_cast<uint64_t>(va_arg(arg_list, uint64_t));
                 guess_delta += 18;
-                int hex_len = strArg.append_hex(hex);
+                strArg.append_hex(hex);
                 strArgList.push_back(strArg);
             }
         }
@@ -1694,7 +1696,7 @@ BASIC_STRING &BASIC_STRING::append_cformat(const value_type *fmt, ...)
                     // hex(uint32_t)
                     uint32_t hex = static_cast<uint32_t>(va_arg(arg_ptr, uint32_t));
                     guess_delta += 10;
-                    int hex_len = append_hex(hex);
+                    append_hex(hex);
                     break;
                 }
                 default: {
@@ -1706,7 +1708,7 @@ BASIC_STRING &BASIC_STRING::append_cformat(const value_type *fmt, ...)
                         // hex(uint64_t)
                         uint64_t hex = static_cast<uint64_t>(va_arg(arg_ptr, uint64_t));
                         guess_delta += 18;
-                        int hex_len = append_hex(hex);
+                        append_hex(hex);
                     }
                     break;
                 }
@@ -1867,7 +1869,7 @@ BASIC_STRING &BASIC_STRING::append_cformat(const value_type *fmt, ...)
                     // hex(uint32_t)
                     uint32_t hex = static_cast<uint32_t>(va_arg(arg_ptr, uint32_t));
                     guess_delta += 10;
-                    int hex_len = append_hex(hex);
+                    append_hex(hex);
                 }
                 else {
                     // unknown format

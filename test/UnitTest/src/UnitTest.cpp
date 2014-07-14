@@ -676,23 +676,23 @@ void String_Base_Test()
         int delta;
         //jimi::string strTest((size_t)1024);
         jimi::string strTest;
-        jimi::formatter formator;
+        jimi::formatter<6> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            strTest = formator.format_fast((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+            strTest = formator.append((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
         }
         sw.stop();
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        str = formator.format_fast(111, \", \", \"222erer\", \", \",\n"
-               "                                   33333, \", \", \"{3}, \", \"ffffff44\");\n");
+        printf("        str = formator.append(111, \", \", \"222erer\", \", \",\n"
+               "                              33333, \", \", \"{3}, \", \"ffffff44\");\n");
         printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2;
-        strTest2 = formator.format_fast((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+        strTest2 = formator.append((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
@@ -710,24 +710,95 @@ void String_Base_Test()
         int delta;
         //jimi::string strTest((size_t)1024);
         jimi::string strTest;
-        jimi::formatter formator;
+        jimi::formatter<6> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
-            delta = formator.format_s(strTest, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+            //delta = formator.append_to(strTest, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+            delta = formator.append_to(strTest, (unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        n = formator.format_s(str, 111, \", \", \"222erer\", \", \",\n"
-               "                              33333, \", \", \"{3}, \", \"ffffff44\");\n");
+        printf("        n = formator.append_to(str, 111, \", \", \"222erer\", \", \",\n"
+               "                               33333, \", \", \"{3}, \", \"ffffff44\");\n");
         printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2;
-        delta = formator.format_s(strTest2, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+        delta = formator.append_to(strTest2, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
+        int delta;
+        //jimi::string strTest((size_t)1024);
+        jimi::string strTest;
+        jimi::formatter<6> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strTest.clear();
+            //delta = formator.format_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            delta = formator.format_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("===================================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        n = formator.format_to(str, \"{0}, {1}, {2}, {{3}, {3}\",\n"
+               "                               111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("===================================================================================\n\n");
+
+        jimi::string strTest2;
+        //delta = formator.format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        delta = formator.format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
+        int delta;
+        //jimi::string strTest((size_t)1024);
+        jimi::string strTest;
+        jimi::formatter<6> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strTest.clear();
+            //strTest = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            strTest = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("===================================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str = formator.format(\"{0}, {1}, {2}, {{3}, {3}\",\n"
+               "                              111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("===================================================================================\n\n");
+
+        jimi::string strTest2;
+        //strTest2 = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        strTest2 = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());

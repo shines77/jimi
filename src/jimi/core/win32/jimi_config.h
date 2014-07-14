@@ -25,6 +25,6 @@
 #define JIMI_HAS_DEFAULTED_FUNCTIONS        0
 #define JIMI_HAS_DELETED_FUNCTIONS          0
 
-#define JIMI_HAS_CPP11_MOVE_FUNCTIONS       1
+#define JIMI_HAS_CPP11_MOVE_FUNCTIONS       0
 
 #endif  /* _JIMI_CONFIG_H_ */

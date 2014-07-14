@@ -18,7 +18,7 @@ using namespace std;
 
 NS_JIMI_BEGIN
 
-class format_setting : public jimi::NonCopyable
+class append_setting : public jimi::NonCopyable
 {
 public:
     enum fmt_align_e {
@@ -34,142 +34,324 @@ public:
 
     /* 对齐方式, 相当于printf()里 "%+05d" 中的 "+", "-" 前缀 */
     static const int kDefaultAlign = ALIGN_NONE;
-    /* 是否填0或填'空格', 相当于printf()里 "%05d" 中的 "0" */
+    /* 是否填0或填'空格', 相当于printf()里 "+%05d" 中的 "0" */
     static const int kDefaultFill = FILL_NONE;
 
 public:
-    format_setting() : align(kDefaultAlign), fill(kDefaultFill) {}
-    format_setting(const unsigned short _align, const unsigned short _fill)
+    append_setting() : align(kDefaultAlign), fill(kDefaultFill) {}
+    append_setting(const unsigned short _align, const unsigned short _fill)
         : align(_align), fill(_fill) {}
-    ~format_setting() {}
+    ~append_setting() {}
 
 public:
     unsigned short align;
     unsigned short fill;
 };
 
-class float_setting : public format_setting
+class float_setting : public append_setting
 {
 public:
     /* 对齐方式, 相当于printf()里 "%+03.6f" 中的 "+", "-" 前缀 */
-    static const int kDefaultFloatAlign = format_setting::ALIGN_NONE;
+    static const int kDefaultFloatAlign = append_setting::ALIGN_NONE;
     /* 是否填0或填'空格', 相当于printf()里 "%03.6f" 中的 "0" */
-    static const int kDefaultFloatFill = format_setting::FILL_NONE;
+    static const int kDefaultFloatFill = append_setting::FILL_NONE;
     /* 显示数据的宽度, 相当于printf()里 "%0.6f" 中的 "0" */
     static const int kDefaultFloatWidth = 0;
     /* 显示数据的精度, 相当于printf()里 "%0.6f" 中的 "6" */
     static const int kDefaultFloatPrecision = 15;
 
 public:
-    float_setting() : format_setting(kDefaultFloatAlign, kDefaultFloatFill),
+    float_setting() : append_setting(kDefaultFloatAlign, kDefaultFloatFill),
         width(kDefaultFloatWidth), precision(kDefaultFloatPrecision) {}
     ~float_setting() {}
+
+    void setDetail(unsigned int _align, unsigned int _fill,
+                   unsigned int _width, unsigned int _precision) {
+        align       = (unsigned short)_align;
+        fill        = (unsigned short)_fill;
+        width       = (unsigned short)_width;
+        precision   = (unsigned short)_precision;
+    }
 public:
     unsigned short width;
     unsigned short precision;
 };
 
-class integer_setting : public format_setting
+class integer_setting : public append_setting
 {
 public:
     /* 对齐方式, 相当于printf()里 "%+05d" 中的 "+", "-" 前缀 */
-    static const int kDefaultIntegerAlign = format_setting::ALIGN_NONE;
+    static const int kDefaultIntegerAlign = append_setting::ALIGN_NONE;
     /* 是否填0或填'空格', 相当于printf()里 "%05d" 中的 "0" */
-    static const int kDefaultIntegerFill = format_setting::FILL_NONE;
+    static const int kDefaultIntegerFill = append_setting::FILL_NONE;
     /* 显示数据的宽度, 相当于printf()里 "%05d" 中的 "5" */
     static const int kDefaultIntegerWidth = 0;
 
 public:
-    integer_setting() : format_setting(kDefaultIntegerAlign, kDefaultIntegerFill),
-        width(kDefaultIntegerWidth), resever1(0) {}
+    integer_setting() : append_setting(kDefaultIntegerAlign, kDefaultIntegerFill),
+        width(kDefaultIntegerWidth) {}
     ~integer_setting() {}
+
+    void setDetail(unsigned int _align, unsigned int _fill, unsigned int _width) {
+        align       = (unsigned short)_align;
+        fill        = (unsigned short)_fill;
+        width       = _width;
+    }
+
 public:
-    unsigned short width;
-    unsigned short resever1;
+    unsigned int width;
 };
 
-class string_setting : public format_setting
+class string_setting : public append_setting
 {
 public:
     /* 对齐方式, 相当于printf()里 "%+030s" 中的 "+", "-" 前缀 */
-    static const int kDefaultStringAlign = format_setting::ALIGN_NONE;
+    static const int kDefaultStringAlign = append_setting::ALIGN_NONE;
     /* 是否填0或填'空格', 相当于printf()里 "%+030s" 中的 "0" */
-    static const int kDefaultStringFill = format_setting::FILL_NONE;
+    static const int kDefaultStringFill = append_setting::FILL_NONE;
     /* 显示数据的宽度, 相当于printf()里 "%+030s" 中的 "30" */
     static const int kDefaultStringWidth = 0;
 
 public:
-    string_setting() : format_setting(kDefaultStringAlign, kDefaultStringFill),
-        width(kDefaultStringWidth), resever1(0) {}
+    string_setting() : append_setting(kDefaultStringAlign, kDefaultStringFill),
+        width(kDefaultStringWidth) {}
     ~string_setting() {}
+
+    void setDetail(unsigned int _align, unsigned int _fill, unsigned int _width) {
+        align       = (unsigned short)_align;
+        fill        = (unsigned short)_fill;
+        width       = _width;
+    }
+
 public:
-    unsigned short width;
-    unsigned short resever1;
+    unsigned int width;
 };
 
+class formatter_detail : public jimi::NonCopyable
+{
+public:
+    formatter_detail() {}
+    ~formatter_detail() {}
+
+public:
+    float_setting   doubles;
+    integer_setting int32s;
+    string_setting  strings;
+    integer_setting hex32s;
+    float_setting   floats;
+    integer_setting int64s;
+    integer_setting hex64s;
+    integer_setting reserve;
+};
+
+#define DEFAULT_FLOAT_PRECISION     15
+
+template <int Precision = DEFAULT_FLOAT_PRECISION, typename StringType = jimi::string>
 class formatter : public jimi::NonCopyable
 {
 public:
-    formatter() {}
+    typedef typename StringType::char_type          char_type;
+    typedef typename StringType::value_type         value_type;
+    typedef typename StringType::size_type          size_type;
+    typedef typename std::basic_string<char_type>   StdStringType;
+
+public:
+    formatter() { setFloatPrecision(Precision); setDoublePrecision(Precision); }
     ~formatter() {}
 
 public:
+    // format() ...
     template <typename ... Args>
-    jimi::string format(const jimi::string & fmt, Args const & ... args);
+    size_t format_to(StringType & result, const char * fmt, Args const & ... args);
 
     template <typename ... Args>
-    jimi::string format(const char * fmt, Args const & ... args);
+    size_t format_to(StringType & result, const StringType & fmt, Args const & ... args);
 
     template <typename ... Args>
-    jimi::string format_fast(Args const & ... args);
+    StringType format(const char * fmt, Args const & ... args);
 
     template <typename ... Args>
-    jimi::string format_l(std::locale loc, Args const & ... args);
+    StringType format(const StringType & fmt, Args const & ... args);
+
+    // append() ...
+    template <typename ... Args>
+    size_t append_to(StdStringType & result, Args const & ... args);
 
     template <typename ... Args>
-    int format_s(std::string & result, Args const & ... args) { return 0; };
+    size_t append_to(StringType & result, Args const & ... args);
 
     template <typename ... Args>
-    int format_s(jimi::string & result, Args const & ... args);
+    size_t append_to(char_type *buffer, size_t countOfElements, Args const & ... args);
 
     template <typename ... Args>
-    int format_s(char *buffer, size_t countOfElements, Args const & ... args) { return 0; };
+    StringType append(Args const & ... args);
+
+    template <typename ... Args>
+    StringType append_l(std::locale loc, Args const & ... args);
+
+public:
+    // setting detail info
+    void setFloatPrecision(unsigned int _precision) {
+        detail.floats.precision = (unsigned short)_precision;
+    }
+
+    void setDoublePrecision(unsigned int _precision) {
+        detail.doubles.precision = (unsigned short)_precision;
+    }
+
+    void setFloatDetail(unsigned int _align, unsigned int _fill,
+                        unsigned int _width, unsigned int _precision) {
+        detail.floats.setDetail(_align, _fill, _width, _precision);
+    }
+
+    void setDoubleDetail(unsigned int _align, unsigned int _fill,
+                         unsigned int _width, unsigned int _precision) {
+        detail.doubles.setDetail(_align, _fill, _width, _precision);
+    }
 
 private:
     template<typename T, typename ... Args>
-    void format_fast_next(jimi::string & result, const T & value);
+    static void format_to_next_args(StringType * arg_list, const T & value);
 
     template<typename T, typename ... Args>
-    void format_fast_next(jimi::string & result, const T & value, Args const & ... args);
-
-    /*
-    template<typename T, typename ... Args>
-    void format_s_next(jimi::string & result, const T & value);
+    static void format_to_next_args(StringType * arg_list, const T & value, Args const & ... args);
 
     template<typename T, typename ... Args>
-    void format_s_next(jimi::string & result, const T & value, Args const & ... args);
-    //*/
+    static void append_to_next(StringType & result, const T & value);
+
+    template<typename T, typename ... Args>
+    static void append_to_next(StringType & result, const T & value, Args const & ... args);
 
 private:
-    float_setting   float_set;
-    integer_setting integer_set;
-    string_setting  string_set;
+    formatter_detail    detail;
 };
 
-template <typename ... Args>
+template <int Precision, typename StringType>
+template <typename T, typename ... Args>
 JIMI_INLINE
-jimi::string formatter::format(const jimi::string & fmt, Args const & ... args)
+void formatter<Precision, StringType>::format_to_next_args(StringType * arg_list, const T & value)
 {
-    jimi::string strResult;
-    return strResult;
+    jimi_assert(arg_list != NULL);
+    if (arg_list) {
+        new (arg_list)StringType();
+        arg_list->append(value);
+    }
 }
 
+template <int Precision, typename StringType>
+template <typename T, typename ... Args>
+JIMI_INLINE
+void formatter<Precision, StringType>::format_to_next_args(StringType * arg_list, const T & value, Args const & ... args)
+{
+    jimi_assert(arg_list != NULL);
+    if (arg_list) {
+        new (arg_list)StringType();
+        arg_list->append(value);
+        arg_list++;
+        format_to_next_args(arg_list, args...);
+    }
+}
+
+/* format() 是否使用栈上分配 arg_list 内存? */
+#undef  FORMAT_USE_ALLOCA_ONSTACK
+#define FORMAT_USE_ALLOCA_ONSTACK       0
+
+template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-jimi::string formatter::format(const char * fmt, Args const & ... args)
+size_t formatter<Precision, StringType>::format_to(StringType & result, const char * fmt, Args const & ... args)
 {
-    jimi::string strResult;
-    return strResult;
+    size_type index;
+    value_type c;
+    value_type *cur;
+    StringType *arg_list;
+    size_type oldSize = result.size();
+
+    jimi_assert(fmt != NULL);
+#if 1
+    if (fmt == NULL)
+        return 0;
+#endif
+
+    const size_t max_args = sizeof...(args);
+#if defined(FORMAT_USE_ALLOCA_ONSTACK) && (FORMAT_USE_ALLOCA_ONSTACK != 0)
+    arg_list = (StringType *)alloca(max_args * sizeof(StringType));
+#else
+    arg_list = (StringType *)malloc(max_args * sizeof(StringType));
+#endif
+
+    format_to_next_args(arg_list, args...);
+
+    index = 0;
+    cur = const_cast<value_type *>(fmt);
+    while ((c = *cur++) != '\0') {
+        if (c == '{') {
+            c = *cur++;
+            if (c == '{') {
+                result.append(c);
+            }
+            else if (c >= '0' && c <= '9') {
+                index = c - '0';
+                while ((c = *cur++) != '\0') {
+                    if (c == '}') {
+                        // the end of number
+                        if (index < max_args)
+                            result.append(*(arg_list + index));
+                        break;
+                    }
+                    else if (c >= '0' && c <= '9') {
+                        index = index * 10 + (c - '0');
+                    }
+                    else {
+                        // get a error number
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            result.append(c);
+        }
+    }
+
+#if defined(FORMAT_USE_ALLOCA_ONSTACK) && (FORMAT_USE_ALLOCA_ONSTACK != 0)
+    StringType *cur_arg = arg_list;
+    for (size_t i = 0; i < max_args; ++i) {
+        cur_arg->~basic_string();
+        cur_arg++;
+    }
+#else
+    if (arg_list) {
+        free(arg_list);
+    }
+#endif
+    return (result.size() - oldSize);
+}
+
+template <int Precision, typename StringType>
+template <typename ... Args>
+JIMI_INLINE
+size_t formatter<Precision, StringType>::format_to(StringType & result, const StringType & fmt, Args const & ... args)
+{
+    return format_to(result, fmt.c_str(), args...);
+}
+
+template <int Precision, typename StringType>
+template <typename ... Args>
+JIMI_INLINE
+StringType formatter<Precision, StringType>::format(const char * fmt, Args const & ... args)
+{
+    jimi::string result;
+    format_to(result, fmt, args...);
+    return result;
+}
+
+template <int Precision, typename StringType>
+template <typename ... Args>
+JIMI_INLINE
+StringType formatter<Precision, StringType>::format(const StringType & fmt, Args const & ... args)
+{
+    return format(fmt.c_str(), args...);
 }
 
 /************************************************************************/
@@ -180,62 +362,71 @@ jimi::string formatter::format(const char * fmt, Args const & ... args)
 /*                                                                      */
 /************************************************************************/
 
-
+template <int Precision, typename StringType>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter::format_fast_next(jimi::string & result, const T & value)
+void formatter<Precision, StringType>::append_to_next(StringType & result, const T & value)
 {
     result.append(value);
 }
 
+template <int Precision, typename StringType>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter::format_fast_next(jimi::string & result, const T & value, Args const & ... args)
+void formatter<Precision, StringType>::append_to_next(StringType & result, const T & value, Args const & ... args)
 {
     result.append(value);
-    format_fast_next(result, args...);
+    append_to_next(result, args...);
 }
 
+template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_FORCEINLINE
-jimi::string formatter::format_fast(Args const & ... args)
+size_t formatter<Precision, StringType>::append_to(StdStringType & result, Args const & ... args)
 {
-    jimi::string result;
-    format_fast_next(result, args...);
+    StdStringType::size_type oldSize = result.size();
+    StringType result_tmp;
+    append_to_next(result_tmp, args...);
+    result.assign(result_tmp.c_str(), result_tmp.size());
+    return result.size() - oldSize;
+}
+
+template <int Precision, typename StringType>
+template <typename ... Args>
+JIMI_FORCEINLINE
+size_t formatter<Precision, StringType>::append_to(StringType & result, Args const & ... args)
+{
+    size_type oldSize = result.size();
+    append_to_next(result, args...);
+    return result.size() - oldSize;
+}
+
+template <int Precision, typename StringType>
+template <typename ... Args>
+JIMI_FORCEINLINE
+size_t formatter<Precision, StringType>::append_to(char_type *buffer, size_t countOfElements, Args const & ... args)
+{
+    // TODO: 未实现
+    return 0;
+}
+
+template <int Precision, typename StringType>
+template <typename ... Args>
+JIMI_FORCEINLINE
+StringType formatter<Precision, StringType>::append(Args const & ... args)
+{
+    StringType result;
+    append_to_next(result, args...);
     return result;
 }
 
+template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_FORCEINLINE
-jimi::string formatter::format_l(std::locale loc, Args const & ... args)
+StringType formatter<Precision, StringType>::append_l(std::locale loc, Args const & ... args)
 {
-    jimi::string result;
+    StringType result;
     return result;
-}
-
-/*
-template <typename T, typename ... Args>
-JIMI_INLINE
-void formatter::format_s_next(jimi::string & result, const T & value)
-{
-    result.append(value);
-}
-
-template <typename T, typename ... Args>
-JIMI_INLINE
-void formatter::format_s_next(jimi::string & result, const T & value, Args const & ... args)
-{
-    result.append(value);
-    format_s_next(result, args...);
-}
-//*/
-
-template <typename ... Args>
-JIMI_FORCEINLINE
-int formatter::format_s(jimi::string & result, Args const & ... args)
-{
-    format_fast_next(result, args...);
-    return result.size();
 }
 
 NS_JIMI_END
