@@ -943,26 +943,26 @@ BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
     index = 0;
     cur = const_cast<value_type *>(fmt);
     while ((c = *cur++) != '\0') {
-        if (c == '{') {
+        if (c == static_cast<value_type>('{')) {
 #if 0
             // the number string first pos
             first = cur - 1;
 #endif
             c = *cur++;
-            if (c == '{') {
+            if (c == static_cast<value_type>('{')) {
                 append(c);
             }
-            else if (c >= '0' && c <= '9') {
+            else if (c >= static_cast<value_type>('0') && c <= static_cast<value_type>('9')) {
                 index = c - '0';
                 while ((c = *cur++) != '\0') {
-                    if (c == '}') {
+                    if (c == static_cast<value_type>('}')) {
                         // the end of number
                         if (index < max_args)
                             append(*(arg_list + index));
                         break;
                     }
-                    else if (c >= '0' && c <= '9') {
-                        index = index * 10 + (c - '0');
+                    else if (c >= static_cast<value_type>('0') && c <= static_cast<value_type>('9')) {
+                        index = index * 10 + (c - static_cast<value_type>('0'));
                     }
 #if 1
                     else {
@@ -970,13 +970,13 @@ BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const & ... args)
                         break;
                     }
 #else
-                    else if (c == ' ') {
+                    else if (c == static_cast<value_type>(' ')) {
                         // do nothing!
                     }
                     else {
                         // get a error number, if not found "}" behind 16 bytes, append as a string
                         while ((c = *cur++) != '\0') {
-                            if (c == '}') {
+                            if (c == static_cast<value_type>('}')) {
                                 append(first, cur - first + 1);
                                 break;
                             }

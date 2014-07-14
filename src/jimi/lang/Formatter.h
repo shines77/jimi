@@ -162,13 +162,13 @@ public:
 public:
     // format() ...
     template <typename ... Args>
-    size_t format_to(StringType & result, const char * fmt, Args const & ... args);
+    size_t format_to(StringType & result, const value_type * fmt, Args const & ... args);
 
     template <typename ... Args>
     size_t format_to(StringType & result, const StringType & fmt, Args const & ... args);
 
     template <typename ... Args>
-    StringType format(const char * fmt, Args const & ... args);
+    StringType format(const value_type * fmt, Args const & ... args);
 
     template <typename ... Args>
     StringType format(const StringType & fmt, Args const & ... args);
@@ -181,7 +181,7 @@ public:
     size_t append_to(StringType & result, Args const & ... args);
 
     template <typename ... Args>
-    size_t append_to(char_type *buffer, size_t countOfElements, Args const & ... args);
+    size_t append_to(value_type *buffer, size_t countOfElements, Args const & ... args);
 
     template <typename ... Args>
     StringType append(Args const & ... args);
@@ -252,14 +252,14 @@ void formatter<Precision, StringType>::format_to_next_args(StringType * arg_list
     }
 }
 
-/* format() 是否使用栈上分配 arg_list 内存? */
-#undef  FORMAT_USE_ALLOCA_ONSTACK
-#define FORMAT_USE_ALLOCA_ONSTACK       0
+/* format_to() 是否使用栈上分配 arg_list 内存? */
+#undef  FORMAT_TO_USE_ALLOCA_ONSTACK
+#define FORMAT_TO_USE_ALLOCA_ONSTACK       0
 
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-size_t formatter<Precision, StringType>::format_to(StringType & result, const char * fmt, Args const & ... args)
+size_t formatter<Precision, StringType>::format_to(StringType & result, const value_type * fmt, Args const & ... args)
 {
     size_type index;
     value_type c;
@@ -274,7 +274,7 @@ size_t formatter<Precision, StringType>::format_to(StringType & result, const ch
 #endif
 
     const size_t max_args = sizeof...(args);
-#if defined(FORMAT_USE_ALLOCA_ONSTACK) && (FORMAT_USE_ALLOCA_ONSTACK != 0)
+#if defined(FORMAT_TO_USE_ALLOCA_ONSTACK) && (FORMAT_TO_USE_ALLOCA_ONSTACK != 0)
     arg_list = (StringType *)alloca(max_args * sizeof(StringType));
 #else
     arg_list = (StringType *)malloc(max_args * sizeof(StringType));
@@ -285,22 +285,22 @@ size_t formatter<Precision, StringType>::format_to(StringType & result, const ch
     index = 0;
     cur = const_cast<value_type *>(fmt);
     while ((c = *cur++) != '\0') {
-        if (c == '{') {
+        if (c == static_cast<value_type>('{')) {
             c = *cur++;
-            if (c == '{') {
+            if (c == static_cast<value_type>('{')) {
                 result.append(c);
             }
-            else if (c >= '0' && c <= '9') {
-                index = c - '0';
+            else if (c >= static_cast<value_type>('0') && c <= static_cast<value_type>('9')) {
+                index = c - static_cast<value_type>('0');
                 while ((c = *cur++) != '\0') {
-                    if (c == '}') {
+                    if (c == static_cast<value_type>('}')) {
                         // the end of number
                         if (index < max_args)
                             result.append(*(arg_list + index));
                         break;
                     }
-                    else if (c >= '0' && c <= '9') {
-                        index = index * 10 + (c - '0');
+                    else if (c >= static_cast<value_type>('0') && c <= static_cast<value_type>('9')) {
+                        index = index * 10 + (c - static_cast<value_type>('0'));
                     }
                     else {
                         // get a error number
@@ -314,7 +314,7 @@ size_t formatter<Precision, StringType>::format_to(StringType & result, const ch
         }
     }
 
-#if defined(FORMAT_USE_ALLOCA_ONSTACK) && (FORMAT_USE_ALLOCA_ONSTACK != 0)
+#if defined(FORMAT_TO_USE_ALLOCA_ONSTACK) && (FORMAT_TO_USE_ALLOCA_ONSTACK != 0)
     StringType *cur_arg = arg_list;
     for (size_t i = 0; i < max_args; ++i) {
         cur_arg->~basic_string();
@@ -339,7 +339,7 @@ size_t formatter<Precision, StringType>::format_to(StringType & result, const St
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-StringType formatter<Precision, StringType>::format(const char * fmt, Args const & ... args)
+StringType formatter<Precision, StringType>::format(const value_type * fmt, Args const & ... args)
 {
     jimi::string result;
     format_to(result, fmt, args...);
@@ -404,7 +404,7 @@ size_t formatter<Precision, StringType>::append_to(StringType & result, Args con
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_FORCEINLINE
-size_t formatter<Precision, StringType>::append_to(char_type *buffer, size_t countOfElements, Args const & ... args)
+size_t formatter<Precision, StringType>::append_to(value_type *buffer, size_t countOfElements, Args const & ... args)
 {
     // TODO: 未实现
     return 0;
