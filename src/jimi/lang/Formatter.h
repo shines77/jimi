@@ -21,24 +21,29 @@ using namespace std;
 
 NS_JIMI_BEGIN
 
-class format_setting : public jimi::NonCopyable
-{
-public:
+namespace detail {
+
     enum fmt_align_e {
-        ALIGN_NONE = 0,
-        ALIGN_LEFT,
-        ALIGN_RIGHT
+        AlignNone   = 0,
+        AlignLeft   = '-',
+        AlignRight  = '+'
     };
     enum fmt_fill_e {
-        FILL_NONE = 0,
-        FILL_SPACE,
-        FILL_ZERO
+        FillNone    = 0,
+        FillSpace   = ' ',
+        FillZero    = '0'
     };
 
+}  /* namespace of detail */
+
+template <typename char_type = char>
+class format_setting : public jimi::NonAssignable
+{
+public:
     /* 对齐方式, 相当于printf()里 "%+05d" 中的 "+", "-" 前缀 */
-    static const int kDefaultAlign = ALIGN_NONE;
+    static const int kDefaultAlign = detail::AlignNone;
     /* 是否填0或填'空格', 相当于printf()里 "+%05d" 中的 "0" */
-    static const int kDefaultFill = FILL_NONE;
+    static const int kDefaultFill = detail::FillNone;
 
 public:
     format_setting() : align(kDefaultAlign), fill(kDefaultFill) {}
@@ -51,13 +56,14 @@ public:
     unsigned short fill;
 };
 
-class float_setting : public format_setting
+template <typename char_type = char>
+class float_setting : public format_setting<char_type>
 {
 public:
     /* 对齐方式, 相当于printf()里 "%+03.6f" 中的 "+", "-" 前缀 */
-    static const int kDefaultFloatAlign = format_setting::ALIGN_NONE;
+    static const int kDefaultFloatAlign = detail::AlignNone;
     /* 是否填0或填'空格', 相当于printf()里 "%03.6f" 中的 "0" */
-    static const int kDefaultFloatFill = format_setting::FILL_NONE;
+    static const int kDefaultFloatFill = detail::FillNone;
     /* 显示数据的宽度, 相当于printf()里 "%0.6f" 中的 "0" */
     static const int kDefaultFloatWidth = 0;
     /* 显示数据的精度, 相当于printf()里 "%0.6f" 中的 "6" */
@@ -75,18 +81,26 @@ public:
         width       = (unsigned short)_width;
         precision   = (unsigned short)_precision;
     }
+    void setDetail(const char_type *fmt) {
+        align       = (unsigned short)0;
+        fill        = (unsigned short)0;
+        width       = 0;
+        precision   = 0;
+    }
+
 public:
     unsigned short width;
     unsigned short precision;
 };
 
-class integer_setting : public format_setting
+template <typename char_type = char>
+class integer_setting : public format_setting<char_type>
 {
 public:
     /* 对齐方式, 相当于printf()里 "%+05d" 中的 "+", "-" 前缀 */
-    static const int kDefaultIntegerAlign = format_setting::ALIGN_NONE;
+    static const int kDefaultIntegerAlign = detail::AlignNone;
     /* 是否填0或填'空格', 相当于printf()里 "%05d" 中的 "0" */
-    static const int kDefaultIntegerFill = format_setting::FILL_NONE;
+    static const int kDefaultIntegerFill = detail::FillNone;
     /* 显示数据的宽度, 相当于printf()里 "%05d" 中的 "5" */
     static const int kDefaultIntegerWidth = 0;
 
@@ -100,18 +114,24 @@ public:
         fill        = (unsigned short)_fill;
         width       = _width;
     }
+    void setDetail(const char_type *fmt) {
+        align       = (unsigned short)0;
+        fill        = (unsigned short)0;
+        width       = 0;
+    }
 
 public:
     unsigned int width;
 };
 
-class string_setting : public format_setting
+template <typename char_type = char>
+class string_setting : public format_setting<char_type>
 {
 public:
     /* 对齐方式, 相当于printf()里 "%+030s" 中的 "+", "-" 前缀 */
-    static const int kDefaultStringAlign = format_setting::ALIGN_NONE;
+    static const int kDefaultStringAlign = detail::AlignNone;
     /* 是否填0或填'空格', 相当于printf()里 "%+030s" 中的 "0" */
-    static const int kDefaultStringFill = format_setting::FILL_NONE;
+    static const int kDefaultStringFill = detail::FillNone;
     /* 显示数据的宽度, 相当于printf()里 "%+030s" 中的 "30" */
     static const int kDefaultStringWidth = 0;
 
@@ -125,32 +145,38 @@ public:
         fill        = (unsigned short)_fill;
         width       = _width;
     }
+    void setDetail(const char_type *fmt) {
+        align       = (unsigned short)0;
+        fill        = (unsigned short)0;
+        width       = 0;
+    }
 
 public:
     unsigned int width;
 };
 
-class formatter_detail : public jimi::NonCopyable
+template <typename char_type = char>
+class formatter_detail : public jimi::NonAssignable
 {
 public:
     formatter_detail() {}
     ~formatter_detail() {}
 
 public:
-    float_setting   doubles;
-    integer_setting int32s;
-    string_setting  strings;
-    integer_setting hex32s;
-    float_setting   floats;
-    integer_setting int64s;
-    integer_setting hex64s;
-    integer_setting reserve;
+    float_setting<char_type>   doubles;
+    integer_setting<char_type> int32s;
+    string_setting<char_type>  strings;
+    integer_setting<char_type> hex32s;
+    float_setting<char_type>   floats;
+    integer_setting<char_type> int64s;
+    integer_setting<char_type> hex64s;
+    integer_setting<char_type> reserve;
 };
 
 #define DEFAULT_FLOAT_PRECISION     0
 
 template <int Precision = DEFAULT_FLOAT_PRECISION, typename StringType = jimi::string>
-class formatter : public jimi::NonCopyable
+class formatter : public jimi::NonAssignable
 {
 public:
     typedef typename StringType::char_type          char_type;
@@ -220,25 +246,248 @@ public:
 
 public:
     // setting detail info
-    void setFloatPrecision(unsigned int _precision) {
+
+    // float, double and decimal's align
+    formatter & setFloatAlign(unsigned int _align) {
+        detail.floats.align = _align;
+        return *this;
+    }
+    formatter & setDoubleAlign(unsigned int _align) {
+        detail.doubles.align = _align;
+        return *this;
+    }
+    formatter & setDecimalAlign(unsigned int _align) {
+        detail.floats.align  = _align;
+        detail.doubles.align = _align;
+        return *this;
+    }
+
+    // float, double and decimal's fill
+    formatter & setFloatFill(unsigned int _fill) {
+        detail.floats.fill  = _fill;
+        return *this;
+    }
+    formatter & setDoubleFill(unsigned int _fill) {
+        detail.doubles.fill  = _fill;
+        return *this;
+    }
+    formatter & setDecimalFill(unsigned int _fill) {
+        detail.floats.fill   = _fill;
+        detail.doubles.fill  = _fill;
+        return *this;
+    }
+
+    // float, double and decimal's width
+    formatter & setFloatWidth(unsigned int _width) {
+        detail.floats.width = (unsigned short)_width;
+        return *this;
+    }
+    formatter & setDoubleWidth(unsigned int _width) {
+        detail.doubles.width = (unsigned short)_width;
+        return *this;
+    }
+    formatter & setDecimalWidth(unsigned int _width) {
+        detail.floats.width  = (unsigned short)_width;
+        detail.doubles.width = (unsigned short)_width;
+        return *this;
+    }
+
+    // float, double and decimal's precision
+    formatter & setFloatPrecision(unsigned int _precision) {
         detail.floats.precision = (unsigned short)_precision;
+        return *this;
     }
-
-    void setDoublePrecision(unsigned int _precision) {
+    formatter & setDoublePrecision(unsigned int _precision) {
         detail.doubles.precision = (unsigned short)_precision;
+        return *this;
+    }
+    formatter & setDecimalPrecision(unsigned int _precision) {
+        detail.floats.precision  = (unsigned short)_precision;
+        detail.doubles.precision = (unsigned short)_precision;
+        return *this;
     }
 
-    void setFloatDetail(unsigned int _align, unsigned int _fill,
-                        unsigned int _width, unsigned int _precision) {
-        detail.floats.setDetail(_align, _fill, _width, _precision);
-    }
-
-    void setDoubleDetail(unsigned int _align, unsigned int _fill,
+    // float, double and decimal's detail
+    formatter & setFloat(unsigned int _align, unsigned int _fill,
                          unsigned int _width, unsigned int _precision) {
+        detail.floats.setDetail(_align, _fill, _width, _precision);
+        return *this;
+    }
+    formatter & setDouble(unsigned int _align, unsigned int _fill,
+                          unsigned int _width, unsigned int _precision) {
         detail.doubles.setDetail(_align, _fill, _width, _precision);
+        return *this;
+    }
+    formatter & setDecimal(unsigned int _align, unsigned int _fill,
+                           unsigned int _width, unsigned int _precision) {
+        detail.floats.setDetail(_align, _fill, _width, _precision);
+        detail.doubles.setDetail(_align, _fill, _width, _precision);
+        return *this;
     }
 
-private:
+    // float, double and decimal's fromat string detail
+    formatter & setFloat(const value_type *fmt) {
+        detail.floats.setDetail(fmt);
+        return *this;
+    }
+    formatter & setDouble(const value_type *fmt) {
+        detail.doubles.setDetail(fmt);
+        return *this;
+    }
+    formatter & setDecimal(const value_type *fmt) {
+        detail.floats.setDetail(fmt);
+        detail.doubles.setDetail(fmt);
+        return *this;
+    }
+
+    // int32, int64 and integer's align
+    formatter & setInt32Align(unsigned int _align) {
+        detail.int32s.align = _align;
+        return *this;
+    }
+    formatter & setInt64Align(unsigned int _align) {
+        detail.int64s.align = _align;
+        return *this;
+    }
+    formatter & setIntegerAlign(unsigned int _align) {
+        detail.int32s.align = _align;
+        detail.int64s.align = _align;
+        return *this;
+    }
+
+    // int32, int64 and integer's fill
+    formatter & setInt32Fill(unsigned int _fill) {
+        detail.int32s.fill  = _fill;
+        return *this;
+    }
+    formatter & setInt64Fill(unsigned int _fill) {
+        detail.int64s.fill  = _fill;
+        return *this;
+    }
+    formatter & setIntegerFill(unsigned int _fill) {
+        detail.int32s.fill  = _fill;
+        detail.int64s.fill  = _fill;
+        return *this;
+    }
+
+    // int32, int64 and integer's width
+    formatter & setInt32Width(unsigned int _width) {
+        detail.int32s.width = _width;
+        return *this;
+    }
+    formatter & setInt64Width(unsigned int _width) {
+        detail.int64s.width = _width;
+        return *this;
+    }
+    formatter & setIntegerWidth(unsigned int _width) {
+        detail.int32s.width = _width;
+        detail.int64s.width = _width;
+        return *this;
+    }
+
+    // int32, int64 and integer's detail
+    formatter & setInt32(unsigned int _align, unsigned int _fill, unsigned int _width) {
+        detail.int32s.setDetail(_align, _fill, _width);
+        return *this;
+    }
+    formatter & setInt64(unsigned int _align, unsigned int _fill, unsigned int _width) {
+        detail.int64s.setDetail(_align, _fill, _width);
+        return *this;
+    }
+    formatter & setInteger(unsigned int _align, unsigned int _fill, unsigned int _width) {
+        detail.int32s.setDetail(_align, _fill, _width);
+        detail.int64s.setDetail(_align, _fill, _width);
+        return *this;
+    }
+
+    // int32, int64 and integer's fromat string detail
+    formatter & setInt32(const value_type *fmt) {
+        detail.int32s.setDetail(fmt);
+        return *this;
+    }
+    formatter & setInt64(const value_type *fmt) {
+        detail.int64s.setDetail(fmt);
+        return *this;
+    }
+    formatter & setInteger(const value_type *fmt) {
+        detail.int32s.setDetail(fmt);
+        detail.int64s.setDetail(fmt);
+        return *this;
+    }
+
+    // string's detail info
+    formatter & setStringAlign(unsigned int _align) {
+        detail.strings.align = _align;
+        return *this;
+    }
+    formatter & setStringFill(unsigned int _fill) {
+        detail.strings.fill  = _fill;
+        return *this;
+    }
+    formatter & setStringWidth(unsigned int _width) {
+        detail.strings.width = _width;
+        return *this;
+    }
+    formatter & setString(unsigned int _align, unsigned int _fill, unsigned int _width) {
+        detail.strings.setDetail(_align, _fill, _width);
+        return *this;
+    }
+    formatter & setString(const value_type *fmt) {
+        detail.strings.setDetail(fmt);
+        return *this;
+    }
+
+    // hex32 and hex64's align
+    formatter & setHex32Align(unsigned int _align) {
+        detail.int32s.align = _align;
+        return *this;
+    }
+    formatter & setHex64Align(unsigned int _align) {
+        detail.int64s.align = _align;
+        return *this;
+    }
+
+    // hex32 and hex64's fill
+    formatter & setHex32Fill(unsigned int _fill) {
+        detail.int32s.fill  = _fill;
+        return *this;
+    }
+    formatter & setHex64Fill(unsigned int _fill) {
+        detail.int64s.fill  = _fill;
+        return *this;
+    }
+
+    // hex32 and hex64's width
+    formatter & setHex32Width(unsigned int _width) {
+        detail.int32s.width = _width;
+        return *this;
+    }
+    formatter & setHex64Width(unsigned int _width) {
+        detail.int64s.width = _width;
+        return *this;
+    }
+
+    // hex32 and hex64's detail
+    formatter & setHex32(unsigned int _align, unsigned int _fill, unsigned int _width) {
+        detail.int32s.setDetail(_align, _fill, _width);
+        return *this;
+    }
+    formatter & setHex64(unsigned int _align, unsigned int _fill, unsigned int _width) {
+        detail.int64s.setDetail(_align, _fill, _width);
+        return *this;
+    }
+
+    // hex32 and hex64's fromat string detail
+    formatter & setHex32(const value_type *fmt) {
+        detail.int32s.setDetail(fmt);
+        return *this;
+    }
+    formatter & setHex64(const value_type *fmt) {
+        detail.int64s.setDetail(fmt);
+        return *this;
+    }
+
+protected:
     // for format_to() ...
     template<typename T, typename ... Args>
     static void format_to_next_args(StringType * arg_list, const T & value);
@@ -262,8 +511,8 @@ private:
     template<typename T, typename ... Args>
     static void append_to_next(StringType & result, const T & value, Args const ... args);
 
-private:
-    formatter_detail    detail;
+protected:
+    formatter_detail<value_type> detail;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
