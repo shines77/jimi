@@ -716,8 +716,10 @@ void String_Base_Test()
         //jimi::string strTest((size_t)1024);
         jimi::string strTest;
         jimi::formatter<6> formator;
-        auto fmtor = jimi::formatter<>().setFloat(jimi::detail::AlignRight, jimi::detail::FillNone, 3, 3).setDoublePrecision(6).setDouble(0, 0, 3, 0);
-        auto fmtor2 = jimi::formatter<>().setFloat("%0.3f").setDouble("%0.5f").setInt32("%-08d").setInt64("%+020d").setString("%-30s");
+        auto fmtor = jimi::formatter<>().setFloat(jimi::detail::AlignRight, jimi::detail::FillNone, 3, 3)
+                                        .setDoublePrecision(6).setDouble(0, 0, 3, 0);
+        auto fmtor2 = jimi::formatter<>().setFloat("%0.3f").setDouble("%0.5f").setInt32("%-08d")
+                                         .setInt64("%+020d").setString("%-30s");
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
@@ -3044,7 +3046,7 @@ int UnitTest_Main(int argc, char *argv[])
 
 #if 1
     String_Base_Test();
-    if (true && 1) {
+    if (true && 0) {
         ::system("pause");
         sLog.log_end();
         return 0;

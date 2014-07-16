@@ -179,10 +179,10 @@ template <int Precision = DEFAULT_FLOAT_PRECISION, typename StringType = jimi::s
 class formatter : public jimi::NonAssignable
 {
 public:
-    typedef typename StringType::char_type          char_type;
+//  typedef typename StringType::char_type          char_type;
     typedef typename StringType::value_type         value_type;
     typedef typename StringType::size_type          size_type;
-    typedef typename std::basic_string<char_type>   StdStringType;
+    typedef typename std::basic_string<value_type>  StdStringType;
 
 public:
     formatter() { setFloatPrecision(Precision); setDoublePrecision(Precision); }
