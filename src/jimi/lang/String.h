@@ -256,7 +256,10 @@ public:
     size_type size() const      { return _store.size(); }
     size_type capacity() const  { return _store.capacity(); }
 
-    void swap(basic_string &rhs) { _store.swap(rhs._store); }
+    // 为了提高效率, 允许 swap() 自己本身
+    void swap(basic_string &rhs)   { _store.swap(rhs._store); }
+    // 但是 stolen() 自己是不允许的..., 否则会把自己偷空...
+    void stolen(basic_string &rhs) { if (this != &rhs) _store.stolen(rhs._store); }
 
     void clear() { resize(0); }
 
@@ -1900,6 +1903,12 @@ template <BASIC_STRING_CLASSES>
 inline void swap(BASIC_STRING &lhs, BASIC_STRING &rhs)
 {
     lhs.swap(rhs);
+}
+
+template <BASIC_STRING_CLASSES>
+inline void stolen(BASIC_STRING &lhs, BASIC_STRING &rhs)
+{
+    lhs.stolen(rhs);
 }
 
 template <BASIC_STRING_CLASSES>

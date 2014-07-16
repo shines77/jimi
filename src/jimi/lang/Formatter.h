@@ -228,6 +228,32 @@ public:
     template <typename ... Args>
     StringType format_fast2(const StringType & fmt, Args const ... args);
 
+    // csharp_format_to() ...
+    template <typename ... Args>
+    size_type csharp_format_to(StringType & result, const value_type * fmt, Args const ... args);
+
+    template <typename ... Args>
+    size_type csharp_format_to(StringType & result, const StringType & fmt, Args const ... args);
+
+    template <typename ... Args>
+    StringType csharp_format(const value_type * fmt, Args const ... args);
+
+    template <typename ... Args>
+    StringType csharp_format(const StringType & fmt, Args const ... args);
+
+    // csharp_format_old_to() ...
+    template <typename ... Args>
+    size_type csharp_format_old_to(StringType & result, const value_type * fmt, Args const ... args);
+
+    template <typename ... Args>
+    size_type csharp_format_old_to(StringType & result, const StringType & fmt, Args const ... args);
+
+    template <typename ... Args>
+    StringType csharp_format_old(const value_type * fmt, Args const ... args);
+
+    template <typename ... Args>
+    StringType csharp_format_old(const StringType & fmt, Args const ... args);
+
     // append() ...
     template <typename ... Args>
     typename StdStringType::size_type append_to(StdStringType & result, Args const ... args);
@@ -386,15 +412,18 @@ public:
     }
 
     // int32, int64 and integer's detail
-    formatter & setInt32(unsigned int _align, unsigned int _fill, unsigned int _width) {
+    formatter & setInt32(unsigned int _align, unsigned int _fill,
+                         unsigned int _width) {
         detail.int32s.setDetail(_align, _fill, _width);
         return *this;
     }
-    formatter & setInt64(unsigned int _align, unsigned int _fill, unsigned int _width) {
+    formatter & setInt64(unsigned int _align, unsigned int _fill,
+                         unsigned int _width) {
         detail.int64s.setDetail(_align, _fill, _width);
         return *this;
     }
-    formatter & setInteger(unsigned int _align, unsigned int _fill, unsigned int _width) {
+    formatter & setInteger(unsigned int _align, unsigned int _fill,
+                           unsigned int _width) {
         detail.int32s.setDetail(_align, _fill, _width);
         detail.int64s.setDetail(_align, _fill, _width);
         return *this;
@@ -428,7 +457,8 @@ public:
         detail.strings.width = _width;
         return *this;
     }
-    formatter & setString(unsigned int _align, unsigned int _fill, unsigned int _width) {
+    formatter & setString(unsigned int _align, unsigned int _fill,
+                          unsigned int _width) {
         detail.strings.setDetail(_align, _fill, _width);
         return *this;
     }
@@ -468,11 +498,13 @@ public:
     }
 
     // hex32 and hex64's detail
-    formatter & setHex32(unsigned int _align, unsigned int _fill, unsigned int _width) {
+    formatter & setHex32(unsigned int _align, unsigned int _fill,
+                         unsigned int _width) {
         detail.int32s.setDetail(_align, _fill, _width);
         return *this;
     }
-    formatter & setHex64(unsigned int _align, unsigned int _fill, unsigned int _width) {
+    formatter & setHex64(unsigned int _align, unsigned int _fill,
+                         unsigned int _width) {
         detail.int64s.setDetail(_align, _fill, _width);
         return *this;
     }
@@ -493,7 +525,16 @@ protected:
     static void format_to_next_args(StringType * arg_list, const T & value);
 
     template<typename T, typename ... Args>
-    static void format_to_next_args(StringType * arg_list, const T & value, Args const ... args);
+    static void format_to_next_args(StringType * arg_list, const T & value,
+                                    Args const ... args);
+
+    // for csharp_format_old_to() ...
+    template<typename T, typename ... Args>
+    static void csharp_format_old_to_next_args(StringType * arg_list, const T & value);
+
+    template<typename T, typename ... Args>
+    static void csharp_format_old_to_next_args(StringType * arg_list, const T & value,
+                                               Args const ... args);
 
     // for format_fast_to2() ...
     template<typename T, typename ... Args>
@@ -516,13 +557,14 @@ protected:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// format_to()
+// csharp_format_old_to()
 ////////////////////////////////////////////////////////////////////////////////
 
 template <int Precision, typename StringType>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter<Precision, StringType>::format_to_next_args(StringType * arg_list, const T & value)
+void formatter<Precision, StringType>::csharp_format_old_to_next_args(
+                                        StringType * arg_list, const T & value)
 {
     jimi_assert(arg_list != NULL);
     if (arg_list) {
@@ -534,14 +576,16 @@ void formatter<Precision, StringType>::format_to_next_args(StringType * arg_list
 template <int Precision, typename StringType>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter<Precision, StringType>::format_to_next_args(StringType * arg_list, const T & value, Args const ... args)
+void formatter<Precision, StringType>::csharp_format_old_to_next_args(
+                                        StringType * arg_list, const T & value,
+                                        Args const ... args)
 {
     jimi_assert(arg_list != NULL);
     if (arg_list) {
         new (arg_list)StringType();
         arg_list->append(value);
         arg_list++;
-        format_to_next_args(arg_list, args...);
+        csharp_format_old_to_next_args(arg_list, args...);
     }
 }
 
@@ -552,7 +596,10 @@ void formatter<Precision, StringType>::format_to_next_args(StringType * arg_list
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-typename StringType::size_type formatter<Precision, StringType>::format_to(StringType & result, const value_type * fmt, Args const ... args)
+typename StringType::size_type
+formatter<Precision, StringType>::csharp_format_old_to(
+                                    StringType & result, const value_type * fmt,
+                                    Args const ... args)
 {
     size_t      index;
     value_type  c;
@@ -573,7 +620,7 @@ typename StringType::size_type formatter<Precision, StringType>::format_to(Strin
     arg_list = (StringType *)malloc(max_args * sizeof(StringType));
 #endif
 
-    format_to_next_args(arg_list, args...);
+    csharp_format_old_to_next_args(arg_list, args...);
 
     index = 0;
     cur = const_cast<value_type *>(fmt);
@@ -583,7 +630,8 @@ typename StringType::size_type formatter<Precision, StringType>::format_to(Strin
             if (c == static_cast<value_type>('{')) {
                 result.append(c);
             }
-            else if (c >= static_cast<value_type>('0') && c <= static_cast<value_type>('9')) {
+            else if (c >= static_cast<value_type>('0')
+                     && c <= static_cast<value_type>('9')) {
                 index = c - static_cast<value_type>('0');
                 while ((c = *cur++) != '\0') {
                     if (c == static_cast<value_type>('}')) {
@@ -592,7 +640,8 @@ typename StringType::size_type formatter<Precision, StringType>::format_to(Strin
                             result.append(*(arg_list + index));
                         break;
                     }
-                    else if (c >= static_cast<value_type>('0') && c <= static_cast<value_type>('9')) {
+                    else if (c >= static_cast<value_type>('0')
+                             && c <= static_cast<value_type>('9')) {
                         index = index * 10 + (c - static_cast<value_type>('0'));
                     }
                     else {
@@ -624,7 +673,10 @@ typename StringType::size_type formatter<Precision, StringType>::format_to(Strin
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-typename StringType::size_type formatter<Precision, StringType>::format_to(StringType & result, const StringType & fmt, Args const ... args)
+typename StringType::size_type
+formatter<Precision, StringType>::csharp_format_old_to(StringType & result,
+                                                       const StringType & fmt,
+                                                       Args const ... args)
 {
     return format_to(result, fmt.c_str(), args...);
 }
@@ -632,19 +684,23 @@ typename StringType::size_type formatter<Precision, StringType>::format_to(Strin
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-StringType formatter<Precision, StringType>::format(const value_type * fmt, Args const ... args)
+StringType
+formatter<Precision, StringType>::csharp_format_old(const value_type * fmt,
+                                                    Args const ... args)
 {
     jimi::string result;
-    format_to(result, fmt, args...);
+    csharp_format_old_to(result, fmt, args...);
     return result;
 }
 
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-StringType formatter<Precision, StringType>::format(const StringType & fmt, Args const ... args)
+StringType
+formatter<Precision, StringType>::csharp_format_old(const StringType & fmt,
+                                                    Args const ... args)
 {
-    return format(fmt.c_str(), args...);
+    return csharp_format_old(fmt.c_str(), args...);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -675,7 +731,10 @@ namespace detail {
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-typename StringType::size_type formatter<Precision, StringType>::format_fast_to(StringType & result, const value_type * fmt, Args const ... args)
+typename StringType::size_type
+formatter<Precision, StringType>::format_fast_to(StringType & result,
+                                                 const value_type * fmt,
+                                                 Args const ... args)
 {
     value_type *cur;
     size_t      index;
@@ -733,7 +792,10 @@ typename StringType::size_type formatter<Precision, StringType>::format_fast_to(
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-typename StringType::size_type formatter<Precision, StringType>::format_fast_to(StringType & result, const StringType & fmt, Args const ... args)
+typename StringType::size_type
+formatter<Precision, StringType>::format_fast_to(StringType & result,
+                                                 const StringType & fmt,
+                                                 Args const ... args)
 {
     return format_fast_to2(result, fmt.c_str(), args...);
 }
@@ -741,7 +803,8 @@ typename StringType::size_type formatter<Precision, StringType>::format_fast_to(
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-StringType formatter<Precision, StringType>::format_fast(const value_type * fmt, Args const ... args)
+StringType
+formatter<Precision, StringType>::format_fast(const value_type * fmt, Args const ... args)
 {
     StringType result;
     format_fast_to(result, fmt, args...);
@@ -751,7 +814,8 @@ StringType formatter<Precision, StringType>::format_fast(const value_type * fmt,
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-StringType formatter<Precision, StringType>::format_fast(const StringType & fmt, Args const ... args)
+StringType
+formatter<Precision, StringType>::format_fast(const StringType & fmt, Args const ... args)
 {
     return format_fast(fmt.c_str(), args...);
 }
@@ -763,9 +827,10 @@ StringType formatter<Precision, StringType>::format_fast(const StringType & fmt,
 template <int Precision, typename StringType>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter<Precision, StringType>::format_fast_to2_next(StringType & result, value_type* & fmt,
-                                                           size_t index, size_t max_args,
-                                                           const T & value)
+void formatter<Precision, StringType>::format_fast_to2_next(StringType & result,
+                                                            value_type* & fmt,
+                                                            size_t index, size_t max_args,
+                                                            const T & value)
 {
     value_type c;
     while ((c = *fmt++) != '\0') {
@@ -807,9 +872,10 @@ void formatter<Precision, StringType>::format_fast_to2_next(StringType & result,
 template <int Precision, typename StringType>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter<Precision, StringType>::format_fast_to2_next(StringType & result, value_type* & fmt,
-                                                           size_t index, size_t max_args,
-                                                           const T & value, Args const ... args)
+void formatter<Precision, StringType>::format_fast_to2_next(StringType & result,
+                                                            value_type* & fmt,
+                                                            size_t index, size_t max_args,
+                                                            const T & value, Args const ... args)
 {
     value_type c;
     while ((c = *fmt++) != '\0') {
@@ -853,7 +919,10 @@ void formatter<Precision, StringType>::format_fast_to2_next(StringType & result,
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-typename StringType::size_type formatter<Precision, StringType>::format_fast_to2(StringType & result, const value_type * fmt, Args const ... args)
+typename StringType::size_type
+formatter<Precision, StringType>::format_fast_to2(StringType & result,
+                                                  const value_type * fmt,
+                                                  Args const ... args)
 {
     value_type *cur;
     size_type   oldSize = result.size();
@@ -874,7 +943,10 @@ typename StringType::size_type formatter<Precision, StringType>::format_fast_to2
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-typename StringType::size_type formatter<Precision, StringType>::format_fast_to2(StringType & result, const StringType & fmt, Args const ... args)
+typename StringType::size_type
+formatter<Precision, StringType>::format_fast_to2(StringType & result,
+                                                  const StringType & fmt,
+                                                  Args const ... args)
 {
     return format_fast_to2(result, fmt.c_str(), args...);
 }
@@ -882,7 +954,9 @@ typename StringType::size_type formatter<Precision, StringType>::format_fast_to2
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-StringType formatter<Precision, StringType>::format_fast2(const value_type * fmt, Args const ... args)
+StringType
+formatter<Precision, StringType>::format_fast2(const value_type * fmt,
+                                               Args const ... args)
 {
     StringType result;
     format_fast_to2(result, fmt, args...);
@@ -892,7 +966,9 @@ StringType formatter<Precision, StringType>::format_fast2(const value_type * fmt
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_INLINE
-StringType formatter<Precision, StringType>::format_fast2(const StringType & fmt, Args const ... args)
+StringType
+formatter<Precision, StringType>::format_fast2(const StringType & fmt,
+                                               Args const ... args)
 {
     return format_fast2(fmt.c_str(), args...);
 }
@@ -920,7 +996,8 @@ void formatter<Precision, StringType>::append_to_next(StringType & result, const
 template <int Precision, typename StringType>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter<Precision, StringType>::append_to_next(StringType & result, const T & value, Args const ... args)
+void formatter<Precision, StringType>::append_to_next(StringType & result, const T & value,
+                                                      Args const ... args)
 {
     result.append(value);
     append_to_next(result, args...);
@@ -942,7 +1019,8 @@ formatter<Precision, StringType>::append_to(StdStringType & result, Args const .
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_FORCEINLINE
-typename StringType::size_type formatter<Precision, StringType>::append_to(StringType & result, Args const ... args)
+typename StringType::size_type
+formatter<Precision, StringType>::append_to(StringType & result, Args const ... args)
 {
     size_type oldSize = result.size();
     append_to_next(result, args...);
@@ -952,7 +1030,9 @@ typename StringType::size_type formatter<Precision, StringType>::append_to(Strin
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_FORCEINLINE
-typename StringType::size_type formatter<Precision, StringType>::append_to(value_type *buffer, size_t countOfElements, Args const ... args)
+typename StringType::size_type
+formatter<Precision, StringType>::append_to(value_type *buffer, size_t countOfElements,
+                                            Args const ... args)
 {
     // TODO: Œ¥ µœ÷
     return 0;
@@ -961,7 +1041,8 @@ typename StringType::size_type formatter<Precision, StringType>::append_to(value
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_FORCEINLINE
-StringType formatter<Precision, StringType>::append(Args const & ... args)
+StringType
+formatter<Precision, StringType>::append(Args const & ... args)
 {
     StringType result;
     append_to_next(result, args...);
@@ -971,7 +1052,8 @@ StringType formatter<Precision, StringType>::append(Args const & ... args)
 template <int Precision, typename StringType>
 template <typename ... Args>
 JIMI_FORCEINLINE
-StringType formatter<Precision, StringType>::append_l(std::locale loc, Args const ... args)
+StringType
+formatter<Precision, StringType>::append_l(std::locale loc, Args const ... args)
 {
     StringType result;
     return result;

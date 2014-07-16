@@ -49,7 +49,7 @@ public:
 #if 0
             printf("Press any key to continue ...\n");
 #else
-            printf("按任意键继续 ...\n");
+            printf("请按任意键继续 ...\n");
 #endif
             keyCode = _getch();
             printf("\n");

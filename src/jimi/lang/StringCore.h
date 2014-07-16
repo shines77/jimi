@@ -14,6 +14,7 @@
 #include <jimi/lang/StringDetail.h>
 #include <jimic/string/jm_strings.h>
 #include <jimic/string/jmf_strings.h>
+#include <jimic/util/utils.h>
 
 #if defined(_MSC_VER) && (_MSC_VER != 0)
 #pragma warning(push)
@@ -23,7 +24,8 @@
 #endif  /* _MSC_VER */
 
 #include <string>
-using namespace std;
+#include <cstdlib>
+//using namespace std;
 
 //#define JIMI_STRING_PERVERSE
 //#define JIMI_STRING_CONSERVATIVE
@@ -53,10 +55,16 @@ NS_JIMI_BEGIN
 
 ////////////////////////////////////////////////////////////////////////////////
 
+/* Small Object Type的大小(单位是字节), 最小不得小于16字节. */
 #define STRING_SMALL_BYTES      32
 
+/**
+  Medium Type的Size大小范围(单位是Word, 一个Word大小为sizeof(CharT_)),
+  会自动对齐到64字节大小, 例如你设置为257, 会对齐到320 Words.
+ */
 #define STRING_MEDIUM_SIZE      256
 
+/* String Null Terminator, 字符串结尾字符. */
 #define STRING_NULL_CHAR        '\0'
 
 typedef enum StringTypeMask
@@ -107,11 +115,11 @@ class JIMI_API string_core
 {
 public:
     // Types
-    typedef _CharT              char_type;
-    typedef _RefCount           refcount_type;
-    typedef size_t              size_type;
-    typedef size_t              flag_type;
-    typedef char_traits<_CharT> traits_type;
+    typedef _CharT                  char_type;
+    typedef _RefCount               refcount_type;
+    typedef size_t                  size_type;
+    typedef size_t                  flag_type;
+    typedef char_traits<char_type>  traits_type;
 
     struct small_info_t;
     struct small_t;
@@ -124,33 +132,47 @@ public:
     typedef struct medium_large_t medium_large_t;
 
     // Constant
-    static const char_type  kNullChar   =  STRING_NULL_CHAR;
+    static const char_type kNullChar    =  STRING_NULL_CHAR;
 
-    static const flag_type  kIsSmall    =  STRING_TYPE_SMALL;
-    static const flag_type  kIsMedium   =  STRING_TYPE_MEDIUM;
-    static const flag_type  kIsLarge    =  STRING_TYPE_LARGE;
-    static const flag_type  kIsConstant =  STRING_TYPE_CONSTANT;
-    static const flag_type  kTypeMask   =  STRING_TYPE_MASK;
-    static const flag_type  kRefCntMask = ~(flag_type)STRING_TYPE_MASK;
+    static const flag_type kIsSmall     =  STRING_TYPE_SMALL;
+    static const flag_type kIsMedium    =  STRING_TYPE_MEDIUM;
+    static const flag_type kIsLarge     =  STRING_TYPE_LARGE;
+    static const flag_type kIsConstant  =  STRING_TYPE_CONSTANT;
+    static const flag_type kTypeMask    =  STRING_TYPE_MASK;
+    static const flag_type kRefCntMask  = ~(flag_type)STRING_TYPE_MASK;
 
-    static const flag_type  kIsSmallX   =  STRING_TYPE_SMALL_X;
+    static const flag_type kIsSmallX    =  STRING_TYPE_SMALL_X;
 
-    static const flag_type  kIsMediumOrLarge =
+    static const flag_type kIsMediumOrLarge =
         STRING_TYPE_MEDIUM | STRING_TYPE_LARGE;
-    static const flag_type  kNotIsSmall      =
+    static const flag_type kNotIsSmall =
         STRING_TYPE_MASK & (~STRING_TYPE_SMALL) & (~STRING_TYPE_CONSTANT);
 
-    static const size_type  kMaxMediumSizeBytes  =
+    static const size_type kMaxMediumSizeBytes =
         JIMI_ALIGNED_TO(STRING_MEDIUM_SIZE * sizeof(char_type), 64);
 
-    static const size_type  kMaxSmallSizeBytes   =
+    static const size_type kMaxSmallSizeBytes =
         (STRING_SMALL_BYTES >= sizeof(core_data_t)) ? STRING_SMALL_BYTES : sizeof(core_data_t);
 
-    static const size_type  kMaxSmallSize   =
+    static const size_type kMaxSmallSize =
         (kMaxSmallSizeBytes - sizeof(small_info_t)) / sizeof(char_type);
 
-    static const size_type  kMaxMediumSize  =
+    static const size_type kMaxMediumSize =
         kMaxMediumSizeBytes / sizeof(char_type);
+
+    /* small_t.info.size 相对于 medium_large_t.core.type 的偏移值(单位为字节) */
+    static const size_type kSmallSizeOffset = (size_type)jimi_abs_marco((intptr_t)(
+                                    (unsigned char *)&(((small_t *)0)->info.size)
+                                  - (unsigned char *)&(((medium_large_t *)0)->core.type)));
+     /* small_t.info.type 相对于 medium_large_t.core.type 的偏移值(单位为字节) */
+    static const size_type kSmallTypeOffset = (size_type)jimi_abs_marco((intptr_t)(
+                                    (unsigned char *)&(((small_t *)0)->info.type)
+                                  - (unsigned char *)&(((medium_large_t *)0)->core.type)));
+
+    /* small_t.info.size 相对于 medium_large_t.core.type 的偏移值(单位为bit) */
+    static const size_type kSmallSizeOffsetBits = kSmallSizeOffset * sizeof(unsigned char) * 8;
+     /* small_t.info.type 相对于 medium_large_t.core.type 的偏移值(单位为bit) */
+    static const size_type kSmallTypeOffsetBits = kSmallTypeOffset * sizeof(unsigned char) * 8;
 
 public:
     // Contructor
@@ -239,9 +261,13 @@ public:
     // worth.
     void swap(string_core &rhs);
 
+    // stolen from rhs, and clear rhs
+    void stolen(string_core &rhs);
+
 #if defined(JIMI_HAS_CPP11_MOVE_FUNCTIONS) && (JIMI_HAS_CPP11_MOVE_FUNCTIONS != 0)
     string_core(string_core && goner) {
-        if (goner.getType() == kIsSmall) {
+        //if (goner.getType() == kIsSmall) {
+        if (goner.is_small()) {
             // Just copy, leave the goner in peace
             new (this) string_core(goner._small.buf, goner._small.info.size);
         }
@@ -249,13 +275,19 @@ public:
 #if 1
             // Take goner's guts
             _ml.core = goner._ml.core;
+
+            // 把 goner 清零为 kIsSmall 类型
+            *(size_t *)(&goner._small.buf[0]) = (size_t)0;
+            goner._ml.core.type = kIsSmall;
 #else
             // Take goner's guts
             _ml = goner._ml;
-#endif
+
             // Clean goner's carcass
             goner._ml.core.data = NULL;
             goner._ml.core.size = 0;
+            goner._ml.core.capacity = 0;
+#endif
         }
     }
 #endif
@@ -306,7 +338,7 @@ private:
 #endif
     }
 
-    void ml_clone(medium_large_t &dest, const medium_large_t &src) {
+    void ml_core_clone(core_data_t &dest, const core_data_t &src) {
         dest.data = src.data;
         dest.size = src.size;
         dest.capacity = src.capacity;
@@ -321,10 +353,47 @@ private:
     }
 
     void ml_swap(medium_large_t &dest, medium_large_t &src) {
-        medium_large_t t;
-        ml_clone(t, dest);
-        ml_clone(dest, src);
-        ml_clone(src, t);
+        core_data_t t;
+        ml_core_clone(t, dest.core);
+        ml_core_clone(dest.core, src.core);
+        ml_core_clone(src.core, t);
+    }
+
+    void small_stolen(small_t &dest, small_t &src) {
+        // 复制 src 到 dest
+        small_clone(dest, src);
+        // 把src清零为 kIsSmall 类型
+        *(size_t *)(&src._small.buf[0]) = (size_t)0;
+        src._ml.core.type = kIsSmall;
+    }
+
+    void ml_stolen(medium_large_t &dest, medium_large_t &src) {
+        // 复制 src 到 dest
+        ml_core_clone(dest.core, src.core);
+
+#if 1
+        if (src.is_small()) {
+            // 如果src已经是 kIsSmall 类型, 则不用管
+            // do nothing !!
+        }
+        else {
+            // 如果src不是 kIsSmall 类型
+#if 1
+            // 把src清零为 kIsSmall 类型
+            *(size_t *)(&src._small.buf[0]) = (size_t)0;
+            src._ml.core.type = kIsSmall;
+#else
+            // Clean src's carcass
+            src._ml.core.data = NULL;
+            src._ml.core.size = 0;
+            src._ml.core.capacity = 0;
+#endif
+        }
+#else
+        // 把src清零为 kIsSmall 类型
+        *(size_t *)(&src._small.buf[0]) = (size_t)0;
+        src._ml.core.type = kIsSmall;
+#endif
     }
 
 protected:
@@ -339,6 +408,14 @@ protected:
         };
     };
 
+    /* medium_large_t 的有效核心数据 */
+    struct core_data_t {
+        char_type  *data;
+        size_type   size;
+        size_type   capacity;
+        flag_type   type;
+    };
+
     /* small string optimized buffer */
     struct small_t {
         union {
@@ -346,18 +423,10 @@ protected:
                 /* (dummy只是占位用, 未使用) */
                 char dummy[(kMaxSmallSizeBytes - sizeof(small_info_t)) / sizeof(char)];
                 /* size and type */
-                small_info_t  info;
+                small_info_t info;
             };
             char_type buf[(kMaxSmallSizeBytes - sizeof(small_info_t)) / sizeof(char_type)];
         };
-    };
-
-    /* 这个结构只是为了动态设置buf的size而存在的 */
-    struct core_data_t {
-        char_type  *data;
-        size_type   size;
-        size_type   capacity;
-        flag_type   type;
     };
 
     /* medium 和 large 共享一样的结构 */
@@ -369,21 +438,13 @@ protected:
 
                 /* medium_large_t的有效数据 */
                 core_data_t core;
-                /* 后面的定义必须和core_data_t的结构一致 */
-                /*
-                char_type *data;
-                size_type  size;
-                size_type  capacity;
-                flag_type  type;
-                //*/
             };
-
             char_type buf[(kMaxSmallSizeBytes - sizeof(core_data_t)) / sizeof(char_type)];
         };
     };
 
 private:
-    /* 这是一个union联合, 即small_t类型和medium_large类型共享于同一个内存结构 */
+    /* 这是一个union联合, 即small_t类型和medium_large_t类型共享于同一个内存结构 */
     union {
         /* mutable修饰符是针对const修饰的, 即使是在被const修饰过的成员函数里, */
         /* 也可以改变被mutable修饰过的成员变量 */
@@ -517,11 +578,21 @@ STRING_CORE::string_core(const size_t _capacity)
 template <STRING_CORE_CLASSES>
 STRING_CORE::string_core(const char_type c)
 {
+#if 1
+    if (sizeof(char_type) <= sizeof(size_t))
+        (*(size_t *)(&_small.buf[0])) = (size_t)c;
+    else
+        (*(char_type *)(&_small.buf[0])) = (char_type)c;
+#else
     _small.buf[0] = c;
     _small.buf[1] = '\0';
+#endif
+#if 0
     _small.info.size = 1;
     _small.info.type = kIsSmallX;
-    //_ml.core.type = kIsSmall;
+#else
+    _ml.core.type = kIsSmall | (1 << kSmallSizeOffsetBits);
+#endif
 }
 
 template <STRING_CORE_CLASSES>
@@ -691,7 +762,7 @@ STRING_CORE & STRING_CORE::operator = (const string_core &rhs) {
     if (type == kIsSmall)
         small_clone(_small, rhs._small);
     else {
-        ml_clone(_ml, rhs._ml);
+        ml_core_clone(_ml.core, rhs._ml.core);
         if (type == kIsLarge)
             refcount_type::retain(_ml.core.data);
     }
@@ -1145,7 +1216,7 @@ void STRING_CORE::swap(STRING_CORE &rhs)
     if (((type | rhs_type) & kIsSmall) == 0) {
         ml_swap(_ml, rhs._ml);
     }
-    else if ((type & rhs_type) == kIsSmall) {
+    else if (((type & rhs_type) & kIsSmall) != 0) {
         small_swap(_small, rhs._small);
     }
 #endif
@@ -1160,10 +1231,59 @@ void STRING_CORE::swap(STRING_CORE &rhs)
     _ml = rhs._ml;
     rhs._ml = t;
 #else
-    medium_large t;
-    memcpy((void *)&t,       (void *)&_ml,      sizeof(medium_large));
-    memcpy((void *)&_ml,     (void *)&rhs._ml,  sizeof(medium_large));
-    memcpy((void *)&rhs._ml, (void *)&t,        sizeof(medium_large));
+    medium_large_t t;
+    memcpy((void *)&t,       (void *)&_ml,      sizeof(medium_large_t));
+    memcpy((void *)&_ml,     (void *)&rhs._ml,  sizeof(medium_large_t));
+    memcpy((void *)&rhs._ml, (void *)&t,        sizeof(medium_large_t));
+#endif
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::stolen(STRING_CORE &rhs)
+{
+#if 1
+    // 在不同的type下, _ml的复制是不同的
+#if 0
+    flag_type type = getType();
+    flag_type rhs_type = rhs.getType();
+    if ((type == kIsSmall) && (rhs_type == kIsSmall)) {
+        small_stolen(_small, rhs._small);
+    }
+    else if ((type != kIsSmall) && (rhs_type != kIsSmall)) {
+        ml_stolen(_ml, rhs._ml);
+    }
+#else
+    flag_type type = _ml.core.type;
+    flag_type rhs_type = rhs._ml.core.type;
+    if (((type | rhs_type) & kIsSmall) == 0) {
+        ml_stolen(_ml, rhs._ml);
+    }
+    else if (((type & rhs_type) & kIsSmall) != 0) {
+        small_stolen(_small, rhs._small);
+    }
+#endif
+    else {
+        // 复制rhs._ml到_ml, 然后清零rhs._ml
+        _ml = rhs._ml;
+
+        // 清零rhs._ml为 kIsSmall 类型
+        *(size_t *)(rhs._small.buf[0]) = (size_t)0;
+        rhs._ml.core.type = kIsSmall;
+    }
+#elif 1
+    // 复制rhs._ml到_ml, 然后清零rhs._ml
+    _ml = rhs._ml;
+
+    // 清零rhs._ml为 kIsSmall 类型
+    *(size_t *)(rhs._small.buf[0]) = (size_t)0;
+    rhs._ml.core.type = kIsSmall;
+#else
+    // 复制rhs._ml到_ml, 然后清零rhs._ml
+    memcpy((void *)&_ml, (void *)&rhs._ml, sizeof(medium_large_t));
+
+    // 清零rhs._ml为 kIsSmall 类型
+    *(size_t *)(rhs._small.buf[0]) = (size_t)0;
+    rhs._ml.core.type = kIsSmall;
 #endif
 }
 

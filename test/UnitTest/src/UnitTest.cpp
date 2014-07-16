@@ -49,6 +49,7 @@
 #include <time.h>
 #include <intrin.h>
 #include <string>
+#include <map>
 #include <locale>
 #include <algorithm>
 #include <functional>
@@ -370,7 +371,7 @@ void String_Performance_Test2()
 
     sw.restart();
     for (i = 0; i < (LOOP_TIMES >> 0); ++i) {
-        strcpy(buffer1, "abcdefghijk");
+        strcpy(buffer1, "a");
         //strcpy(buffer1 + (i & 2), "abcdefghijk");
         /*
         strcpy(buffer1 + 0, "abcdefghijk");
@@ -385,26 +386,25 @@ void String_Performance_Test2()
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        strcpy_s(buffer2, jm_countof(buffer2), "abcdefghijk");
-        len2 = strlen("abcdefghijk");
+        strcpy_s(buffer2, jm_countof(buffer2), "a");
+        len2 = strlen("a");
     }
     sw.stop();
     time2 = sw.getMillisec();
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        //jimi::string str = "abcdefghijk";
-        //jimi::string str("abcdefghijk", sizeof("abcdefghijk") - 1);
-        jimi::string str("abcdefghijk");
+        //jimi::string str = "a";
+        //jimi::string str("a", sizeof("abcdefghijk") - 1);
+        jimi::string str('a');
     }
     sw.stop();
     time3 = sw.getMillisec();
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        //std::string str = "abcdefghijk";
-        //std::string str("abcdefghijk", sizeof("abcdefghijk") - 1);
-        std::string str("abcdefghijk");
+        //std::string str = 'a';
+        std::string str(1, 'a');
     }
     sw.stop();
     time4 = sw.getMillisec();
@@ -414,13 +414,6 @@ void String_Performance_Test2()
     sw.restart();
     for (i = 0; i < (LOOP_TIMES >> 0); ++i) {
         strcpy(buffer1, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
-        //strcpy(buffer1 + (i & 2), "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
-        /*
-        strcpy(buffer1 + 0, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
-        strcpy(buffer1 + 4, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
-        strcpy(buffer1 + 0, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
-        strcpy(buffer1 + 4, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
-        //*/
         len1 = strlen(buffer1);
     }
     sw.stop();
@@ -454,10 +447,10 @@ void String_Performance_Test2()
 
     printf("buffer1 = %s, len1 = %d, len2 = %d\n\n", buffer1, len1, len2);
 
-    printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefghijk\";",   time1);
-    printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefghijk\";",   time2);
-    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefghijk\";",   time4);
-    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"abcdefghijk\";",   time3);
+    printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"a\";",   time1);
+    printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"a\";",   time2);
+    printf("%-30s time = %0.5f ms.\n", "std::string  str = \"a\";",   time4);
+    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"a\";",   time3);
     printf("\n");
     printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefg...xyz\";", time5);
     printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefg...xyz\";", time6);
@@ -757,22 +750,22 @@ void String_Base_Test()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
-            //strTest = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-            strTest = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+            //strTest = formator.csharp_format_old("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            strTest = formator.csharp_format_old("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        str = formator.format(\"{0}, {1}, {2}, {{3}, {3}\",\n"
-               "                              111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("        str = formator.csharp_format_old(\"{0}, {1}, {2}, {{3}, {3}\",\n"
+               "                                         111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2;
-        //strTest2 = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-        strTest2 = formator.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        //strTest2 = formator.csharp_format_old("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        strTest2 = formator.csharp_format_old("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
@@ -792,22 +785,22 @@ void String_Base_Test()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
-            //delta = formator.format_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-            delta = formator.format_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+            //delta = formator.csharp_format_old_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            delta = formator.csharp_format_old_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
         printf("===================================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        n = formator.format_to(str, \"{0}, {1}, {2}, {{3}, {3}\",\n"
-               "                               111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("        n = formator.csharp_format_old_to(str, \"{0}, {1}, {2}, {{3}, {3}\",\n"
+               "                                          111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
         printf("===================================================================================\n\n");
 
         jimi::string strTest2;
-        //delta = formator.format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-        delta = formator.format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        //delta = formator.csharp_format_old_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        delta = formator.csharp_format_old_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
@@ -2841,6 +2834,31 @@ bool win_iconv_test()
     return true;
 }
 
+void Emplace_Test()
+{
+    std::map<std::string, std::string> m;
+ 
+    // uses pair's move constructor (overload 8)
+    m.emplace(std::make_pair(std::string("a"), std::string("a")));
+ 
+    // uses pair's converting move constructor (overload 5)
+    m.emplace(std::make_pair("b", "abcd"));
+ 
+    // uses pair's template constructor (overload 3)
+    m.emplace("d", "ddd");
+ 
+    // uses pair's piecewise constructor (overload 6)
+    m.emplace(std::piecewise_construct,
+              std::forward_as_tuple("c"),
+              std::forward_as_tuple(10, 'c'));
+ 
+    for (const auto &p : m) {
+        std::cout << p.first << " => " << p.second << '\n';
+    }
+
+    std::cout << std::endl;
+}
+
 void malloc_addr_test()
 {
     int i;
@@ -3036,6 +3054,10 @@ int UnitTest_Main(int argc, char *argv[])
 
 #if 0
     IEEE754_Double_Test();
+#endif
+
+#if 1
+    Emplace_Test();
 #endif
 
     // 测试std::string是否使用了COW(Copy On Write)

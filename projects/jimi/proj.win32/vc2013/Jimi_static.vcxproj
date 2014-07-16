@@ -113,6 +113,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\util\utils.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.h" />
     <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert_impl.cpp">
       <FileType>CppHeader</FileType>

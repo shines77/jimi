@@ -84,6 +84,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="src\jimic\util">
+      <UniqueIdentifier>{4c9f0127-281e-4908-8cab-f8132ab1f0bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\jimi\jimi_all.h">
@@ -298,6 +301,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\lang\Formatter.h">
       <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\util\utils.h">
+      <Filter>src\jimic\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
