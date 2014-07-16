@@ -59,14 +59,14 @@ namespace detail {
     }
 
     template<size_t k, typename Tuple>
-    typename std::enable_if <(k == std::tuple_size<Tuple>::value)>::type
+    typename std::enable_if< (k == std::tuple_size<Tuple>::value) >::type
     inline GetArgByIndex(size_t, Tuple &, char* &)
     {
         throw std::invalid_argument("arg index out of range");
     }
 
     template<size_t k = 0, typename Tuple>
-    typename std::enable_if <(k < std::tuple_size<Tuple>::value)>::type
+    typename std::enable_if< (k < std::tuple_size<Tuple>::value) >::type
     inline GetArgByIndex(size_t index, Tuple & tp, char* & p)
     {
         if (k == index)

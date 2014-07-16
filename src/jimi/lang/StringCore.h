@@ -261,8 +261,8 @@ public:
     // worth.
     void swap(string_core &rhs);
 
-    // stolen from rhs, and clear rhs
-    void stolen(string_core &rhs);
+    // stole from rhs, and clear rhs
+    void stole(string_core &rhs);
 
 #if defined(JIMI_HAS_CPP11_MOVE_FUNCTIONS) && (JIMI_HAS_CPP11_MOVE_FUNCTIONS != 0)
     string_core(string_core && goner) {
@@ -359,7 +359,7 @@ private:
         ml_core_clone(src.core, t);
     }
 
-    void small_stolen(small_t &dest, small_t &src) {
+    void small_stole(small_t &dest, small_t &src) {
         // 复制 src 到 dest
         small_clone(dest, src);
         // 把src清零为 kIsSmall 类型
@@ -367,7 +367,7 @@ private:
         src._ml.core.type = kIsSmall;
     }
 
-    void ml_stolen(medium_large_t &dest, medium_large_t &src) {
+    void ml_stole(medium_large_t &dest, medium_large_t &src) {
         // 复制 src 到 dest
         ml_core_clone(dest.core, src.core);
 
@@ -1239,7 +1239,7 @@ void STRING_CORE::swap(STRING_CORE &rhs)
 }
 
 template <STRING_CORE_CLASSES>
-void STRING_CORE::stolen(STRING_CORE &rhs)
+void STRING_CORE::stole(STRING_CORE &rhs)
 {
 #if 1
     // 在不同的type下, _ml的复制是不同的
@@ -1247,19 +1247,19 @@ void STRING_CORE::stolen(STRING_CORE &rhs)
     flag_type type = getType();
     flag_type rhs_type = rhs.getType();
     if ((type == kIsSmall) && (rhs_type == kIsSmall)) {
-        small_stolen(_small, rhs._small);
+        small_stole(_small, rhs._small);
     }
     else if ((type != kIsSmall) && (rhs_type != kIsSmall)) {
-        ml_stolen(_ml, rhs._ml);
+        ml_stole(_ml, rhs._ml);
     }
 #else
     flag_type type = _ml.core.type;
     flag_type rhs_type = rhs._ml.core.type;
     if (((type | rhs_type) & kIsSmall) == 0) {
-        ml_stolen(_ml, rhs._ml);
+        ml_stole(_ml, rhs._ml);
     }
     else if (((type & rhs_type) & kIsSmall) != 0) {
-        small_stolen(_small, rhs._small);
+        small_stole(_small, rhs._small);
     }
 #endif
     else {

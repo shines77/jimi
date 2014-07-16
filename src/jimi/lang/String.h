@@ -249,6 +249,7 @@ public:
     const value_type *c_str() const { return _store.c_str(); }
     const value_type *data() const  { return c_str(); }
     const value_type *toString() const { return c_str(); }
+
     std::string toStdString() const;
 
     bool empty() const          { return size() == 0; }
@@ -258,8 +259,8 @@ public:
 
     // 为了提高效率, 允许 swap() 自己本身
     void swap(basic_string &rhs)   { _store.swap(rhs._store); }
-    // 但是 stolen() 自己是不允许的..., 否则会把自己偷空...
-    void stolen(basic_string &rhs) { if (this != &rhs) _store.stolen(rhs._store); }
+    // 但是 stole() 自己是不允许的..., 否则会把自己偷空...
+    void stole(basic_string &rhs) { if (this != &rhs) _store.stole(rhs._store); }
 
     void clear() { resize(0); }
 
@@ -1906,9 +1907,9 @@ inline void swap(BASIC_STRING &lhs, BASIC_STRING &rhs)
 }
 
 template <BASIC_STRING_CLASSES>
-inline void stolen(BASIC_STRING &lhs, BASIC_STRING &rhs)
+inline void stole(BASIC_STRING &lhs, BASIC_STRING &rhs)
 {
-    lhs.stolen(rhs);
+    lhs.stole(rhs);
 }
 
 template <BASIC_STRING_CLASSES>

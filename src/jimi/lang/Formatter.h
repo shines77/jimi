@@ -710,14 +710,14 @@ formatter<Precision, StringType>::csharp_format_old(const StringType & fmt,
 namespace detail {
 
     template<size_t i, typename Tuple, typename StringType>
-    typename std::enable_if <(i == std::tuple_size<Tuple>::value)>::type
+    typename std::enable_if< (i == std::tuple_size<Tuple>::value) >::type
     JIMI_INLINE AppendArgByIndex(size_t, Tuple &, StringType &)
     {
         throw std::invalid_argument("arg index out of range");
     }
 
     template<size_t i = 0, typename Tuple, typename StringType>
-    typename std::enable_if <(i < std::tuple_size<Tuple>::value)>::type
+    typename std::enable_if< (i < std::tuple_size<Tuple>::value) >::type
     JIMI_INLINE AppendArgByIndex(size_t index, Tuple & tp, StringType & result)
     {
         if (i == index)
