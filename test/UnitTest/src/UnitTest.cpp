@@ -85,6 +85,60 @@ USING_NS_UNITEST;
 
 NS_UNITEST_BEGIN
 
+#define SetCPUAffinityMask2(m1, m2)             ((((m2) & 1) << 1) | ((m1) & 1))
+#define SetCPUAffinityMask3(m1, m2, m3)         ((((m3) & 1) << 2) | (((m2) & 1) << 1) | ((m1) & 1))
+#define SetCPUAffinityMask4(m1, m2, m3, m4)     ((((m4) & 1) << 3) | (((m3) & 1) << 2) | (((m2) & 1) << 1) | ((m1) & 1))
+
+#define SetCPUAffinityMask8(m1, m2, m3, m4, m5, m6, m7, m8) \
+    ((SetCPUAffinityMask4(m5, m6, m7, m8) << 4) | SetCPUAffinityMask4(m1, m2, m3, m4))
+
+void set_thread_affinity(DWORD dwCPUMask)
+{
+    bool echo = false;
+#if defined(_WIN32) || defined(_WIN64)
+    if (echo)
+        printf("\n");
+    HANDLE hCurrentProcess = GetCurrentProcess();
+    DWORD dwProcessAffinity = 0, dwSystemAffinity = 0;
+    DWORD dwAffinityMask = SetCPUAffinityMask4(1, 0, 0, 0);
+    BOOL bAffResult;
+    if (dwCPUMask != 0)
+        dwAffinityMask = dwCPUMask;
+    bAffResult = GetProcessAffinityMask(hCurrentProcess, &dwProcessAffinity, &dwSystemAffinity);
+    if (bAffResult) {
+        if (dwProcessAffinity != dwSystemAffinity) {
+            if (echo)
+                printf("This process can not utilize all processors.\n");
+        }
+
+        while ((dwAffinityMask != 0) && (dwAffinityMask <= dwProcessAffinity)) {
+            // Check to make sure we can utilize this processsor first.
+            if ((dwAffinityMask & dwProcessAffinity) != 0) {
+                bAffResult = SetProcessAffinityMask(hCurrentProcess, dwAffinityMask);
+                if (bAffResult) {
+                    // Wait for the process affinity effected
+                    Sleep(0);
+                    //
+                    if (echo)
+                        printf("SetProcessAffinityMask(): dwAffinityMask = 0x%08X\n", dwAffinityMask);
+                    DWORD dwProcessAffinityNew = 0;
+                    bAffResult = GetProcessAffinityMask(hCurrentProcess, &dwProcessAffinityNew, &dwSystemAffinity);
+                    if (dwProcessAffinityNew == dwAffinityMask) {
+                        if (echo)
+                            printf("SetProcessAffinityMask(): Success.\n");
+                        bAffResult = SetThreadAffinityMask(GetCurrentThread(), dwAffinityMask);
+                        Sleep(0);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    if (echo)
+        printf("\n");
+#endif  /* _WIN32 || _WIN64 */
+}
+
 /* 从size转换成KB, MB, GB, TB */
 
 int get_bytes_display(char *buf, size_t buf_size, uint32_t size)
@@ -153,7 +207,7 @@ void String_Performance_Test()
     double time1, time2, time3, time4;
     double time5, time6, time7, time8;
     int i, j = 0, loop_times = 0;
-    stop_watch sw;
+    jimi::stop_watch sw;
 
     sw.restart();
     for (i = 0; i < (LOOP_TIMES >> 0); ++i) {
@@ -267,7 +321,7 @@ void String_Performance_Test2()
     double time1, time2, time3, time4;
     double time5, time6, time7, time8;
     int i, j = 0, loop_times = 0;
-    stop_watch sw;
+    jimi::stop_watch sw;
 
     sw.restart();
     for (i = 0; i < (LOOP_TIMES >> 0); ++i) {
@@ -403,7 +457,7 @@ void String_Base_Test()
     int i;
     double time;
     int loop_times = 9999999;
-    stop_watch sw;
+    jimi::stop_watch sw;
 
 #if 1
     jimi::string str1 = "abcdefg";
@@ -511,12 +565,12 @@ void String_Base_Test()
         sw.stop();
         time = sw.getMillisec();
 
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
         printf("        str.format(\"{0}, {1}, {2}, {{3}, {3}\",\n"
                "                    111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
 
         jimi::string strTest2((size_t)128);
         //strTest2.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
@@ -530,12 +584,12 @@ void String_Base_Test()
         sw.stop();
         time = sw.getMillisec();
 
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
         printf("        str.format_c(\"{0}, {1}, {2}, {{3}, {3}\", \"%%d %%s %%d %%s\",\n"
                "                      111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
 
         jimi::string strTest2((size_t)128);
         strTest2.format_c("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
@@ -548,17 +602,79 @@ void String_Base_Test()
         sw.stop();
         time = sw.getMillisec();
 
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
         printf("        str.append_format_c(\"%%d, %%s, %%d, {3}, %%s\",\n"
                "                            111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
 
         jimi::string strTest2((size_t)128);
         strTest2.append_format_c("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
         delta = strTest2.size();
 #endif
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+
+    {
+        int delta;
+        jimi::string strTest((size_t)999999999);
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strTest.append_format((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str.append_format(111, \", \", \"222erer\", \", \",\n"
+               "                          33333, \", \", \"{3}, \", \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        jimi::string strTest2((size_t)128);
+        strTest2.append_format((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+
+    {
+        int delta;
+        jimi::string strTest((size_t)999999999);
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strTest.append_format((unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str.append_format(num1, \", \", buf1, \", \",\n"
+               "                          num2, \", \", \"{3}, \", buf2);\n");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        jimi::string strTest2((size_t)128);
+        strTest2.append_format((unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
+        delta = strTest2.size();
+
+        std::string strStd2 = strTest2.toStdString();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
 
@@ -582,12 +698,12 @@ void String_Base_Test()
         sw.stop();
         time = sw.getMillisec();
 
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
         printf("        str = formator.append(111, \", \", \"222erer\", \", \",\n"
                "                              33333, \", \", \"{3}, \", \"ffffff44\");\n");
         printf("    }\n\n");
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
 
         jimi::string strTest2;
         strTest2 = formator.append((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
@@ -622,19 +738,18 @@ void String_Base_Test()
 
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            strTest.clear();
             //delta = formator.append_to(strTest, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
             delta = formator.append_to(strTest, (unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
         printf("        n = formator.append_to(str, 111, \", \", \"222erer\", \", \",\n"
                "                               33333, \", \", \"{3}, \", \"ffffff44\");\n");
         printf("    }\n\n");
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
 
         jimi::string strTest2;
         delta = formator.append_to(strTest2, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
@@ -656,19 +771,18 @@ void String_Base_Test()
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            strTest.clear();
             //strTest = formator.csharp_format_old("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
             strTest = formator.csharp_format_old("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
         printf("        str = formator.csharp_format_old(\"{0}, {1}, {2}, {{3}, {3}\",\n"
                "                                         111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
 
         jimi::string strTest2;
         //strTest2 = formator.csharp_format_old("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
@@ -691,19 +805,18 @@ void String_Base_Test()
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            strTest.clear();
             //delta = formator.csharp_format_old_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
             delta = formator.csharp_format_old_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
         printf("        n = formator.csharp_format_old_to(str, \"{0}, {1}, {2}, {{3}, {3}\",\n"
                "                                          111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
 
         jimi::string strTest2;
         //delta = formator.csharp_format_old_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
@@ -721,28 +834,158 @@ void String_Base_Test()
 #if 1
     {
         int delta;
-        //jimi::string strTest((size_t)1024);
         jimi::string strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            strTest.clear();
+            //strTest = formator.csharp_format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            strTest = formator.csharp_format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str = formator.csharp_format(\"{0}, {1}, {2}, {{3}, {3}\",\n"
+               "                                     111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        jimi::string strTest2;
+        //strTest2 = formator.csharp_format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        strTest2 = formator.csharp_format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
+        int delta;
+        jimi::string strTest;
+        jimi::formatter<> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            //delta = formator.csharp_format_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            delta = formator.csharp_format_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        n = formator.csharp_format_to(str, \"{0}, {1}, {2}, {{3}, {3}\",\n"
+               "                                      111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        jimi::string strTest2;
+        //delta = formator.csharp_format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        delta = formator.csharp_format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
+        int delta;
+        jimi::string strTest;
+        jimi::formatter<> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            //delta = formator.csharp_format_to_new(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            delta = formator.csharp_format_to_new(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        n = formator.csharp_format_to_new(str, \"{0}, {1}, {2}, {{3}, {3}\",\n"
+               "                                          111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        jimi::string strTest2;
+        //delta = formator.csharp_format_to_new(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        delta = formator.csharp_format_to_new(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
+        int delta;
+        jimi::string strTest;
+        jimi::formatter<> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
             delta = formator.format_fast_to(strTest, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
             //delta = formator.format_fast_to(strTest, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
         printf("        n = formator.format_fast_to(str, \"?, ?, ?, ??3}, ?\",\n"
                "                                    111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
 
         jimi::string strTest2;
         delta = formator.format_fast_to(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
         //delta = formator.format_fast_to(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
+        int delta;
+        jimi::string strTest;
+        jimi::formatter<> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            delta = formator.format_fast_to_new(strTest, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            //delta = formator.format_fast_to_new(strTest, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        n = formator.format_fast_to_new(str, \"?, ?, ?, ??3}, ?\",\n"
+               "                                        111, \"222erer\", 33333, \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        jimi::string strTest2;
+        delta = formator.format_fast_to_new(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        //delta = formator.format_fast_to_new(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
@@ -761,19 +1004,18 @@ void String_Base_Test()
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            strTest.clear();
             delta = formator.format_fast_to2(strTest, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
             //delta = formator.format_fast_to2(strTest, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
         printf("        n = formator.format_fast_to2(str, \"?, ?, ?, ??3}, ?\",\n"
                "                                     111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
 
         jimi::string strTest2;
         delta = formator.format_fast_to2(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
@@ -787,68 +1029,6 @@ void String_Base_Test()
         printf("\n");
     }
 #endif
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-
-    {
-        int delta;
-        jimi::string strTest((size_t)999999999);
-        sw.restart();
-        for (i = 0; i < loop_times; ++i) {
-            strTest.append_format((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
-        }
-        sw.stop();
-        time = sw.getMillisec();
-
-        printf("===================================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        str.append_format(111, \", \", \"222erer\", \", \",\n"
-               "                          33333, \", \", \"{3}, \", \"ffffff44\");\n");
-        printf("    }\n\n");
-        printf("===================================================================================\n\n");
-
-        jimi::string strTest2((size_t)128);
-        strTest2.append_format((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
-        delta = strTest2.size();
-
-        printf("str.c_str() = %s\n\n", strTest2.c_str());
-
-        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
-        printf("strTest.size()  = %d bytes\n", strTest.size());
-        printf("\n");
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-
-    {
-        int delta;
-        jimi::string strTest((size_t)999999999);
-        sw.restart();
-        for (i = 0; i < loop_times; ++i) {
-            strTest.append_format((unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
-        }
-        sw.stop();
-        time = sw.getMillisec();
-
-        printf("===================================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        str.append_format(num1, \", \", buf1, \", \",\n"
-               "                          num2, \", \", \"{3}, \", buf2);\n");
-        printf("    }\n\n");
-        printf("===================================================================================\n\n");
-
-        jimi::string strTest2((size_t)128);
-        strTest2.append_format((unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
-        delta = strTest2.size();
-
-        std::string strStd2 = strTest2.toStdString();
-
-        printf("str.c_str() = %s\n\n", strTest2.c_str());
-
-        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
-        printf("strTest.size()  = %d bytes\n", strTest.size());
-        printf("\n");
-    }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -866,12 +1046,12 @@ void String_Base_Test()
         sw.stop();
         time = sw.getMillisec();
 
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
         printf("        str = format(\"{0}, {1}, {2}, $3}, {3}\",\n"
                "                      111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
 
         std::string str_cpp11b;
         str_cpp11b = qicosmos::format("{0}, {1}, {2}, $3}, {3}", 111, "222erer", 33333, "ffffff44");
@@ -902,12 +1082,12 @@ void String_Base_Test()
         sw.stop();
         time = sw.getMillisec();
 
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
         printf("        str = sprintf(buf, \"%%d, %%s, %%d, {3}, %%s\",\n"
                "                      111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
-        printf("===================================================================================\n\n");
+        printf("==============================================================================\n\n");
 
         std::string str_cfmt2;
         sprintf(buf, "%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
@@ -923,6 +1103,300 @@ void String_Base_Test()
 #endif
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
+}
+
+void String_Format_Test()
+{
+    int i;
+    double time;
+    int loop_times = 9999999;
+    jimi::stop_watch sw;
+
+#ifndef _DEBUG
+    loop_times = 999999;
+#else
+    loop_times = 9999;
+#endif
+
+#if 1
+    {
+        int delta;
+        jimi::string strTest;
+        jimi::formatter<> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            strTest = formator.csharp_format("{99} {99} {99} {99} {99}",
+                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        str = formator.csharp_format(\"{99} {99} {99} {99} {99}\",\n"
+               "                                     111, \", \", \"222erer\", \", \",\n"
+               "                                     33333, \", \", \"{3}, \", \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        jimi::string strTest2;
+        strTest2 = formator.csharp_format("{99} {99} {99} {99} {99}",
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
+        int delta;
+        jimi::string strTest;
+        jimi::formatter<> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            //strTest.clear();
+            delta = formator.csharp_format_to(strTest,
+                                              //"{1} {1} {1} {1} {1}",
+                                              "{99} {99} {99} {99} {99}",
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        n = formator.csharp_format_to(str, \"{99} {99} {99} {99} {99}\",\n"
+               "                                      111, \", \", \"222erer\", \", \",\n"
+               "                                      33333, \", \", \"{3}, \", \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        jimi::string strTest2;
+        delta = formator.csharp_format_to(strTest2,
+                                          "{1} {1} {1} {1} {1}",
+                                          //"{99} {99} {99} {99} {99}",
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
+        int delta;
+        jimi::string strTest;
+        jimi::formatter<> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            //strTest.clear();
+            delta = formator.csharp_format_to_new(strTest,
+                                                  //"{1} {1} {1} {1} {1}",
+                                                  "{99} {99} {99} {99} {99}",
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        n = formator.csharp_format_to_new(str, \"{99} {99} {99} {99} {99}\",\n"
+               "                                          111, \", \", \"222erer\", \", \",\n"
+               "                                          33333, \", \", \"{3}, \", \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        jimi::string strTest2;
+        delta = formator.csharp_format_to_new(strTest2,
+                                              //"{1} {1} {1} {1} {1}",
+                                              "{99} {99} {99} {99} {99}",
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
+        int delta;
+        jimi::string strTest;
+        jimi::formatter<> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            //strTest.clear();
+            delta = formator.csharp_format_old_to(strTest,
+                                                  //"{1} {1} {1} {1} {1}",
+                                                  "{99} {99} {99} {99} {99}",
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        n = formator.csharp_format_old_to(str, \"{99} {99} {99} {99} {99}\",\n"
+               "                                          111, \", \", \"222erer\", \", \",\n"
+               "                                          33333, \", \", \"{3}, \", \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        jimi::string strTest2;
+        delta = formator.csharp_format_old_to(strTest2,
+                                              //"{1} {1} {1} {1} {1}",
+                                              "{99} {99} {99} {99} {99}",
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
+        int delta;
+        jimi::string strTest;
+        jimi::formatter<> formator;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            //strTest.clear();
+            delta = formator.format_fast_to_new(strTest,
+                                                //"{1} {1} {1} {1} {1}",
+                                                "? ? ? ? ?",
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        n = formator.format_fast_to_new(str, \"? ? ? ? ?\",\n"
+               "                                        111, \", \", \"222erer\", \", \",\n"
+               "                                        33333, \", \", \"{3}, \", \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        jimi::string strTest2;
+        delta = formator.format_fast_to_new(strTest2,
+                                            //"{1} {1} {1} {1} {1}",
+                                            "? ? ? ? ?",
+                                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
 }
 
 static const unsigned char s_toUpper[] =
@@ -1064,7 +1538,7 @@ void Jm_StrLwr_Verify()
     int alignment, offset;
     char *buffer1, *buffer2, *buffer3, *buffer4;
     char *strTest1, *strTest2, *temp;
-    stop_watch sw;
+    jimi::stop_watch sw;
     char checkCharList[] = { '@', 'A', 'Q', 'Z', '[', 'a', 'q', 'z', '0', ' ', '\b' };
     int sizeCharList = jm_countof(checkCharList);
 
@@ -1546,7 +2020,7 @@ void Fast_StrLen_Test()
     double time1, time2, time3, time4;
     double time5, time6, time7, time8;
     int i, j = 0, loop_times = 0;
-    stop_watch sw;
+    jimi::stop_watch sw;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2086,7 +2560,7 @@ void Memcpy_Test()
     double time1, time2, time3, time4;
     double time5, time6, time7, time8;
     int i, j, loop_times;
-    stop_watch sw;
+    jimi::stop_watch sw;
 #if USE_BUFFER_VERIFY
     bool verify_ok1, verify_ok2;
 #endif
@@ -2343,7 +2817,7 @@ void Char_Traits_Test()
     const int LOOP_TIMES = 50000;
 #endif
     double time1, time2, time3;
-    stop_watch sw;
+    jimi::stop_watch sw;
     int i, j;
 
     char *pstr1, *pstr2, *pstr3, *pstr4, *pstr;
@@ -2421,7 +2895,7 @@ void Char_Traits_Test()
 
 void win_iconv_ansi2unicode_test(const char *szTest, bool echo_result)
 {
-    stop_watch sw;
+    jimi::stop_watch sw;
 #ifdef _DEBUG
     const int loop_times = 2000;
 #else
@@ -2562,7 +3036,7 @@ void win_iconv_ansi2unicode_test(const char *szTest, bool echo_result)
 
 void win_iconv_unicode2ansi_test(const wchar_t *szTest, bool echo_result)
 {
-    stop_watch sw;
+    jimi::stop_watch sw;
 #ifdef _DEBUG
     const int loop_times = 2000;
 #else
@@ -2871,6 +3345,9 @@ void template_inherit_test()
 
 int UnitTest_Main(int argc, char *argv[])
 {
+    // 设置进程和线程的亲缘性
+    set_thread_affinity(0);
+
     // 设置CRTDBG的环境(Debug模式下, 检查内存越界和内存泄漏问题)
     jimi_set_crtdbg_env(1, 1);
 
@@ -2883,7 +3360,7 @@ int UnitTest_Main(int argc, char *argv[])
         sLog.info(strCmdLine.c_str());
     }
 
-#if 1
+#if 0
     if (true) {
         template_inherit_test();
         ::system("pause");
@@ -2963,7 +3440,7 @@ int UnitTest_Main(int argc, char *argv[])
     IEEE754_Double_Test();
 #endif
 
-#if 1
+#if 0
     Emplace_Test();
 #endif
 
@@ -2976,6 +3453,15 @@ int UnitTest_Main(int argc, char *argv[])
 #if 1
     String_Base_Test();
     if (true && 0) {
+        ::system("pause");
+        sLog.log_end();
+        return 0;
+    }
+#endif
+
+#if 1
+    String_Format_Test();
+    if (true && 1) {
         ::system("pause");
         sLog.log_end();
         return 0;
