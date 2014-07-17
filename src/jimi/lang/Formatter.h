@@ -74,10 +74,18 @@ public:
 
     void setDetail(unsigned int _align, unsigned int _fill,
                    unsigned int _width, unsigned int _precision) {
-        align       = (unsigned short)_align;
-        fill        = (unsigned short)_fill;
-        width       = (unsigned short)_width;
-        precision   = (unsigned short)_precision;
+        if (_align == detail::AlignNone || _align == detail::AlignLeft
+            || _align == detail::AlignRight)
+            align = (unsigned short)_align;
+        else
+            align = detail::AlignNone;
+        if (_fill == detail::FillNone || _fill == detail::FillSpace
+            || _fill == detail::FillZero)
+            fill = (unsigned short)_fill;
+        else
+            fill = detail::FillNone;
+        width     = (unsigned short)_width;
+        precision = (unsigned short)_precision;
     }
     void setDetail(const char_type *fmt) {
         align       = (unsigned short)0;
@@ -108,9 +116,17 @@ public:
     ~integer_setting() {}
 
     void setDetail(unsigned int _align, unsigned int _fill, unsigned int _width) {
-        align       = (unsigned short)_align;
-        fill        = (unsigned short)_fill;
-        width       = _width;
+        if (_align == detail::AlignNone || _align == detail::AlignLeft
+            || _align == detail::AlignRight)
+            align = (unsigned short)_align;
+        else
+            align = detail::AlignNone;
+        if (_fill == detail::FillNone || _fill == detail::FillSpace
+            || _fill == detail::FillZero)
+            fill = (unsigned short)_fill;
+        else
+            fill = detail::FillNone;
+        width = _width;
     }
     void setDetail(const char_type *fmt) {
         align       = (unsigned short)0;
@@ -139,9 +155,17 @@ public:
     ~string_setting() {}
 
     void setDetail(unsigned int _align, unsigned int _fill, unsigned int _width) {
-        align       = (unsigned short)_align;
-        fill        = (unsigned short)_fill;
-        width       = _width;
+        if (_align == detail::AlignNone || _align == detail::AlignLeft
+            || _align == detail::AlignRight)
+            align = (unsigned short)_align;
+        else
+            align = detail::AlignNone;
+        if (_fill == detail::FillNone || _fill == detail::FillSpace
+            || _fill == detail::FillZero)
+            fill = (unsigned short)_fill;
+        else
+            fill = detail::FillNone;
+        width = _width;
     }
     void setDetail(const char_type *fmt) {
         align       = (unsigned short)0;
@@ -154,11 +178,260 @@ public:
 };
 
 template <typename char_type = char>
-class formatter_detail : public jimi::NonAssignable
+class format_detail : public jimi::NonAssignable
 {
 public:
-    formatter_detail() {}
-    ~formatter_detail() {}
+    format_detail() {}
+    ~format_detail() {}
+
+public:
+    // setting detail info
+
+    // float, double and decimal's align
+    format_detail & setFloatAlign(unsigned int _align) {
+        floats.align = _align;
+        return *this;
+    }
+    format_detail & setDoubleAlign(unsigned int _align) {
+        doubles.align = _align;
+        return *this;
+    }
+    format_detail & setDecimalAlign(unsigned int _align) {
+        floats.align  = _align;
+        doubles.align = _align;
+        return *this;
+    }
+
+    // float, double and decimal's fill
+    format_detail & setFloatFill(unsigned int _fill) {
+        floats.fill  = _fill;
+        return *this;
+    }
+    format_detail & setDoubleFill(unsigned int _fill) {
+        doubles.fill  = _fill;
+        return *this;
+    }
+    format_detail & setDecimalFill(unsigned int _fill) {
+        floats.fill   = _fill;
+        doubles.fill  = _fill;
+        return *this;
+    }
+
+    // float, double and decimal's width
+    format_detail & setFloatWidth(unsigned int _width) {
+        floats.width = (unsigned short)_width;
+        return *this;
+    }
+    format_detail & setDoubleWidth(unsigned int _width) {
+        doubles.width = (unsigned short)_width;
+        return *this;
+    }
+    format_detail & setDecimalWidth(unsigned int _width) {
+        floats.width  = (unsigned short)_width;
+        doubles.width = (unsigned short)_width;
+        return *this;
+    }
+
+    // float, double and decimal's precision
+    format_detail & setFloatPrecision(unsigned int _precision) {
+        floats.precision = (unsigned short)_precision;
+        return *this;
+    }
+    format_detail & setDoublePrecision(unsigned int _precision) {
+        doubles.precision = (unsigned short)_precision;
+        return *this;
+    }
+    format_detail & setDecimalPrecision(unsigned int _precision) {
+        floats.precision  = (unsigned short)_precision;
+        doubles.precision = (unsigned short)_precision;
+        return *this;
+    }
+
+    // float, double and decimal's detail
+    format_detail & setFloat(unsigned int _align, unsigned int _fill,
+                         unsigned int _width, unsigned int _precision) {
+        floats.setDetail(_align, _fill, _width, _precision);
+        return *this;
+    }
+    format_detail & setDouble(unsigned int _align, unsigned int _fill,
+                          unsigned int _width, unsigned int _precision) {
+        doubles.setDetail(_align, _fill, _width, _precision);
+        return *this;
+    }
+    format_detail & setDecimal(unsigned int _align, unsigned int _fill,
+                           unsigned int _width, unsigned int _precision) {
+        floats.setDetail(_align, _fill, _width, _precision);
+        doubles.setDetail(_align, _fill, _width, _precision);
+        return *this;
+    }
+
+    // float, double and decimal's fromat string detail
+    format_detail & setFloat(const char_type *fmt) {
+        floats.setDetail(fmt);
+        return *this;
+    }
+    format_detail & setDouble(const char_type *fmt) {
+        doubles.setDetail(fmt);
+        return *this;
+    }
+    format_detail & setDecimal(const char_type *fmt) {
+        floats.setDetail(fmt);
+        doubles.setDetail(fmt);
+        return *this;
+    }
+
+    // int32, int64 and integer's align
+    format_detail & setInt32Align(unsigned int _align) {
+        int32s.align = _align;
+        return *this;
+    }
+    format_detail & setInt64Align(unsigned int _align) {
+        int64s.align = _align;
+        return *this;
+    }
+    format_detail & setIntegerAlign(unsigned int _align) {
+        int32s.align = _align;
+        int64s.align = _align;
+        return *this;
+    }
+
+    // int32, int64 and integer's fill
+    format_detail & setInt32Fill(unsigned int _fill) {
+        int32s.fill  = _fill;
+        return *this;
+    }
+    format_detail & setInt64Fill(unsigned int _fill) {
+        int64s.fill  = _fill;
+        return *this;
+    }
+    format_detail & setIntegerFill(unsigned int _fill) {
+        int32s.fill  = _fill;
+        int64s.fill  = _fill;
+        return *this;
+    }
+
+    // int32, int64 and integer's width
+    format_detail & setInt32Width(unsigned int _width) {
+        int32s.width = _width;
+        return *this;
+    }
+    format_detail & setInt64Width(unsigned int _width) {
+        int64s.width = _width;
+        return *this;
+    }
+    format_detail & setIntegerWidth(unsigned int _width) {
+        int32s.width = _width;
+        int64s.width = _width;
+        return *this;
+    }
+
+    // int32, int64 and integer's detail
+    format_detail & setInt32(unsigned int _align, unsigned int _fill,
+                         unsigned int _width) {
+        int32s.setDetail(_align, _fill, _width);
+        return *this;
+    }
+    format_detail & setInt64(unsigned int _align, unsigned int _fill,
+                         unsigned int _width) {
+        int64s.setDetail(_align, _fill, _width);
+        return *this;
+    }
+    format_detail & setInteger(unsigned int _align, unsigned int _fill,
+                           unsigned int _width) {
+        int32s.setDetail(_align, _fill, _width);
+        int64s.setDetail(_align, _fill, _width);
+        return *this;
+    }
+
+    // int32, int64 and integer's fromat string detail
+    format_detail & setInt32(const char_type *fmt) {
+        int32s.setDetail(fmt);
+        return *this;
+    }
+    format_detail & setInt64(const char_type *fmt) {
+        int64s.setDetail(fmt);
+        return *this;
+    }
+    format_detail & setInteger(const char_type *fmt) {
+        int32s.setDetail(fmt);
+        int64s.setDetail(fmt);
+        return *this;
+    }
+
+    // string's detail info
+    format_detail & setStringAlign(unsigned int _align) {
+        strings.align = _align;
+        return *this;
+    }
+    format_detail & setStringFill(unsigned int _fill) {
+        strings.fill  = _fill;
+        return *this;
+    }
+    format_detail & setStringWidth(unsigned int _width) {
+        strings.width = _width;
+        return *this;
+    }
+    format_detail & setString(unsigned int _align, unsigned int _fill,
+                          unsigned int _width) {
+        strings.setDetail(_align, _fill, _width);
+        return *this;
+    }
+    format_detail & setString(const char_type *fmt) {
+        strings.setDetail(fmt);
+        return *this;
+    }
+
+    // hex32 and hex64's align
+    format_detail & setHex32Align(unsigned int _align) {
+        int32s.align = _align;
+        return *this;
+    }
+    format_detail & setHex64Align(unsigned int _align) {
+        int64s.align = _align;
+        return *this;
+    }
+
+    // hex32 and hex64's fill
+    format_detail & setHex32Fill(unsigned int _fill) {
+        int32s.fill  = _fill;
+        return *this;
+    }
+    format_detail & setHex64Fill(unsigned int _fill) {
+        int64s.fill  = _fill;
+        return *this;
+    }
+
+    // hex32 and hex64's width
+    format_detail & setHex32Width(unsigned int _width) {
+        int32s.width = _width;
+        return *this;
+    }
+    format_detail & setHex64Width(unsigned int _width) {
+        int64s.width = _width;
+        return *this;
+    }
+
+    // hex32 and hex64's detail
+    format_detail & setHex32(unsigned int _align, unsigned int _fill,
+                         unsigned int _width) {
+        int32s.setDetail(_align, _fill, _width);
+        return *this;
+    }
+    format_detail & setHex64(unsigned int _align, unsigned int _fill,
+                         unsigned int _width) {
+        int64s.setDetail(_align, _fill, _width);
+        return *this;
+    }
+
+    // hex32 and hex64's fromat string detail
+    format_detail & setHex32(const char_type *fmt) {
+        int32s.setDetail(fmt);
+        return *this;
+    }
+    format_detail & setHex64(const char_type *fmt) {
+        int64s.setDetail(fmt);
+        return *this;
+    }
 
 public:
     float_setting<char_type>   doubles;
@@ -173,7 +446,7 @@ public:
 
 #define DEFAULT_FLOAT_PRECISION     0
 
-template <int Precision = DEFAULT_FLOAT_PRECISION, typename StringType = jimi::string>
+template <typename StringType = jimi::string, int Precision = DEFAULT_FLOAT_PRECISION>
 class formatter : public jimi::NonAssignable
 {
 public:
@@ -183,7 +456,7 @@ public:
     typedef typename std::basic_string<value_type>  StdStringType;
 
 public:
-    formatter() { setFloatPrecision(Precision); setDoublePrecision(Precision); }
+    formatter() {}
     ~formatter() {}
 
 public:
@@ -268,255 +541,6 @@ public:
     template <typename ... Args>
     StringType append_l(std::locale loc, Args const ... args);
 
-public:
-    // setting detail info
-
-    // float, double and decimal's align
-    formatter & setFloatAlign(unsigned int _align) {
-        detail.floats.align = _align;
-        return *this;
-    }
-    formatter & setDoubleAlign(unsigned int _align) {
-        detail.doubles.align = _align;
-        return *this;
-    }
-    formatter & setDecimalAlign(unsigned int _align) {
-        detail.floats.align  = _align;
-        detail.doubles.align = _align;
-        return *this;
-    }
-
-    // float, double and decimal's fill
-    formatter & setFloatFill(unsigned int _fill) {
-        detail.floats.fill  = _fill;
-        return *this;
-    }
-    formatter & setDoubleFill(unsigned int _fill) {
-        detail.doubles.fill  = _fill;
-        return *this;
-    }
-    formatter & setDecimalFill(unsigned int _fill) {
-        detail.floats.fill   = _fill;
-        detail.doubles.fill  = _fill;
-        return *this;
-    }
-
-    // float, double and decimal's width
-    formatter & setFloatWidth(unsigned int _width) {
-        detail.floats.width = (unsigned short)_width;
-        return *this;
-    }
-    formatter & setDoubleWidth(unsigned int _width) {
-        detail.doubles.width = (unsigned short)_width;
-        return *this;
-    }
-    formatter & setDecimalWidth(unsigned int _width) {
-        detail.floats.width  = (unsigned short)_width;
-        detail.doubles.width = (unsigned short)_width;
-        return *this;
-    }
-
-    // float, double and decimal's precision
-    formatter & setFloatPrecision(unsigned int _precision) {
-        detail.floats.precision = (unsigned short)_precision;
-        return *this;
-    }
-    formatter & setDoublePrecision(unsigned int _precision) {
-        detail.doubles.precision = (unsigned short)_precision;
-        return *this;
-    }
-    formatter & setDecimalPrecision(unsigned int _precision) {
-        detail.floats.precision  = (unsigned short)_precision;
-        detail.doubles.precision = (unsigned short)_precision;
-        return *this;
-    }
-
-    // float, double and decimal's detail
-    formatter & setFloat(unsigned int _align, unsigned int _fill,
-                         unsigned int _width, unsigned int _precision) {
-        detail.floats.setDetail(_align, _fill, _width, _precision);
-        return *this;
-    }
-    formatter & setDouble(unsigned int _align, unsigned int _fill,
-                          unsigned int _width, unsigned int _precision) {
-        detail.doubles.setDetail(_align, _fill, _width, _precision);
-        return *this;
-    }
-    formatter & setDecimal(unsigned int _align, unsigned int _fill,
-                           unsigned int _width, unsigned int _precision) {
-        detail.floats.setDetail(_align, _fill, _width, _precision);
-        detail.doubles.setDetail(_align, _fill, _width, _precision);
-        return *this;
-    }
-
-    // float, double and decimal's fromat string detail
-    formatter & setFloat(const value_type *fmt) {
-        detail.floats.setDetail(fmt);
-        return *this;
-    }
-    formatter & setDouble(const value_type *fmt) {
-        detail.doubles.setDetail(fmt);
-        return *this;
-    }
-    formatter & setDecimal(const value_type *fmt) {
-        detail.floats.setDetail(fmt);
-        detail.doubles.setDetail(fmt);
-        return *this;
-    }
-
-    // int32, int64 and integer's align
-    formatter & setInt32Align(unsigned int _align) {
-        detail.int32s.align = _align;
-        return *this;
-    }
-    formatter & setInt64Align(unsigned int _align) {
-        detail.int64s.align = _align;
-        return *this;
-    }
-    formatter & setIntegerAlign(unsigned int _align) {
-        detail.int32s.align = _align;
-        detail.int64s.align = _align;
-        return *this;
-    }
-
-    // int32, int64 and integer's fill
-    formatter & setInt32Fill(unsigned int _fill) {
-        detail.int32s.fill  = _fill;
-        return *this;
-    }
-    formatter & setInt64Fill(unsigned int _fill) {
-        detail.int64s.fill  = _fill;
-        return *this;
-    }
-    formatter & setIntegerFill(unsigned int _fill) {
-        detail.int32s.fill  = _fill;
-        detail.int64s.fill  = _fill;
-        return *this;
-    }
-
-    // int32, int64 and integer's width
-    formatter & setInt32Width(unsigned int _width) {
-        detail.int32s.width = _width;
-        return *this;
-    }
-    formatter & setInt64Width(unsigned int _width) {
-        detail.int64s.width = _width;
-        return *this;
-    }
-    formatter & setIntegerWidth(unsigned int _width) {
-        detail.int32s.width = _width;
-        detail.int64s.width = _width;
-        return *this;
-    }
-
-    // int32, int64 and integer's detail
-    formatter & setInt32(unsigned int _align, unsigned int _fill,
-                         unsigned int _width) {
-        detail.int32s.setDetail(_align, _fill, _width);
-        return *this;
-    }
-    formatter & setInt64(unsigned int _align, unsigned int _fill,
-                         unsigned int _width) {
-        detail.int64s.setDetail(_align, _fill, _width);
-        return *this;
-    }
-    formatter & setInteger(unsigned int _align, unsigned int _fill,
-                           unsigned int _width) {
-        detail.int32s.setDetail(_align, _fill, _width);
-        detail.int64s.setDetail(_align, _fill, _width);
-        return *this;
-    }
-
-    // int32, int64 and integer's fromat string detail
-    formatter & setInt32(const value_type *fmt) {
-        detail.int32s.setDetail(fmt);
-        return *this;
-    }
-    formatter & setInt64(const value_type *fmt) {
-        detail.int64s.setDetail(fmt);
-        return *this;
-    }
-    formatter & setInteger(const value_type *fmt) {
-        detail.int32s.setDetail(fmt);
-        detail.int64s.setDetail(fmt);
-        return *this;
-    }
-
-    // string's detail info
-    formatter & setStringAlign(unsigned int _align) {
-        detail.strings.align = _align;
-        return *this;
-    }
-    formatter & setStringFill(unsigned int _fill) {
-        detail.strings.fill  = _fill;
-        return *this;
-    }
-    formatter & setStringWidth(unsigned int _width) {
-        detail.strings.width = _width;
-        return *this;
-    }
-    formatter & setString(unsigned int _align, unsigned int _fill,
-                          unsigned int _width) {
-        detail.strings.setDetail(_align, _fill, _width);
-        return *this;
-    }
-    formatter & setString(const value_type *fmt) {
-        detail.strings.setDetail(fmt);
-        return *this;
-    }
-
-    // hex32 and hex64's align
-    formatter & setHex32Align(unsigned int _align) {
-        detail.int32s.align = _align;
-        return *this;
-    }
-    formatter & setHex64Align(unsigned int _align) {
-        detail.int64s.align = _align;
-        return *this;
-    }
-
-    // hex32 and hex64's fill
-    formatter & setHex32Fill(unsigned int _fill) {
-        detail.int32s.fill  = _fill;
-        return *this;
-    }
-    formatter & setHex64Fill(unsigned int _fill) {
-        detail.int64s.fill  = _fill;
-        return *this;
-    }
-
-    // hex32 and hex64's width
-    formatter & setHex32Width(unsigned int _width) {
-        detail.int32s.width = _width;
-        return *this;
-    }
-    formatter & setHex64Width(unsigned int _width) {
-        detail.int64s.width = _width;
-        return *this;
-    }
-
-    // hex32 and hex64's detail
-    formatter & setHex32(unsigned int _align, unsigned int _fill,
-                         unsigned int _width) {
-        detail.int32s.setDetail(_align, _fill, _width);
-        return *this;
-    }
-    formatter & setHex64(unsigned int _align, unsigned int _fill,
-                         unsigned int _width) {
-        detail.int64s.setDetail(_align, _fill, _width);
-        return *this;
-    }
-
-    // hex32 and hex64's fromat string detail
-    formatter & setHex32(const value_type *fmt) {
-        detail.int32s.setDetail(fmt);
-        return *this;
-    }
-    formatter & setHex64(const value_type *fmt) {
-        detail.int64s.setDetail(fmt);
-        return *this;
-    }
-
 protected:
     // for format_to() ...
     template<typename T, typename ... Args>
@@ -549,19 +573,16 @@ protected:
 
     template<typename T, typename ... Args>
     static void append_to_next(StringType & result, const T & value, Args const ... args);
-
-protected:
-    formatter_detail<value_type> detail;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // csharp_format_old_to()
 ////////////////////////////////////////////////////////////////////////////////
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter<Precision, StringType>::csharp_format_old_to_next_args(
+void formatter<StringType, Precision>::csharp_format_old_to_next_args(
                                         StringType * arg_list, const T & value)
 {
     jimi_assert(arg_list != NULL);
@@ -571,10 +592,10 @@ void formatter<Precision, StringType>::csharp_format_old_to_next_args(
     }
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter<Precision, StringType>::csharp_format_old_to_next_args(
+void formatter<StringType, Precision>::csharp_format_old_to_next_args(
                                         StringType * arg_list, const T & value,
                                         Args const ... args)
 {
@@ -591,11 +612,11 @@ void formatter<Precision, StringType>::csharp_format_old_to_next_args(
 #undef  FORMAT_TO_USE_ALLOCA_ONSTACK
 #define FORMAT_TO_USE_ALLOCA_ONSTACK       0
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 typename StringType::size_type
-formatter<Precision, StringType>::csharp_format_old_to(
+formatter<StringType, Precision>::csharp_format_old_to(
                                     StringType & result, const value_type * fmt,
                                     Args const ... args)
 {
@@ -668,22 +689,22 @@ formatter<Precision, StringType>::csharp_format_old_to(
     return (result.size() - oldSize);
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 typename StringType::size_type
-formatter<Precision, StringType>::csharp_format_old_to(StringType & result,
+formatter<StringType, Precision>::csharp_format_old_to(StringType & result,
                                                        const StringType & fmt,
                                                        Args const ... args)
 {
     return format_to(result, fmt.c_str(), args...);
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 StringType
-formatter<Precision, StringType>::csharp_format_old(const value_type * fmt,
+formatter<StringType, Precision>::csharp_format_old(const value_type * fmt,
                                                     Args const ... args)
 {
     jimi::string result;
@@ -691,11 +712,11 @@ formatter<Precision, StringType>::csharp_format_old(const value_type * fmt,
     return result;
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 StringType
-formatter<Precision, StringType>::csharp_format_old(const StringType & fmt,
+formatter<StringType, Precision>::csharp_format_old(const StringType & fmt,
                                                     Args const ... args)
 {
     return csharp_format_old(fmt.c_str(), args...);
@@ -726,11 +747,11 @@ namespace detail {
 
 }  /* namespace of detail */
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 typename StringType::size_type
-formatter<Precision, StringType>::format_fast_to(StringType & result,
+formatter<StringType, Precision>::format_fast_to(StringType & result,
                                                  const value_type * fmt,
                                                  Args const ... args)
 {
@@ -787,33 +808,33 @@ formatter<Precision, StringType>::format_fast_to(StringType & result,
     return (result.size() - oldSize);
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 typename StringType::size_type
-formatter<Precision, StringType>::format_fast_to(StringType & result,
+formatter<StringType, Precision>::format_fast_to(StringType & result,
                                                  const StringType & fmt,
                                                  Args const ... args)
 {
     return format_fast_to2(result, fmt.c_str(), args...);
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 StringType
-formatter<Precision, StringType>::format_fast(const value_type * fmt, Args const ... args)
+formatter<StringType, Precision>::format_fast(const value_type * fmt, Args const ... args)
 {
     StringType result;
     format_fast_to(result, fmt, args...);
     return result;
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 StringType
-formatter<Precision, StringType>::format_fast(const StringType & fmt, Args const ... args)
+formatter<StringType, Precision>::format_fast(const StringType & fmt, Args const ... args)
 {
     return format_fast(fmt.c_str(), args...);
 
@@ -826,10 +847,10 @@ formatter<Precision, StringType>::format_fast(const StringType & fmt, Args const
 // format_fast_to2()
 ////////////////////////////////////////////////////////////////////////////////
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter<Precision, StringType>::format_fast_to2_next(StringType & result,
+void formatter<StringType, Precision>::format_fast_to2_next(StringType & result,
                                                             value_type* & fmt,
                                                             size_t index, size_t max_args,
                                                             const T & value)
@@ -871,10 +892,10 @@ void formatter<Precision, StringType>::format_fast_to2_next(StringType & result,
     }
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter<Precision, StringType>::format_fast_to2_next(StringType & result,
+void formatter<StringType, Precision>::format_fast_to2_next(StringType & result,
                                                             value_type* & fmt,
                                                             size_t index, size_t max_args,
                                                             const T & value, Args const ... args)
@@ -918,11 +939,11 @@ void formatter<Precision, StringType>::format_fast_to2_next(StringType & result,
     }
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 typename StringType::size_type
-formatter<Precision, StringType>::format_fast_to2(StringType & result,
+formatter<StringType, Precision>::format_fast_to2(StringType & result,
                                                   const value_type * fmt,
                                                   Args const ... args)
 {
@@ -942,22 +963,22 @@ formatter<Precision, StringType>::format_fast_to2(StringType & result,
     return (result.size() - oldSize);
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 typename StringType::size_type
-formatter<Precision, StringType>::format_fast_to2(StringType & result,
+formatter<StringType, Precision>::format_fast_to2(StringType & result,
                                                   const StringType & fmt,
                                                   Args const ... args)
 {
     return format_fast_to2(result, fmt.c_str(), args...);
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 StringType
-formatter<Precision, StringType>::format_fast2(const value_type * fmt,
+formatter<StringType, Precision>::format_fast2(const value_type * fmt,
                                                Args const ... args)
 {
     StringType result;
@@ -965,11 +986,11 @@ formatter<Precision, StringType>::format_fast2(const value_type * fmt,
     return result;
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 StringType
-formatter<Precision, StringType>::format_fast2(const StringType & fmt,
+formatter<StringType, Precision>::format_fast2(const StringType & fmt,
                                                Args const ... args)
 {
     return format_fast2(fmt.c_str(), args...);
@@ -987,29 +1008,29 @@ formatter<Precision, StringType>::format_fast2(const StringType & fmt,
 /*                                                                      */
 /************************************************************************/
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter<Precision, StringType>::append_to_next(StringType & result, const T & value)
+void formatter<StringType, Precision>::append_to_next(StringType & result, const T & value)
 {
     result.append(value);
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename T, typename ... Args>
 JIMI_INLINE
-void formatter<Precision, StringType>::append_to_next(StringType & result, const T & value,
+void formatter<StringType, Precision>::append_to_next(StringType & result, const T & value,
                                                       Args const ... args)
 {
     result.append(value);
     append_to_next(result, args...);
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_FORCEINLINE
-typename formatter<Precision, StringType>::StdStringType::size_type
-formatter<Precision, StringType>::append_to(StdStringType & result, Args const ... args)
+typename formatter<StringType, Precision>::StdStringType::size_type
+formatter<StringType, Precision>::append_to(StdStringType & result, Args const ... args)
 {
     StdStringType::size_type oldSize = result.size();
     StringType result_tmp;
@@ -1018,44 +1039,44 @@ formatter<Precision, StringType>::append_to(StdStringType & result, Args const .
     return result.size() - oldSize;
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_FORCEINLINE
 typename StringType::size_type
-formatter<Precision, StringType>::append_to(StringType & result, Args const ... args)
+formatter<StringType, Precision>::append_to(StringType & result, Args const ... args)
 {
     size_type oldSize = result.size();
     append_to_next(result, args...);
     return result.size() - oldSize;
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_FORCEINLINE
 typename StringType::size_type
-formatter<Precision, StringType>::append_to(value_type *buffer, size_t countOfElements,
+formatter<StringType, Precision>::append_to(value_type *buffer, size_t countOfElements,
                                             Args const ... args)
 {
     // TODO: Œ¥ µœ÷
     return 0;
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_FORCEINLINE
 StringType
-formatter<Precision, StringType>::append(Args const & ... args)
+formatter<StringType, Precision>::append(Args const & ... args)
 {
     StringType result;
     append_to_next(result, args...);
     return result;
 }
 
-template <int Precision, typename StringType>
+template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_FORCEINLINE
 StringType
-formatter<Precision, StringType>::append_l(std::locale loc, Args const ... args)
+formatter<StringType, Precision>::append_l(std::locale loc, Args const ... args)
 {
     StringType result;
     return result;

@@ -574,7 +574,7 @@ void String_Base_Test()
         int delta;
         //jimi::string strTest((size_t)1024);
         jimi::string strTest;
-        jimi::formatter<6> formator;
+        jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest = formator.append((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
@@ -608,11 +608,18 @@ void String_Base_Test()
         int delta;
         //jimi::string strTest((size_t)1024);
         jimi::string strTest;
-        jimi::formatter<6> formator;
-        auto fmtor = jimi::formatter<>().setFloat(jimi::detail::AlignRight, jimi::detail::FillNone, 3, 3)
+        jimi::formatter<> formator;
+        auto fmt_detail  = jimi::format_detail<>().setFloat(jimi::detail::AlignRight, jimi::detail::FillNone, 3, 3)
                                         .setDoublePrecision(6).setDouble(0, 0, 3, 0);
-        auto fmtor2 = jimi::formatter<>().setFloat("%0.3f").setDouble("%0.5f").setInt32("%-08d")
+        auto fmt_detail2 = jimi::format_detail<>().setFloat("%0.3f").setDouble("%0.5f").setInt32("%-08d")
                                          .setInt64("%+020d").setString("%-30s");
+                                         
+        fmt_detail.doubles.align = jimi::detail::AlignRight;
+        fmt_detail.doubles.fill  = jimi::detail::FillSpace;
+        fmt_detail.doubles.width = 3;
+        fmt_detail.doubles.precision = 6;
+        fmt_detail.floats.setDetail('-', '0', 3, 6);
+
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
@@ -646,7 +653,7 @@ void String_Base_Test()
         int delta;
         //jimi::string strTest((size_t)1024);
         jimi::string strTest;
-        jimi::formatter<6> formator;
+        jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
@@ -681,7 +688,7 @@ void String_Base_Test()
         int delta;
         //jimi::string strTest((size_t)1024);
         jimi::string strTest;
-        jimi::formatter<6> formator;
+        jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
@@ -716,7 +723,7 @@ void String_Base_Test()
         int delta;
         //jimi::string strTest((size_t)1024);
         jimi::string strTest;
-        jimi::formatter<6> formator;
+        jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
@@ -751,7 +758,7 @@ void String_Base_Test()
         int delta;
         //jimi::string strTest((size_t)1024);
         jimi::string strTest;
-        jimi::formatter<6> formator;
+        jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.clear();
