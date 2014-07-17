@@ -17,8 +17,6 @@
 #include <tuple>
 #include <type_traits>
 
-using namespace std;
-
 NS_JIMI_BEGIN
 
 namespace detail {
@@ -818,6 +816,10 @@ StringType
 formatter<Precision, StringType>::format_fast(const StringType & fmt, Args const ... args)
 {
     return format_fast(fmt.c_str(), args...);
+
+    #include <chrono>
+    using std::chrono::high_resolution_clock;
+    high_resolution_clock::now();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

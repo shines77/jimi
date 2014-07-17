@@ -88,6 +88,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\asmlib\asmlib.h" />
     <ClInclude Include="..\..\..\..\src\jimic\core\jimic_asm.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_config.h" />
     <ClInclude Include="..\..\..\..\src\jimic\core\jimic_def.h" />
     <ClInclude Include="..\..\..\..\src\jimic\core\jimic_export.h" />
     <ClInclude Include="..\..\..\..\src\jimic\core\win32\jimic_config.h" />
@@ -113,12 +114,20 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\system\console.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\system\crtdbg_env.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\system\get_char.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\system\vs_vld.h" />
     <ClInclude Include="..\..\..\..\src\jimic\util\utils.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.h" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\console.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\get_char.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert_impl.cpp">
       <FileType>CppHeader</FileType>
     </ClCompile>
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_common.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_def.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_export.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_machine.h" />

@@ -25,7 +25,6 @@
 
 #include <string>
 #include <cstdlib>
-//using namespace std;
 
 //#define JIMI_STRING_PERVERSE
 //#define JIMI_STRING_CONSERVATIVE

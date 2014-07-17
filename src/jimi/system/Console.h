@@ -9,6 +9,8 @@
 #include <jimi/core/jimi_def.h>
 #include <jimi/internal/NonCopyable.h>
 
+#include <jimic/system/get_char.h>
+
 #include <stdio.h>
 #include <conio.h>
 #include <stdarg.h>
@@ -51,11 +53,11 @@ public:
 #else
             printf("请按任意键继续 ...\n");
 #endif
-            keyCode = _getch();
+            keyCode = jimi_getch();
             printf("\n");
         }
         else {
-            keyCode = _getch();
+            keyCode = jimi_getch();
             if (echoInput)
                 printf("%c", keyCode);
         }

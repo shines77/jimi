@@ -87,6 +87,9 @@
     <Filter Include="src\jimic\util">
       <UniqueIdentifier>{4c9f0127-281e-4908-8cab-f8132ab1f0bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\jimic\system">
+      <UniqueIdentifier>{c848d8dd-192b-42b4-828d-9fa86df36104}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\jimi\jimi_all.h">
@@ -305,6 +308,24 @@
     <ClInclude Include="..\..\..\..\src\jimic\util\utils.h">
       <Filter>src\jimic\util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\system\console.h">
+      <Filter>src\jimic\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\system\crtdbg_env.h">
+      <Filter>src\jimic\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\system\vs_vld.h">
+      <Filter>src\jimic\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_config.h">
+      <Filter>src\jimi\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_config.h">
+      <Filter>src\jimic\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\system\get_char.h">
+      <Filter>src\jimic\system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">
@@ -336,6 +357,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert_impl.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\system\console.cpp">
+      <Filter>src\jimic\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.cpp">
+      <Filter>src\jimic\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\system\get_char.cpp">
+      <Filter>src\jimic\system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -22,7 +22,6 @@
 #if (defined(_MSC_VER) && (_MSC_VER >= 1700)) || defined(__GNUC__)
 #include <functional>   // std::less_equal, std::bind2nd
 #endif
-using namespace std;
 
 NS_JIMI_BEGIN
 
@@ -257,8 +256,8 @@ public:
     size_type size() const      { return _store.size(); }
     size_type capacity() const  { return _store.capacity(); }
 
-    // 为了提高效率, 允许 swap() 自己本身
-    void swap(basic_string &rhs)   { _store.swap(rhs._store); }
+    // 为了提高效率, 允许 swap() 对象本身
+    void swap(basic_string &rhs) { _store.swap(rhs._store); }
     // 但是 stole() 自己是不允许的..., 否则会把自己偷空...
     void stole(basic_string &rhs) { if (this != &rhs) _store.stole(rhs._store); }
 

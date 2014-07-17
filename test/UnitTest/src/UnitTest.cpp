@@ -2,19 +2,9 @@
 // UnitTest.cpp : 定义控制台应用程序的入口点。
 //
 
-// whether use crtdbg check?
-#ifndef USE_CRTDBG_CHECK
-#define USE_CRTDBG_CHECK    1
-#endif
-
-//
-// From: http://msdn.microsoft.com/zh-cn/library/e5ewb1h3%28v=vs.90%29.aspx
-// From: http://msdn.microsoft.com/en-us/library/x98tx3cf.aspx
-//
-#if USE_CRTDBG_CHECK
-#ifdef _DEBUG
-#define _CRTDBG_MAP_ALLOC
-#endif
+// whether use crtdbg check? / 是否使用 crtdbg 的内存泄露或越界检测?
+#ifndef JIMI_USE_CRTDBG_CHECK
+#define JIMI_USE_CRTDBG_CHECK    1
 #endif
 
 #include "UnitTest.h"
@@ -43,11 +33,17 @@
 #include <jimic/platform/win/fast_memcpy.h>
 #include <jimic/string/jmf_strings.h>
 #include <jimic/string/iconv_win.h>
+#include <jimic/system/console.h>
 
 #include <stdlib.h>
 #include <conio.h>
 #include <time.h>
 #include <intrin.h>
+
+// crtdbg_env.h must be behind the stdlib.h
+// crtdbg_env.h 必须放在 stdlib.h 之后
+#include <jimic/system/crtdbg_env.h>
+
 #include <string>
 #include <map>
 #include <locale>
@@ -75,52 +71,11 @@
  * for asmlib
  */
 #pragma comment(lib, "libacof32.lib")
+
+/**
+ * for boost::locale
+ */
 #pragma comment(lib, "libboost_locale-vc120-mt-gd-1_55.lib")
-
-/* 基于CRT的内存泄漏检测 */
-#if USE_CRTDBG_CHECK
-
-//
-// C++中基于CRT的内存泄漏检测
-//
-// Reference: http://www.cnblogs.com/weiym/archive/2013/02/25/2932810.html
-//
-
-#ifdef _DEBUG
-  #define DEBUG_CLIENTBLOCK  new(_CLIENT_BLOCK, __FILE__, __LINE__)
-#else
-  #define DEBUG_CLIENTBLOCK
-#endif
-
-// 如果不定义这个宏, C方式的malloc泄露不会被记录下来
-#define _CRTDBG_MAP_ALLOC
-
-// crtdbg.h must be behind the stdlib.h
-#include <crtdbg.h>
-
-#ifdef _DEBUG
-  #ifndef new
-    #define new DEBUG_CLIENTBLOCK
-  #endif
-#endif
-
-#endif  /* USE_CRTDBG_CHECK */
-
-/**********************************************************
- *
- *  Use Visual Leak Detector(vld) for Visual C++,
- *  Homepage: http://vld.codeplex.com/
- *
- **********************************************************/
-#ifdef _MSC_VER
-#ifdef _DEBUG
-// 如果你没有安装vld(Visual Leak Detector), 请注释掉这一句. vld的官网请看上面.
-#include <vld.h>
-#endif  /* _DEBUG */
-#endif  /* _MSC_VER */
-
-using namespace std;
-//using namespace boost;
 
 USING_NS_JIMI;
 USING_NS_JIMI_LOG;
@@ -130,92 +85,37 @@ USING_NS_UNITEST;
 
 NS_UNITEST_BEGIN
 
-/* 设置CRTDBG的环境(Debug模式下, 检查内存越界和内存泄漏问题) */
-
-void set_crtdbg_env()
-{
-/* 使用CRTDBG将会检查内存越界问题, 如果你使用了vld, 内存泄漏信息可关闭 */
-#if USE_CRTDBG_CHECK
-
-#ifdef _DEBUG
-
-    // 设置 CRT 报告模式
-    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
-
-    // 如果已经引用vld.h, 则不显示crtdbg的内存泄漏信息
-#ifndef VLD_RPTHOOK_INSTALL
-    // 进程退出时, 显示内存泄漏信息
-    // _CRTDBG_CHECK_ALWAYS_DF 表示每次分配/释放内存时, 系统会自动调用_CrtCheckMemory(), 检查内存越界情况
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
-#endif  /* VLD_RPTHOOK_INSTALL */
-
-#endif  /* _DEBUG */
-
-#endif  /* USE_CRTDBG_CHECK */
-}
-
-/* 预热时间至少要大于500毫秒, 如果还不够, 可以自行增加最小预热时间 */
-
-void jimi_cpu_warmup(int delayTime)
-{
-#ifndef _DEBUG
-    stop_watch sw;
-    volatile int sum = 0;
-    double elapsedTime = 0.0;
-    double delayTimeLimit = (double)delayTime;
-    printf("CPU warm up start ...\n");
-    fflush(stdout);
-    do {
-        sw.restart();
-        // 如果有聪明的编译器能发现这是一个固定值就NB了, 应该没有
-        for (int i = 0; i < 10000; ++i) {
-            sum += i;
-            // 循环顺序故意颠倒过来的
-            for (int j = 5000; j >= 0; --j) {
-                sum -= j;
-            }
-        }
-        sw.stop();
-        elapsedTime += sw.getMillisec();
-    } while (elapsedTime < delayTimeLimit);
-    // 输出sum的值只是为了防止编译器把循环优化掉
-    printf("sum = %u, time: %0.3f ms\n", sum, elapsedTime);
-    printf("CPU warm up done  ... \n\n");
-    fflush(stdout);
-#endif
-}
-
 /* 从size转换成KB, MB, GB, TB */
 
-int get_bytes_display(char *buffer, size_t buf_size, size_t size)
+int get_bytes_display(char *buf, size_t buf_size, uint32_t size)
 {
     int result;
     if (size <= 8192)
-        result = jm_sprintf(buffer, buf_size, "%d", size);
+        result = jm_sprintf(buf, buf_size, "%d", size);
     else if (size < 1024 * 1024)
-        result = jm_sprintf(buffer, buf_size, "%d K", size / 1024);
+        result = jm_sprintf(buf, buf_size, "%d K", size / 1024);
     else if (size < 1024 * 1024 * 1024)
-        result = jm_sprintf(buffer, buf_size, "%d M", size / (1024 * 1024));
+        result = jm_sprintf(buf, buf_size, "%d M", size / (1024 * 1024));
     else
-        result = jm_sprintf(buffer, buf_size, "%d G", size / (1024 * 1024 * 1024));
+        result = jm_sprintf(buf, buf_size, "%d G", size / (1024 * 1024 * 1024));
     return result;
 }
 
 /* 从size转换成KB, MB, GB, TB */
 
-int get_bytes_display64(char *buffer, size_t buf_size, uint64_t size)
+int get_bytes_display64(char *buf, size_t buf_size, uint64_t size)
 {
     int result;
     if (size <= 8192ULL)
-        result = jm_sprintf(buffer, buf_size, "%d", size);
+        result = jm_sprintf(buf, buf_size, "%d", size);
     else if (size < 0x0000000000100000ULL)
-        result = jm_sprintf(buffer, buf_size, "%d K", size / 1024ULL);
+        result = jm_sprintf(buf, buf_size, "%d K", size / 1024ULL);
     else if (size < 0x0000000040000000ULL)
-        result = jm_sprintf(buffer, buf_size, "%d M", size / 0x0000000000100000ULL);
+        result = jm_sprintf(buf, buf_size, "%d M", size / 0x0000000000100000ULL);
     else if (size < 0x0000010000000000ULL)
-        result = jm_sprintf(buffer, buf_size, "%d G", size / 0x0000000040000000ULL);
+        result = jm_sprintf(buf, buf_size, "%d G", size / 0x0000000040000000ULL);
     else
-        result = jm_sprintf(buffer, buf_size, "%d T", size / 0x0000010000000000ULL);
+        result = jm_sprintf(buf, buf_size, "%d T", size / 0x0000010000000000ULL);
     return result;
 }
 
@@ -2956,6 +2856,8 @@ private:
 void template_inherit_test()
 {
     A<B>* a = new B();
+    char *p = (char *)a;
+    //*(p + sizeof(A<B>) + 3) = 0;
     a->Destroy();
     //delete a;
 }
@@ -2963,20 +2865,18 @@ void template_inherit_test()
 int UnitTest_Main(int argc, char *argv[])
 {
     // 设置CRTDBG的环境(Debug模式下, 检查内存越界和内存泄漏问题)
-    set_crtdbg_env();
+    jimi_set_crtdbg_env(1, 1);
 
     sLog.log_begin();
 
-    ///*
     jimi::util::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
         std::string strCmdLine = cmdLine.getCmdLine();
         sLog.info(strCmdLine.c_str());
     }
-    //*/
 
-#if 0
+#if 1
     if (true) {
         template_inherit_test();
         ::system("pause");

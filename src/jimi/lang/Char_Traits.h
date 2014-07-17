@@ -11,7 +11,6 @@
 #include <jimic/string/jm_strings.h>
 
 #include <string>
-using namespace std;
 
 #define CHAR_TRAITS_STRICT_CHECK_V0     0
 #define CHAR_TRAITS_STRICT_CHECK_V1     0
