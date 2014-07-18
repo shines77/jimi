@@ -1118,6 +1118,10 @@ void String_Format_Test()
     loop_times = 9999;
 #endif
 
+    printf("==============================================================================\n\n");
+    printf("\n\n");
+    printf("==============================================================================\n\n");
+
 #if 1
     {
         int delta;
@@ -1125,7 +1129,7 @@ void String_Format_Test()
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            strTest = formator.csharp_format("{99} {99} {99} {99} {99}",
+            strTest = formator.csharp_format("{99} {98} {97} {96} {95}",
                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1142,14 +1146,14 @@ void String_Format_Test()
 
         printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        str = formator.csharp_format(\"{99} {99} {99} {99} {99}\",\n"
+        printf("        str = formator.csharp_format(\"{99} {98} {97} {96} {95}\",\n"
                "                                     111, \", \", \"222erer\", \", \",\n"
                "                                     33333, \", \", \"{3}, \", \"ffffff44\");\n");
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
         jimi::string strTest2;
-        strTest2 = formator.csharp_format("{99} {99} {99} {99} {99}",
+        strTest2 = formator.csharp_format("{99} {98} {97} {96} {95}",
                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1180,7 +1184,7 @@ void String_Format_Test()
             //strTest.clear();
             delta = formator.csharp_format_to(strTest,
                                               //"{1} {1} {1} {1} {1}",
-                                              "{99} {99} {99} {99} {99}",
+                                              "{99} {98} {97} {96} {95}",
                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1197,7 +1201,7 @@ void String_Format_Test()
 
         printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        n = formator.csharp_format_to(str, \"{99} {99} {99} {99} {99}\",\n"
+        printf("        n = formator.csharp_format_to(str, \"{99} {98} {97} {96} {95}\",\n"
                "                                      111, \", \", \"222erer\", \", \",\n"
                "                                      33333, \", \", \"{3}, \", \"ffffff44\");\n");
         printf("    }\n\n");
@@ -1205,8 +1209,8 @@ void String_Format_Test()
 
         jimi::string strTest2;
         delta = formator.csharp_format_to(strTest2,
-                                          "{1} {1} {1} {1} {1}",
-                                          //"{99} {99} {99} {99} {99}",
+                                          //"{1} {1} {1} {1} {1}",
+                                          "{99} {98} {97} {96} {95}",
                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1237,7 +1241,7 @@ void String_Format_Test()
             //strTest.clear();
             delta = formator.csharp_format_to_new(strTest,
                                                   //"{1} {1} {1} {1} {1}",
-                                                  "{99} {99} {99} {99} {99}",
+                                                  "{99} {98} {97} {96} {95}",
                                                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1254,7 +1258,7 @@ void String_Format_Test()
 
         printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        n = formator.csharp_format_to_new(str, \"{99} {99} {99} {99} {99}\",\n"
+        printf("        n = formator.csharp_format_to_new(str, \"{99} {98} {97} {96} {95}\",\n"
                "                                          111, \", \", \"222erer\", \", \",\n"
                "                                          33333, \", \", \"{3}, \", \"ffffff44\");\n");
         printf("    }\n\n");
@@ -1263,7 +1267,7 @@ void String_Format_Test()
         jimi::string strTest2;
         delta = formator.csharp_format_to_new(strTest2,
                                               //"{1} {1} {1} {1} {1}",
-                                              "{99} {99} {99} {99} {99}",
+                                              "{99} {98} {97} {96} {95}",
                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1286,6 +1290,70 @@ void String_Format_Test()
 
 #if 1
     {
+        int a, b, c, d, e, f, g, h, i, j;
+        int k, l, m, n, o, p, q, r, s, t;
+        int u, v, w, x, y, z;
+        int delta;
+        jimi::string strTest;
+        jimi::formatter<> formator;
+        a = b = c = d = e = 1;
+        f = g = h = i = j = 3;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            //strTest.clear();
+            delta = formator.csharp_format_to_new(strTest,
+                                                  //"{1} {1} {1} {1} {1}",
+                                                  "{99} {98} {97} {96} {95}",
+                                                  a, b, c, d, e, f, g, h, i, j,
+                                                  k, l, m, n, o, p, q, r, s, t,
+                                                  u, v, w, x, y, z, a, b, c, d,
+                                                  a, b, c, d, e, f, g, h, i, j,
+                                                  k, l, m, n, o, p, q, r, s, t,
+                                                  u, v, w, x, y, z, a, b, c, d,
+                                                  a, b, c, d, e, f, g, h, i, j,
+                                                  k, l, m, n, o, p, q, r, s, t,
+                                                  u, v, w, x, y, z, a, b, c, d,
+                                                  a, b, c, d, e, f, g, h, i, j,
+                                                  2, 2, 2, 2, 2, 2, 2, 2, 2, 2);
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        n = formator.csharp_format_to_new(str, \"{99} {98} {97} {96} {95}\",\n"
+               "                                          111, \", \", \"222erer\", \", \",\n"
+               "                                          33333, \", \", \"{3}, \", \"ffffff44\");\n");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        jimi::string strTest2;
+        delta = formator.csharp_format_to_new(strTest2,
+                                              //"{1} {1} {1} {1} {1}",
+                                              "{99} {98} {97} {96} {95}",
+                                              a, b, c, d, e, f, g, h, i, j,
+                                              k, l, m, n, o, p, q, r, s, t,
+                                              u, v, w, x, y, z, a, b, c, d,
+                                              a, b, c, d, e, f, g, h, i, j,
+                                              k, l, m, n, o, p, q, r, s, t,
+                                              u, v, w, x, y, z, a, b, c, d,
+                                              a, b, c, d, e, f, g, h, i, j,
+                                              k, l, m, n, o, p, q, r, s, t,
+                                              u, v, w, x, y, z, a, b, c, d,
+                                              a, b, c, d, e, f, g, h, i, j,
+                                              2, 2, 2, 2, 2, 2, 2, 2, 2, 2);
+        delta = strTest2.size();
+
+        printf("str.c_str() = %s\n\n", strTest2.c_str());
+
+        printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
+        printf("strTest.size()  = %d bytes\n", strTest.size());
+        printf("\n");
+    }
+#endif
+
+#if 1
+    {
         int delta;
         jimi::string strTest;
         jimi::formatter<> formator;
@@ -1294,7 +1362,7 @@ void String_Format_Test()
             //strTest.clear();
             delta = formator.csharp_format_old_to(strTest,
                                                   //"{1} {1} {1} {1} {1}",
-                                                  "{99} {99} {99} {99} {99}",
+                                                  "{99} {98} {97} {96} {95}",
                                                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1311,7 +1379,7 @@ void String_Format_Test()
 
         printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        n = formator.csharp_format_old_to(str, \"{99} {99} {99} {99} {99}\",\n"
+        printf("        n = formator.csharp_format_old_to(str, \"{99} {98} {97} {96} {95}\",\n"
                "                                          111, \", \", \"222erer\", \", \",\n"
                "                                          33333, \", \", \"{3}, \", \"ffffff44\");\n");
         printf("    }\n\n");
@@ -1320,7 +1388,7 @@ void String_Format_Test()
         jimi::string strTest2;
         delta = formator.csharp_format_old_to(strTest2,
                                               //"{1} {1} {1} {1} {1}",
-                                              "{99} {99} {99} {99} {99}",
+                                              "{99} {98} {97} {96} {95}",
                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

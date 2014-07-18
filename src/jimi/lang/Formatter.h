@@ -616,7 +616,7 @@ void formatter<StringType, Precision>::csharp_format_to_next_arg(
 
 /* 使用递归获取指定arg */
 
-/* 江南版的递归取模版变参 detail::appendArgByIndex<0>() */
+/* 江南版的递归取模版变参 detail::appendArgByIndex<i>() */
 #if 1
 
 template <typename StringType, int Precision>
@@ -784,43 +784,36 @@ namespace detail {
     void
     JIMI_INLINE appendArgByIndex2(StringType & result, size_t & index, const T & value)
     {
-        //throw std::invalid_argument("arg index out of range");
-        if (index-- == 0)
+        if (index == 0)
             result.append(value);
     }
 
     template<typename StringType, typename T, typename ... Args>
     void
-    JIMI_INLINE appendArgByIndex2(StringType & result, size_t & index, const T & value, Args const & ... args)
+    JIMI_INLINE appendArgByIndex2(StringType & result, size_t & index, const T & value,
+                                  Args const & ... args)
     {
-        if (index-- == 0) {
+#if 1
+        if (index == 0) {
             result.append(value);
-            return;
         }
-        appendArgByIndex2(result, index, args...);
-    }
-
-    template<typename StringType, typename T>
-    void
-    JIMI_INLINE appendArgByIndex2a(StringType & result, size_t &index, const T & value)
-    {
-        if (index-- == 0) {
+        else {
+            index--;
+            appendArgByIndex2(result, index, args...);
+        }
+#else
+        if (index != 0) {
+            index--;
+            appendArgByIndex2(result, index, args...);
+        }
+        else
             result.append(value);
-            return;
-        }
+#endif
     }
 
-    template<typename StringType, typename T, typename ... Args>
+    template<size_t i = 0, typename StringType, typename T>
     void
-    JIMI_INLINE appendArgByIndex2a(StringType & result, size_t &index, const T & value, Args const & ... args)
-    {
-        appendArgByIndex2a(result, index, value);
-        appendArgByIndex2a(result, index, args...);
-    }
-
-    template<size_t i, typename StringType, typename T>
-    void
-    JIMI_INLINE appendArgByIndex2b(StringType & result, size_t index, const T & value)
+    JIMI_INLINE appendArgByIndex2_tpl(StringType & result, size_t index, const T & value)
     {
         if (i == index)
             result.append(value);
@@ -828,12 +821,20 @@ namespace detail {
 
     template<size_t i = 0, typename StringType, typename T, typename ... Args>
     void
-    JIMI_INLINE appendArgByIndex2b(StringType & result, size_t index, const T & value, Args const & ... args)
+    JIMI_INLINE appendArgByIndex2_tpl(StringType & result, size_t index, const T & value,
+                                      Args const & ... args)
     {
+#if 1
         if (i == index)
             result.append(value);
         else
-            appendArgByIndex2b<i + 1>(result, index, args...);
+            appendArgByIndex2_tpl<i + 1>(result, index, args...);
+#else
+        if (i != index)
+            appendArgByIndex2_tpl<i + 1>(result, index, args...);
+        else
+            result.append(value);
+#endif
     }
 
 }  /* namespace of detail */
@@ -875,8 +876,7 @@ formatter<StringType, Precision>::csharp_format_to_new(
                             // get the index
                             if (index < max_args) {
                                 //detail::appendArgByIndex2(result, index, args...);
-                                //detail::appendArgByIndex2a(result, index, args...);
-                                detail::appendArgByIndex2b<0>(result, index, args...);
+                                detail::appendArgByIndex2_tpl<0>(result, index, args...);
                             }
                             break;
                         }
@@ -884,7 +884,7 @@ formatter<StringType, Precision>::csharp_format_to_new(
                         else if (c == static_cast<value_type>(':')) {
                             // get the index
                             if (index < max_args) {
-                                detail::appendArgByIndex<0>(index, tp, result);
+                                detail::appendArgByIndex2_tpl<0>(index, tp, result);
                             }
                             break;
                         }
@@ -1072,7 +1072,7 @@ formatter<StringType, Precision>::csharp_format_old(const StringType & fmt,
 
 namespace detail {
 
-    template<size_t i, typename Tuple, typename StringType>
+    template<size_t i = 0, typename Tuple, typename StringType>
     typename std::enable_if< (i >= std::tuple_size<Tuple>::value) >::type
     JIMI_INLINE appendArgByIndex(size_t, const Tuple &, StringType &)
     {
@@ -1083,10 +1083,17 @@ namespace detail {
     typename std::enable_if< (i < std::tuple_size<Tuple>::value) >::type
     JIMI_INLINE appendArgByIndex(size_t index, const Tuple & tp, StringType & result)
     {
+#if 0
         if (i == index)
             result.append(std::get<i>(tp));
         else
             appendArgByIndex<i + 1>(index, tp, result);
+#else
+        if (i != index)
+            appendArgByIndex<i + 1>(index, tp, result);
+        else
+            result.append(std::get<i>(tp));
+#endif
     }
 
 }  /* namespace of detail */
@@ -1184,8 +1191,7 @@ formatter<StringType, Precision>::format_fast_to_new(StringType & result,
             if (c != static_cast<value_type>('?')) {
                 if (index < max_args) {
                     //detail::appendArgByIndex2(result, index, args...);
-                    //detail::appendArgByIndex2a(result, index, args...);
-                    detail::appendArgByIndex2b<0>(result, index, args...);
+                    detail::appendArgByIndex2_tpl<0>(result, index, args...);
                     if (c != static_cast<value_type>('\0'))
                         result.append(c);
                     else
