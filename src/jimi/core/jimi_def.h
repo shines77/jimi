@@ -13,7 +13,7 @@
     #include <jimi/platform/jimi_targetver.h>
 #endif
 
-#include <jimi/core/win32/jimi_config.h>
+#include <jimi/core/jimi_config.h>
 #include <jimi/core/jimi_export.h>
 
 // Define type size_t
@@ -120,7 +120,6 @@
  * for assert defines
  */
 #include <jimi/core/jimi_assert.h>
-//#include <jimi/core/jimi_assert_impl.h>
 
 /**
  * for jimi_winapi

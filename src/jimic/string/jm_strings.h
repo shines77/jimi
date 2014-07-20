@@ -8,13 +8,13 @@
 
 #include <jimi/platform/jimi_platform_def.h>
 
+#include <jimic/core/jimic_def.h>
+#include <string.h>
+
 #if defined(JIMI_IS_WINDOWS)
 #include <tchar.h>
 #include <mbstring.h>
 #endif  /* JIMI_IS_WINDOWS */
-
-#include <jimic/core/jimic_def.h>
-#include <string.h>
 
 #ifndef jimic_tolower
 #define jimic_tolower(c)     (unsigned char) ((c >= 'A' && c <= 'Z') ? (c |  0x20) : c)

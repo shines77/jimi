@@ -135,7 +135,7 @@ inline std::string format(char* src, Args... args)
     {
         if (*p == '{')
         {
-            // copy content befor {
+            // copy content before {
             last = p - original;
             memcpy(buf, original, last);
             buf += last;

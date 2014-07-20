@@ -88,6 +88,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\asmlib\asmlib.h" />
     <ClInclude Include="..\..\..\..\src\jimic\core\jimic_asm.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_assert.h" />
     <ClInclude Include="..\..\..\..\src\jimic\core\jimic_config.h" />
     <ClInclude Include="..\..\..\..\src\jimic\core\jimic_def.h" />
     <ClInclude Include="..\..\..\..\src\jimic\core\jimic_export.h" />
@@ -100,16 +101,23 @@
     <ClInclude Include="..\..\..\..\src\jimic\platform\linux\fast_memcpy.h" />
     <ClInclude Include="..\..\..\..\src\jimic\platform\win\fast_memcpy.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\csharp_sprintf.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h" />
+    <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.cpp" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\csharp_sprintf.inl.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
     <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.cpp" />
-    <ClCompile Include="..\..\..\..\src\jimic\string\jm_strings.h">
+    <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.h">
       <FileType>CppCode</FileType>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\string\jm_strings.inl.h">
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.inl.h">
       <FileType>CppCode</FileType>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-    </ClCompile>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\sprintf.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\sprintf.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.inl.h" />
@@ -123,7 +131,7 @@
     <ClCompile Include="..\..\..\..\src\jimic\system\console.cpp" />
     <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.cpp" />
     <ClCompile Include="..\..\..\..\src\jimic\system\get_char.cpp" />
-    <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert_impl.cpp">
+    <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert.cpp">
       <FileType>CppHeader</FileType>
     </ClCompile>
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_common.h" />

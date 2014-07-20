@@ -23,6 +23,7 @@ namespace detail {
 
     enum fmt_align_e {
         AlignNone   = 0,
+        AlignSpace  = ' ',
         AlignLeft   = '-',
         AlignRight  = '+'
     };
@@ -74,8 +75,8 @@ public:
 
     void setDetail(unsigned int _align, unsigned int _fill,
                    unsigned int _width, unsigned int _precision) {
-        if (_align == detail::AlignNone || _align == detail::AlignLeft
-            || _align == detail::AlignRight)
+        if (_align == detail::AlignNone || _align == detail::AlignSpace
+            || _align == detail::AlignLeft || _align == detail::AlignRight)
             align = (unsigned short)_align;
         else
             align = detail::AlignNone;
@@ -116,8 +117,8 @@ public:
     ~integer_setting() {}
 
     void setDetail(unsigned int _align, unsigned int _fill, unsigned int _width) {
-        if (_align == detail::AlignNone || _align == detail::AlignLeft
-            || _align == detail::AlignRight)
+        if (_align == detail::AlignNone || _align == detail::AlignSpace
+            || _align == detail::AlignLeft || _align == detail::AlignRight)
             align = (unsigned short)_align;
         else
             align = detail::AlignNone;
@@ -155,8 +156,8 @@ public:
     ~string_setting() {}
 
     void setDetail(unsigned int _align, unsigned int _fill, unsigned int _width) {
-        if (_align == detail::AlignNone || _align == detail::AlignLeft
-            || _align == detail::AlignRight)
+        if (_align == detail::AlignNone || _align == detail::AlignSpace
+            || _align == detail::AlignLeft || _align == detail::AlignRight)
             align = (unsigned short)_align;
         else
             align = detail::AlignNone;
@@ -639,28 +640,26 @@ formatter<StringType, Precision>::csharp_format_to(
 
     result.clear();
 
-    auto tp = std::tuple<Args...>(args...);
     const size_t max_args = sizeof...(args);
-    //const size_t max_args = std::tuple_size<decltype(tp)>::value;
+    auto tp = std::tuple<Args...>(args...);
 
     cur = const_cast<value_type *>(fmt);
 
     while ((c = *cur++) != '\0') {
-        if (c == static_cast<value_type>('{')) {
+        if (c == '{') {
             c = *cur++;
-            if (c != static_cast<value_type>('{')) {
-                if (c >= static_cast<value_type>('0')
-                    && c <= static_cast<value_type>('9')) {
-                    index = c - static_cast<value_type>('0');
+            if (c != '{') {
+                if (c >= '0' && c <= '9') {
+                    index = c - '0';
                     while ((c = *cur++) != '\0') {
-                        if (c == static_cast<value_type>('}')) {
+                        if (c == '}') {
                             // get the index
                             if (index < max_args)
                                 detail::appendArgByIndex<0>(index, tp, result);
                             break;
                         }
                         /*
-                        else if (c == static_cast<value_type>(':')) {
+                        else if (c == ':') {
                             // get the index
                             if (index < max_args) {
                                 detail::appendArgByIndex<0>(index, tp, result);
@@ -668,9 +667,9 @@ formatter<StringType, Precision>::csharp_format_to(
                             break;
                         }
                         //*/
-                        else if (c >= static_cast<value_type>('0')
-                                 && c <= static_cast<value_type>('9')) {
-                            index = index * 10 + (c - static_cast<value_type>('0'));
+                        else if (c >= '0'
+                                 && c <= '9') {
+                            index = index * 10 + (c - '0');
                         }
                         else {
                             // get a error index number
@@ -729,22 +728,20 @@ formatter<StringType, Precision>::csharp_format_to(
 
     cur = const_cast<value_type *>(fmt);
     while ((c = *cur++) != '\0') {
-        if (c == static_cast<value_type>('{')) {
+        if (c == '{') {
             c = *cur++;
-            if (c != static_cast<value_type>('{')) {
-                if (c >= static_cast<value_type>('0')
-                    && c <= static_cast<value_type>('9')) {
-                    index = c - static_cast<value_type>('0');
+            if (c != '{') {
+                if (c >= '0' && c <= '9') {
+                    index = c - '0';
                     while ((c = *cur++) != '\0') {
-                        if (c == static_cast<value_type>('}')) {
+                        if (c == '}') {
                             // get the index
                             if (index < max_args)
                                 result.append(*(arg_list + index));
                             break;
                         }
-                        else if (c >= static_cast<value_type>('0')
-                                 && c <= static_cast<value_type>('9')) {
-                            index = index * 10 + (c - static_cast<value_type>('0'));
+                        else if (c >= '0' && c <= '9') {
+                            index = index * 10 + (c - '0');
                         }
                         else {
                             // get a error index number
@@ -824,17 +821,10 @@ namespace detail {
     JIMI_INLINE appendArgByIndex2_tpl(StringType & result, size_t index, const T & value,
                                       Args const & ... args)
     {
-#if 1
         if (i == index)
             result.append(value);
         else
             appendArgByIndex2_tpl<i + 1>(result, index, args...);
-#else
-        if (i != index)
-            appendArgByIndex2_tpl<i + 1>(result, index, args...);
-        else
-            result.append(value);
-#endif
     }
 
 }  /* namespace of detail */
@@ -865,14 +855,13 @@ formatter<StringType, Precision>::csharp_format_to_new(
     cur = const_cast<value_type *>(fmt);
 
     while ((c = *cur++) != '\0') {
-        if (c == static_cast<value_type>('{')) {
+        if (c == '{') {
             c = *cur++;
-            if (c != static_cast<value_type>('{')) {
-                if (c >= static_cast<value_type>('0')
-                    && c <= static_cast<value_type>('9')) {
-                    index = c - static_cast<value_type>('0');
+            if (c != '{') {
+                if (c >= '0' && c <= '9') {
+                    index = c - '0';
                     while ((c = *cur++) != '\0') {
-                        if (c == static_cast<value_type>('}')) {
+                        if (c == '}') {
                             // get the index
                             if (index < max_args) {
                                 //detail::appendArgByIndex2(result, index, args...);
@@ -881,7 +870,7 @@ formatter<StringType, Precision>::csharp_format_to_new(
                             break;
                         }
                         /*
-                        else if (c == static_cast<value_type>(':')) {
+                        else if (c == ':') {
                             // get the index
                             if (index < max_args) {
                                 detail::appendArgByIndex2_tpl<0>(index, tp, result);
@@ -889,9 +878,8 @@ formatter<StringType, Precision>::csharp_format_to_new(
                             break;
                         }
                         //*/
-                        else if (c >= static_cast<value_type>('0')
-                                 && c <= static_cast<value_type>('9')) {
-                            index = index * 10 + (c - static_cast<value_type>('0'));
+                        else if (c >= '0' && c <= '9') {
+                            index = index * 10 + (c - '0');
                         }
                         else {
                             // get a error index number
@@ -986,22 +974,20 @@ formatter<StringType, Precision>::csharp_format_old_to(
     index = 0;
     cur = const_cast<value_type *>(fmt);
     while ((c = *cur++) != '\0') {
-        if (c == static_cast<value_type>('{')) {
+        if (c == '{') {
             c = *cur++;
-            if (c != static_cast<value_type>('{')) {
-                if (c >= static_cast<value_type>('0')
-                    && c <= static_cast<value_type>('9')) {
-                    index = c - static_cast<value_type>('0');
+            if (c != '{') {
+                if (c >= '0' && c <= '9') {
+                    index = c - '0';
                     while ((c = *cur++) != '\0') {
-                        if (c == static_cast<value_type>('}')) {
+                        if (c == '}') {
                             // get the index
                             if (index < max_args)
                                 result.append(*(arg_list + index));
                             break;
                         }
-                        else if (c >= static_cast<value_type>('0')
-                                 && c <= static_cast<value_type>('9')) {
-                            index = index * 10 + (c - static_cast<value_type>('0'));
+                        else if (c >= '0' && c <= '9') {
+                            index = index * 10 + (c - '0');
                         }
                         else {
                             // get a error index number
@@ -1118,27 +1104,27 @@ formatter<StringType, Precision>::format_fast_to(StringType & result,
 
     result.clear();
 
+    const size_t max_args = sizeof...(args);
     auto tp = std::tuple<Args...>(args...);
     //const size_t max_args = std::tuple_size<decltype(tp)>::value;
-    const size_t max_args = sizeof...(args);
 
     index = 0;
     cur = const_cast<value_type *>(fmt);
     
     while ((c = *cur++) != '\0') {
-        if (c == static_cast<value_type>('?')) {
+        if (c == '?') {
             c = *cur++;
-            if (c != static_cast<value_type>('?')) {
+            if (c != '?') {
                 if (index < max_args) {
                     detail::appendArgByIndex<0>(index, tp, result);
-                    if (c != static_cast<value_type>('\0'))
+                    if (c != '\0')
                         result.append(c);
                     else
                         break;
                     index++;
                 }
                 else {
-                    if (c != static_cast<value_type>('\0'))
+                    if (c != '\0')
                         result.append(c);
                     else
                         break;
@@ -1186,20 +1172,20 @@ formatter<StringType, Precision>::format_fast_to_new(StringType & result,
     cur = const_cast<value_type *>(fmt);
     
     while ((c = *cur++) != '\0') {
-        if (c == static_cast<value_type>('?')) {
+        if (c == '?') {
             c = *cur++;
-            if (c != static_cast<value_type>('?')) {
+            if (c != '?') {
                 if (index < max_args) {
                     //detail::appendArgByIndex2(result, index, args...);
                     detail::appendArgByIndex2_tpl<0>(result, index, args...);
-                    if (c != static_cast<value_type>('\0'))
+                    if (c != '\0')
                         result.append(c);
                     else
                         break;
                     index++;
                 }
                 else {
-                    if (c != static_cast<value_type>('\0'))
+                    if (c != '\0')
                         result.append(c);
                     else
                         break;
@@ -1270,12 +1256,12 @@ void formatter<StringType, Precision>::format_fast_to2_next(StringType & result,
 {
     value_type c;
     while ((c = *fmt++) != '\0') {
-        if (c == static_cast<value_type>('?')) {
+        if (c == '?') {
             c = *fmt++;
-            if (c != static_cast<value_type>('?')) {
+            if (c != '?') {
                 if (index < max_args) {
                     result.append(value);
-                    if (c != static_cast<value_type>('\0'))
+                    if (c != '\0')
                         result.append(c);
                     else
                         break;
@@ -1285,7 +1271,7 @@ void formatter<StringType, Precision>::format_fast_to2_next(StringType & result,
                     break;
                 }
                 else {
-                    if (c != static_cast<value_type>('\0'))
+                    if (c != '\0')
                         result.append(c);
                     else
                         break;
@@ -1315,12 +1301,12 @@ void formatter<StringType, Precision>::format_fast_to2_next(StringType & result,
 {
     value_type c;
     while ((c = *fmt++) != '\0') {
-        if (c == static_cast<value_type>('?')) {
+        if (c == '?') {
             c = *fmt++;
-            if (c != static_cast<value_type>('?')) {
+            if (c != '?') {
                 if (index < max_args) {
                     result.append(value);
-                    if (c != static_cast<value_type>('\0'))
+                    if (c != '\0')
                         result.append(c);
                     else
                         break;
@@ -1332,7 +1318,7 @@ void formatter<StringType, Precision>::format_fast_to2_next(StringType & result,
                     break;
                 }
                 else {
-                    if (c != static_cast<value_type>('\0'))
+                    if (c != '\0')
                         result.append(c);
                     else
                         break;

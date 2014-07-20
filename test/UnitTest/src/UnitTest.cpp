@@ -28,12 +28,14 @@
 #include <asmlib/asmlib.h>
 #include "SampleThread.h"
 #include "FastMemcpy.h"
-//#include "cpp11_format.h"
+#include "cpp11_format.h"
 
 #include <jimic/platform/win/fast_memcpy.h>
 #include <jimic/string/jmf_strings.h>
 #include <jimic/string/iconv_win.h>
 #include <jimic/system/console.h>
+#include <jimic/string/sprintf.h>
+#include <jimic/string/csharp_sprintf.h>
 
 #include <stdlib.h>
 #include <conio.h>
@@ -199,7 +201,7 @@ void String_Performance_Test()
 #ifndef _DEBUG
     const int LOOP_TIMES = 1000000;
 #else
-    const int LOOP_TIMES = 200000;
+    const int LOOP_TIMES = 2000;
 #endif
     size_t len1, len2;
     char buffer1[512];
@@ -313,7 +315,7 @@ void String_Performance_Test2()
 #ifndef _DEBUG
     const int LOOP_TIMES = 1000000;
 #else
-    const int LOOP_TIMES = 200000;
+    const int LOOP_TIMES = 2000;
 #endif
     size_t len1, len2;
     char buffer1[512];
@@ -459,6 +461,10 @@ void String_Base_Test()
     int loop_times = 9999999;
     jimi::stop_watch sw;
 
+    printf("==============================================================================\n\n");
+    printf("String_Base_Test():\n\n");
+    printf("==============================================================================\n\n");
+
 #if 1
     jimi::string str1 = "abcdefg";
     jimi::string str2 = "hijklmnop";
@@ -550,6 +556,33 @@ void String_Base_Test()
 #else
     loop_times = 9999;
 #endif
+
+    int fmtlen;
+    char fmtbuf[256] = { 0 };
+    fmtlen = jmc_csharp_snprintf(fmtbuf, jm_countof(fmtbuf),
+                                 "{0:%04d}, {1:%0.3f}, {2:%08d}, 0x{3:%08X}, {4{:%05d}, {025d:05d}",
+                                 "%d, %f, %d, %X, %d, %d",
+                                 1, 2.34, 3, 123456);
+    fmtbuf[fmtlen] = '\0';
+    printf("jmc_csharp_snprintf(buf, count,\n"
+           "    \"{0:%%04d}, {1:%%0.3f}, {2:%%08d}, 0x{3:%%08X}, {4{:%%05d}, {025d:05d}\");\n\n");
+    printf("len = %d\n", fmtlen);
+    printf("buf = %s\n", fmtbuf);
+    printf("\n");
+
+    fmtbuf[0] = '\0';
+    fmtlen = jmc_snprintf(fmtbuf, jm_countof(fmtbuf),
+                          "%04d, %0.3f, %08d, 0x%08X, %05d, 05d",
+                          1, 2.34, 3, 123456, 0);
+    fmtbuf[fmtlen] = '\0';
+    printf("jmc_snprintf(buf, count,\n"
+           "    \"%%04d, %%0.3f, %%08d, 0x%%08X, %%05d, 05d\");\n\n");
+    printf("len = %d\n", fmtlen);
+    printf("buf = %s\n", fmtbuf);
+    printf("\n");
+
+    //::system("pause");
+    return;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1119,7 +1152,7 @@ void String_Format_Test()
 #endif
 
     printf("==============================================================================\n\n");
-    printf("\n\n");
+    printf("String_Format_Test():\n\n");
     printf("==============================================================================\n\n");
 
 #if 1
@@ -1296,8 +1329,12 @@ void String_Format_Test()
         int delta;
         jimi::string strTest;
         jimi::formatter<> formator;
+        // 从 k 到 z 是故意不初始化的, 看编译器会优化成什么样子
         a = b = c = d = e = 1;
         f = g = h = i = j = 3;
+        k = l = m = n = o = 5;
+        p = q = r = s = t = 7;
+        u = v = w = x = y = z = 9;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             //strTest.clear();
@@ -3520,14 +3557,14 @@ int UnitTest_Main(int argc, char *argv[])
 
 #if 1
     String_Base_Test();
-    if (true && 0) {
+    if (true && 1) {
         ::system("pause");
         sLog.log_end();
         return 0;
     }
 #endif
 
-#if 1
+#if 0
     String_Format_Test();
     if (true && 1) {
         ::system("pause");

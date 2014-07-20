@@ -1,39 +1,36 @@
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/core/jimi_assert.h>
+#include <jimic/core/jimic_def.h>
+#include <jimic/core/jimic_assert.h>
 #include <jimic/string/jm_strings.h>
 
 // include headers for required function declarations
-#include <cstdlib>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #if _MSC_VER
 #include <crtdbg.h>
-#define JIMI_USE_DBGBREAK_DLG   JIMI_USE_DEBUG
+#ifndef JIMIC_USE_DBGBREAK_DLG
+#define JIMIC_USE_DBGBREAK_DLG   JIMIC_USE_DEBUG
+#endif
 #endif
 
-using namespace std;
-
-NS_JIMI_BEGIN
-
 //! Type for an assertion handler
-typedef void (*assertion_handler_type)(const char * filename, int line,
-                                       const char * expression, const char * comment);
+typedef void (*jimic_assertion_handler_type)(const char * filename, int line,
+                                             const char * expression, const char * comment);
 
-static assertion_handler_type assertion_handler;
+static jimic_assertion_handler_type jimic_assertion_handler;
 
-assertion_handler_type JIMI_EXPORTED_FUNC
-set_assertion_handler(assertion_handler_type new_handler) {
-    assertion_handler_type old_handler = assertion_handler;
-    assertion_handler = new_handler;
+jimic_assertion_handler_type JIMIC_EXPORTED_FUNC
+set_c_assertion_handler(jimic_assertion_handler_type new_handler) {
+    jimic_assertion_handler_type old_handler = jimic_assertion_handler;
+    jimic_assertion_handler = new_handler;
     return old_handler;
 }
 
-void JIMI_EXPORTED_FUNC assertion_failure(const char * filename, int line,
+void JIMIC_EXPORTED_FUNC jimic_assertion_failure(const char * filename, int line,
                                           const char * expression, const char * comment) {
-    if (assertion_handler_type assert_handler = assertion_handler) {
-        (*assert_handler)(filename, line, expression, comment);
+    if (jimic_assertion_handler_type assert_handler = jimic_assertion_handler) {
+        (*jimic_assertion_handler)(filename, line, expression, comment);
     }
     else {
         static bool already_failed;
@@ -42,7 +39,7 @@ void JIMI_EXPORTED_FUNC assertion_failure(const char * filename, int line,
             fprintf(stderr, "Assertion %s failed on line %d of file %s\n", expression, line, filename);
             if (comment)
                 fprintf(stderr, "Detailed description: %s\n", comment);
-#if JIMI_USE_DBGBREAK_DLG
+#if JIMIC_USE_DBGBREAK_DLG
             if (1 == _CrtDbgReport(_CRT_ASSERT, filename, line, "jimi_shared_debug.dll",
                 "%s\r\n%s", expression, comment ? comment : ""))
                 _CrtDbgBreak();
@@ -54,18 +51,11 @@ void JIMI_EXPORTED_FUNC assertion_failure(const char * filename, int line,
     }
 }
 
-#if defined(_MSC_VER) && (_MSC_VER < 1400)
-  #ifndef vsnprintf
-    #define vsnprintf _vsnprintf
-  #endif
-#endif
-
-#if JIMI_USE_ASSERT
+#if JIMIC_USE_ASSERT
 
 #if !JIMI_MALLOC_BUILD
-namespace internal {
     //! Report a runtime warning.
-    void JIMI_EXPORTED_FUNC runtime_warning(const char * format, ...)
+    void JIMI_EXPORTED_FUNC jimic_runtime_warning(const char * format, ...)
     {
         char str[1024];
         memset(str, 0, 1024);
@@ -75,10 +65,6 @@ namespace internal {
         va_end(args);
         fprintf(stderr, "Jimi Warning: %s\n", str);
     }
-}  // namespace internal
 #endif
 
-#endif /* !JIMI_USE_ASSERT */
-
-NS_JIMI_END
-
+#endif /* JIMIC_USE_ASSERT */

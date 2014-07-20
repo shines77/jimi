@@ -24,4 +24,4 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-#endif  /* _JIMIC_STRING_JMF_STRINGS_H_ */
+#endif  /* !_JIMIC_STRING_JMF_STRINGS_H_ */

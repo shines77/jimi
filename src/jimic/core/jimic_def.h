@@ -13,7 +13,7 @@
     #include <jimic/platform/jimic_targetver.h>
 #endif
 
-#include <jimic/core/win32/jimic_config.h>
+#include <jimic/core/jimic_config.h>
 #include <jimic/core/jimic_export.h>
 
 // Define type size_t
@@ -137,28 +137,6 @@
 
 #endif  /* defined(JIMI_IS_WINDOWS) || defined(JIMI_IS_DOXYGEN) */
 
-#include <assert.h>
-
-#define JIMIC_ASSERT_TRUE(predicate)                    assert(!(predicate))
-#define JIMIC_ASSERT_FALSE(predicate)                   assert(!!(predicate))
-#define JIMIC_ASSERT(predicate)                         JIMIC_ASSERT_FALSE
-
-#define JIMIC_ASSERT_EX_TRUE(predicate, comment)        assert(!(predicate))
-#define JIMIC_ASSERT_EX_FALSE(predicate, comment)       assert(!!(predicate))
-#define JIMIC_ASSERT_EX(predicate, comment)             JIMIC_ASSERT_EX_FALSE
-
-#ifndef jimic_assert
-#define jimic_assert_true       JIMIC_ASSERT_TRUE
-#define jimic_assert_false      JIMIC_ASSERT_FALSE
-#define jimic_assert            JIMIC_ASSERT
-#endif
-
-#ifndef jimic_assert_ex
-#define jimic_assert_ex_true    JIMIC_ASSERT_EX_TRUE
-#define jimic_assert_ex_false   JIMIC_ASSERT_EX_FALSE
-#define jimic_assert_ex         JIMIC_ASSERT_EX
-#endif
-
 #define JIMIC_MIN(a, b)         ((a) < (b) ? (a) : (b))
 #define JIMIC_MAX(a, b)         ((a) > (b) ? (a) : (b))
 
@@ -174,6 +152,20 @@ typedef struct JIMIC_MACRO_T
     const char *value;
 } JIMIC_MACRO_T;
 
+#ifndef JM_CONST
+#define JM_CONST        const
+#endif  /* JM_CONST */
+
+#ifndef JM_CHAR_DEFINED
+#define JM_CHAR_DEFINED
+typedef char            jm_char;
+#endif  /* JM_CHAR_DEFINED */
+
+#ifndef JM_UCHAR_DEFINED
+#define JM_UCHAR_DEFINED
+typedef unsigned char   jm_uchar;
+#endif  /* JM_UCHAR_DEFINED */
+
 /**
  * JMC public API wrap for C++ compilers.
  */
@@ -184,6 +176,11 @@ typedef struct JIMIC_MACRO_T
 #define JMC_BEGIN_DECLS
 #define JMC_END_DECLS
 #endif  /* __cplusplus */
+
+/**
+ * for jimic assert defines
+ */
+#include <jimic/core/jimic_assert.h>
 
 /**
  * for JMC_DECLARE define

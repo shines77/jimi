@@ -19,7 +19,7 @@
 #endif  /* JIMI_EXPORTED_FUNC */
 
 //! Type for an assertion handler
-typedef void(*assertion_handler_type)(const char * filename, int line,
+typedef void (*assertion_handler_type)(const char * filename, int line,
                                        const char * expression, const char * comment);
 
 #if JIMI_USE_ASSERT
@@ -28,7 +28,8 @@ typedef void(*assertion_handler_type)(const char * filename, int line,
 /** If x is false, print assertion failure message.  
     If the comment argument is not NULL, it is printed as part of the failure message.  
     The comment argument has no other effect. */
-#define JIMI_ASSERT_NS(predicate, message, ns)      ((predicate) ? ((void)0) : ns::assertion_failure(__FILE__, __LINE__, #predicate, message))
+#define JIMI_ASSERT_NS(predicate, message, ns) \
+    ((predicate) ? ((void)0) : ns::assertion_failure(__FILE__, __LINE__, #predicate, message))
 
 #ifndef JIMI_ASSERT
 #define JIMI_ASSERT_TRUE(predicate)                 JIMI_ASSERT_NS(!(predicate),  NULL, jimi)
@@ -81,7 +82,7 @@ NS_JIMI_BEGIN
 
 #if !JIMI_MALLOC_BUILD
 namespace internal {
-        //! Report a runtime warning.
+    //! Report a runtime warning.
     void JIMI_EXPORTED_FUNC runtime_warning(const char * format, ...);
 }
 #endif
