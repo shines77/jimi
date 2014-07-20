@@ -122,6 +122,26 @@ int jmc_ptohex(jm_char *buf, void *p)
     return 0;
 }
 
+int jmc_uitohex(jm_char *buf, uint32_t val, int isUpper)
+{
+    return 0;
+}
+
+int jmc_ui64tohex(jm_char *buf, uint64_t val)
+{
+    return 0;
+}
+
+size_t jmc_strlen(jm_char *str)
+{
+    return 0;
+}
+
+size_t jmc_strcpy(jm_char *dest, JM_CONST jm_char *src)
+{
+    return 0;
+}
+
 //
 // Printf() 输出格式控制
 // Reference: http://bbs.csdn.net/topics/330107715
@@ -157,16 +177,18 @@ jmc_vslprintf(jm_char *buf, size_t count, JM_CONST jm_char *fmt, va_list args)
     jm_char        *cur;
     jm_char         c;
     unsigned int    align, fill, width, precision;
-    int             len, exit;
+    int             len, no_exit;
+    jm_char        *s;
     int             i32;
+    double          dbl;
+    jm_uchar        ch;
+    void *          p;
     unsigned int    u32;
     long            l32;
     unsigned long   ul32 = 0;
     int64_t         i64;
     uint64_t        u64;
-    double          dbl;
-    jm_uchar        ch;
-    void *          p;
+    int32_t         hex32;
 
 
     jimic_assert(buf != NULL);
@@ -182,7 +204,7 @@ jmc_vslprintf(jm_char *buf, size_t count, JM_CONST jm_char *fmt, va_list args)
             align = 0;
             fill = 0;
             width = 0;
-            precision = 5;
+            precision = 0;
             len = 0;
             // get align or fill info
             c = *cur++;
@@ -214,14 +236,19 @@ jmc_vslprintf(jm_char *buf, size_t count, JM_CONST jm_char *fmt, va_list args)
                 goto exit_sprintf;
 
             // get another info
-            exit = 0;
             while ((c = *cur++) != '\0') {
+                no_exit = 0;
                 switch (c) {
                 case '%':   // 0x25
                     // specail for "%%"
-                    *buf++ = c;
-                    if (buf >= end)
-                        goto exit_sprintf;
+                    if (no_exit == 0) {
+                        *buf++ = c;
+                        if (buf >= end)
+                            goto exit_sprintf;
+                    }
+                    else {
+                        // not is "%%", do nothing!
+                    }
                     break;
                 case '.':   // 0x2E
                     // get precision
@@ -232,10 +259,13 @@ jmc_vslprintf(jm_char *buf, size_t count, JM_CONST jm_char *fmt, va_list args)
                     }
                     if (c == '\0')
                         goto exit_sprintf;
+                    cur--;
+                    no_exit = 1;
                     break;
                 case '0': case '1': case '2': case '3': case '4':
                 case '5': case '6': case '7': case '8': case '9':
                     width = width * 10 + c - '0';
+                    no_exit = 1;
                     break;
                 case 'c':
                     ch = (jm_uchar)va_arg(args, int);
@@ -278,6 +308,14 @@ jmc_vslprintf(jm_char *buf, size_t count, JM_CONST jm_char *fmt, va_list args)
                     p = va_arg(args, void *);
                     len = jmc_ptohex(buf, p);
                     break;
+                case 's':
+                    // void *
+                    s = va_arg(args, jm_char *);
+                    len = jmc_strlen(s);
+                    if ((buf + len) >= end)
+                        goto exit_sprintf;
+                    len = jmc_strcpy(buf, s);
+                    break;
                 case 't':
                     // uint64_t
                     if ((buf + 20) >= end)
@@ -292,9 +330,39 @@ jmc_vslprintf(jm_char *buf, size_t count, JM_CONST jm_char *fmt, va_list args)
                     u32 = va_arg(args, unsigned int);
                     len = jmc_utoa_radix10(buf, u32);
                     break;
+                case 'x':
+                    // hex32
+                    if ((buf + 16) >= end)
+                        goto exit_sprintf;
+                    hex32 = va_arg(args, uint32_t);
+                    len = jmc_uitohex(buf, hex32, FALSE);
+                    break;
                 default:
+                    if (c == 'X') {
+                        // HEX32
+                        if ((buf + 16) >= end)
+                            goto exit_sprintf;
+                        hex32 = va_arg(args, uint32_t);
+                        len = jmc_uitohex(buf, hex32, TRUE);
+                    }
+                    else if (c == 'U') {
+                        // uint64_t
+                        if ((buf + 20) >= end)
+                            goto exit_sprintf;
+                        u64 = va_arg(args, uint64_t);
+                        len = jmc_u64toa_radix10(buf, u64);
+                    }
+                    else if (c == 'L') {
+                        // unsigned long
+                        if ((buf + 10) >= end)
+                            goto exit_sprintf;
+                        ul32 = va_arg(args, unsigned long);
+                        len = jmc_ultoa_radix10(buf, ul32);
+                    }
                     break;
                 }
+                if (no_exit == 0)
+                    break;
             }
             *buf++ = c;
             if (buf >= end)

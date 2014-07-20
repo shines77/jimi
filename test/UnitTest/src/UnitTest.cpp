@@ -572,11 +572,11 @@ void String_Base_Test()
 
     fmtbuf[0] = '\0';
     fmtlen = jmc_snprintf(fmtbuf, jm_countof(fmtbuf),
-                          "%04d, %0.3f, %08d, 0x%08X, %05d, 05d",
-                          1, 2.34, 3, 123456, 0);
+                          "%04d, %0.3f, %-20.8s, 0x%08X, %05.3d, 05d",
+                          1, 2.34, "abcdhgjhged", 123456, 0);
     fmtbuf[fmtlen] = '\0';
     printf("jmc_snprintf(buf, count,\n"
-           "    \"%%04d, %%0.3f, %%08d, 0x%%08X, %%05d, 05d\");\n\n");
+           "    \"%%04d, %%0.3f, %%-20.8s, 0x%%08X, %%05.3d, 05d\");\n\n");
     printf("len = %d\n", fmtlen);
     printf("buf = %s\n", fmtbuf);
     printf("\n");
