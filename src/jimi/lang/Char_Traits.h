@@ -694,9 +694,9 @@ template<typename char_type>
 JIMI_INLINE
 int char_traits<char_type>::utoa(char_type *buf, unsigned int val, const int radix)
 {
-    int digval, digital;
+    unsigned int digval, digital;
     char_type *cur;
-    char digits[16];        // 实际最多只会用到10个bytes
+    char digits[16];    // 实际最多只会用到10个bytes
     cur = digits;
     do {
         digval = val % radix;
@@ -737,9 +737,9 @@ template<typename char_type>
 JIMI_INLINE
 int char_traits<char_type>::utoa_radix10(char_type *buf, unsigned int val)
 {
-    int digval, digital;
+    unsigned int digval, digital;
     char_type *cur;
-    char digits[16];        // 实际最多只会用到10个bytes
+    char digits[16];    // 实际最多只会用到10个bytes
 
     cur = digits;
     do {
@@ -791,7 +791,7 @@ template<typename char_type>
 JIMI_INLINE
 int char_traits<char_type>::utoa_radix10_fast(char_type *buf, unsigned int val, const int last)
 {
-    int digval, digital;
+    unsigned int digval, digital;
     char_type *cur, *end;
     end = buf + last;
     cur = end;
@@ -833,7 +833,7 @@ template<typename char_type>
 JIMI_INLINE
 int char_traits<char_type>::ultoa_radix10(char_type *buf, unsigned long val)
 {
-    int digval, digital;
+    unsigned long digval, digital;
     char_type *cur;
     char digits[16];    // 实际最多只会用到10个bytes
 
@@ -880,7 +880,7 @@ template<typename char_type>
 JIMI_INLINE
 int char_traits<char_type>::u64toa_radix10(char_type *buf, uint64_t val)
 {
-    int digval, digital;
+    unsigned int digval, digital;
     char_type *cur;
     char digits[32];    // 实际最多只会用到20个bytes
 

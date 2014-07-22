@@ -347,6 +347,12 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\sprintf.inl.h">
       <Filter>src\jimic\string</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.inl.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">

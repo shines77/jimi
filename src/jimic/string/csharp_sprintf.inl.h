@@ -178,6 +178,7 @@ jmc_csharp_vslprintf(jm_char *buf, size_t count, JM_CONST jm_char *fmt,
         }
     }
 
+    *buf = '\0';
     return buf;
 }
 

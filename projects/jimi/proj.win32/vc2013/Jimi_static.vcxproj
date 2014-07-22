@@ -102,6 +102,8 @@
     <ClInclude Include="..\..\..\..\src\jimic\platform\win\fast_memcpy.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\csharp_sprintf.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h" />
     <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.cpp" />
     <ClInclude Include="..\..\..\..\src\jimic\string\csharp_sprintf.inl.h">

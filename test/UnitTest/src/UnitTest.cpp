@@ -559,26 +559,42 @@ void String_Base_Test()
 
     int fmtlen;
     char fmtbuf[256] = { 0 };
+    memset(fmtbuf, '?', jm_countof(fmtbuf));
     fmtlen = jmc_csharp_snprintf(fmtbuf, jm_countof(fmtbuf),
-                                 "{0:%04d}, {1:%0.3f}, {2:%08d}, 0x{3:%08X}, {4{:%05d}, {025d:05d}",
-                                 "%d, %f, %d, %X, %d, %d",
-                                 1, 2.34, 3, 123456);
-    fmtbuf[fmtlen] = '\0';
+                                 "{0:%d}, {1:%0.3f}, {2:%5d}, {3:%08d}, {4:%-20.8s}, 0x{5:%08X}, {6{:%05d}, {025d:05d}",
+                                 "%d, %f, %d, %d, %X, %d",
+                                 999, 12.345, 8888, 99999, "abcdhgjhged", 123456);
+    //fmtbuf[fmtlen] = '\0';
     printf("jmc_csharp_snprintf(buf, count,\n"
-           "    \"{0:%%04d}, {1:%%0.3f}, {2:%%08d}, 0x{3:%%08X}, {4{:%%05d}, {025d:05d}\");\n\n");
-    printf("len = %d\n", fmtlen);
-    printf("buf = %s\n", fmtbuf);
+           "    \"{0:%%d}, {1:%%0.3f}, {2:%%5d}, {3:%%08d}, {4:%%-20.8s}, 0x{5:%%08X}, {6{:%%05d}, {025d:05d}\");\n\n");
+    printf("buf = %s\n\n", fmtbuf);
+    printf("len = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
     printf("\n");
 
     fmtbuf[0] = '\0';
-    fmtlen = jmc_snprintf(fmtbuf, jm_countof(fmtbuf),
-                          "%04d, %0.3f, %-20.8s, 0x%08X, %05.3d, 05d",
-                          1, 2.34, "abcdhgjhged", 123456, 0);
-    fmtbuf[fmtlen] = '\0';
-    printf("jmc_snprintf(buf, count,\n"
-           "    \"%%04d, %%0.3f, %%-20.8s, 0x%%08X, %%05.3d, 05d\");\n\n");
-    printf("len = %d\n", fmtlen);
-    printf("buf = %s\n", fmtbuf);
+    memset(fmtbuf, '?', jm_countof(fmtbuf));
+    fmtlen = jmc_snprintf(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
+                          "%d, %0.3f, %5d, %08d, %-20.8s, 0x%08X,\n%05.3d, %05.3d, %-05.3d, %-05.3d, 05d",
+                          777, 12.345, 8888, 99999, "abcdhgjhged", 123456, 1, 12345678, 1, 12345678);
+    //fmtbuf[fmtlen] = '\0';
+    printf("jmc_snprintf(buf, bufsize, count,\n"
+           "    \"%%04d, %%0.3f, %%5d, %%08d, %%-20.8s, 0x%%08X,\n"
+           "     %%05.3d, %%05.3d, %%-05.3d, %%-05.3d, 05d\");\n\n");
+    printf("buf = %s\n\n", fmtbuf);
+    printf("len = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+    printf("\n");
+
+    fmtbuf[0] = '\0';
+    memset(fmtbuf, '?', jm_countof(fmtbuf));
+    fmtlen = jm_snprintf(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
+                         "%d, %0.3f, %5d, %08d, %-20.8s, 0x%08X,\n%05.3d, %05.3d, %-05.3d, %-05.3d, 05d",
+                         777, 12.345, 8888, 99999, "abcdhgjhged", 123456, 1, 12345678, 1, 12345678);
+    //fmtbuf[fmtlen] = '\0';
+    printf("jm_snprintf(buf, bufsize, count,\n"
+           "    \"%%04d, %%0.3f, %%5d, %%08d, %%-20.8s, 0x%%08X,\n"
+           "     %%05.3d, %%05.3d, %%-05.3d, %%-05.3d, 05d\");\n\n");
+    printf("buf = %s\n\n", fmtbuf);
+    printf("len = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
     printf("\n");
 
     //::system("pause");
