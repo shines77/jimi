@@ -143,6 +143,8 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
 
     cur = (jm_char *)fmt;
     end = buf + JIMIC_MIN(count, countOfElements - 1);
+    if (end < buf)
+        end = (jm_char *)(size_t)-1;
 
 vslprintf_try_next:
     while ((c = *cur++) != '\0') {
