@@ -36,14 +36,12 @@ jmc_i64toa_radix10(jm_char *buf, int64_t val);
 
 // itoa_radix10_ex()
 JMC_INLINE_NONSTD(int)
-jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int flag,
-                    unsigned int fill, unsigned int width, unsigned int length,
-                    unsigned int val);
+jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int flag,
+                    unsigned int fill, unsigned int width, unsigned int length);
 
 JMC_INLINE_NONSTD(int)
-jmc_itoa_radix10_ex(jm_char *buf, size_t count, unsigned int flag,
-                    unsigned int fill, unsigned int width, unsigned int length,
-                    int val);
+jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
+                    unsigned int fill, unsigned int width, unsigned int length);
 
 // ftos(), dtos()
 JMC_INLINE_NONSTD(int)
@@ -68,6 +66,17 @@ jmc_strlen(jm_char *str);
 
 JMC_INLINE_NONSTD(size_t)
 jmc_strcpy(jm_char *dest, JM_CONST jm_char *src);
+
+// strncpy()
+JMC_INLINE_NONSTD(size_t)
+jmc_strncpy(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count);
+
+JMC_INLINE_NONSTD(size_t)
+jmc_strncpy_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count);
+
+JMC_INLINE_NONSTD(size_t)
+jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
+               unsigned int flag, unsigned int fill, unsigned int width, unsigned int length);
 
 #ifdef __cplusplus
 }

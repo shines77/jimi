@@ -574,12 +574,12 @@ void String_Base_Test()
     fmtbuf[0] = '\0';
     memset(fmtbuf, '?', jm_countof(fmtbuf));
     fmtlen = jmc_snprintf(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
-                          "%d, %0.3f, %5d, %08d, %-20.8s, 0x%08X,\n%05.3d, %05.3d, %-05.3d, %-05.3d, 05d",
-                          777, 12.345, 8888, 99999, "abcdhgjhged", 123456, 1, 12345678, 1, 12345678);
+                          "%d, %0.3f, %5d, %08d, %-020.8s, 0x%08X,\n%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
+                          777, 12.345, 8888, 99999, "abcdhgjhged", 123456, 1, 1234, 12345678, 1, 1234, 12345678);
     //fmtbuf[fmtlen] = '\0';
     printf("jmc_snprintf(buf, bufsize, count,\n"
            "    \"%%04d, %%0.3f, %%5d, %%08d, %%-20.8s, 0x%%08X,\n"
-           "     %%05.3d, %%05.3d, %%-05.3d, %%-05.3d, 05d\");\n\n");
+           "     %%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\");\n\n");
     printf("buf = %s\n\n", fmtbuf);
     printf("len = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
     printf("\n");
@@ -587,12 +587,12 @@ void String_Base_Test()
     fmtbuf[0] = '\0';
     memset(fmtbuf, '?', jm_countof(fmtbuf));
     fmtlen = jm_snprintf(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
-                         "%d, %0.3f, %5d, %08d, %-20.8s, 0x%08X,\n%05.3d, %05.3d, %-05.3d, %-05.3d, 05d",
-                         777, 12.345, 8888, 99999, "abcdhgjhged", 123456, 1, 12345678, 1, 12345678);
+                         "%d, %0.3f, %5d, %08d, %-020.8s, 0x%08X,\n%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
+                         777, 12.345, 8888, 99999, "abcdhgjhged", 123456, 1, 1234, 12345678, 1, 1234, 12345678);
     //fmtbuf[fmtlen] = '\0';
     printf("jm_snprintf(buf, bufsize, count,\n"
-           "    \"%%04d, %%0.3f, %%5d, %%08d, %%-20.8s, 0x%%08X,\n"
-           "     %%05.3d, %%05.3d, %%-05.3d, %%-05.3d, 05d\");\n\n");
+           "    \"%%04d, %%0.3f, %%5d, %%08d, %%-020.8s, 0x%%08X,\n"
+           "     %%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\");\n\n");
     printf("buf = %s\n\n", fmtbuf);
     printf("len = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
     printf("\n");

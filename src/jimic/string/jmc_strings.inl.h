@@ -181,13 +181,12 @@ jmc_i64toa_radix10(jm_char *buf, int64_t val)
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int flag,
-                    unsigned int fill, unsigned int width, unsigned int length,
-                    unsigned int val)
+jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int flag,
+                    unsigned int fill, unsigned int width, unsigned int length)
 {
     unsigned int digval, digital;
     int fill_cnt;
-    register int padding;
+    int padding;
     jm_char *cur;
     char digits[16];    // 实际最多只会用到10个bytes
 
@@ -202,91 +201,86 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int flag,
     digital = cur - digits;
     fill_cnt = width - digital;
 
-    if ((flag & FORMAT_ALIGN_LEFT) == 0) {
-        // align to right
-        if (fill_cnt > 0) {
-            if (length == 0 || length >= width) {
-                // fill normal
-                do {
-                    *buf++ = fill;
-                    fill_cnt--;
-                } while (fill_cnt > 0);
-            }
-            else {
-                if (length < width) {
+    if (fill_cnt > 0) {
+        // when legnth == 0 || legnth >= witdh, align to right or left is same
+        if (length == 0 || length >= width) {
+            // fill normal
+            do {
+                *buf++ = fill;
+                fill_cnt--;
+            } while (fill_cnt > 0);
+        }
+        else {
+            if ((flag & FORMAT_ALIGN_LEFT) == 0) {
+                // align to right, when (length < width)
+                jimic_assert(length < width);
+
+                padding = length - digital;
+                if (padding > 0) {
                     // fill right padding space
-                    padding = length - digital;
-                    do {
+                    while (fill_cnt > padding) {
                         *buf++ = ' ';
                         fill_cnt--;
-                    } while (fill_cnt > padding);
+                    }
+
                     // fill normal
-                    do {
+                    while (fill_cnt > 0) {
                         *buf++ = fill;
                         fill_cnt--;
-                    }  while (fill_cnt > 0);
+                    }
                 }
-            }
-        }
-#if 0
-        do {
-            --cur;
-            *buf++ = *cur;
-        } while (cur != digits);
-#else
-        cur--;
-        while (cur >= digits)
-            *buf++ = *cur--;
-#endif
-    }
-    else {
-        // align to left
-        if (fill_cnt > 0) {
-            if (length == 0 || length >= width) {
-                // fill normal
-                do {
-                    *buf++ = fill;
-                    fill_cnt--;
-                } while (fill_cnt > 0);
+                else {
+                    // fill right padding space
+                    while (fill_cnt > 0) {
+                        *buf++ = ' ';
+                        fill_cnt--;
+                    }
+                }
             }
             else {
-                if (length < width) {
-                    // fill normal
-                    padding = length - digital;
+                // align to left, when (length < width)
+                jimic_assert(length < width);
+
+                // fill normal
+                padding = length - digital;
+                if (padding > 0) {
+                    fill_cnt -= padding;
                     do {
                         *buf++ = fill;
-                        fill_cnt--;
-                    } while (fill_cnt > padding);
-#if 0
-                    do {
-                        --cur;
-                        *buf++ = *cur;
-                    } while (cur != digits);
-#else
-                    cur--;
-                    while (cur >= digits)
-                        *buf++ = *cur--;
-#endif
-                    // fill left padding space
-                    do {
-                        *buf++ = ' ';
-                        fill_cnt--;
-                    }  while (fill_cnt > 0);
+                        padding--;
+                    } while (padding > 0);
                 }
-                goto utoa_radix10_ex_exit;
+#if 0
+                do {
+                    --cur;
+                    *buf++ = *cur;
+                } while (cur != digits);
+#else
+                cur--;
+                while (cur >= digits)
+                    *buf++ = *cur--;
+#endif
+                // fill left padding space
+                while (fill_cnt > 0) {
+                    *buf++ = ' ';
+                    fill_cnt--;
+                }
+
+                goto utoa_radix10_ex_exit;                
             }
         }
-#if 0
-        do {
-            --cur;
-            *buf++ = *cur;
-        } while (cur != digits);
-#else
-        cur--;
-        while (cur >= digits)
-            *buf++ = *cur--;
-#endif
     }
+
+#if 0
+    do {
+        --cur;
+        *buf++ = *cur;
+    } while (cur != digits);
+#else
+    cur--;
+    while (cur >= digits)
+        *buf++ = *cur--;
+#endif
 
 utoa_radix10_ex_exit:
     *buf = '\0';
@@ -302,9 +296,8 @@ utoa_radix10_ex_exit:
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_itoa_radix10_ex(jm_char *buf, size_t count, unsigned int flag,
-                    unsigned int fill, unsigned int width, unsigned int length,
-                    int val)
+jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
+                    unsigned int fill, unsigned int width, unsigned int length)
 {
     if ((flag & FORMAT_SPACE_SIGN) == 0) {
         if (val < 0) {
@@ -322,7 +315,7 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, unsigned int flag,
         }
     }
 
-    return jmc_utoa_radix10_ex(buf, count, flag, fill, width, length, val);
+    return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length);
 }
 
 JMC_INLINE_NONSTD(int)
@@ -360,13 +353,128 @@ jmc_ui64tohex(jm_char *buf, uint64_t val)
 JMC_INLINE_NONSTD(size_t)
 jmc_strlen(jm_char *str)
 {
-    return 0;
+    return jm_strlen(str);
 }
 
 JMC_INLINE_NONSTD(size_t)
 jmc_strcpy(jm_char *dest, JM_CONST jm_char *src)
 {
     return 0;
+}
+
+JMC_INLINE_NONSTD(size_t)
+jmc_strncpy(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count)
+{
+    return 0;
+}
+
+JMC_INLINE_NONSTD(size_t)
+jmc_strncpy_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count)
+{
+    jm_char *end;
+    count = JIMIC_MIN(count, countOfElements - 1);
+    end = (jm_char *)src + count;
+    while (src < end) {
+        *dest++ = *src++;
+    }
+    *dest = '\0';
+    return count;
+}
+
+JMC_INLINE_NONSTD(size_t)
+jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
+               unsigned int flag, unsigned int fill, unsigned int width, unsigned int length)
+{
+    jm_char *end;
+    size_t copy_len, len;
+    int fill_cnt, padding;
+    count = JIMIC_MIN(count, countOfElements - 1);
+    copy_len = JIMIC_MIN(JIMIC_MIN(length, width), count);
+    len = JIMIC_MAX(width, count);
+    end = (jm_char *)src + copy_len;
+
+    fill_cnt = width - copy_len;
+    if (fill_cnt <= 0) {
+        // copy from src
+        while (src < end) {
+            *dest++ = *src++;
+        }
+        *dest = '\0';
+        return copy_len;
+    }
+    else {
+        // when legnth == 0 || legnth >= witdh, align to right or left is same
+        if (length == 0 || length >= width) {
+            // fill normal
+            do {
+                *dest++ = fill;
+                fill_cnt--;
+            } while (fill_cnt > 0);
+        }
+        else {
+            if ((flag & FORMAT_ALIGN_LEFT) == 0) {
+                // align to right, when (length < width)
+                jimic_assert(length < width);
+
+                // fill right padding space
+                padding = length - count;
+                if (padding > 0) {
+                    while (fill_cnt > padding) {
+                        *dest++ = ' ';
+                        fill_cnt--;
+                    }
+
+                    // fill normal
+                    while (fill_cnt > 0) {
+                        *dest++ = fill;
+                        fill_cnt--;
+                    }
+                }
+                else {
+                    // fill right padding space
+                    while (fill_cnt > 0) {
+                        *dest++ = ' ';
+                        fill_cnt--;
+                    }
+                }
+            }
+            else {
+                // align to left, when (length < width)
+                jimic_assert(length < width);
+
+                // fill normal
+                padding = length - count;
+                if (padding > 0) {
+                    fill_cnt -= padding;
+                    do {
+                        *dest++ = fill;
+                        padding--;
+                    } while (padding > 0);
+                }
+
+                // copy from src
+                while (src < end) {
+                    *dest++ = *src++;
+                }
+
+                // fill left padding space
+                while (fill_cnt > 0) {
+                    *dest++ = ' ';
+                    fill_cnt--;
+                }
+                goto jmc_strncpy_ex_exit;
+            }
+        }
+    }
+
+    // copy from src
+    while (src < end) {
+        *dest++ = *src++;
+    }
+
+jmc_strncpy_ex_exit:
+    *dest = '\0';
+    return len;
 }
 
 #endif  /* !_JIMIC_STRING_JMC_STRIGNS_INL_H_ */

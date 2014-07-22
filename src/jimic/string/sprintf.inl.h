@@ -329,7 +329,7 @@ vslprintf_continue:
                         flag |= align;
                         if (sign != 0)
                             flag |= FORMAT_SIGN_MASK;
-                        len = jmc_itoa_radix10_ex(buf, -1, flag, fill, width, precision, i32);
+                        len = jmc_itoa_radix10_ex(buf, -1, i32, flag, fill, width, precision);
                     }
                     buf += len;
                     goto vslprintf_try_next;
@@ -373,9 +373,17 @@ vslprintf_continue:
                     // char *
                     s = va_arg(args, jm_char *);
                     len = jmc_strlen(s);
-                    if ((buf + len) >= end)
+                    if ((buf + JIMIC_MAX(len, width)) >= end)
                         goto vslprintf_exit;
-                    len = jmc_strcpy(buf, s);
+                    if (width == 0 && flag == FORMAT_DEFAULT_SIGN) {
+                        len = jmc_strncpy(buf, (size_t)-1, s, len);
+                    }
+                    else {
+                        flag |= align;
+                        if (sign != 0)
+                            flag |= FORMAT_SIGN_MASK;
+                        len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
+                    }
                     buf += len;
                     goto vslprintf_try_next;
 
