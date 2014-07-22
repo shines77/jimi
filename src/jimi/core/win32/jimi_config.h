@@ -37,6 +37,9 @@
 
 #define JIMI_HAS_CPP11_MOVE_FUNCTIONS       1
 
+#define JIMI_HAS_BOOST                      0
+#define JIMI_HAS_BOOST_LOCALE               0
+
 //
 // From: http://msdn.microsoft.com/zh-cn/library/e5ewb1h3%28v=vs.90%29.aspx
 // From: http://msdn.microsoft.com/en-us/library/x98tx3cf.aspx

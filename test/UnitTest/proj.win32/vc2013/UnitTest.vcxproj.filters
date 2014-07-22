@@ -20,9 +20,6 @@
     <ClCompile Include="..\..\src\UnitTest.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\encoding\codepage.cpp">
-      <Filter>src\encoding</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\FastMemcpy.h">
@@ -37,25 +34,11 @@
     <ClInclude Include="..\..\src\UnitTest.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\encoding\conv.hpp">
-      <Filter>src\encoding</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\cpp11_format.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\src\encoding\iconv_codepage.ipp">
-      <Filter>src\encoding</Filter>
-    </None>
-    <None Include="..\..\src\encoding\uconv_codepage.ipp">
-      <Filter>src\encoding</Filter>
-    </None>
-    <None Include="..\..\src\encoding\wconv_codepage.ipp">
-      <Filter>src\encoding</Filter>
-    </None>
   </ItemGroup>
 </Project>

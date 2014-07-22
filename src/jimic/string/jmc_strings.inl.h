@@ -92,8 +92,10 @@ jmc_itoa_radix10(jm_char *buf, int val)
     if (val < 0) {
         *buf++ = '-';
         val = -val;
+        return jmc_utoa_radix10(buf, val) + 1;
     }
-    return jmc_utoa_radix10(buf, val);
+    else
+        return jmc_utoa_radix10(buf, val);    
 }
 
 JMC_INLINE_NONSTD(int)
@@ -134,8 +136,10 @@ jmc_ltoa_radix10(jm_char *buf, long val)
     if (val < 0) {
         *buf++ = '-';
         val = -val;
+        return jmc_ultoa_radix10(buf, val) + 1;
     }
-    return jmc_ultoa_radix10(buf, val);
+    else
+        return jmc_ultoa_radix10(buf, val);    
 }
 
 JMC_INLINE_NONSTD(int)
@@ -176,8 +180,10 @@ jmc_i64toa_radix10(jm_char *buf, int64_t val)
     if (val < 0) {
         *buf++ = '-';
         val = -val;
+        return jmc_u64toa_radix10(buf, val) + 1;
     }
-    return jmc_u64toa_radix10(buf, val);
+    else
+        return jmc_u64toa_radix10(buf, val);
 }
 
 JMC_INLINE_NONSTD(int)
@@ -303,7 +309,10 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
         if (val < 0) {
             *buf++ = '-';
             val = -val;
+            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + 1;
         }
+        else
+            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length);
     }
     else {
         if (val >= 0) {
@@ -313,9 +322,8 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
             *buf++ = '-';
             val = -val;
         }
-    }
-
-    return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length);
+        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + 1;
+    }    
 }
 
 JMC_INLINE_NONSTD(int)

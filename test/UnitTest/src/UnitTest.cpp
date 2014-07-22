@@ -53,9 +53,11 @@
 #include <functional>
 #include <cctype>
 
+#if defined(JIMI_HAS_BOOST_LOCALE) && (JIMI_HAS_BOOST_LOCALE != 0)
 #include <boost/locale.hpp>
 #include <boost/locale/encoding.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
+#endif
 #include <iostream>
 
 #ifndef _CRT_SECURE_NO_WARNINGS
@@ -77,7 +79,9 @@
 /**
  * for boost::locale
  */
+#if defined(JIMI_HAS_BOOST_LOCALE) && (JIMI_HAS_BOOST_LOCALE != 0)
 #pragma comment(lib, "libboost_locale-vc120-mt-gd-1_55.lib")
+#endif
 
 USING_NS_JIMI;
 USING_NS_JIMI_LOG;
@@ -3405,6 +3409,8 @@ void win_iconv_ansi2unicode_test(const char *szTest, bool echo_result)
         utf8_str[utf8_size] = '\0';
     }
 
+#if defined(JIMI_HAS_BOOST_LOCALE) && (JIMI_HAS_BOOST_LOCALE != 0)
+
     if (echo_result)
         printf("boost::locale::conv::to_utf()\n\n");
 
@@ -3424,6 +3430,10 @@ void win_iconv_ansi2unicode_test(const char *szTest, bool echo_result)
         wprintf(L"unicode str = \n%s\n\n", w_string.c_str());
         printf("\n");
     }
+
+#else
+    time1 = 1.0;
+#endif  /* JIMI_HAS_BOOST_LOCALE */
 
     ansi_size = jm_strlen(szTest) + 1;
     ansi_str = (char *)malloc(ansi_size * sizeof(char));
@@ -3546,6 +3556,8 @@ void win_iconv_unicode2ansi_test(const wchar_t *szTest, bool echo_result)
         utf8_str[utf8_size] = '\0';
     }
 
+#if defined(JIMI_HAS_BOOST_LOCALE) && (JIMI_HAS_BOOST_LOCALE != 0)
+
     if (echo_result)
         printf("boost::locale::conv::from_utf()\n\n");
 
@@ -3565,6 +3577,10 @@ void win_iconv_unicode2ansi_test(const wchar_t *szTest, bool echo_result)
         printf("ansi str = \n%s\n\n", a_string.c_str());
         printf("\n");
     }
+
+#else
+    time1 = 1.0;
+#endif  /* JIMI_HAS_BOOST_LOCALE */
 
     unicode_size = jm_wcslen(szTest) + 1;
     unicode_str = (wchar_t *)malloc(unicode_size * sizeof(wchar_t));
@@ -3952,7 +3968,7 @@ int UnitTest_Main(int argc, char *argv[])
 #endif
 
 #if 1
-    String_Snprintf_Test();
+    //String_Snprintf_Test();
 
     String_Sprintf_Preformance_Test_D1();
     String_Snprintf_Preformance_Test_D1();
