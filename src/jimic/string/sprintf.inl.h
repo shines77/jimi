@@ -168,7 +168,6 @@ vslprintf_try_next:
             width = 0;
             precision = 0;
             //sign = 0;
-            //len = 0;
 
             // get align or fill info
             c = *cur;

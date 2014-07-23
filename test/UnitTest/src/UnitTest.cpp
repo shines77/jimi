@@ -1599,7 +1599,7 @@ void String_Snprintf_Preformance_Test_D2()
     }
 #endif
 
-#if 0
+#if 1
     //
     // How to reuse an ostringstream?
     //
