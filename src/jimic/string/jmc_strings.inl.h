@@ -89,13 +89,13 @@ jmc_utoa_radix10(jm_char *buf, unsigned int val)
 JMC_INLINE_NONSTD(int)
 jmc_itoa_radix10(jm_char *buf, int val)
 {
-    if (val < 0) {
+    int sign;
+    sign = (val < 0);
+    if (sign) {
         *buf++ = '-';
         val = -val;
-        return jmc_utoa_radix10(buf, val) + 1;
     }
-    else
-        return jmc_utoa_radix10(buf, val);    
+    return jmc_utoa_radix10(buf, val) + sign;
 }
 
 JMC_INLINE_NONSTD(int)
@@ -133,13 +133,13 @@ jmc_ultoa_radix10(jm_char *buf, unsigned long val)
 JMC_INLINE_NONSTD(int)
 jmc_ltoa_radix10(jm_char *buf, long val)
 {
-    if (val < 0) {
+    int sign;
+    sign = (val < 0);
+    if (sign) {
         *buf++ = '-';
         val = -val;
-        return jmc_ultoa_radix10(buf, val) + 1;
     }
-    else
-        return jmc_ultoa_radix10(buf, val);    
+    return jmc_ultoa_radix10(buf, val) + sign;
 }
 
 JMC_INLINE_NONSTD(int)
@@ -177,13 +177,13 @@ jmc_u64toa_radix10(jm_char *buf, uint64_t val)
 JMC_INLINE_NONSTD(int)
 jmc_i64toa_radix10(jm_char *buf, int64_t val)
 {
-    if (val < 0) {
+    int sign;
+    sign = (val < 0);
+    if (sign) {
         *buf++ = '-';
         val = -val;
-        return jmc_u64toa_radix10(buf, val) + 1;
     }
-    else
-        return jmc_u64toa_radix10(buf, val);
+    return jmc_u64toa_radix10(buf, val) + sign;
 }
 
 JMC_INLINE_NONSTD(int)
@@ -305,6 +305,7 @@ JMC_INLINE_NONSTD(int)
 jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
                     unsigned int fill, unsigned int width, unsigned int length)
 {
+#if 0
     if ((flag & FORMAT_SPACE_SIGN) == 0) {
         if (val < 0) {
             *buf++ = '-';
@@ -323,7 +324,28 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
             val = -val;
         }
         return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + 1;
-    }    
+    }
+#else
+    int sign;
+    if ((flag & FORMAT_SPACE_SIGN) == 0) {
+        sign = (val < 0);
+        if (sign) {
+            *buf++ = '-';
+            val = -val;
+        }
+        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + sign;
+    }
+    else {
+        if (val < 0) {
+            *buf++ = '-';
+            val = -val;
+        }
+        else {
+            *buf++ = '+';
+        }
+        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + 1;
+    }
+#endif
 }
 
 JMC_INLINE_NONSTD(int)

@@ -46,7 +46,12 @@
 // crtdbg_env.h 必须放在 stdlib.h 之后
 #include <jimic/system/crtdbg_env.h>
 
+#include <cstdlib>
+#include <cstdio>
 #include <string>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 #include <map>
 #include <locale>
 #include <algorithm>
@@ -58,7 +63,8 @@
 #include <boost/locale/encoding.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #endif
-#include <iostream>
+
+//#include <boost/iostreams/stream_buffer.hpp>
 
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -83,9 +89,11 @@
 #pragma comment(lib, "libboost_locale-vc120-mt-gd-1_55.lib")
 #endif
 
-USING_NS_JIMI;
-USING_NS_JIMI_LOG;
-USING_NS_JIMI_SYSTEM;
+//USING_NS_JIMI;
+//USING_NS_JIMI_LOG;
+//USING_NS_JIMI_SYSTEM;
+
+using namespace std;
 
 USING_NS_UNITEST;
 
@@ -1203,10 +1211,10 @@ void String_Sprintf_Preformance_Test_D1()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             fmtlen = jm_sprintf(fmtbuf, jm_countof(fmtbuf),
-                                 "%d, %d, %d, %d, %04d, %5d, %08d\n"
-                                 "%d, %d, %d, %d, %d, %d",
-                                 123, 123456789, -123, -123456789, 777, 8888, 99999,
-                                 1, 1234, 12345678, 1, 1234, 12345678);
+                                "%d, %d, %d, %d, %04d, %5d, %08d\n"
+                                "%d, %d, %d, %d, %d, %d",
+                                123, 123456789, -123, -123456789, 777, 8888, 99999,
+                                1, 1234, 12345678, 1, 1234, 12345678);
         }
         sw.stop();
         time = sw.getMillisec();
@@ -1233,10 +1241,10 @@ void String_Sprintf_Preformance_Test_D1()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             fmtlen = sprintf(fmtbuf,
-                                 "%d, %d, %d, %d, %04d, %5d, %08d\n"
-                                 "%d, %d, %d, %d, %d, %d",
-                                 123, 123456789, -123, -123456789, 777, 8888, 99999,
-                                 1, 1234, 12345678, 1, 1234, 12345678);
+                             "%d, %d, %d, %d, %04d, %5d, %08d\n"
+                             "%d, %d, %d, %d, %d, %d",
+                             123, 123456789, -123, -123456789, 777, 8888, 99999,
+                             1, 1234, 12345678, 1, 1234, 12345678);
         }
         sw.stop();
         time = sw.getMillisec();
@@ -1259,15 +1267,70 @@ void String_Sprintf_Preformance_Test_D1()
     }
 #endif
 
+#if 0
+    //
+    // How to reuse an ostringstream?
+    //
+    // Reference: http://stackoverflow.com/questions/624260/how-to-reuse-an-ostringstream
+    //
+    {
+        std::ostringstream ostr;
+        ostr.str().reserve(512);
+        ostr << 11 << std::endl;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            ostr.clear();
+            ostr.seekp(0);  // for outputs: seek put ptr to start
+//          ostr.seekg(0);  // for inputs: seek get ptr to start
+            ostr << 123 << ", " << 123456789 << ", " << -123 << ", " << -123456789 << ", "
+                 << std::right << std::setfill('0') << std::setw(4) << 777 << ", "
+                 << std::right << std::setfill(' ') << std::setw(5) << 8888 << ", "
+                 << std::right << std::setfill('0') << std::setw(8) << 99999 << ","
+                 << std::endl;
+            ostr << std::setfill('0') << std::setw(6) << 1  << ", "
+                 << std::setfill('0') << std::setw(5) << 1234 << ", "
+                 << std::setfill('0') << std::setw(5) << 12345678 << ", "
+                 << std::left << std::setfill('0') << std::setw(6) << 1 << ", "
+                 << std::left << std::setfill('0') << std::setw(5) << 1234 << ", "
+                 << std::left << std::setfill('0') << std::setw(5) << 12345678;
+            //ostr << std::ends;
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        ostr.clear();\n"
+               "        ostr << 123 << \", \" << 123456789 << \", \" << -123 << \", \" << -123456789 << \", \"\n"
+               "             << std::right << std::setfill('0') << std::setw(4) << 777 << \", \"\n"
+               "             << std::right << std::setfill(' ') << std::setw(5) << 8888 << \", \"\n"
+               "             << std::right << std::setfill('0') << std::setw(8) << 99999 << \",\"\n"
+               "             << std::endl;\n"
+               "        ostr << std::setfill('0') << std::setw(6) << 1  << \", \"\n"
+               "             << std::setfill('0') << std::setw(5) << 1234 << \", \"\n"
+               "             << std::setfill('0') << std::setw(5) << 12345678 << \", \"\n"
+               "             << std::left << std::setfill('0') << std::setw(6) << 1 << \", \"\n"
+               "             << std::left << std::setfill('0') << std::setw(5) << 1234 << \", \"\n"
+               "             << std::left << std::setfill('0') << std::setw(5) << 12345678;");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        printf("buf  = %s\n\n", ostr.str().c_str());
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(ostr.str().c_str()));
+        printf("time = %0.3f ms\n", time);
+        printf("\n");
+    }
+#endif
+
 #if 1
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             fmtlen = jmc_sprintf(fmtbuf,
-                                  "%d, %d, %d, %d, %04d, %5d, %08d\n"
-                                  "%d, %d, %d, %d, %d, %d",
-                                  123, 123456789, -123, -123456789, 777, 8888, 99999,
-                                  1, 1234, 12345678, 1, 1234, 12345678);
+                                 "%d, %d, %d, %d, %04d, %5d, %08d\n"
+                                 "%d, %d, %d, %d, %d, %d",
+                                 123, 123456789, -123, -123456789, 777, 8888, 99999,
+                                 1, 1234, 12345678, 1, 1234, 12345678);
         }
         sw.stop();
         time = sw.getMillisec();
@@ -1487,6 +1550,162 @@ void String_Snprintf_Preformance_Test_D2()
     }
 #endif
 
+    // 下面这种方式比后面那一种方式还要慢, 所以放弃了
+
+#if 0
+    {
+        std::string out_str;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            std::ostringstream ostr;
+            ostr << 123 << ", " << 123456789 << ", " << -123 << ", " << -123456789 << ", "
+                 << std::right << std::setfill('0') << std::setw(4) << 777 << ", "
+                 << std::right << std::setfill(' ') << std::setw(5) << 8888 << ", "
+                 << std::right << std::setfill('0') << std::setw(8) << 99999 << ","
+                 << std::endl;
+            ostr << std::setfill('0') << std::setw(6) << 1  << ", "
+                 << std::setfill('0') << std::setw(5) << 1234 << ", "
+                 << std::setfill('0') << std::setw(5) << 12345678 << ", "
+                 << std::left << std::setfill('0') << std::setw(6) << 1 << ", "
+                 << std::left << std::setfill('0') << std::setw(5) << 1234 << ", "
+                 << std::left << std::setfill('0') << std::setw(5) << 12345678;
+            if (i == loop_times - 1)
+                out_str = ostr.str();
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        ostr.clear();\n"
+               "        ostr << 123 << \", \" << 123456789 << \", \" << -123 << \", \" << -123456789 << \", \"\n"
+               "             << std::right << std::setfill('0') << std::setw(4) << 777 << \", \"\n"
+               "             << std::right << std::setfill(' ') << std::setw(5) << 8888 << \", \"\n"
+               "             << std::right << std::setfill('0') << std::setw(8) << 99999 << \",\"\n"
+               "             << std::endl;\n"
+               "        ostr << std::setfill('0') << std::setw(6) << 1  << \", \"\n"
+               "             << std::setfill('0') << std::setw(5) << 1234 << \", \"\n"
+               "             << std::setfill('0') << std::setw(5) << 12345678 << \", \"\n"
+               "             << std::left << std::setfill('0') << std::setw(6) << 1 << \", \"\n"
+               "             << std::left << std::setfill('0') << std::setw(5) << 1234 << \", \"\n"
+               "             << std::left << std::setfill('0') << std::setw(5) << 12345678;");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        printf("buf  = %s\n\n", out_str.c_str());
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(out_str.c_str()));
+        printf("time = %0.3f ms\n", time);
+        printf("\n");
+    }
+#endif
+
+#if 0
+    //
+    // How to reuse an ostringstream?
+    //
+    // Reference: http://stackoverflow.com/questions/624260/how-to-reuse-an-ostringstream
+    //
+    {
+        std::ostringstream ostr;
+        ostr.str().reserve(512);
+        // 要使用ostr.clear(); ostr.seekp(0); 来重置ostr的状态, 必须先给它写点东西, 才能正常工作
+        ostr << 11 << std::endl;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            ostr.clear();
+            //ostr.str("");
+            ostr.seekp(0);  // for outputs: seek put ptr to start
+//          ostr.seekg(0);  // for inputs: seek get ptr to start
+            ostr << 123 << ", " << 123456789 << ", " << -123 << ", " << -123456789 << ", "
+                 << std::right << std::setfill('0') << std::setw(4) << 777 << ", "
+                 << std::right << std::setfill(' ') << std::setw(5) << 8888 << ", "
+                 << std::right << std::setfill('0') << std::setw(8) << 99999 << ","
+                 << std::endl;
+            ostr << std::setfill('0') << std::setw(6) << 1  << ", "
+                 << std::setfill('0') << std::setw(5) << 1234 << ", "
+                 << std::setfill('0') << std::setw(5) << 12345678 << ", "
+                 << std::left << std::setfill('0') << std::setw(6) << 1 << ", "
+                 << std::left << std::setfill('0') << std::setw(5) << 1234 << ", "
+                 << std::left << std::setfill('0') << std::setw(5) << 12345678;
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        ostr.clear();\n"
+               "        ostr << 123 << \", \" << 123456789 << \", \" << -123 << \", \" << -123456789 << \", \"\n"
+               "             << std::right << std::setfill('0') << std::setw(4) << 777 << \", \"\n"
+               "             << std::right << std::setfill(' ') << std::setw(5) << 8888 << \", \"\n"
+               "             << std::right << std::setfill('0') << std::setw(8) << 99999 << \",\"\n"
+               "             << std::endl;\n"
+               "        ostr << std::setfill('0') << std::setw(6) << 1  << \", \"\n"
+               "             << std::setfill('0') << std::setw(5) << 1234 << \", \"\n"
+               "             << std::setfill('0') << std::setw(5) << 12345678 << \", \"\n"
+               "             << std::left << std::setfill('0') << std::setw(6) << 1 << \", \"\n"
+               "             << std::left << std::setfill('0') << std::setw(5) << 1234 << \", \"\n"
+               "             << std::left << std::setfill('0') << std::setw(5) << 12345678;");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        printf("buf  = %s\n\n", ostr.str().c_str());
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(ostr.str().c_str()));
+        printf("time = %0.3f ms\n", time);
+        printf("\n");
+    }
+#endif
+
+#if 0
+    {
+        std::ostringstream ostr;
+        ostr.str().reserve(512);
+        // 要使用ostr.clear(); ostr.seekp(0); 来重置ostr的状态, 必须先给它写点东西, 才能正常工作
+        ostr << 11 << std::endl;
+        sw.restart();
+        for (i = 0; i < loop_times; ++i) {
+            ostr.clear();
+            //ostr.str("");
+            ostr.seekp(0);  // for outputs: seek put ptr to start
+//          ostr.seekg(0);  // for inputs: seek get ptr to start
+            ostr << 123 << ", " << 123456789 << ", " << -123 << ", " << -123456789 << ", "
+                 << 777 << ", "
+                 << 8888 << ", "
+                 << 99999 << ","
+                 << std::endl;
+            ostr << 1  << ", "
+                 << 1234 << ", "
+                 << 12345678 << ", "
+                 << 1 << ", "
+                 << 1234 << ", "
+                 << 12345678;
+        }
+        sw.stop();
+        time = sw.getMillisec();
+
+        printf("==============================================================================\n\n");
+        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
+        printf("        ostr.clear();\n"
+               "        ostr << 123 << \", \" << 123456789 << \", \" << -123 << \", \" << -123456789 << \", \"\n"
+               "             << 777 << \", \"\n"
+               "             << 8888 << \", \"\n"
+               "             << 99999 << \",\"\n"
+               "             << std::endl;\n"
+               "        ostr << 1  << \", \"\n"
+               "             << 1234 << \", \"\n"
+               "             << 12345678 << \", \"\n"
+               "             << 1 << \", \"\n"
+               "             << 1234 << \", \"\n"
+               "             << 12345678;");
+        printf("    }\n\n");
+        printf("==============================================================================\n\n");
+
+        printf("buf  = %s\n\n", ostr.str().c_str());
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(ostr.str().c_str()));
+        printf("time = %0.3f ms\n", time);
+        printf("\n");
+    }
+#endif
+
 #if 1
     {
         sw.restart();
@@ -1517,6 +1736,46 @@ void String_Snprintf_Preformance_Test_D2()
         printf("\n");
     }
 #endif
+    printf("\n");
+}
+
+void OStreamString_Performance_Test()
+{
+    std::ostringstream ostr;
+    ostr.str().reserve(512);
+    ostr << 11 << std::endl;
+
+    ostr.clear();
+    ostr.seekp(0);
+
+    ostr << 123 << ", " << 123456789 << ", " << -123 << ", " << -123456789 << ", "
+         << std::setfill('0') << std::setw(4) << 777 << ", "
+         << std::setfill(' ') << std::setw(5) << 8888 << ", "
+         << std::setfill('0') << std::setw(8) << 99999 << ","
+         << std::endl;
+    ostr << std::setfill('0') << std::setw(6) << 1  << ", "
+         << std::setfill('0') << std::setw(5) << 1234 << ", "
+         << std::setfill('0') << std::setw(5) << 12345678 << ", "
+         << std::left << std::setfill('0') << std::setw(6) << std::skipws << 1 << ", "
+         << std::left << std::setfill('0') << std::setw(5) << std::skipws << 1234 << ", "
+         << std::left << std::setfill('0') << std::setw(5) << std::skipws << 12345678;
+
+    ostr.clear();
+    ostr.seekp(0);
+
+    ostr << 123 << ", " << 123456789 << ", " << -123 << ", " << -123456789 << ", "
+         << std::setfill('0') << std::setw(4) << 777 << ", "
+         << std::setfill(' ') << std::setw(5) << 8888 << ", "
+         << std::setfill('0') << std::setw(8) << 99999 << ","
+         << std::endl;
+    ostr << std::setfill('0') << std::setw(6) << 1  << ", "
+         << std::setfill('0') << std::setw(5) << 1234 << ", "
+         << std::setfill('0') << std::setw(5) << 12345678 << ", "
+         << std::left << std::setfill('0') << std::setw(6) << std::skipws << 1 << ", "
+         << std::left << std::setfill('0') << std::setw(5) << std::skipws << 1234 << ", "
+         << std::left << std::setfill('0') << std::setw(5) << std::skipws << 12345678;
+
+    printf("std::ostringstream ostr.str() = %s\n\nostr.size() = %d\n", ostr.str().c_str(), ostr.str().size());
     printf("\n");
 }
 
@@ -3950,7 +4209,8 @@ int UnitTest_Main(int argc, char *argv[])
     //Memcpy_Test();
 
 #if 0
-    String_Base_Test();
+    OStreamString_Performance_Test();
+
     if (true && 1) {
         ::system("pause");
         sLog.log_end();
@@ -3959,8 +4219,17 @@ int UnitTest_Main(int argc, char *argv[])
 #endif
 
 #if 0
+    String_Base_Test();
+    if (true && 0) {
+        ::system("pause");
+        sLog.log_end();
+        return 0;
+    }
+#endif
+
+#if 0
     String_Format_Test();
-    if (true && 1) {
+    if (true && 0) {
         ::system("pause");
         sLog.log_end();
         return 0;
@@ -3968,7 +4237,7 @@ int UnitTest_Main(int argc, char *argv[])
 #endif
 
 #if 1
-    //String_Snprintf_Test();
+    String_Snprintf_Test();
 
     String_Sprintf_Preformance_Test_D1();
     String_Snprintf_Preformance_Test_D1();

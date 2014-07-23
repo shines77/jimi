@@ -12,6 +12,11 @@
 
 #include <jimic/string/jmc_strings.h>
 
+#if defined(_MSC_VER) && (_MSC_VER != 0)
+#pragma warning(push)
+#pragma warning(disable : 4102)         // 禁止warning C4102: "未引用的标签"
+#endif  /* _MSC_VER */
+
 //
 // Printf() 输出格式控制
 // Reference: http://bbs.csdn.net/topics/330107715
@@ -109,6 +114,9 @@ jmc_vsnprintf(jm_char *buf, size_t countOfElements, size_t count,
     return len;
 }
 
+/* jmc_vslprintf()是否使用前置处理, 使用为1 */
+#define VSLPRINTF_USE_PRE_TREATMENT     1
+
 /**
  * Format:
  *   sprintf("%04d, %20s, %0.3f, %03d, 0x%08X, %%3%%", 1, "2", 3.12, 4, 8989);
@@ -124,7 +132,6 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
     jm_char        *first;
     unsigned int    flag, align, fill, width, precision, sign;
     size_t          len;
-//  int             no_exit;
     jm_char        *s;
     int             i32;
     double          dbl;
@@ -141,10 +148,14 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
     jimic_assert(fmt != NULL);
     jimic_assert(count != 0);
 
+    sign = 0;
+
     cur = (jm_char *)fmt;
     end = buf + JIMIC_MIN(count, countOfElements - 1);
     if (end < buf)
         end = (jm_char *)(size_t)-1;
+
+    jimic_assert(end >= buf);
 
 vslprintf_try_next:
     while ((c = *cur++) != '\0') {
@@ -156,10 +167,43 @@ vslprintf_try_next:
             fill  = FORMAT_FILL_NONE;
             width = 0;
             precision = 0;
-            sign = 0;
-            len = 0;
+            //sign = 0;
+            //len = 0;
+
             // get align or fill info
             c = *cur;
+#if defined(VSLPRINTF_USE_PRE_TREATMENT) && (VSLPRINTF_USE_PRE_TREATMENT != 0)
+#if 1
+            if (c <= '9' && c >= '0') {
+                if (c == '0') {
+                    // '0': 0x30
+                    fill = FORMAT_FILL_ZERO;
+                    c = *++cur;
+                    if (c > '9' || c <= '0')
+                        goto vslprintf_continue;
+                }
+                width = c - '0';
+                c = *++cur;
+                while (c >= '0' && c <= '9') {
+                    width = width * 10 + c - '0';
+                    c = *++cur;
+                }
+
+                // special for something
+                if (0) {
+                    // do nothing!
+                }
+                else if (c == '.') {
+                    goto vslprintf_get_precision;
+                }
+#if 0
+                // special for '%0##d'
+                else if (c == 'd') {
+                    goto vslprintf_out_int;
+                }
+#endif
+            }
+#else
             if (c == '0') {
                 // '0': 0x30
                 fill = FORMAT_FILL_ZERO;
@@ -173,17 +217,23 @@ vslprintf_try_next:
                     c = *++cur;
                 }
             }
+#endif
+            // special for something
+            if (0) {
+                // do nothing!
+            }
 #if 0
-            if (c == 'd') {
-                //
-                continue;
+            // special for '%0##d'
+            else if (c == 'd') {
+                goto vslprintf_out_int;
             }
             else if (c == 'f') {
-                //
-                continue;
+                goto vslprintf_out_double;
+                //continue;
             }
             else if (c == 's') {
                 //
+                goto vslprintf_out_string;
                 continue;
             }
             else if (c == '-') {
@@ -201,14 +251,15 @@ vslprintf_try_next:
                 flag = FORMAT_FILL_SPACE;
                 c = *++cur;
             }
-#endif
             else if (c == '\0') {
                 goto vslprintf_exit;
             }
+#endif
+
+#endif  /* VSLPRINTF_USE_PRE_TREATMENT */
 
             // get another info
             while ((c = *cur++) != '\0') {
-                //no_exit = 0;
 vslprintf_continue:
                 switch (c) {
                 case ' ':   // 0x20
@@ -263,6 +314,7 @@ vslprintf_continue:
                     break;
 
                 case '.':   // 0x2E
+vslprintf_get_precision:
                     // get precision
                     c = *cur++;
                     if (c >= '0' && c <= '9') {
@@ -282,8 +334,6 @@ vslprintf_continue:
                         continue;
                     }
                     goto vslprintf_continue;
-                    //cur--;
-                    //break;
 
                 case '0':
                     fill = FORMAT_FILL_ZERO;
@@ -297,8 +347,6 @@ vslprintf_continue:
                         }
                     }
                     goto vslprintf_continue;
-                    //cur--;
-                    //break;
 
                 case '1': case '2': case '3': case '4':
                 case '5': case '6': case '7': case '8': case '9':
@@ -309,8 +357,6 @@ vslprintf_continue:
                         c = *cur++;
                     }
                     goto vslprintf_continue;
-                    //cur--;
-                    //break;
 
                 case 'c':
                     ch = (jm_uchar)va_arg(args, int);
@@ -320,23 +366,24 @@ vslprintf_continue:
                     goto vslprintf_try_next;
 
                 case 'd':
+vslprintf_out_int:
                     // int
                     if ((buf + JIMIC_MAX(11, width)) >= end)
                         goto vslprintf_exit;
                     i32 = va_arg(args, int);
-                    if (width == 0 && flag == FORMAT_DEFAULT_SIGN) {
+                    //if (width == 0 && flag == FORMAT_DEFAULT_SIGN) {
+                    if ((width & flag) == (0 | FORMAT_DEFAULT_SIGN)) {
                         len = jmc_itoa_radix10(buf, i32);
                     }
                     else {
                         flag |= align;
-                        if (sign != 0)
-                            flag |= FORMAT_SIGN_MASK;
                         len = jmc_itoa_radix10_ex(buf, -1, i32, flag, fill, width, precision);
                     }
                     buf += len;
                     goto vslprintf_try_next;
 
                 case 'f':
+vslprintf_out_double:
                     // float & double
                     if ((buf + 32) >= end)
                         goto vslprintf_exit;
@@ -372,18 +419,18 @@ vslprintf_continue:
                     goto vslprintf_try_next;
 
                 case 's':
+vslprintf_out_string:
                     // char *
                     s = va_arg(args, jm_char *);
                     len = jmc_strlen(s);
                     if ((buf + JIMIC_MAX(len, width)) >= end)
                         goto vslprintf_exit;
-                    if (width == 0 && flag == FORMAT_DEFAULT_SIGN) {
+                    //if (width == 0 && flag == FORMAT_DEFAULT_SIGN) {
+                    if ((width & flag) == (0 | FORMAT_DEFAULT_SIGN)) {
                         len = jmc_strncpy(buf, (size_t)-1, s, len);
                     }
                     else {
                         flag |= align;
-                        if (sign != 0)
-                            flag |= FORMAT_SIGN_MASK;
                         len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
                     }
                     buf += len;
@@ -451,10 +498,6 @@ vslprintf_continue:
                     }
                     break;
                 }
-#if 0
-                if (no_exit == 0)
-                    break;
-#endif
             }
 #if 1
             *buf++ = c;
@@ -474,5 +517,9 @@ vslprintf_exit:
     *buf = '\0';
     return buf;
 }
+
+#if defined(_MSC_VER) && (_MSC_VER != 0)
+#pragma warning(pop)                    // 恢复warning状态
+#endif
 
 #endif  /* !_JIMIC_STRING_SPRINTF_INL_H_ */
