@@ -101,7 +101,7 @@ public:
     // Move constructor
     basic_string(basic_string && goner)
         : _store(std::move(goner._store)) {
-        //
+        // do nothing!
     }
 
     // Move assignment

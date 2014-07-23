@@ -171,7 +171,9 @@ vslprintf_try_next:
 
             // get align or fill info
             c = *cur;
+
 #if defined(VSLPRINTF_USE_PRE_TREATMENT) && (VSLPRINTF_USE_PRE_TREATMENT != 0)
+
 #if 1
             if (c <= '9' && c >= '0') {
                 if (c == '0') {
@@ -192,10 +194,10 @@ vslprintf_try_next:
                 if (0) {
                     // do nothing!
                 }
+#if 0
                 else if (c == '.') {
                     goto vslprintf_get_precision;
                 }
-#if 0
                 // special for '%0##d'
                 else if (c == 'd') {
                     goto vslprintf_out_int;
@@ -370,14 +372,19 @@ vslprintf_out_int:
                     if ((buf + JIMIC_MAX(11, width)) >= end)
                         goto vslprintf_exit;
                     i32 = va_arg(args, int);
+#if 1
                     //if (width == 0 && flag == FORMAT_DEFAULT_SIGN) {
-                    if ((width & flag) == (0 | FORMAT_DEFAULT_SIGN)) {
+                    if ((width | flag) == (0 | FORMAT_DEFAULT_SIGN)) {
                         len = jmc_itoa_radix10(buf, i32);
                     }
                     else {
                         flag |= align;
                         len = jmc_itoa_radix10_ex(buf, -1, i32, flag, fill, width, precision);
                     }
+#else
+                    flag |= align;
+                    len = jmc_itoa_radix10_ex(buf, -1, i32, flag, fill, width, precision);
+#endif
                     buf += len;
                     goto vslprintf_try_next;
 
@@ -425,7 +432,7 @@ vslprintf_out_string:
                     if ((buf + JIMIC_MAX(len, width)) >= end)
                         goto vslprintf_exit;
                     //if (width == 0 && flag == FORMAT_DEFAULT_SIGN) {
-                    if ((width & flag) == (0 | FORMAT_DEFAULT_SIGN)) {
+                    if ((width | flag) == (0 | FORMAT_DEFAULT_SIGN)) {
                         len = jmc_strncpy(buf, (size_t)-1, s, len);
                     }
                     else {
