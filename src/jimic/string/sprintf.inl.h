@@ -148,12 +148,16 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
     jimic_assert(fmt != NULL);
     jimic_assert(count != 0);
 
-    sign = 0;
+    //sign = 0;
 
     cur = (jm_char *)fmt;
     end = buf + JIMIC_MIN(count, countOfElements - 1);
+#if 0
     if (end < buf)
         end = (jm_char *)(size_t)-1;
+#else
+    end = (end >= buf) ? end : ((jm_char *)(size_t)-1);
+#endif
 
     jimic_assert(end >= buf);
 
@@ -169,11 +173,10 @@ vslprintf_try_next:
             precision = 0;
             //sign = 0;
 
-            // get align or fill info
-            c = *cur;
-
 #if defined(VSLPRINTF_USE_PRE_TREATMENT) && (VSLPRINTF_USE_PRE_TREATMENT != 0)
 
+            // get align or fill info
+            c = *cur;
 #if 1
             if (c <= '9' && c >= '0') {
                 if (c == '0') {
@@ -195,6 +198,7 @@ vslprintf_try_next:
                     // do nothing!
                 }
 #if 0
+                 // special for '%0#.#d'
                 else if (c == '.') {
                     goto vslprintf_get_precision;
                 }
@@ -203,6 +207,9 @@ vslprintf_try_next:
                     goto vslprintf_out_int;
                 }
 #endif
+                else {
+                    // do nothing!
+                }
             }
 #else
             if (c == '0') {
@@ -256,6 +263,9 @@ vslprintf_try_next:
                 goto vslprintf_exit;
             }
 #endif
+            else {
+                // do nothing!
+            }
 
 #endif  /* VSLPRINTF_USE_PRE_TREATMENT */
 
@@ -273,12 +283,12 @@ vslprintf_continue:
 
                 case '%':   // 0x25
                     // specail for "%%"
-#if 1
+#if 0
                     *buf++ = c;
                     if (buf >= end)
                         goto vslprintf_exit;
 #else
-                    if (no_exit == 0) {
+                    if ((cur - first) == 1) {
                         *buf++ = c;
                         if (buf >= end)
                             goto vslprintf_exit;
@@ -293,12 +303,13 @@ vslprintf_continue:
                     flag |= FORMAT_FIELDWIDTH_SIGN;
                     // get filed width from the next argument
                     i32 = (jm_uchar)va_arg(args, int);
-                    if (i32 < 0) {
+                    if (i32 >= 0) {
+                        width = i32;
+                    }
+                    else {
                         align = FORMAT_ALIGN_LEFT;
                         width = -i32;
-                    }
-                    else
-                        width = i32;
+                    }                        
                     //goto vslprintf_continue;
                     break;
 
@@ -388,6 +399,10 @@ vslprintf_out_int:
                     buf += len;
                     goto vslprintf_try_next;
 
+                case 'e':
+                    // float & double, exponential expression
+                    break;
+
                 case 'f':
 vslprintf_out_double:
                     // float & double
@@ -470,32 +485,34 @@ vslprintf_out_string:
                     break;
 
                 default:
-                    if (c == 'X') {
-                        // HEX32
-                        if ((buf + 16) >= end)
-                            goto vslprintf_exit;
-                        hex32 = va_arg(args, uint32_t);
-                        len = jmc_uitohex(buf, hex32, TRUE);
-                        buf += len;
-                        goto vslprintf_try_next;
-                    }
-                    else if (c == 'U') {
-                        // uint64_t
-                        if ((buf + 20) >= end)
-                            goto vslprintf_exit;
-                        u64 = va_arg(args, uint64_t);
-                        len = jmc_u64toa_radix10(buf, u64);
-                        buf += len;
-                        goto vslprintf_try_next;
-                    }
-                    else if (c == 'L') {
-                        // unsigned long
-                        if ((buf + 10) >= end)
-                            goto vslprintf_exit;
-                        ul32 = va_arg(args, unsigned long);
-                        len = jmc_ultoa_radix10(buf, ul32);
-                        buf += len;
-                        goto vslprintf_try_next;
+                    if (c >= 'A' && c <= 'Z') {
+                        if (c == 'X') {
+                            // HEX32
+                            if ((buf + 16) >= end)
+                                goto vslprintf_exit;
+                            hex32 = va_arg(args, uint32_t);
+                            len = jmc_uitohex(buf, hex32, TRUE);
+                            buf += len;
+                            goto vslprintf_try_next;
+                        }
+                        else if (c == 'U') {
+                            // uint64_t
+                            if ((buf + 20) >= end)
+                                goto vslprintf_exit;
+                            u64 = va_arg(args, uint64_t);
+                            len = jmc_u64toa_radix10(buf, u64);
+                            buf += len;
+                            goto vslprintf_try_next;
+                        }
+                        else if (c == 'L') {
+                            // unsigned long
+                            if ((buf + 10) >= end)
+                                goto vslprintf_exit;
+                            ul32 = va_arg(args, unsigned long);
+                            len = jmc_ultoa_radix10(buf, ul32);
+                            buf += len;
+                            goto vslprintf_try_next;
+                        }
                     }
                     else {
                         *buf++ = c;
@@ -505,7 +522,7 @@ vslprintf_out_string:
                     break;
                 }
             }
-#if 1
+#if 0
             *buf++ = c;
             if (buf >= end)
                 break;
