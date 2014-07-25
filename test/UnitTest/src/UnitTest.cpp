@@ -1385,7 +1385,11 @@ void String_Snprintf_Preformance_Test_D1()
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
+#ifdef _MSC_VER
             fmtlen = _snprintf_s(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
+#else
+            fmtlen =    snprintf(fmtbuf, sizeof(fmtbuf),
+#endif // _MSC_VER
                                  "%d, %d, %d, %d, %d, %d, %d\n"
                                  "%d, %d, %d, %d, %d, %d",
                                  123, 123456789, -123, -123456789, 777, 8888, 99999,
@@ -1443,7 +1447,11 @@ void String_Snprintf_Preformance_Test_D1()
         printf(">>> %s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf);
         printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+#ifdef _MSC_VER
         printf("time = %0.3f ms, preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+#else
+        printf("time = %0.3f ms, preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+#endif // _MSC_VER
         printf("\n");
     }
 #endif
@@ -1517,7 +1525,11 @@ void String_Snprintf_Preformance_Test_D2()
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
+#ifdef _MSC_VER
             fmtlen = _snprintf_s(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
+#else
+            fmtlen =    snprintf(fmtbuf, sizeof(fmtbuf),
+#endif // _MSC_VER
                                  "%d, %d, %d, %d, %04d, %5d, %08d\n"
                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
                                  123, 123456789, -123, -123456789, 777, 8888, 99999,
@@ -1575,7 +1587,11 @@ void String_Snprintf_Preformance_Test_D2()
         printf(">>> %s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf);
         printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+#ifdef _MSC_VER
         printf("time = %0.3f ms, preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+#else
+        printf("time = %0.3f ms, preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+#endif // _MSC_VER
         printf("\n");
     }
 #endif
@@ -1814,7 +1830,11 @@ void String_Snprintf_Preformance_Test_D3()
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
+#ifdef _MSC_VER
             fmtlen = _snprintf_s(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
+#else
+            fmtlen =    snprintf(fmtbuf, sizeof(fmtbuf),
+#endif // _MSC_VER
                                  "%d, %d, %d, %d, %04d, %5d, %08d\n"
                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d\n"
                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
@@ -1876,7 +1896,11 @@ void String_Snprintf_Preformance_Test_D3()
         printf(">>> %s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf);
         printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+#ifdef _MSC_VER
         printf("time = %0.3f ms, preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+#else
+        printf("time = %0.3f ms, preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+#endif // _MSC_VER
         printf("\n");
     }
 #endif

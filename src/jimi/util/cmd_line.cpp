@@ -1,6 +1,8 @@
 
 #include <jimi/util/cmd_line.h>
 
+#include <string.h>
+
 NS_JIMI_BEGIN
 
 NS_JIMI_UTIL_BEGIN

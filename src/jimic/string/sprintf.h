@@ -9,7 +9,7 @@
 #include <jimi/platform/jimi_platform_def.h>
 #include <jimic/core/jimic_def.h>
 
-#include <vadefs.h>
+#include <stdarg.h>
 
 #ifdef __cplusplus
 extern "C" {

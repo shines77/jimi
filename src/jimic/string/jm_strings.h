@@ -16,6 +16,8 @@
 #include <mbstring.h>
 #endif  /* JIMI_IS_WINDOWS */
 
+#include <stdarg.h>
+
 #ifndef jimic_tolower
 #define jimic_tolower(c)     (unsigned char) ((c >= 'A' && c <= 'Z') ? (c |  0x20) : c)
 #endif

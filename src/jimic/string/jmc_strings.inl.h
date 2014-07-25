@@ -10,7 +10,7 @@
 #include <jimic/string/jmc_strings.h>
 #endif
 
-#include <vadefs.h>
+#include <stdarg.h>
 
 //
 // Printf() 输出格式控制
@@ -154,13 +154,14 @@ JMC_INLINE_NONSTD(int)
 jmc_ltoa_radix10(jm_char *buf, long val)
 {
 #if 1
-    if (val < 0) {
+    if (val >= 0) {
+        return jmc_ultoa_radix10(buf, val);
+    }
+    else {
         *buf++ = '-';
         val = -val;
         return jmc_ultoa_radix10(buf, val) + 1;
-    }
-    else
-        return jmc_ultoa_radix10(buf, val);
+    }        
 #else
     int sign;
     sign = (val < 0);
@@ -208,13 +209,14 @@ JMC_INLINE_NONSTD(int)
 jmc_i64toa_radix10(jm_char *buf, int64_t val)
 {
 #if 1
-    if (val < 0) {
+    if (val >= 0) {
+        return jmc_u64toa_radix10(buf, val);
+    }
+    else {
         *buf++ = '-';
         val = -val;
         return jmc_u64toa_radix10(buf, val) + 1;
-    }
-    else
-        return jmc_u64toa_radix10(buf, val);
+    }        
 #else
     int sign;
     sign = (val < 0);
@@ -236,6 +238,9 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
     jm_char *cur;
     int sign_char;
     char digits[16];    // 实际最多只会用到10个bytes
+
+    jimi_assert(buf != NULL);
+    jimi_assert(count != 0);
 
     cur = digits;
     do {
@@ -394,12 +399,6 @@ utoa_radix10_ex_exit:
     *buf = '\0';
 
     return width;
-    /*
-    if (fill_cnt >= 0)
-        return width;
-    else
-        return digital;
-    //*/
 }
 
 JMC_INLINE_NONSTD(int)
@@ -407,11 +406,13 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
                     unsigned int fill, unsigned int width, unsigned int length)
 {
 #if 1
+
     if (val < 0) {
         flag |= FMT_SIGN_MASK;
         val = -val;
     }
     return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length);
+
 #elif 0
     if ((flag & FMT_SPACE_SIGN) == 0) {
         if (val >= 0) {
@@ -579,6 +580,7 @@ jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, siz
                 // fill right padding space
                 padding = length - count;
                 if (padding > 0) {
+                    // fill right padding space
                     while (fill_cnt > padding) {
                         *dest++ = ' ';
                         fill_cnt--;

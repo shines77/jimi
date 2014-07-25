@@ -391,6 +391,9 @@
     <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.cpp">
       <Filter>src\jimic\core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimi\thread\Thread.cpp">
+      <Filter>src\jimi\thread</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

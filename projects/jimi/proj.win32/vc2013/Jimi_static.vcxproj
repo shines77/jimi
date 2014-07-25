@@ -197,6 +197,7 @@
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\system\scoped_lock.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimi\thread\Thread.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\util\cmd_line.cpp" />
   </ItemGroup>
   <ItemGroup>

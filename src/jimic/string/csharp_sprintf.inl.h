@@ -6,7 +6,11 @@
 #pragma once
 #endif
 
-//#include <jimic/string/csharp_sprintf.h>
+#ifndef _JIMIC_STRING_CSHARP_SPRINTF_H_
+#include <jimic/string/csharp_sprintf.h>
+#endif
+
+#include <stdarg.h>
 
 JMC_INLINE_NONSTD(int)
 jmc_csharp_sprintf(jm_char *buf, JM_CONST jm_char *fmt,

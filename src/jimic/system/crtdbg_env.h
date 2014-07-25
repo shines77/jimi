@@ -40,7 +40,9 @@
 #define _CRTDBG_MAP_ALLOC
 
 // crtdbg.h must be behind the stdlib.h
+#ifdef _MSC_VER
 #include <crtdbg.h>
+#endif
 
 #if defined(_DEBUG) || !defined(NDEBUG)
   #ifndef new
@@ -51,7 +53,9 @@
 #else
 
 // crtdbg.h must be behind the stdlib.h
+#ifdef _MSC_VER
 #include <crtdbg.h>
+#endif
 
 #endif  /* JIMI_USE_CRTDBG_CHECK */
 

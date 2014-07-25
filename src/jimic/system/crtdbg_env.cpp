@@ -14,6 +14,8 @@ void jimi_set_crtdbg_env(int display_memory_leak, int always_check_bounds)
 
 #if defined(JIMI_USE_CRTDBG_CHECK) && (JIMI_USE_CRTDBG_CHECK != 0)
 
+#if defined(_MSC_VER)
+
 #if defined(_DEBUG) || !defined(NDEBUG)
 
     // 设置 CRT 报告模式
@@ -39,6 +41,8 @@ void jimi_set_crtdbg_env(int display_memory_leak, int always_check_bounds)
         _CrtSetDbgFlag(dbg_flag);
 
 #endif  /* _DEBUG */
+
+#endif  /* _MSC_VER */
 
 #endif  /* JIMI_USE_CRTDBG_CHECK */
 }

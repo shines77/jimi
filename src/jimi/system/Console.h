@@ -12,8 +12,11 @@
 #include <jimic/system/get_char.h>
 
 #include <stdio.h>
-#include <conio.h>
 #include <stdarg.h>
+
+#ifdef _MSC_VER
+#include <conio.h>
+#endif // _MSC_VER
 
 NS_JIMI_BEGIN
 
@@ -48,10 +51,10 @@ public:
     static int ReadKey(bool displayTips = true, bool echoInput = false) {
         int keyCode;
         if (displayTips) {
-#if 0
-            printf("Press any key to continue ...\n");
+#if 1
+            printf("Press any key to continue ...");
 #else
-            printf("请按任意键继续 ...\n");
+            printf("请按任意键继续 ...");
 #endif
             keyCode = jimi_getch();
             printf("\n");

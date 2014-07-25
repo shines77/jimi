@@ -33,6 +33,8 @@
 #pragma once
 #endif
 
+#include <jimi/core/jimi_def.h>
+
 #ifdef _MSC_VER
 #include <jimi/core/win32/vs_stdint.h>
 #else
@@ -153,19 +155,19 @@ inline void stop_watch_base<T>::native_getTimeStamp(timestamp_t &result)
     result = static_cast<timestamp_t>(qp_cnt.QuadPart);
 #elif __linux__
     struct timespec ts;
-#if GMTL_USE_ASSERT
+#if JIMI_USE_ASSERT
     int status =
-#endif /* GMTL_USE_ASSERT */
+#endif /* JIMI_USE_ASSERT */
         clock_gettime(CLOCK_REALTIME, &ts);
-    _GMTL_ASSERT(status == 0, "CLOCK_REALTIME not supported");
+    JIMI_ASSERT_EX(status == 0, "CLOCK_REALTIME not supported");
     result = static_cast<timestamp_t>(static_cast<int64_t>(1000000000UL) * static_cast<int64_t>(ts.tv_sec) + static_cast<int64_t>(ts.tv_nsec));
 #else /* generic Unix */
     struct timeval tv;
-#if GMTL_USE_ASSERT
+#if JIMI_USE_ASSERT
     int status =
-#endif /* GMTL_USE_ASSERT */
+#endif /* JIMI_USE_ASSERT */
         gettimeofday(&tv, NULL);
-    _GMTL_ASSERT(status == 0, "gettimeofday failed");
+    JIMI_ASSERT_EX(status == 0, "gettimeofday failed");
     result = static_cast<timestamp_t>(static_cast<int64_t>(1000000UL) * static_cast<int64_t>(tv.tv_sec) + static_cast<int64_t>(tv.tv_usec));
 #endif /*(choice of OS) */
 }
@@ -183,19 +185,19 @@ inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::native_now(v
     result = static_cast<timestamp_t>(((double)qp_cnt.QuadPart / (double)qp_freq.QuadPart) * 1000000000.0);
 #elif __linux__
     struct timespec ts;
-#if GMTL_USE_ASSERT
+#if JIMI_USE_ASSERT
     int status =
-#endif /* GMTL_USE_ASSERT */
+#endif /* JIMI_USE_ASSERT */
         clock_gettime(CLOCK_REALTIME, &ts);
-    _GMTL_ASSERT(status == 0, "CLOCK_REALTIME not supported");
+    JIMI_ASSERT_EX(status == 0, "CLOCK_REALTIME not supported");
     result = static_cast<timestamp_t>(static_cast<int64_t>(1000000000UL) * static_cast<int64_t>(ts.tv_sec) + static_cast<int64_t>(ts.tv_nsec));
 #else /* generic Unix */
     struct timeval tv;
-#if GMTL_USE_ASSERT
+#if JIMI_USE_ASSERT
     int status =
-#endif /* GMTL_USE_ASSERT */
+#endif /* JIMI_USE_ASSERT */
         gettimeofday(&tv, NULL);
-    _GMTL_ASSERT(status == 0, "gettimeofday failed");
+    JIMI_ASSERT_EX(status == 0, "gettimeofday failed");
     result = static_cast<timestamp_t>(static_cast<int64_t>(1000000000UL) * static_cast<int64_t>(tv.tv_sec) + static_cast<int64_t>(1000UL) * static_cast<int64_t>(tv.tv_usec));
 #endif /*(choice of OS) */
 
@@ -216,21 +218,21 @@ inline double stop_watch_base<T>::native_nowf(void)
 #elif __linux__
     int64_t time_usecs;
     struct timespec ts;
-#if GMTL_USE_ASSERT
+#if JIMI_USE_ASSERT
     int status =
-#endif /* GMTL_USE_ASSERT */
+#endif /* JIMI_USE_ASSERT */
         clock_gettime(CLOCK_REALTIME, &ts);
-    _GMTL_ASSERT(status == 0, "CLOCK_REALTIME not supported");
+    JIMI_ASSERT_EX(status == 0, "CLOCK_REALTIME not supported");
     time_usecs = static_cast<int64_t>(1000000000UL) * static_cast<int64_t>(ts.tv_sec) + static_cast<int64_t>(ts.tv_nsec);
-    result = (double)time_usecs * 1E-9
+    result = (double)time_usecs * 1E-9;
 #else /* generic Unix */
     int64_t time_usecs;
     struct timeval tv;
-#if GMTL_USE_ASSERT
+#if JIMI_USE_ASSERT
     int status =
-#endif /* GMTL_USE_ASSERT */
+#endif /* JIMI_USE_ASSERT */
         gettimeofday(&tv, NULL);
-    _GMTL_ASSERT(status == 0, "gettimeofday failed");
+    JIMI_ASSERT_EX(status == 0, "gettimeofday failed");
     time_usecs = static_cast<int64_t>(1000000UL) * static_cast<int64_t>(tv.tv_sec) + static_cast<int64_t>(tv.tv_usec);
     result = (double)time_usecs * 1E-6;
 #endif /*(choice of OS) */
@@ -251,19 +253,19 @@ inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::native_now_m
     result = static_cast<timestamp_t>(((double)qp_cnt.QuadPart / (double)qp_freq.QuadPart) * 1000.0);
 #elif __linux__
     struct timespec ts;
-#if GMTL_USE_ASSERT
+#if JIMI_USE_ASSERT
     int status =
-#endif /* GMTL_USE_ASSERT */
+#endif /* JIMI_USE_ASSERT */
         clock_gettime(CLOCK_REALTIME, &ts);
-    _GMTL_ASSERT(status == 0, "CLOCK_REALTIME not supported");
+    JIMI_ASSERT_EX(status == 0, "CLOCK_REALTIME not supported");
     result = static_cast<timestamp_t>(static_cast<int64_t>(1000UL) * static_cast<int64_t>(ts.tv_sec) + static_cast<int64_t>(ts.tv_nsec) / static_cast<int64_t>(1000000UL));
 #else /* generic Unix */
     struct timeval tv;
-#if GMTL_USE_ASSERT
+#if JIMI_USE_ASSERT
     int status =
-#endif /* GMTL_USE_ASSERT */
+#endif /* JIMI_USE_ASSERT */
         gettimeofday(&tv, NULL);
-    _GMTL_ASSERT(status == 0, "gettimeofday failed");
+    JIMI_ASSERT_EX(status == 0, "gettimeofday failed");
     result = static_cast<timestamp_t>(static_cast<int64_t>(1000UL) * static_cast<int64_t>(tv.tv_sec) + static_cast<int64_t>(tv.tv_usec) / static_cast<int64_t>(1000UL));
 #endif /*(choice of OS) */
 

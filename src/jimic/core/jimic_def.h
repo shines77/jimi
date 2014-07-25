@@ -119,6 +119,8 @@
 
 #include <windows.h>
 
+#ifdef _MSC_VER
+
 /* 
  * Add a _very_few_ declarations missing from the restricted set of headers
  * (If this list becomes extensive, re-enable the required headers above!)
@@ -133,12 +135,22 @@
 #include <winsock.h>
 #endif  /* _WIN32_WCE */
 
+#endif  /* _MSC)VER */
+
 #endif  /* _WINDOWS_ */
 
 #endif  /* defined(JIMI_IS_WINDOWS) || defined(JIMI_IS_DOXYGEN) */
 
 #define JIMIC_MIN(a, b)         ((a) < (b) ? (a) : (b))
 #define JIMIC_MAX(a, b)         ((a) > (b) ? (a) : (b))
+
+#ifndef TRUE
+#define TRUE                    1
+#endif  // TRUE
+
+#ifndef FALSE
+#define FALSE                   0
+#endif  // FALSE
 
 // for precompiled macro to string
 #define JIMIC_STRING_ESCAPE(x)  #x
@@ -189,8 +201,8 @@ typedef unsigned char   jm_uchar;
 
 #define JMC_DECLARE(type)           type
 #define JMC_DECLARE_NONSTD(type)    type
-#define JMC_INLINE_DECLARE(type)    type
-#define JMC_INLINE_NONSTD(type)     type
+#define JMC_INLINE_DECLARE(type)    JMC_INLINE type
+#define JMC_INLINE_NONSTD(type)     JMC_INLINE type
 #define JMC_DECLARE_DATA
 
 #elif defined(JIMI_DECLARE_IMPORT)
