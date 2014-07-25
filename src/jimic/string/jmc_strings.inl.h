@@ -21,31 +21,32 @@
 #define _JIMIC_STRING_SPRINTF_FORMAT_DEF_
 
 /* format sign */
-#define FORMAT_DEFAULT_SIGN     0x0000
-#define FORMAT_SPACE_SIGN       0x0001      // ' ', space sign
-#define FORMAT_SHARP_SIGN       0x0002      // '#', number sign
-#define FORMAT_CURRENCY_SIGN    0x0004      // ',', comma sign
-#define FORMAT_FIELDWIDTH_SIGN  0x0008      // '*', asterisk sign
+#define FMT_DEFAULT_SIGN        0x0000
+#define FMT_SPACE_SIGN          0x0001      // ' ', space sign
+#define FMT_SIGN_MASK           0x0002      // sign mask
+#define FMT_SHARP_SIGN          0x0004      // '#', number sign
+#define FMT_FIELDWIDTH_SIGN     0x0008      // '*', asterisk sign
+#define FMT_CURRENCY_SIGN       0x0010      // ',', comma sign
+
+#define FMT_SIGN_MASK_BIT       2           // move bit
 
 // 句号: period
 
 /* format align mode */
-#define FORMAT_ALIGN_PLUS       0x0010      // '+', plus sign
-#define FORMAT_ALIGN_MINUS      0x0020      // '-', minus sign
-#define FORMAT_ALIGN_LEFT       FORMAT_ALIGN_MINUS
-#define FORMAT_ALIGN_RIGHT      FORMAT_ALIGN_PLUS
-#define FORMAT_ALIGN_NONE       FORMAT_ALIGN_RIGHT
-                                            // default is FORMAT_ALIGN_RIGHT, '+'
+#define FMT_ALIGN_PLUS          0x0040      // '+', plus sign
+#define FMT_ALIGN_MINUS         0x0080      // '-', minus sign
+#define FMT_ALIGN_LEFT          FMT_ALIGN_MINUS
+#define FMT_ALIGN_RIGHT         FMT_ALIGN_PLUS
+#define FMT_ALIGN_NONE          FMT_ALIGN_RIGHT
+                                            // default is FMT_ALIGN_RIGHT, '+'
 
 /* format fill mode */
-#define FORMAT_FILL_SPACE       ' '         // fill space: ' '
-#define FORMAT_FILL_ZERO        '0'         // fill zero:  '0'
-#define FORMAT_FILL_NONE        FORMAT_FILL_SPACE
-                                            // default is FORMAT_FILL_SPACE, ' '
+#define FMT_FILL_SPACE          ' '         // fill space: ' '
+#define FMT_FILL_ZERO           '0'         // fill zero:  '0'
+#define FMT_FILL_NONE           FMT_FILL_SPACE
+                                            // default is FMT_FILL_SPACE, ' '
 
-#define FORMAT_SIGN_MASK        0x8000      // sign mask
-
-#define FORMAT_DEFAULT_FLAG     (FORMAT_DEFAULT_SIGN | FORMAT_ALIGN_NONE)
+#define FMT_DEFAULT_FLAG        (FMT_DEFAULT_SIGN | FMT_ALIGN_NONE)
 
 #endif  /* !_JIMIC_STRING_SPRINTF_FORMAT_DEF_ */
 
@@ -97,7 +98,7 @@ jmc_itoa_radix10(jm_char *buf, int val)
         *buf++ = '-';
         val = -val;
         return jmc_utoa_radix10(buf, val) + 1;
-    }        
+    }
 #elif 0
     if (val < 0) {
         *buf++ = '-';
@@ -233,6 +234,7 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
     int fill_cnt;
     int padding;
     jm_char *cur;
+    int sign_char;
     char digits[16];    // 实际最多只会用到10个bytes
 
     cur = digits;
@@ -244,9 +246,35 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
     } while (val != 0);
 
     digital = cur - digits;
-    fill_cnt = width - digital;
+
+    if ((flag & (FMT_SIGN_MASK | FMT_SPACE_SIGN | FMT_SHARP_SIGN)) == 0) {
+        sign_char = '\0';
+        fill_cnt = width - digital;
+    }
+    else {
+        if ((flag & FMT_SPACE_SIGN) == 0) {
+            // '+' is 0x2B, '-' is 0x2D
+            sign_char = '+' + (flag & FMT_SIGN_MASK);
+            fill_cnt = width - digital - 1;
+        }
+        else {
+            // ' ' is 0x20, '-' is 0x2D
+#if 0
+            sign_char = ((flag & FMT_SIGN_MASK) == 0) ? ' ' : '-';
+#else
+            if ((flag & FMT_SIGN_MASK) == 0)
+                sign_char = ' ';
+            else
+                sign_char = '-';
+#endif
+            fill_cnt = width - digital - 1;
+        }
+    }
 
     if (fill_cnt <= 0) {
+        // add sign
+        if (sign_char != '\0')
+            *buf++ = (jm_char)sign_char;
 #if 0
         do {
             --cur;
@@ -259,11 +287,18 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
 #endif
         *buf = '\0';
 
-        return digital;
+        if (sign_char == '\0')
+            return digital;
+        else
+            return digital + 1;
     }
     else {
         // when legnth == 0 || legnth >= witdh, align to right or left is same
         if (length == 0 || length >= width) {
+            // add sign
+            if (sign_char != '\0')
+                *buf++ = (jm_char)sign_char;
+
             // fill normal
             do {
                 *buf++ = fill;
@@ -271,7 +306,7 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
             } while (fill_cnt > 0);
         }
         else {
-            if ((flag & FORMAT_ALIGN_LEFT) == 0) {
+            if ((flag & FMT_ALIGN_LEFT) == 0) {
                 // align to right, when (length < width)
                 jimic_assert(length < width);
 
@@ -282,6 +317,10 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
                         *buf++ = ' ';
                         fill_cnt--;
                     }
+
+                    // add sign
+                    if (sign_char != '\0')
+                        *buf++ = (jm_char)sign_char;
 
                     // fill normal
                     while (fill_cnt > 0) {
@@ -295,11 +334,19 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
                         *buf++ = ' ';
                         fill_cnt--;
                     }
+
+                    // add sign
+                    if (sign_char != '\0')
+                        *buf++ = (jm_char)sign_char;
                 }
             }
             else {
                 // align to left, when (length < width)
                 jimic_assert(length < width);
+
+                // add sign
+                if (sign_char != '\0')
+                    *buf++ = (jm_char)sign_char;
 
                 // fill normal
                 padding = length - digital;
@@ -310,6 +357,7 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
                         padding--;
                     } while (padding > 0);
                 }
+
 #if 0
                 do {
                     --cur;
@@ -326,7 +374,7 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
                     fill_cnt--;
                 }
 
-                goto utoa_radix10_ex_exit;                
+                goto utoa_radix10_ex_exit;
             }
         }
     }
@@ -359,15 +407,22 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
                     unsigned int fill, unsigned int width, unsigned int length)
 {
 #if 1
-    if ((flag & FORMAT_SPACE_SIGN) == 0) {
+    if (val < 0) {
+        flag |= FMT_SIGN_MASK;
+        val = -val;
+    }
+    return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length);
+#elif 0
+    if ((flag & FMT_SPACE_SIGN) == 0) {
         if (val >= 0) {
             return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length);
         }
         else {
             *buf++ = '-';
             val = -val;
+            flag |= FMT_SIGN_MASK;
             return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + 1;
-        }            
+        }
     }
     else {
         if (val >= 0) {
@@ -377,10 +432,11 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
             *buf++ = '-';
             val = -val;
         }
+        flag |= FMT_SIGN_MASK;
         return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + 1;
     }
 #elif 0
-    if ((flag & FORMAT_SPACE_SIGN) == 0) {
+    if ((flag & FMT_SPACE_SIGN) == 0) {
         if (val < 0) {
             *buf++ = '-';
             val = -val;
@@ -401,7 +457,7 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
     }
 #else
     int sign;
-    if ((flag & FORMAT_SPACE_SIGN) == 0) {
+    if ((flag & FMT_SPACE_SIGN) == 0) {
         sign = (val < 0);
         if (val < 0) {
             *buf++ = '-';
@@ -516,7 +572,7 @@ jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, siz
             } while (fill_cnt > 0);
         }
         else {
-            if ((flag & FORMAT_ALIGN_LEFT) == 0) {
+            if ((flag & FMT_ALIGN_LEFT) == 0) {
                 // align to right, when (length < width)
                 jimic_assert(length < width);
 

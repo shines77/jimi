@@ -26,31 +26,32 @@
 #define _JIMIC_STRING_SPRINTF_FORMAT_DEF_
 
 /* format sign */
-#define FORMAT_DEFAULT_SIGN     0x0000
-#define FORMAT_SPACE_SIGN       0x0001      // ' ', space sign
-#define FORMAT_SHARP_SIGN       0x0002      // '#', number sign
-#define FORMAT_CURRENCY_SIGN    0x0004      // ',', comma sign
-#define FORMAT_FIELDWIDTH_SIGN  0x0008      // '*', asterisk sign
+#define FMT_DEFAULT_SIGN        0x0000
+#define FMT_SPACE_SIGN          0x0001      // ' ', space sign
+#define FMT_SIGN_MASK           0x0002      // sign mask
+#define FMT_SHARP_SIGN          0x0004      // '#', number sign
+#define FMT_FIELDWIDTH_SIGN     0x0008      // '*', asterisk sign
+#define FMT_CURRENCY_SIGN       0x0010      // ',', comma sign
+
+#define FMT_SIGN_MASK_BIT       2           // move bit
 
 // ¾äºÅ: period
 
 /* format align mode */
-#define FORMAT_ALIGN_PLUS       0x0010      // '+', plus sign
-#define FORMAT_ALIGN_MINUS      0x0020      // '-', minus sign
-#define FORMAT_ALIGN_LEFT       FORMAT_ALIGN_MINUS
-#define FORMAT_ALIGN_RIGHT      FORMAT_ALIGN_PLUS
-#define FORMAT_ALIGN_NONE       FORMAT_ALIGN_RIGHT
-                                            // default is FORMAT_ALIGN_RIGHT, '+'
+#define FMT_ALIGN_PLUS          0x0040      // '+', plus sign
+#define FMT_ALIGN_MINUS         0x0080      // '-', minus sign
+#define FMT_ALIGN_LEFT          FMT_ALIGN_MINUS
+#define FMT_ALIGN_RIGHT         FMT_ALIGN_PLUS
+#define FMT_ALIGN_NONE          FMT_ALIGN_RIGHT
+                                            // default is FMT_ALIGN_RIGHT, '+'
 
 /* format fill mode */
-#define FORMAT_FILL_SPACE       ' '         // fill space: ' '
-#define FORMAT_FILL_ZERO        '0'         // fill zero:  '0'
-#define FORMAT_FILL_NONE        FORMAT_FILL_SPACE
-                                            // default is FORMAT_FILL_SPACE, ' '
+#define FMT_FILL_SPACE          ' '         // fill space: ' '
+#define FMT_FILL_ZERO           '0'         // fill zero:  '0'
+#define FMT_FILL_NONE           FMT_FILL_SPACE
+                                            // default is FMT_FILL_SPACE, ' '
 
-#define FORMAT_SIGN_MASK        0x8000      // sign mask
-
-#define FORMAT_DEFAULT_FLAG     (FORMAT_DEFAULT_SIGN | FORMAT_ALIGN_NONE | FORMAT_FILL_NONE)
+#define FMT_DEFAULT_FLAG        (FMT_DEFAULT_SIGN | FMT_ALIGN_NONE)
 
 #endif  /* !_JIMIC_STRING_SPRINTF_FORMAT_DEF_ */
 
@@ -127,7 +128,7 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
               JM_CONST jm_char *fmt, va_list args)
 {
     register jm_char c;
-
+    //jm_char         c;
     jm_char        *end, *cur;
     unsigned int    flag, align, fill, width, precision, sign;
     jm_char        *first;
@@ -136,7 +137,7 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
     int             i32;
     double          dbl;
     jm_uchar        ch;
-    void *          p;
+    void           *p;
     unsigned int    u32;
     long            l32;
     unsigned long   ul32 = 0;
@@ -148,7 +149,7 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
     jimic_assert(fmt != NULL);
     jimic_assert(count != 0);
 
-    //sign = 0;
+    sign = 0;
 
     cur = (jm_char *)fmt;
     end = buf + JIMIC_MIN(count, countOfElements - 1);
@@ -165,9 +166,9 @@ vslprintf_try_next:
     while ((c = *cur) != '\0') {
         // '%' start
         if (c == '%') {
-            flag  = FORMAT_DEFAULT_SIGN;
-            align = FORMAT_ALIGN_NONE;
-            fill  = FORMAT_FILL_NONE;
+            flag  = FMT_DEFAULT_SIGN;
+            align = FMT_ALIGN_NONE;
+            fill  = FMT_FILL_NONE;
             width = 0;
             precision = 0;
             cur++;
@@ -182,14 +183,14 @@ vslprintf_try_next:
             if (c <= '9' && c >= '0') {
                 if (c == '0') {
                     // '0': 0x30
-                    fill = FORMAT_FILL_ZERO;
+                    fill = FMT_FILL_ZERO;
                     c = *++cur;
-                    if (c > '9' || c <= '0')
+                    if (c <= '0' || c > '9')
                         goto vslprintf_continue;
                 }
                 width = c - '0';
                 c = *++cur;
-                while (c <= '9' && c >= '0') {
+                while (c >= '0' && c <= '9') {
                     width = width * 10 + c - '0';
                     c = *++cur;
                 }
@@ -199,7 +200,7 @@ vslprintf_try_next:
                     // do nothing!
                 }
 #if 0
-                 // special for '%0#.#d'
+                // special for '%0#.#d'
                 else if (c == '.') {
                     //cur++;
                     goto vslprintf_get_precision;
@@ -216,7 +217,7 @@ vslprintf_try_next:
 #else
             if (c == '0') {
                 // '0': 0x30
-                fill = FORMAT_FILL_ZERO;
+                fill = FMT_FILL_ZERO;
                 c = *++cur;
             }
             if (c >= '1' && c <= '9') {
@@ -248,17 +249,17 @@ vslprintf_try_next:
             }
             else if (c == '-') {
                 // '-': 0x2D
-                align = FORMAT_ALIGN_LEFT;
+                align = FMT_ALIGN_LEFT;
                 c = *++cur;
             }
             else if (c == '+') {
                 // '+': 0x2B
-                align = FORMAT_ALIGN_RIGHT;
+                align = FMT_ALIGN_RIGHT;
                 c = *++cur;
             }
             else if (c == ' ') {
                 // ' ': 0x20
-                flag = FORMAT_FILL_SPACE;
+                flag = FMT_FILL_SPACE;
                 c = *++cur;
             }
             else if (c == '\0') {
@@ -272,17 +273,35 @@ vslprintf_try_next:
 #endif  /* VSLPRINTF_USE_PRE_TREATMENT */
 
             // get another info
-            while ((c = *cur) != '\0') {
-            //for (;;) {
+            //while ((c = *cur) != '\0') {
+            for ( ;; ) {
+                c = *cur;
+                //if (c == '\0')
+                //    goto vslprintf_try_next;
 vslprintf_continue:
                 switch (c) {
+#if 1
+                case '\0':
+                    goto vslprintf_try_next;
+                    //goto vslprintf_exit;
+
+                case '\t':
+                case '\b':
+                case '\n':
+                case '\r':
+                    *buf++ = c;
+                    if (buf >= end)
+                        goto vslprintf_exit;
+                    cur++;
+                    break;
+#endif
                 case ' ':   // 0x20
-                    flag |= FORMAT_SPACE_SIGN;
+                    flag |= FMT_SPACE_SIGN;
                     cur++;
                     break;
 
                 case '#':   // 0x23
-                    flag |= FORMAT_SHARP_SIGN;
+                    flag |= FMT_SHARP_SIGN;
                     cur++;
                     break;
 
@@ -308,11 +327,11 @@ vslprintf_continue:
                     break;
 
                 case '*':   // 0x2A
-                    flag |= FORMAT_FIELDWIDTH_SIGN;
+                    flag |= FMT_FIELDWIDTH_SIGN;
                     // get filed width from the next argument
                     width = (unsigned int)va_arg(args, int);
                     if ((int)width < 0) {
-                        align = FORMAT_ALIGN_LEFT;
+                        align = FMT_ALIGN_LEFT;
                         width = (unsigned int)(-(int)width);
                     }
                     cur++;
@@ -320,32 +339,32 @@ vslprintf_continue:
                     break;
 
                 case '+':   // 0x2B
-                    align = FORMAT_ALIGN_RIGHT;
+                    align = FMT_ALIGN_RIGHT;
                     cur++;
                     break;
 
                 case ',':   // 0x2C
-                    flag |= FORMAT_CURRENCY_SIGN;
+                    flag |= FMT_CURRENCY_SIGN;
                     cur++;
                     break;
 
                 case '-':   // 0x2D
-                    align = FORMAT_ALIGN_LEFT;
+                    align = FMT_ALIGN_LEFT;
                     cur++;
                     break;
 
                 case '.':   // 0x2E
 vslprintf_get_precision:
-                    cur++;
                     // get precision
-                    c = *cur++;
+                    c = *++cur;
                     if (c >= '0' && c <= '9') {
                         precision = c - '0';
-                        c = *cur++;
-                        while (c >= '0' && c <= '9') {
+                        c = *++cur;
+                        while (c <= '9' && c >= '0') {
                             precision = precision * 10 + c - '0';
-                            c = *cur++;
+                            c = *++cur;
                         }
+                        goto vslprintf_continue;
                     }
                     else if (c == '*') {
                         // get filed precision from the next argument
@@ -353,20 +372,20 @@ vslprintf_get_precision:
                         /* ignore negative precision */
                         if (i32 >= 0)
                             precision = i32;
-                        continue;
+                        c = *++cur;
+                        //continue;
                     }
                     goto vslprintf_continue;
 
                 case '0':
-                    fill = FORMAT_FILL_ZERO;
-                    cur++;
-                    c = *cur++;
+                    fill = FMT_FILL_ZERO;
+                    c = *++cur;
                     if (c >= '0' && c <= '9') {
                         width = c - '0';
-                        c = *cur++;
-                        while (c >= '0' && c <= '9') {
+                        c = *++cur;
+                        while (c <= '9' && c >= '0') {
                             width = width * 10 + c - '0';
-                            c = *cur++;
+                            c = *++cur;
                         }
                     }
                     goto vslprintf_continue;
@@ -374,11 +393,10 @@ vslprintf_get_precision:
                 case '1': case '2': case '3': case '4':
                 case '5': case '6': case '7': case '8': case '9':
                     width = c - '0';
-                    cur++;
-                    c = *cur++;
-                    while (c >= '0' && c <= '9') {
+                    c = *++cur;
+                    while (c <= '9' && c >= '0') {
                         width = width * 10 + c - '0';
-                        c = *cur++;
+                        c = *++cur;
                     }
                     goto vslprintf_continue;
 
@@ -397,8 +415,8 @@ vslprintf_out_int:
                         goto vslprintf_exit;
                     i32 = va_arg(args, int);
 #if 1
-                    //if (width == 0 && flag == FORMAT_DEFAULT_SIGN) {
-                    if ((width | flag) == (0 | FORMAT_DEFAULT_SIGN)) {
+                    //if (width == 0 && flag == FMT_DEFAULT_SIGN) {
+                    if ((width | flag) == (0 | FMT_DEFAULT_SIGN)) {
                         len = jmc_itoa_radix10(buf, i32);
                         buf += len;
                         cur++;
@@ -421,7 +439,7 @@ vslprintf_out_int:
                 case 'e':
                     // float & double, exponential expression
                     cur++;
-                    break;
+                    goto vslprintf_try_next;
 
                 case 'f':
 vslprintf_out_double:
@@ -471,8 +489,8 @@ vslprintf_out_string:
                     len = jmc_strlen(s);
                     if ((buf + JIMIC_MAX(len, width)) >= end)
                         goto vslprintf_exit;
-                    //if (width == 0 && flag == FORMAT_DEFAULT_SIGN) {
-                    if ((width | flag) == (0 | FORMAT_DEFAULT_SIGN)) {
+                    //if (width == 0 && flag == FMT_DEFAULT_SIGN) {
+                    if ((width | flag) == (0 | FMT_DEFAULT_SIGN)) {
                         len = jmc_strncpy(buf, (size_t)-1, s, len);
                         buf += len;
                         cur++;
@@ -549,29 +567,28 @@ vslprintf_out_string:
                             goto vslprintf_try_next;
                         }
                     }
+#if 0
+                    else if (c == '\0') {
+                        //goto vslprintf_exit;
+                        goto vslprintf_try_next;
+                    }
+#endif
                     else {
-                        cur++;
                         *buf++ = c;
                         if (buf >= end)
                             goto vslprintf_exit;
-                        //cur++;
+                        cur++;
                     }
                     break;
                 }
             }
-#if 0
-            *buf++ = c;
-            if (buf >= end)
-                break;
-#endif
         }
         else {
             // non format info
-            cur++;
             *buf++ = c;
             if (buf >= end)
                 break;
-            //cur++;
+            cur++;
         }
     }
 
