@@ -14,7 +14,7 @@
 #include <windows.h>
 #include <process.h>
 
-#define TERMINATE_WAIT_TIME     5000
+#define TERMINATE_WAIT_TIME             5000
 
 #define THREAD_STATUS_MASK              0x00FFFFFFUL
 

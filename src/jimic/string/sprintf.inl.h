@@ -128,7 +128,6 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
               JM_CONST jm_char *fmt, va_list args)
 {
     register jm_char c;
-    //jm_char         c;
     jm_char        *end, *cur;
     unsigned int    flag, align, fill, width, precision, sign;
     jm_char        *first;
@@ -173,7 +172,6 @@ vslprintf_try_next:
             precision = 0;
             cur++;
             first = cur;
-            //sign = 0;
 
 #if defined(VSLPRINTF_USE_PRE_TREATMENT) && (VSLPRINTF_USE_PRE_TREATMENT != 0)
 
@@ -275,10 +273,12 @@ vslprintf_try_next:
             // get another info
             //while ((c = *cur) != '\0') {
             for ( ;; ) {
-                c = *cur;
-                //if (c == '\0')
-                //    goto vslprintf_try_next;
+                //c = *cur;
 vslprintf_continue:
+#if 0
+                if (c == '\0')
+                    goto vslprintf_try_next;
+#endif
                 switch (c) {
 #if 1
                 case '\0':
@@ -293,16 +293,19 @@ vslprintf_continue:
                     if (buf >= end)
                         goto vslprintf_exit;
                     cur++;
+                    c = *cur;
                     break;
 #endif
                 case ' ':   // 0x20
                     flag |= FMT_SPACE_SIGN;
                     cur++;
+                    c = *cur;
                     break;
 
                 case '#':   // 0x23
                     flag |= FMT_SHARP_SIGN;
                     cur++;
+                    c = *cur;
                     break;
 
                 case '%':   // 0x25
@@ -318,10 +321,12 @@ vslprintf_continue:
                         if (buf >= end)
                             goto vslprintf_exit;
                         cur++;
+                        c = *cur;
                     }
                     else {
                         // not is "%%", do nothing!
                         cur++;
+                        c = *cur;
                     }
 #endif
                     break;
@@ -335,22 +340,26 @@ vslprintf_continue:
                         width = (unsigned int)(-(int)width);
                     }
                     cur++;
+                    c = *cur;
                     //goto vslprintf_continue;
                     break;
 
                 case '+':   // 0x2B
                     align = FMT_ALIGN_RIGHT;
                     cur++;
+                    c = *cur;
                     break;
 
                 case ',':   // 0x2C
                     flag |= FMT_CURRENCY_SIGN;
                     cur++;
+                    c = *cur;
                     break;
 
                 case '-':   // 0x2D
                     align = FMT_ALIGN_LEFT;
                     cur++;
+                    c = *cur;
                     break;
 
                 case '.':   // 0x2E
@@ -399,6 +408,38 @@ vslprintf_get_precision:
                         c = *++cur;
                     }
                     goto vslprintf_continue;
+
+#if 1
+                case 'L':
+                    // unsigned long
+                    if ((buf + 10) >= end)
+                        goto vslprintf_exit;
+                    ul32 = va_arg(args, unsigned long);
+                    len = jmc_ultoa_radix10(buf, ul32);
+                    buf += len;
+                    cur++;
+                    goto vslprintf_try_next;
+
+                case 'U':
+                    // uint64_t
+                    if ((buf + 20) >= end)
+                        goto vslprintf_exit;
+                    u64 = va_arg(args, uint64_t);
+                    len = jmc_u64toa_radix10(buf, u64);
+                    buf += len;
+                    cur++;
+                    goto vslprintf_try_next;
+
+                case 'X':
+                    // HEX32
+                    if ((buf + 16) >= end)
+                        goto vslprintf_exit;
+                    hex32 = va_arg(args, uint32_t);
+                    len = jmc_uitohex(buf, hex32, TRUE);
+                    buf += len;
+                    cur++;
+                    goto vslprintf_try_next;
+#endif
 
                 case 'c':
                     ch = (jm_uchar)va_arg(args, int);
@@ -535,6 +576,7 @@ vslprintf_out_string:
                     goto vslprintf_try_next;
 
                 default:
+#if 0
                     if (c >= 'A' && c <= 'Z') {
                         if (c == 'X') {
                             // HEX32
@@ -579,6 +621,7 @@ vslprintf_out_string:
                             goto vslprintf_exit;
                         cur++;
                     }
+#endif
                     break;
                 }
             }
