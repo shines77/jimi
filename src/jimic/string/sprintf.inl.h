@@ -127,7 +127,8 @@ JMC_INLINE_NONSTD(jm_char *)
 jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
               JM_CONST jm_char *fmt, va_list args)
 {
-    register jm_char c;
+    register jm_char    c;
+
     jm_char        *end, *cur;
     unsigned int    flag, align, fill, width, precision, sign;
     jm_char        *first;
@@ -162,9 +163,23 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
     jimic_assert(end >= buf);
 
 vslprintf_try_next:
+#if 0
     while ((c = *cur) != '\0') {
+#else
+    for ( ;; ) {
+        c = *cur;
+#endif
         // '%' start
-        if (c == '%') {
+        if (c != '%') {
+            // non format info
+            if (c == '\0')
+                break;
+            *buf++ = c;
+            if (buf >= end)
+                break;
+            cur++;
+        }
+        else {
             flag  = FMT_DEFAULT_SIGN;
             align = FMT_ALIGN_NONE;
             fill  = FMT_FILL_NONE;
@@ -173,10 +188,11 @@ vslprintf_try_next:
             cur++;
             first = cur;
 
+            c = *cur;
+
 #if defined(VSLPRINTF_USE_PRE_TREATMENT) && (VSLPRINTF_USE_PRE_TREATMENT != 0)
 
             // get align or fill info
-            c = *cur;
 #if 1
             if (c <= '9' && c >= '0') {
                 if (c == '0') {
@@ -626,6 +642,7 @@ vslprintf_out_string:
                 }
             }
         }
+#if 0
         else {
             // non format info
             *buf++ = c;
@@ -633,6 +650,7 @@ vslprintf_out_string:
                 break;
             cur++;
         }
+#endif
     }
 
 vslprintf_exit:
