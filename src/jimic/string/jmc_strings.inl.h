@@ -239,8 +239,8 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
     int sign_char;
     char digits[16];    // 实际最多只会用到10个bytes
 
-    jimi_assert(buf != NULL);
-    jimi_assert(count != 0);
+    jimic_assert(buf != NULL);
+    jimic_assert(count != 0);
 
     cur = digits;
     do {
