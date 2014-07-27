@@ -472,15 +472,15 @@ vslprintf_out_int:
                         goto vslprintf_exit;
                     i32 = va_arg(args, int);
 #if 1
-                    //if (width == 0 && flag == FMT_DEFAULT_SIGN) {
-                    if ((width | flag) == (0 | FMT_DEFAULT_SIGN)) {
+                    flag |= align;
+                    //if (width == 0 && flag == FMT_DEFAULT_SIGN && align == FMT_ALIGN_NONE) {
+                    if ((width | flag) == (0 | FMT_DEFAULT_SIGN | FMT_ALIGN_NONE)) {
                         len = jmc_itoa_radix10(buf, i32);
                         buf += len;
                         cur++;
                         goto vslprintf_try_next;
                     }
                     else {
-                        flag |= align;
                         len = jmc_itoa_radix10_ex(buf, -1, i32, flag, fill, width, precision);
                         buf += len;
                         cur++;
@@ -504,10 +504,22 @@ vslprintf_out_double:
                     if ((buf + 32) >= end)
                         goto vslprintf_exit;
                     dbl = va_arg(args, double);
-                    len = jmc_dtos(buf, dbl);
-                    buf += len;
-                    cur++;
-                    goto vslprintf_try_next;
+                    flag |= align;
+                    //if (flag == FMT_DEFAULT_SIGN && align == FMT_ALIGN_NONE
+                    //    && fill == FMT_FILL_NONE) {
+                    if ((flag | fill) == ((FMT_DEFAULT_SIGN | FMT_ALIGN_NONE)
+                        | FMT_FILL_NONE)) {
+                        len = jmc_dtos(buf, dbl, width, precision);
+                        buf += len;
+                        cur++;
+                        goto vslprintf_try_next;
+                    }
+                    else {
+                        len = jmc_dtos_ex(buf, -1, dbl, flag, fill, width, precision);
+                        buf += len;
+                        cur++;
+                        goto vslprintf_try_next;
+                    }
 
                 case 'i':
                     // int64_t

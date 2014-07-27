@@ -111,6 +111,10 @@ int strlen_my(const char *s) {
 	}
 }
 
+//
+// From: http://www.strchr.com/optimized_strlen_function
+//
+
 int strlen_AgnerFog(const char* s) {
 	__asm {
         mov     eax, [s]               ; get pointer s 

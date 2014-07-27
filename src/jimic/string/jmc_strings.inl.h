@@ -11,6 +11,70 @@
 #endif
 
 #include <stdarg.h>
+#include <math.h>       // for isnan()
+#include <float.h>
+
+/* 小端或大端, 为1表示小端存储 */
+#define JIMI_IS_LITTLE_ENDIAN           1
+
+#define JM_FIS_NORMAL                   0
+#define JM_FIS_INF                      0x01
+#define JM_FIS_NAN                      0x02
+#define JM_FIS_NAN_OR_INF               0x04
+#define JM_FIS_ZERO                     0x08
+#define JM_FIS_SUBNORMAL                0x10
+
+#define JM_FLOAT_SIGN_BIT               (0x80000000UL)
+#define JM_FLOAT_EXPONENT_MASK          (0x7F800000UL)
+#define JM_FLOAT_MANTISSA_MASK          (0x007FFFFFUL)
+
+#define JM_DOUBLE_SIGN_BIT              (0x8000000000000000ULL)
+#define JM_DOUBLE_EXPONENT_MASK         (0x7FF0000000000000ULL)
+#define JM_DOUBLE_MANTISSA_MASK         (0x000FFFFFFFFFFFFFULL)
+
+#define JM_DOUBLE_SIGN_BIT32            (uint32_t)(JM_DOUBLE_SIGN_BIT      >> 32)
+#define JM_DOUBLE_EXPONENT_MASK32       (uint32_t)(JM_DOUBLE_EXPONENT_MASK >> 32)
+#define JM_DOUBLE_MANTISSA_MASK_HIGH    (uint32_t)(JM_DOUBLE_MANTISSA_MASK >> 32)
+#define JM_DOUBLE_MANTISSA_MASK_LOW     \
+                        (uint32_t)(JM_DOUBLE_MANTISSA_MASK & 0x00000000FFFFFFFFULL)
+
+typedef struct fuint64_s {
+    union {
+#if defined(JIMI_IS_LITTLE_ENDIAN) && (JIMI_IS_LITTLE_ENDIAN != 0)
+        // 小端存储
+        struct {
+            uint32_t    low;
+            uint32_t    high;
+        };
+#else
+        // 大端存储
+        struct {
+            uint32_t    high;
+            uint32_t    low;
+        };
+#endif  /* JIMI_IS_LITTLE_ENDIAN */
+        uint64_t        u64;
+        double          d;
+    };
+} fuint64_s;
+
+typedef struct fvariant_t {
+    union {
+        fuint64_s       f64;
+        int64_t         i64;
+        uint64_t        u64;
+        int             i32;
+        unsigned char   u32;
+        long            l32;
+        unsigned long   ul32;
+        char            c;
+        unsigned char   b;
+        short           s16;
+        unsigned short  u16;
+        double          d;
+        float           f;
+    };
+} fvariant_t;
 
 //
 // Printf() 输出格式控制
@@ -480,16 +544,256 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_ftos(jm_char *buf, float val)
+jmc_isnan_f(float val)
+{
+    uint32_t *u32;
+    uint32_t exponent;
+    if (sizeof(uint32_t) == sizeof(float)) {
+        u32 = (uint32_t *)&val;
+        exponent = *u32 & JM_FLOAT_EXPONENT_MASK;
+        if (((*u32 & JM_FLOAT_EXPONENT_MASK) == JM_FLOAT_EXPONENT_MASK)
+            && ((*u32 & JM_FLOAT_MANTISSA_MASK) != 0))
+            return 1;
+        else
+            return 0;
+    }
+    else {
+        // maybe have some error!
+#ifndef _MSC_VER
+        #error "jmc_isnan_f() maybe have some error!"
+#endif // _MSC_VER
+        return 0;
+    }
+}
+
+JMC_INLINE_NONSTD(int)
+jmc_isinf_f(float val)
+{
+    uint32_t *u32;
+    uint32_t exponent;
+    if (sizeof(uint32_t) == sizeof(float)) {
+        u32 = (uint32_t *)&val;
+        exponent = *u32 & JM_FLOAT_EXPONENT_MASK;
+        if (((*u32 & JM_FLOAT_EXPONENT_MASK) == JM_FLOAT_EXPONENT_MASK)
+            && ((*u32 & JM_FLOAT_MANTISSA_MASK) == 0))
+            return 1;
+        else
+            return 0;
+    }
+    else {
+        // maybe have some error!
+#ifndef _MSC_VER
+        #error "jmc_isinf_f() maybe have some error!"
+#endif // _MSC_VER
+        return 0;
+    }
+}
+
+JMC_INLINE_NONSTD(int)
+jmc_is_nan_or_inf_f(float val)
+{
+    uint32_t *u32;
+    if (sizeof(uint32_t) == sizeof(float)) {
+        u32 = (uint32_t *)&val;
+        if ((*u32 & JM_FLOAT_EXPONENT_MASK) == JM_FLOAT_EXPONENT_MASK)
+            return 1;
+        else
+            return 0;
+    }
+    else {
+        // maybe have some error!
+#ifndef _MSC_VER
+        #error "jmc_is_nan_or_inf_f() maybe have some error!"
+#endif // _MSC_VER
+        return 0;
+    }
+}
+
+JMC_INLINE_NONSTD(int)
+jmc_isnan_d(double val)
+{
+    fuint64_s *f64;
+    uint32_t exponent;
+    if (sizeof(fuint64_s) == sizeof(double)) {
+        f64 = (fuint64_s *)&val;
+        exponent = f64->high & JM_DOUBLE_EXPONENT_MASK32;
+        if (((f64->high & JM_DOUBLE_EXPONENT_MASK32) == JM_DOUBLE_EXPONENT_MASK32)
+            && (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
+            || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)))
+            return 1;
+        else
+            return 0;
+    }
+    else {
+        // maybe have some error!
+#ifndef _MSC_VER
+        #error "jmc_isnan_d() maybe have some error!"
+#endif // _MSC_VER
+        return 0;
+    }
+}
+
+JMC_INLINE_NONSTD(int)
+jmc_isinf_d(double val)
+{
+    fuint64_s *f64;
+    uint32_t exponent;
+    if (sizeof(fuint64_s) == sizeof(double)) {
+        f64 = (fuint64_s *)&val;
+        exponent = f64->high & JM_DOUBLE_EXPONENT_MASK32;
+        if (((f64->high & JM_DOUBLE_EXPONENT_MASK32) == JM_DOUBLE_EXPONENT_MASK32)
+            && (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) == 0)
+            && ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) == 0)))
+            return 1;
+        else
+            return 0;
+    }
+    else {
+        // maybe have some error!
+#ifndef _MSC_VER
+        #error "jmc_isnan_d() maybe have some error!"
+#endif // _MSC_VER
+        return 0;
+    }
+}
+
+JMC_INLINE_NONSTD(int)
+jmc_is_nan_or_inf_d(double val)
+{
+    fuint64_s *f64;
+    if (sizeof(fuint64_s) == sizeof(double)) {
+        f64 = (fuint64_s *)&val;
+        if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) == JM_DOUBLE_EXPONENT_MASK32)
+            return 1;
+        else
+            return 0;
+    }
+    else {
+        // maybe have some error!
+#ifndef _MSC_VER
+        #error "jmc_is_nan_or_inf_d() maybe have some error!"
+#endif // _MSC_VER
+        return 0;
+    }
+}
+
+//
+// Zero:   exponent(指数)为0, 且mantissa(尾数)为0
+//
+// 下溢数: exponent(指数)为0, 且mantissa(尾数)不为0
+//
+// +/-INF: 无穷大或无穷小, exponent(指数)为最大值, 且mantissa(尾数)为0
+//
+// NaN:    Not a Number, exponent(指数)为最大值, 且mantissa(尾数)不为0
+//
+
+JMC_INLINE_NONSTD(int)
+jmc_ftest(float val)
+{
+    uint32_t *u32;
+    uint32_t exponent;
+    if (sizeof(uint32_t) == sizeof(float)) {
+        u32 = (uint32_t *)&val;
+        exponent = *u32 & JM_FLOAT_EXPONENT_MASK;
+        if (exponent == JM_FLOAT_EXPONENT_MASK) {
+            if ((*u32 & JM_FLOAT_MANTISSA_MASK) != 0)
+                return (JM_FIS_NAN_OR_INF | JM_FIS_NAN);
+            else
+                return (JM_FIS_NAN_OR_INF | JM_FIS_INF);
+        }
+        else if (exponent == 0) {
+            if ((*u32 & JM_FLOAT_MANTISSA_MASK) == 0)
+                return JM_FIS_ZERO;
+            else
+                return JM_FIS_SUBNORMAL;
+        }
+        return JM_FIS_NORMAL;
+    }
+    else {
+        // maybe have some error!
+#ifndef _MSC_VER
+        #error "jmc_ftest() maybe have some error!"
+#endif // _MSC_VER
+        return JM_FIS_NORMAL;
+    }
+}
+
+//
+// Zero:   exponent(指数)为0, 且mantissa(尾数)为0
+//
+// 下溢数: exponent(指数)为0, 且mantissa(尾数)不为0
+//
+// +/-INF: 无穷大或无穷小, exponent(指数)为最大值, 且mantissa(尾数)为0
+//
+// NaN:    Not a Number, exponent(指数)为最大值, 且mantissa(尾数)不为0
+//
+// Reference: http://zh.wikipedia.org/wiki/IEEE_754
+// Reference: http://zh.wikipedia.org/wiki/%E9%9B%99%E7%B2%BE%E5%BA%A6%E6%B5%AE%E9%BB%9E%E6%95%B8
+//
+
+JMC_INLINE_NONSTD(int)
+jmc_dtest(double val)
+{
+    fuint64_s *f64;
+    uint32_t exponent;
+    if (sizeof(fuint64_s) == sizeof(double)) {
+        f64 = (fuint64_s *)&val;
+        exponent = f64->high & JM_DOUBLE_EXPONENT_MASK32;
+        if (exponent == JM_DOUBLE_EXPONENT_MASK32) {
+            if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
+                || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0))
+                return (JM_FIS_NAN_OR_INF | JM_FIS_NAN);
+            else
+                return (JM_FIS_NAN_OR_INF | JM_FIS_INF);
+        }
+        else if (exponent == 0) {
+            if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) == 0)
+                && ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) == 0))
+                return JM_FIS_ZERO;
+            else
+                return JM_FIS_SUBNORMAL;
+        }
+        return JM_FIS_NORMAL;
+    }
+    else {
+        // maybe have some error!
+#ifndef _MSC_VER
+        #error "jmc_dtest() maybe have some error!"
+#endif // _MSC_VER
+        return JM_FIS_NORMAL;
+    }
+}
+
+JMC_INLINE_NONSTD(int)
+jmc_ftos(jm_char *buf, float val, unsigned int width, unsigned int precision)
 {
     //
     return 0;
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_dtos(jm_char *buf, double val)
+jmc_ftos_ex(jm_char *buf, size_t count, float val, unsigned int flag,
+            unsigned int fill, unsigned int width, unsigned int precision)
 {
-    //
+    return 0;
+}
+
+JMC_INLINE_NONSTD(int)
+jmc_dtos(jm_char *buf, double val, unsigned int width, unsigned int precision)
+{
+    int sign_char;
+    int dtype = jmc_dtest(val);
+    if (isnan(val) || isinf(val)) {
+        //
+        sign_char = ' ';
+    }
+    return 0;
+}
+
+JMC_INLINE_NONSTD(int)
+jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
+            unsigned int fill, unsigned int width, unsigned int precision)
+{
     return 0;
 }
 

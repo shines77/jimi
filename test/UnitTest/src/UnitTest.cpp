@@ -8,9 +8,13 @@
 #endif
 
 #include "UnitTest.h"
-#include "UnitTests/snprintf_test.h"
 #include "UnitTests/String_StrLen_Test.h"
 #include "UnitTests/String_StrLwr_Test.h"
+#include "UnitTests/snprintf_test.h"
+
+#include "SampleThread.h"
+#include "FastMemcpy.h"
+#include "cpp11_format.h"
 
 #include <jimi/core/jimi_def.h>
 #include <jimi/util/cmd_line.h>
@@ -28,10 +32,6 @@
 #include <jimi/system/Program.h>
 #include <jimi/system/Console.h>
 
-#include "SampleThread.h"
-#include "FastMemcpy.h"
-#include "cpp11_format.h"
-
 #include <jimic/platform/win/fast_memcpy.h>
 #include <jimic/string/jmf_strings.h>
 #include <jimic/string/iconv_win.h>
@@ -45,6 +45,9 @@
 #endif // _MSC_VER
 #include <time.h>
 #include <intrin.h>
+
+#include <math.h>
+#include <float.h>
 
 // crtdbg_env.h must be behind the stdlib.h
 // crtdbg_env.h 必须放在 stdlib.h 之后
@@ -461,9 +464,9 @@ void String_Base_Test()
     int loop_times = 9999999;
     jimi::stop_watch sw;
 
-    printf("******************************************************************************\n\n");
+    printf("==============================================================================\n\n");
     printf("  String_Base_Test()\n\n");
-    printf("******************************************************************************\n\n");
+    printf("==============================================================================\n\n");
 
 #if 1
     jimi::string str1 = "abcdefg";
@@ -557,9 +560,9 @@ void String_Base_Test()
     loop_times = 9999;
 #endif
 
-    printf("******************************************************************************\n\n");
+    printf("==============================================================================\n\n");
     printf("  String_Base_Test()\n\n");
-    printf("******************************************************************************\n\n");
+    printf("==============================================================================\n\n");
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2292,6 +2295,56 @@ void template_inherit_test()
     //delete a;
 }
 
+void Double_And_Float_Test()
+{
+    char buf[128];
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "%8.3f", 12.345);
+
+    #define NAN_DOUBLE      ((double)(INFINITY * 0.0F))
+
+    printf("isnan(NAN)         = %d\n", isnan(NAN));
+    printf("isnan(INFINITY)    = %d\n", isnan(INFINITY));
+    printf("isnan(0.0)         = %d\n", isnan(0.0));
+    printf("isnan(DBL_MIN/2.0) = %d\n", isnan(DBL_MIN/2.0));
+    printf("isnan(1.0)         = %d\n", isnan(1.0));
+    printf("isnan(NAN_DOUBLE)  = %d\n", isnan(NAN_DOUBLE));
+    printf("\n");
+
+    printf("isnan(NAN)         = %d\n", jmc_isnan_f(NAN));
+    printf("isnan(INFINITY)    = %d\n", jmc_isnan_f(INFINITY));
+    printf("isnan(0.0)         = %d\n", jmc_isnan_d(0.0));
+    printf("isnan(DBL_MIN/2.0) = %d\n", jmc_isnan_d(DBL_MIN/2.0));
+    printf("isnan(1.0)         = %d\n", jmc_isnan_d(1.0));
+    printf("isnan(NAN_DOUBLE)  = %d\n", jmc_isnan_d(NAN_DOUBLE));
+    printf("\n");
+
+    printf("NAN         = %f\n", NAN);
+    printf("NAN_DOUBLE  = %f\n", NAN_DOUBLE);
+    printf("\n");
+
+    printf("FP_NAN       = %d\n", FP_NAN);         // 0
+    printf("FP_INFINITE  = %d\n", FP_INFINITE);    // 1
+    printf("FP_ZERO      = %d\n", FP_ZERO);        // 2
+    printf("FP_SUBNORMAL = %d\n", FP_SUBNORMAL);   // 3
+    printf("FP_NORMAL    = %d\n", FP_NORMAL);      // 4
+    printf("\n");
+ 
+    printf("fpclassify(NAN)         = %d\n", fpclassify(NAN));           // 0
+    printf("fpclassify(INFINITY)    = %d\n", fpclassify(INFINITY));      // 1
+    printf("fpclassify(0.0)         = %d\n", fpclassify(0.0));           // 2
+    printf("fpclassify(DBL_MIN/2.0) = %d\n", fpclassify(DBL_MIN/2.0));   // 3
+    printf("fpclassify(1.0)         = %d\n", fpclassify(1.0));           // 4
+    printf("\n");
+
+    printf("jmc_ftest(NAN)          = %d\n", jmc_ftest(NAN));           // 0
+    printf("jmc_ftest(INFINITY)     = %d\n", jmc_ftest(INFINITY));      // 1
+    printf("jmc_dtest(NAN_DOUBLE)   = %d\n", jmc_dtest(NAN_DOUBLE));    // 0
+    printf("jmc_dtest(0.0)          = %d\n", jmc_dtest(0.0));           // 2
+    printf("jmc_dtest(DBL_MIN/2.0)  = %d\n", jmc_dtest(DBL_MIN/2.0));   // 3
+    printf("jmc_dtest(1.0)          = %d\n", jmc_dtest(1.0));           // 4
+    printf("\n");
+}
+
 int UnitTest_Main(int argc, char *argv[])
 {
     // 设置进程和线程的亲缘性
@@ -2425,6 +2478,10 @@ int UnitTest_Main(int argc, char *argv[])
         sLog.log_end();
         return 0;
     }
+#endif
+
+#if 1
+    Double_And_Float_Test();
 #endif
 
 #if 1
