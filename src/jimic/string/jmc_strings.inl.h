@@ -63,6 +63,10 @@
 // Reference: http://ascii.911cha.com/
 //
 
+#ifndef FMT_DEFAULT_FLOAT_PRECISION
+#define FMT_DEFAULT_FLOAT_PRECISION     6
+#endif
+
 #define JM_FIS_NORMAL                   0
 #define JM_FIS_INF                      0x01
 #define JM_FIS_NAN                      0x02
@@ -881,6 +885,7 @@ jmc_dtest(double val)
 #ifndef _MSC_VER
         #error "jmc_dtest() maybe have some error!"
 #endif // _MSC_VER
+        jimic_assert(sizeof(fuint64_s) == sizeof(double));
         return JM_FIS_NORMAL;
     }
 }
@@ -902,13 +907,120 @@ jmc_ftos_ex(jm_char *buf, size_t count, float val, unsigned int flag,
 JMC_INLINE_NONSTD(int)
 jmc_dtos(jm_char *buf, double val, unsigned int width, unsigned int precision)
 {
+    int filedWidth = 0;
+    int64_t i64;
+    uint64_t scale, frac;
+    fuint64_s *f64;
+    unsigned int n;
     int sign_char;
-    int dtype = jmc_dtest(val);
-    if (isnan(val) || isinf(val)) {
-        //
-        sign_char = ' ';
+    if (sizeof(fuint64_s) != sizeof(double)) {
+        // maybe have some error!
+#ifndef _MSC_VER
+        #error "jmc_dtos() maybe have some error!"
+#endif // _MSC_VER
+        jimic_assert(sizeof(fuint64_s) == sizeof(double));
+        return 0;
     }
-    return 0;
+
+    if (precision == 0) {
+        precision = FMT_DEFAULT_FLOAT_PRECISION;
+        scale = 1000000;
+    }
+    else {
+        scale = 1;
+        for (n = precision; n > 0; --n)
+            scale *= 10;
+    }
+
+    if (width <= precision) {
+        f64 = (fuint64_s *)&val;
+        // is NaN or INF ? (exponent is maxium ?)
+        if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
+            if (val < 0.0) {
+                *buf++ = '-';
+                val = -val;
+            }
+
+            i64 = (int64_t)val;
+            frac = (uint64_t)((val - (double)i64) * scale + 0.5);
+            if (frac == scale) {
+                i64++;
+                frac = 0;
+            }
+        }
+        else if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
+                 || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)) {
+            // is NaN, not a number
+            *buf        = 'N';
+            *(buf + 1)  = 'a';
+            *(buf + 2)  = 'N';
+            *(buf + 3)  = '\0';
+            return 3;
+        }
+        else {
+            // if +INF or -INF
+            if ((f64->high & JM_DOUBLE_SIGN_BIT32) == 0) {
+                // '+', 0x2B
+                *buf        = 'I';
+                *(buf + 1)  = 'n';
+                *(buf + 2)  = 'f';
+                *(buf + 3)  = '\0';
+                return 3;
+            }
+            else {
+                // '-', 0x2D
+    //          *buf        = '+' + ((f64->high & JM_DOUBLE_SIGN_BIT32) >> 30);
+                *buf        = '-';
+                *(buf + 1)  = 'I';
+                *(buf + 2)  = 'n';
+                *(buf + 3)  = 'f';
+                *(buf + 4)  = '\0';
+                return 4;
+            }
+        }
+    }
+    else {
+        f64 = (fuint64_s *)&val;
+        // is NaN or INF ? (exponent is maxium ?)
+        if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
+            if (val < 0.0) {
+                sign_char = '-';
+            }
+        
+            i64 = (int64_t)val;
+        }
+        else if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
+                 || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)) {
+            // is NaN, not a number
+            *buf        = 'N';
+            *(buf + 1)  = 'a';
+            *(buf + 2)  = 'N';
+            *(buf + 3)  = '\0';
+            return 3;
+        }
+        else {
+            // if +INF or -INF
+            if ((f64->high & JM_DOUBLE_SIGN_BIT32) == 0) {
+                // '+', 0x2B
+                *buf        = 'I';
+                *(buf + 1)  = 'n';
+                *(buf + 2)  = 'f';
+                *(buf + 3)  = '\0';
+                return 3;
+            }
+            else {
+                // '-', 0x2D
+    //          *buf        = '+' + ((f64->high & JM_DOUBLE_SIGN_BIT32) >> 30);
+                *buf        = '-';
+                *(buf + 1)  = 'I';
+                *(buf + 2)  = 'n';
+                *(buf + 3)  = 'f';
+                *(buf + 4)  = '\0';
+                return 4;
+            }
+        }
+    }
+    return filedWidth;
 }
 
 JMC_INLINE_NONSTD(int)

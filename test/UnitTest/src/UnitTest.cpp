@@ -2300,7 +2300,8 @@ void Double_And_Float_Test()
     char buf[128];
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "%8.3f", 12.345);
 
-    #define NAN_DOUBLE      ((double)(INFINITY * 0.0F))
+    #define NAN_DOUBLE          ((double)(INFINITY * 0.0F))
+    #define DOUBLE_INFINITY     ((double)(_HUGE_ENUF * _HUGE_ENUF))
 
     printf("isnan(NAN)         = %d\n", isnan(NAN));
     printf("isnan(INFINITY)    = %d\n", isnan(INFINITY));
@@ -2342,6 +2343,22 @@ void Double_And_Float_Test()
     printf("jmc_dtest(0.0)          = %d\n", jmc_dtest(0.0));           // 2
     printf("jmc_dtest(DBL_MIN/2.0)  = %d\n", jmc_dtest(DBL_MIN/2.0));   // 3
     printf("jmc_dtest(1.0)          = %d\n", jmc_dtest(1.0));           // 4
+    printf("\n");
+
+    printf("printf(INFINITY)         = %f\n", INFINITY);
+    printf("printf(-INFINITY)        = %f\n", -INFINITY);
+    printf("printf(DOUBLE_INFINITY)  = %f\n", DOUBLE_INFINITY);
+    printf("printf(-DOUBLE_INFINITY) = %f\n", -DOUBLE_INFINITY);
+    printf("\n");
+
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(INFINITY)         = %f\n", INFINITY);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(-INFINITY)        = %f\n", -INFINITY);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(DOUBLE_INFINITY)  = %f\n", DOUBLE_INFINITY);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(-DOUBLE_INFINITY) = %f\n", -DOUBLE_INFINITY);
+    printf("%s", buf);
     printf("\n");
 }
 

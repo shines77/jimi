@@ -445,7 +445,9 @@ public:
     integer_setting<char_type> reserve;
 };
 
-#define DEFAULT_FLOAT_PRECISION     0
+#ifndef DEFAULT_FLOAT_PRECISION
+#define DEFAULT_FLOAT_PRECISION     6
+#endif
 
 template <typename StringType = jimi::string, int Precision = DEFAULT_FLOAT_PRECISION>
 class formatter : public jimi::NonAssignable
