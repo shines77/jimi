@@ -10,14 +10,58 @@
 #include <jimic/string/jmc_strings.h>
 #endif
 
-#include <stdarg.h>
-#include <math.h>       // for isnan()
-#include <float.h>
-
 #include <jimic/string/jm_strings.h>
+
+#include <stdarg.h>
+#include <math.h>       // for isnan(), isinf()
+#include <float.h>
 
 /* 小端或大端, 为1表示小端存储 */
 #define JIMI_IS_LITTLE_ENDIAN           1
+
+//
+// Printf() 输出格式控制
+// Reference: http://bbs.csdn.net/topics/330107715
+//
+
+#ifndef _JIMIC_STRING_SPRINTF_FORMAT_DEF_
+#define _JIMIC_STRING_SPRINTF_FORMAT_DEF_
+
+/* format sign */
+#define FMT_DEFAULT_FLAG        0x00000000      // default flag
+#define FMT_SPACE_FLAG          0x00010000      // ' ', space flag
+#define FMT_PLUS_FLAG           0x00020000      // '+', plus flag
+#define FMT_SHARP_FLAG          0x00040000      // '#', number flag
+#define FMT_FIELDWIDTH_FLAG     0x00080000      // '*', asterisk flag
+#define FMT_CURRENCY_FLAG       0x00100000      // ',', comma flag
+
+#define FMT_SIGN_MASK           0x00000002      // sign mask
+#define FMT_SIGN_MASK_BIT       2               // sign move bit
+
+// 句号: period
+
+/* format align mode */
+#define FMT_ALIGN_RIGHT         0x00200000      // align to right
+#define FMT_ALIGN_LEFT          0x00400000      // align to left
+#define FMT_ALIGN_CENTER        0x00800000      // align to center
+#define FMT_ALIGN_MINUS         FMT_ALIGN_LEFT  // '-', minus sign
+#define FMT_ALIGN_DEFAULT       FMT_ALIGN_RIGHT
+                                                // default is FMT_ALIGN_RIGHT, '+'
+
+/* format fill mode */
+#define FMT_FILL_SPACE          ' '             // fill space: ' '
+#define FMT_FILL_ZERO           '0'             // fill zero:  '0'
+#define FMT_FILL_DEFAULT        FMT_FILL_SPACE
+                                                // default is FMT_FILL_SPACE, ' '
+
+#define FMT_DEFAULT_STATUS      (FMT_DEFAULT_FLAG | FMT_ALIGN_DEFAULT | FMT_FILL_DEFAULT)
+
+#endif  /* !_JIMIC_STRING_SPRINTF_FORMAT_DEF_ */
+
+//
+// ASCII码对照表
+// Reference: http://ascii.911cha.com/
+//
 
 #define JM_FIS_NORMAL                   0
 #define JM_FIS_INF                      0x01
@@ -78,55 +122,91 @@ typedef struct fvariant_t {
     };
 } fvariant_t;
 
-//
-// Printf() 输出格式控制
-// Reference: http://bbs.csdn.net/topics/330107715
-//
+#if 1
+JMC_INLINE_NONSTD(int)
+jmc_utoa_radix10(jm_char *buf, unsigned int val)
+{
+    unsigned int digval, digital;
+    const jm_char *end;
+    jm_char *cur;
+    char digits[16];    // 实际最多只会用到10个bytes
 
-#ifndef _JIMIC_STRING_SPRINTF_FORMAT_DEF_
-#define _JIMIC_STRING_SPRINTF_FORMAT_DEF_
+    jimic_assert(buf != NULL);
 
-/* format sign */
-#define FMT_DEFAULT_SIGN        0x0000
-#define FMT_SPACE_SIGN          0x0001      // ' ', space sign
-#define FMT_SIGN_MASK           0x0002      // sign mask
-#define FMT_SHARP_SIGN          0x0004      // '#', number sign
-#define FMT_FIELDWIDTH_SIGN     0x0008      // '*', asterisk sign
-#define FMT_CURRENCY_SIGN       0x0010      // ',', comma sign
+    end = digits + jm_countof(digits);
+    cur = (jm_char *)end;
+    do {
+        cur--;
+        digval = val % 10;
+        val /= 10;
 
-#define FMT_SIGN_MASK_BIT       2           // move bit
+        *cur = (jm_char)(digval + '0');
+    } while (val != 0);
 
-// 句号: period
+    digital = end - cur;
+    digval = digital;
 
-/* format align mode */
-#define FMT_ALIGN_PLUS          0x0040      // '+', plus sign
-#define FMT_ALIGN_MINUS         0x0080      // '-', minus sign
-#define FMT_ALIGN_LEFT          FMT_ALIGN_MINUS
-#define FMT_ALIGN_RIGHT         FMT_ALIGN_PLUS
-#define FMT_ALIGN_NONE          FMT_ALIGN_RIGHT
-                                            // default is FMT_ALIGN_RIGHT, '+'
+#if 1
+    while (digval > 0) {
+        *buf++ = *cur++;
+        digval--;
+    }
+#elif 0
+    do {
+        *buf++ = *cur++;
+    } while (cur != end);
+#else
+    while (cur < end)
+        *buf++ = *cur++;
+#endif
+    *buf = '\0';
 
-/* format fill mode */
-#define FMT_FILL_SPACE          ' '         // fill space: ' '
-#define FMT_FILL_ZERO           '0'         // fill zero:  '0'
-#define FMT_FILL_NONE           FMT_FILL_SPACE
-                                            // default is FMT_FILL_SPACE, ' '
+    return digital;
+}
+#elif 0
+JMC_INLINE_NONSTD(int)
+jmc_utoa_radix10(jm_char *buf, unsigned int val)
+{
+    unsigned int digval, digital;
+    jm_char *end, *cur;
+    char digits[16];    // 实际最多只会用到10个bytes
 
-#define FMT_DEFAULT_FLAG        (FMT_DEFAULT_SIGN | FMT_ALIGN_NONE)
+    jimic_assert(buf != NULL);
 
-#endif  /* !_JIMIC_STRING_SPRINTF_FORMAT_DEF_ */
+    end = digits + jm_countof(digits) - 1;
+    cur = end;
+    do {
+        digval = val % 10;
+        val /= 10;
 
-//
-// ASCII码对照表
-// Reference: http://ascii.911cha.com/
-//
+        *cur-- = (jm_char)(digval + '0');
+    } while (val != 0);
 
+    digital = end - cur;
+
+#if 0
+    do {
+        ++cur;
+        *buf++ = *cur;
+    } while (cur != end);
+#else
+    cur++;
+    while (cur <= end)
+        *buf++ = *cur++;
+#endif
+    *buf = '\0';
+
+    return digital;
+}
+#else
 JMC_INLINE_NONSTD(int)
 jmc_utoa_radix10(jm_char *buf, unsigned int val)
 {
     unsigned int digval, digital;
     jm_char *cur;
     char digits[16];    // 实际最多只会用到10个bytes
+
+    jimic_assert(buf != NULL);
 
     cur = digits;
     do {
@@ -152,6 +232,7 @@ jmc_utoa_radix10(jm_char *buf, unsigned int val)
 
     return digital;
 }
+#endif
 
 JMC_INLINE_NONSTD(int)
 jmc_itoa_radix10(jm_char *buf, int val)
@@ -174,7 +255,7 @@ jmc_itoa_radix10(jm_char *buf, int val)
     else
         return jmc_utoa_radix10(buf, val);
 #else
-    int sign;
+    register int sign;
     sign = (val < 0);
     if (val < 0) {
         *buf++ = '-';
@@ -301,29 +382,50 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
     unsigned int digval, digital;
     int fill_cnt;
     int padding;
-    jm_char *cur;
+    jm_char *end, *cur;
     int sign_char;
     char digits[16];    // 实际最多只会用到10个bytes
 
     jimic_assert(buf != NULL);
     jimic_assert(count != 0);
 
-    cur = digits;
+    end = digits + jm_countof(digits) - 1;
+    cur = end;
     do {
         digval = val % 10;
         val /= 10;
 
-        *cur++ = (jm_char)digval + '0';
+        *cur-- = (jm_char)(digval + '0');
     } while (val != 0);
 
-    digital = cur - digits;
+    digital = end - cur;
 
-    if ((flag & (FMT_SIGN_MASK | FMT_SPACE_SIGN | FMT_SHARP_SIGN)) == 0) {
+    if ((flag & (FMT_SIGN_MASK | FMT_SPACE_FLAG | FMT_SHARP_FLAG)) == 0) {
         sign_char = '\0';
         fill_cnt = width - digital;
+#if 0
+        if (fill_cnt > 0) {
+            goto utoa_radix10_ex_L001;
+        }
+        else {
+#if 0
+            do {
+                ++cur;
+                *buf++ = *cur;
+            } while (cur != end);
+#else
+            cur++;
+            while (cur <= end)
+                *buf++ = *cur++;
+#endif
+            *buf = '\0';
+
+            return digital;
+        }
+#endif
     }
     else {
-        if ((flag & FMT_SPACE_SIGN) == 0) {
+        if ((flag & FMT_SPACE_FLAG) == 0) {
             // '+' is 0x2B, '-' is 0x2D
             sign_char = '+' + (flag & FMT_SIGN_MASK);
             fill_cnt = width - digital - 1;
@@ -348,13 +450,13 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
             *buf++ = (jm_char)sign_char;
 #if 0
         do {
-            --cur;
+            ++cur;
             *buf++ = *cur;
-        } while (cur != digits);
+        } while (cur != end);
 #else
-        cur--;
-        while (cur >= digits)
-            *buf++ = *cur--;
+        cur++;
+        while (cur <= end)
+            *buf++ = *cur++;
 #endif
         *buf = '\0';
 
@@ -364,6 +466,7 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
             return digital + 1;
     }
     else {
+utoa_radix10_ex_L001:
         // when legnth == 0 || legnth >= witdh, align to right or left is same
         if (length == 0 || length >= width) {
             // add sign
@@ -431,13 +534,13 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
 
 #if 0
                 do {
-                    --cur;
+                    ++cur;
                     *buf++ = *cur;
-                } while (cur != digits);
+                } while (cur != end);
 #else
-                cur--;
-                while (cur >= digits)
-                    *buf++ = *cur--;
+                cur++;
+                while (cur <= end)
+                    *buf++ = *cur++;
 #endif
                 // fill left padding space
                 while (fill_cnt > 0) {
@@ -452,13 +555,13 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
 
 #if 0
     do {
-        --cur;
+        ++cur;
         *buf++ = *cur;
-    } while (cur != digits);
+    } while (cur != end);
 #else
-    cur--;
-    while (cur >= digits)
-        *buf++ = *cur--;
+    cur++;
+    while (cur <= end)
+        *buf++ = *cur++;
 #endif
 
 utoa_radix10_ex_exit:
@@ -480,7 +583,7 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
     return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length);
 
 #elif 0
-    if ((flag & FMT_SPACE_SIGN) == 0) {
+    if ((flag & FMT_SPACE_FLAG) == 0) {
         if (val >= 0) {
             return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length);
         }
@@ -503,7 +606,7 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
         return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + 1;
     }
 #elif 0
-    if ((flag & FMT_SPACE_SIGN) == 0) {
+    if ((flag & FMT_SPACE_FLAG) == 0) {
         if (val < 0) {
             *buf++ = '-';
             val = -val;
@@ -524,7 +627,7 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
     }
 #else
     int sign;
-    if ((flag & FMT_SPACE_SIGN) == 0) {
+    if ((flag & FMT_SPACE_FLAG) == 0) {
         sign = (val < 0);
         if (val < 0) {
             *buf++ = '-';
@@ -549,10 +652,14 @@ JMC_INLINE_NONSTD(int)
 jmc_isnan_f(float val)
 {
     uint32_t *u32;
+#if defined(_DEBUG)
     uint32_t exponent;
+#endif
     if (sizeof(uint32_t) == sizeof(float)) {
         u32 = (uint32_t *)&val;
+#if defined(_DEBUG)
         exponent = *u32 & JM_FLOAT_EXPONENT_MASK;
+#endif
         if (((*u32 & JM_FLOAT_EXPONENT_MASK) == JM_FLOAT_EXPONENT_MASK)
             && ((*u32 & JM_FLOAT_MANTISSA_MASK) != 0))
             return 1;
@@ -572,10 +679,14 @@ JMC_INLINE_NONSTD(int)
 jmc_isinf_f(float val)
 {
     uint32_t *u32;
+#if defined(_DEBUG)
     uint32_t exponent;
+#endif
     if (sizeof(uint32_t) == sizeof(float)) {
         u32 = (uint32_t *)&val;
+#if defined(_DEBUG)
         exponent = *u32 & JM_FLOAT_EXPONENT_MASK;
+#endif
         if (((*u32 & JM_FLOAT_EXPONENT_MASK) == JM_FLOAT_EXPONENT_MASK)
             && ((*u32 & JM_FLOAT_MANTISSA_MASK) == 0))
             return 1;
@@ -615,10 +726,14 @@ JMC_INLINE_NONSTD(int)
 jmc_isnan_d(double val)
 {
     fuint64_s *f64;
+#if defined(_DEBUG)
     uint32_t exponent;
+#endif
     if (sizeof(fuint64_s) == sizeof(double)) {
         f64 = (fuint64_s *)&val;
+#if defined(_DEBUG)
         exponent = f64->high & JM_DOUBLE_EXPONENT_MASK32;
+#endif
         if (((f64->high & JM_DOUBLE_EXPONENT_MASK32) == JM_DOUBLE_EXPONENT_MASK32)
             && (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
             || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)))
@@ -639,10 +754,14 @@ JMC_INLINE_NONSTD(int)
 jmc_isinf_d(double val)
 {
     fuint64_s *f64;
+#if defined(_DEBUG)
     uint32_t exponent;
+#endif
     if (sizeof(fuint64_s) == sizeof(double)) {
         f64 = (fuint64_s *)&val;
+#if defined(_DEBUG)
         exponent = f64->high & JM_DOUBLE_EXPONENT_MASK32;
+#endif
         if (((f64->high & JM_DOUBLE_EXPONENT_MASK32) == JM_DOUBLE_EXPONENT_MASK32)
             && (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) == 0)
             && ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) == 0)))
