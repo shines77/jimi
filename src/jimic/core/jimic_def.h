@@ -199,34 +199,42 @@ typedef unsigned char   jm_uchar;
  */
 #if (!defined(JIMI_IS_WINDOWS)) || defined(JIMI_IS_DOXYGEN)
 
-#define JMC_DECLARE(type)           type
-#define JMC_DECLARE_NONSTD(type)    type
-#define JMC_INLINE_DECLARE(type)    JMC_INLINE type
-#define JMC_INLINE_NONSTD(type)     JMC_INLINE type
+#define JMC_DECLARE(type)               type
+#define JMC_DECLARE_NONSTD(type)        type
+#define JMC_INLINE_DECLARE(type)        JMC_INLINE type
+#define JMC_INLINE_NONSTD(type)         JMC_INLINE type
+#define JMC_FORCEINLINE_DECLARE(type)   JMC_FORCEINLINE type
+#define JMC_FORCEINLINE_NONSTD(type)    JMC_FORCEINLINE type
 #define JMC_DECLARE_DATA
 
 #elif defined(JIMI_DECLARE_IMPORT)
 
-#define JMC_DECLARE(type)           __declspec(dllimport) type __stdcall
-#define JMC_INLINE_DECLARE(type)    JMC_INLINE __declspec(dllimport) type __stdcall
-#define JMC_DECLARE_NONSTD(type)    __declspec(dllimport) type __cdecl
-#define JMC_INLINE_NONSTD(type)     JMC_INLINE __declspec(dllimport) type __cdecl
-#define JMC_DECLARE_DATA            __declspec(dllimport)
+#define JMC_DECLARE(type)               __declspec(dllimport) type __stdcall
+#define JMC_DECLARE_NONSTD(type)        __declspec(dllimport) type __cdecl
+#define JMC_INLINE_DECLARE(type)        JMC_INLINE __declspec(dllimport) type __stdcall
+#define JMC_INLINE_NONSTD(type)         JMC_INLINE __declspec(dllimport) type __cdecl
+#define JMC_FORCEINLINE_DECLARE(type)   JMC_FORCEINLINE __declspec(dllimport) type __stdcall
+#define JMC_FORCEINLINE_NONSTD(type)    JMC_FORCEINLINE __declspec(dllimport) type __cdecl
+#define JMC_DECLARE_DATA                __declspec(dllimport)
 
 #elif defined(JIMI_DECLARE_EXPORT)
 
-#define JMC_DECLARE(type)           __declspec(dllexport) type __stdcall
-#define JMC_INLINE_DECLARE(type)    JMC_INLINE __declspec(dllexport) type __stdcall
-#define JMC_DECLARE_NONSTD(type)    __declspec(dllexport) type __cdecl
-#define JMC_INLINE_NONSTD(type)     JMC_INLINE __declspec(dllexport) type __cdecl
-#define JMC_DECLARE_DATA            __declspec(dllexport)
+#define JMC_DECLARE(type)               __declspec(dllexport) type __stdcall
+#define JMC_DECLARE_NONSTD(type)        __declspec(dllexport) type __cdecl
+#define JMC_INLINE_DECLARE(type)        JMC_INLINE __declspec(dllexport) type __stdcall
+#define JMC_INLINE_NONSTD(type)         JMC_INLINE __declspec(dllexport) type __cdecl
+#define JMC_FORCEINLINE_DECLARE(type)   JMC_FORCEINLINE __declspec(dllexport) type __stdcall
+#define JMC_FORCEINLINE_NONSTD(type)    JMC_FORCEINLINE __declspec(dllexport) type __cdecl
+#define JMC_DECLARE_DATA                __declspec(dllexport)
 
 #else
 
-#define JMC_DECLARE(type)           type __stdcall
-#define JMC_INLINE_DECLARE(type)    JMC_INLINE type __stdcall
-#define JMC_DECLARE_NONSTD(type)    type __cdecl
-#define JMC_INLINE_NONSTD(type)     JMC_INLINE type __cdecl
+#define JMC_DECLARE(type)               type __stdcall
+#define JMC_DECLARE_NONSTD(type)        type __cdecl
+#define JMC_INLINE_DECLARE(type)        JMC_INLINE type __stdcall
+#define JMC_INLINE_NONSTD(type)         JMC_INLINE type __cdecl
+#define JMC_FORCEINLINE_DECLARE(type)   JMC_FORCEINLINE type __stdcall
+#define JMC_FORCEINLINE_NONSTD(type)    JMC_FORCEINLINE type __cdecl
 #define JMC_DECLARE_DATA
 
 #endif  /* (!defined(JIMI_IS_WINDOWS)) || defined(JIMI_IS_DOXYGEN) */

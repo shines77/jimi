@@ -99,7 +99,7 @@ void Sprintf_Preformance_Test_D1()
     printf("    }\n\n");
     printf("==============================================================================\n\n");
 
-#if !defined(VSNPRINTF_SHORT_DISPLAY) || (VSNPRINTF_SHORT_DISPLAY == 0)
+#if defined(VSNPRINTF_TEST_JM_SNPRINTF) && (VSNPRINTF_TEST_JM_SNPRINTF != 0)
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -112,13 +112,17 @@ void Sprintf_Preformance_Test_D1()
         sw.stop();
         time = sw.getMillisec();
 
+#if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
+        printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_sprintf()", time);
+#else
         printf(">>> %-18s <<<\n\n", "jm_sprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
         printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
         printf("time = %0.3f ms\n", time);
         printf("\n");
-    }
 #endif // VSNPRINTF_SHORT_DISPLAY
+    }
+#endif // VSNPRINTF_TEST_JM_SNPRINTF
 
 #if 1
     {
@@ -210,7 +214,7 @@ void Snprintf_Preformance_Test_D1()
     printf("    }\n\n");
     printf("==============================================================================\n\n");
 
-#if !defined(VSNPRINTF_SHORT_DISPLAY) || (VSNPRINTF_SHORT_DISPLAY == 0)
+#if defined(VSNPRINTF_TEST_JM_SNPRINTF) && (VSNPRINTF_TEST_JM_SNPRINTF != 0)
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -223,13 +227,17 @@ void Snprintf_Preformance_Test_D1()
         sw.stop();
         time = sw.getMillisec();
 
+#if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
+        printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
+#else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
-        printf("result = \n%s\n\n", fmtbuf1);
+        printf("result =\n%s\n\n", fmtbuf1);
         printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
         printf("time = %0.3f ms\n", time);
         printf("\n");
-    }
 #endif // VSNPRINTF_SHORT_DISPLAY
+    }
+#endif // VSNPRINTF_TEST_JM_SNPRINTF
 
 #if 1
     {
@@ -341,7 +349,7 @@ void Snprintf_Preformance_Test_D2()
     printf("    }\n\n");
     printf("==============================================================================\n\n");
 
-#if !defined(VSNPRINTF_SHORT_DISPLAY) || (VSNPRINTF_SHORT_DISPLAY == 0)
+#if defined(VSNPRINTF_TEST_JM_SNPRINTF) && (VSNPRINTF_TEST_JM_SNPRINTF != 0)
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -354,13 +362,17 @@ void Snprintf_Preformance_Test_D2()
         sw.stop();
         time = sw.getMillisec();
 
+#if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
+        printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
+#else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
-        printf("result = \n%s\n\n", fmtbuf1);
+        printf("result =\n%s\n\n", fmtbuf1);
         printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
         printf("time = %0.3f ms\n", time);
         printf("\n");
+#endif // VSNPRINTF_SHORT_DISPLAY
     }
-#endif
+#endif // VSNPRINTF_TEST_JM_SNPRINTF
 
 #if 1
     {
@@ -474,7 +486,7 @@ void Snprintf_Preformance_Test_D3()
     printf("    }\n\n");
     printf("==============================================================================\n\n");
 
-#if !defined(VSNPRINTF_SHORT_DISPLAY) || (VSNPRINTF_SHORT_DISPLAY == 0)
+#if defined(VSNPRINTF_TEST_JM_SNPRINTF) && (VSNPRINTF_TEST_JM_SNPRINTF != 0)
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -489,13 +501,17 @@ void Snprintf_Preformance_Test_D3()
         sw.stop();
         time = sw.getMillisec();
 
+#if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
+        printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
+#else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
-        printf("result = \n%s\n\n", fmtbuf1);
+        printf("result =\n%s\n\n", fmtbuf1);
         printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
         printf("time = %0.3f ms\n", time);
         printf("\n");
+#endif // VSNPRINTF_SHORT_DISPLAY
     }
-#endif
+#endif // VSNPRINTF_TEST_JM_SNPRINTF
 
 #if 1
     {

@@ -466,7 +466,7 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
             return digital + 1;
     }
     else {
-utoa_radix10_ex_L001:
+//utoa_radix10_ex_L001:
         // when legnth == 0 || legnth >= witdh, align to right or left is same
         if (length == 0 || length >= width) {
             // add sign

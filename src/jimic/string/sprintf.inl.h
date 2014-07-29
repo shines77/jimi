@@ -163,10 +163,11 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
 
     jimic_assert(end >= buf);
 
-vslprintf_try_next:
 #if 0
+vslprintf_try_next:
     while ((c = *cur) != '\0') {
 #else
+vslprintf_try_next:
     for ( ;; ) {
         c = *cur;
 #endif
