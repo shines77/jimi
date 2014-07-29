@@ -70,7 +70,8 @@ void Sprintf_Preformance_Test_D1()
     int loop_times = 9999999;
     jimi::stop_watch sw;
 
-    char fmtbuf[512] = { 0 };
+    char fmtbuf1[512] = { 0 };
+    char fmtbuf2[512] = { 0 };
     int fmtlen;
 
 #if !defined(VSNPRINTF_SHORT_DISPLAY) || (VSNPRINTF_SHORT_DISPLAY == 0)
@@ -91,10 +92,10 @@ void Sprintf_Preformance_Test_D1()
     printf("==============================================================================\n\n");
     printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
     printf("        len = jmc_sprintf(buf, bufsize, count,\n"
-           "                          \"%%d, %%d, %%d, %%d, %%d, %%d, %%d\\n\"\n"
-           "                          \"%%d, %%d, %%d, %%d, %%d, %%d\",\n"
-           "                          123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-           "                          1, 1234, 12345678, -1, -1234, -12345678\");\n");
+           "                          \"%%d, %%d, %%d, %%d, %%d,\\n\"\n"
+           "                          \"%%d, %%d, %%d, %%d, %%d\",\n"
+           "                           12,  1234,  123456,  12345678,  123456789,\n"
+           "                          -12, -1234, -123456, -12345678, -123456789\");\n");
     printf("    }\n\n");
     printf("==============================================================================\n\n");
 
@@ -102,30 +103,18 @@ void Sprintf_Preformance_Test_D1()
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            fmtlen = jm_sprintf(fmtbuf, jm_countof(fmtbuf),
-                                "%d, %d, %d, %d, %d, %d, %d\n"
-                                "%d, %d, %d, %d, %d, %d",
-                                123, 123456789, -123, -123456789, 777, 8888, 99999,
-                                1, 1234, 12345678, -1, -1234, -12345678);
+            fmtlen = jm_sprintf(fmtbuf1, jm_countof(fmtbuf1),
+                                "%d, %d, %d, %d, %d\n"
+                                "%d, %d, %d, %d, %d",
+                                 12,  1234,  123456,  12345678,  123456789,
+                                -12, -1234, -123456, -12345678, -123456789);
         }
         sw.stop();
         time = sw.getMillisec();
 
-        /*
-        printf("==============================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        len = jm_sprintf(buf, bufsize, count,\n"
-               "                        \"%%d, %%d, %%d, %%d, %%d, %%d, %%d\\n\"\n"
-               "                        \"%%d, %%d, %%d, %%d, %%d, %%d\",\n"
-               "                        123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-               "                        1, 1234, 12345678, -1, -1234, -12345678\");\n");
-        printf("    }\n\n");
-        printf("==============================================================================\n\n");
-        //*/
-
         printf(">>> %-18s <<<\n\n", "jm_sprintf()");
-        printf("result =\n%s\n\n", fmtbuf);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+        printf("result =\n%s\n\n", fmtbuf1);
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
         printf("time = %0.3f ms\n", time);
         printf("\n");
     }
@@ -135,34 +124,22 @@ void Sprintf_Preformance_Test_D1()
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            fmtlen = sprintf(fmtbuf,
-                             "%d, %d, %d, %d, %d, %d, %d\n"
-                             "%d, %d, %d, %d, %d, %d",
-                             123, 123456789, -123, -123456789, 777, 8888, 99999,
-                             1, 1234, 12345678, -1, -1234, -12345678);
+            fmtlen = sprintf(fmtbuf1,
+                             "%d, %d, %d, %d, %d\n"
+                             "%d, %d, %d, %d, %d",
+                              12,  1234,  123456,  12345678,  123456789,
+                             -12, -1234, -123456, -12345678, -123456789);
         }
         sw.stop();
         time = sw.getMillisec();
         timeReference = time;
 
-        /*
-        printf("==============================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        len = sprintf(buf, bufsize, count,\n"
-               "                      \"%%d, %%d, %%d, %%d, %%d, %%d, %%d\\n\"\n"
-               "                      \"%%d, %%d, %%d, %%d, %%d, %%d\",\n"
-               "                      123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-               "                      1, 1234, 12345678, -1, -1234, -12345678\");\n");
-        printf("    }\n\n");
-        printf("==============================================================================\n\n");
-        //*/
-
 #if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "sprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "sprintf()");
-        printf("result =\n%s\n\n", fmtbuf);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+        printf("result =\n%s\n\n", fmtbuf1);
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
         printf("time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_SHORT_DISPLAY
@@ -173,34 +150,22 @@ void Sprintf_Preformance_Test_D1()
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            fmtlen = jmc_sprintf(fmtbuf,
-                                 "%d, %d, %d, %d, %d, %d, %d\n"
-                                 "%d, %d, %d, %d, %d, %d",
-                                 123, 123456789, -123, -123456789, 777, 8888, 99999,
-                                 1, 1234, 12345678, -1, -1234, -12345678);
+            fmtlen = jmc_sprintf(fmtbuf2,
+                                 "%d, %d, %d, %d, %d\n"
+                                 "%d, %d, %d, %d, %d",
+                                  12,  1234,  123456,  12345678,  123456789,
+                                 -12, -1234, -123456, -12345678, -123456789);
         }
         sw.stop();
         time = sw.getMillisec();
-
-        /*
-        printf("==============================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        len = jmc_sprintf(buf, bufsize, count,\n"
-               "                          \"%%d, %%d, %%d, %%d, %%d, %%d, %%d\\n\"\n"
-               "                          \"%%d, %%d, %%d, %%d, %%d, %%d\",\n"
-               "                          123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-               "                          1, 1234, 12345678, -1, -1234, -12345678\");\n");
-        printf("    }\n\n");
-        printf("==============================================================================\n\n");
-        //*/
 
 #if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_sprintf()", time);
         printf("jmc_sprintf() preformance is sprintf() %0.3f X times.\n\n", timeReference / time);
 #else
         printf(">>> %-18s <<<\n\n", "jmc_sprintf()");
-        printf("result =\n%s\n\n", fmtbuf);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+        printf("result =\n%s\n\n", fmtbuf2);
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
         printf("time = %0.3f ms, preformance is sprintf(): %0.3f X (times)\n", time, timeReference / time);
         printf("\n");
 #endif // VSNPRINTF_SHORT_DISPLAY
@@ -216,7 +181,8 @@ void Snprintf_Preformance_Test_D1()
     int loop_times = 9999999;
     jimi::stop_watch sw;
 
-    char fmtbuf[512] = { 0 };
+    char fmtbuf1[512] = { 0 };
+    char fmtbuf2[512] = { 0 };
     int fmtlen;
 
 #if !defined(VSNPRINTF_SHORT_DISPLAY) || (VSNPRINTF_SHORT_DISPLAY == 0)
@@ -237,10 +203,10 @@ void Snprintf_Preformance_Test_D1()
     printf("==============================================================================\n\n");
     printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
     printf("        len = jmc_snprintf(buf, bufsize, count,\n"
-            "                           \"%%d, %%d, %%d, %%d, %%d, %%d, %%d\\n\"\n"
-            "                           \"%%d, %%d, %%d, %%d, %%d, %%d\",\n"
-            "                           123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-            "                           1, 1234, 12345678, -1, -1234, -12345678\");\n");
+           "                           \"%%d, %%d, %%d, %%d, %%d,\\n\"\n"
+           "                           \"%%d, %%d, %%d, %%d, %%d\",\n"
+           "                            12,  1234,  123456,  12345678,  123456789,\n"
+           "                           -12, -1234, -123456, -12345678, -123456789\");\n");
     printf("    }\n\n");
     printf("==============================================================================\n\n");
 
@@ -248,30 +214,18 @@ void Snprintf_Preformance_Test_D1()
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            fmtlen = jm_snprintf(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
-                                 "%d, %d, %d, %d, %d, %d, %d\n"
-                                 "%d, %d, %d, %d, %d, %d",
-                                 123, 123456789, -123, -123456789, 777, 8888, 99999,
-                                 1, 1234, 12345678, -1, -1234, -12345678);
+            fmtlen = jm_snprintf(fmtbuf1, jm_countof(fmtbuf1), jm_countof(fmtbuf1) - 1,
+                                 "%d, %d, %d, %d, %d\n"
+                                 "%d, %d, %d, %d, %d",
+                                  12,  1234,  123456,  12345678,  123456789,
+                                 -12, -1234, -123456, -12345678, -123456789);
         }
         sw.stop();
         time = sw.getMillisec();
 
-        /*
-        printf("==============================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        len = jm_snprintf(buf, bufsize, count,\n"
-               "                          \"%%d, %%d, %%d, %%d, %%d, %%d, %%d\\n\"\n"
-               "                          \"%%d, %%d, %%d, %%d, %%d, %%d\",\n"
-               "                          123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-               "                          1, 1234, 12345678, -1, -1234, -12345678\");\n");
-        printf("    }\n\n");
-        printf("==============================================================================\n\n");
-        //*/
-
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
-        printf("result = \n%s\n\n", fmtbuf);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+        printf("result = \n%s\n\n", fmtbuf1);
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
         printf("time = %0.3f ms\n", time);
         printf("\n");
     }
@@ -282,30 +236,18 @@ void Snprintf_Preformance_Test_D1()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
 #ifdef _MSC_VER
-            fmtlen = _snprintf_s(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
+            fmtlen = _snprintf_s(fmtbuf1, jm_countof(fmtbuf1), jm_countof(fmtbuf1) - 1,
 #else
-            fmtlen =    snprintf(fmtbuf, sizeof(fmtbuf),
+            fmtlen =    snprintf(fmtbuf1, sizeof(fmtbuf1),
 #endif // _MSC_VER
-                                 "%d, %d, %d, %d, %d, %d, %d\n"
-                                 "%d, %d, %d, %d, %d, %d",
-                                 123, 123456789, -123, -123456789, 777, 8888, 99999,
-                                 1, 1234, 12345678, -1, -1234, -12345678);
+                                 "%d, %d, %d, %d, %d\n"
+                                 "%d, %d, %d, %d, %d",
+                                  12,  1234,  123456,  12345678,  123456789,
+                                 -12, -1234, -123456, -12345678, -123456789);
         }
         sw.stop();
         time = sw.getMillisec();
         timeReference = time;
-
-        /*
-        printf("==============================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        len = _snprintf_s(buf, bufsize, count,\n"
-               "                          \"%%d, %%d, %%d, %%d, %%d, %%d, %%d\\n\"\n"
-               "                          \"%%d, %%d, %%d, %%d, %%d, %%d\",\n"
-               "                          123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-               "                          1, 1234, 12345678, -1, -1234, -12345678\");\n");
-        printf("    }\n\n");
-        printf("==============================================================================\n\n");
-        //*/
 
 #if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
   #ifdef _MSC_VER
@@ -319,8 +261,8 @@ void Snprintf_Preformance_Test_D1()
   #else
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
-        printf("result = \n%s\n\n", fmtbuf);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+        printf("result = \n%s\n\n", fmtbuf1);
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
         printf("time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_SHORT_DISPLAY
@@ -331,26 +273,14 @@ void Snprintf_Preformance_Test_D1()
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            fmtlen = jmc_snprintf(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
-                                  "%d, %d, %d, %d, %d, %d, %d\n"
-                                  "%d, %d, %d, %d, %d, %d",
-                                  123, 123456789, -123, -123456789, 777, 8888, 99999,
-                                  1, 1234, 12345678, -1, -1234, -12345678);
+            fmtlen = jmc_snprintf(fmtbuf2, jm_countof(fmtbuf2), jm_countof(fmtbuf2) - 1,
+                                  "%d, %d, %d, %d, %d\n"
+                                  "%d, %d, %d, %d, %d",
+                                   12,  1234,  123456,  12345678,  123456789,
+                                  -12, -1234, -123456, -12345678, -123456789);
         }
         sw.stop();
         time = sw.getMillisec();
-
-        /*
-        printf("==============================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        len = jmc_snprintf(buf, bufsize, count,\n"
-               "                           \"%%d, %%d, %%d, %%d, %%d, %%d, %%d\\n\"\n"
-               "                           \"%%d, %%d, %%d, %%d, %%d, %%d\",\n"
-               "                           123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-               "                           1, 1234, 12345678, -1, -1234, -12345678\");\n");
-        printf("    }\n\n");
-        printf("==============================================================================\n\n");
-        //*/
 
 #if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
@@ -361,8 +291,8 @@ void Snprintf_Preformance_Test_D1()
   #endif // _MSC_VER
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
-        printf("result = \n%s\n\n", fmtbuf);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+        printf("result = \n%s\n\n", fmtbuf2);
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
         printf("time = %0.3f ms, preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
   #else
@@ -382,7 +312,8 @@ void Snprintf_Preformance_Test_D2()
     int loop_times = 9999999;
     jimi::stop_watch sw;
 
-    char fmtbuf[512] = { 0 };
+    char fmtbuf1[512] = { 0 };
+    char fmtbuf2[512] = { 0 };
     int fmtlen;
 
 #if !defined(VSNPRINTF_SHORT_DISPLAY) || (VSNPRINTF_SHORT_DISPLAY == 0)
@@ -414,7 +345,7 @@ void Snprintf_Preformance_Test_D2()
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            fmtlen = jm_snprintf(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
+            fmtlen = jm_snprintf(fmtbuf1, jm_countof(fmtbuf1), jm_countof(fmtbuf1) - 1,
                                  "%d, %d, %d, %d, %04d, %5d, %08d\n"
                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
                                  123, 123456789, -123, -123456789, 777, 8888, 99999,
@@ -423,21 +354,9 @@ void Snprintf_Preformance_Test_D2()
         sw.stop();
         time = sw.getMillisec();
 
-        /*
-        printf("==============================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        len = jm_snprintf(buf, bufsize, count,\n"
-               "                          \"%%d, %%d, %%d, %%d, %%04d, %%5d, %%08d\\n\"\n"
-               "                          \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\",\n"
-               "                          123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-               "                          1, 1234, 12345678, 1, 1234, 12345678\");\n");
-        printf("    }\n\n");
-        printf("==============================================================================\n\n");
-        //*/
-
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
-        printf("result = \n%s\n\n", fmtbuf);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+        printf("result = \n%s\n\n", fmtbuf1);
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
         printf("time = %0.3f ms\n", time);
         printf("\n");
     }
@@ -448,9 +367,9 @@ void Snprintf_Preformance_Test_D2()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
 #ifdef _MSC_VER
-            fmtlen = _snprintf_s(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
+            fmtlen = _snprintf_s(fmtbuf1, jm_countof(fmtbuf1), jm_countof(fmtbuf1) - 1,
 #else
-            fmtlen =    snprintf(fmtbuf, sizeof(fmtbuf),
+            fmtlen =    snprintf(fmtbuf1, sizeof(fmtbuf1),
 #endif // _MSC_VER
                                  "%d, %d, %d, %d, %04d, %5d, %08d\n"
                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
@@ -460,18 +379,6 @@ void Snprintf_Preformance_Test_D2()
         sw.stop();
         time = sw.getMillisec();
         timeReference = time;
-
-        /*
-        printf("==============================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        len = _snprintf_s(buf, bufsize, count,\n"
-               "                          \"%%d, %%d, %%d, %%d, %%04d, %%5d, %%08d\\n\"\n"
-               "                          \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\",\n"
-               "                          123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-               "                          1, 1234, 12345678, 1, 1234, 12345678\");\n");
-        printf("    }\n\n");
-        printf("==============================================================================\n\n");
-        //*/
 
 #if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
   #ifdef _MSC_VER
@@ -485,8 +392,8 @@ void Snprintf_Preformance_Test_D2()
   #else
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
-        printf("result = \n%s\n\n", fmtbuf);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+        printf("result = \n%s\n\n", fmtbuf1);
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
         printf("time = %0.3f ms\n", time);
         printf("\n");
 #endif
@@ -497,7 +404,7 @@ void Snprintf_Preformance_Test_D2()
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            fmtlen = jmc_snprintf(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
+            fmtlen = jmc_snprintf(fmtbuf2, jm_countof(fmtbuf2), jm_countof(fmtbuf2) - 1,
                                   "%d, %d, %d, %d, %04d, %5d, %08d\n"
                                   "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
                                   123, 123456789, -123, -123456789, 777, 8888, 99999,
@@ -505,18 +412,6 @@ void Snprintf_Preformance_Test_D2()
         }
         sw.stop();
         time = sw.getMillisec();
-
-        /*
-        printf("==============================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        len = jmc_snprintf(buf, bufsize, count,\n"
-               "                           \"%%d, %%d, %%d, %%d, %%04d, %%5d, %%08d\\n\"\n"
-               "                           \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\",\n"
-               "                           123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-               "                           1, 1234, 12345678, 1, 1234, 12345678\");\n");
-        printf("    }\n\n");
-        printf("==============================================================================\n\n");
-        //*/
 
 #if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
@@ -527,8 +422,8 @@ void Snprintf_Preformance_Test_D2()
   #endif // _MSC_VER
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
-        printf("result = \n%s\n\n", fmtbuf);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+        printf("result = \n%s\n\n", fmtbuf2);
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
         printf("time = %0.3f ms, preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
   #else
@@ -548,7 +443,8 @@ void Snprintf_Preformance_Test_D3()
     int loop_times = 9999999;
     jimi::stop_watch sw;
 
-    char fmtbuf[512] = { 0 };
+    char fmtbuf1[512] = { 0 };
+    char fmtbuf2[512] = { 0 };
     int fmtlen;
 
 #if !defined(VSNPRINTF_SHORT_DISPLAY) || (VSNPRINTF_SHORT_DISPLAY == 0)
@@ -570,7 +466,7 @@ void Snprintf_Preformance_Test_D3()
     printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
     printf("        len = jmc_snprintf(buf, bufsize, count,\n"
            "                           \"%%d, %%d, %%d, %%d, %%04d, %%5d, %%08d\\n\"\n"
-           "                           \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\"\\n\n"
+           "                           \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\\n\"\n"
            "                           \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\",\n"
            "                           123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
            "                           1, 1234, 12345678, 1, 1234, 12345678,\n"
@@ -582,7 +478,7 @@ void Snprintf_Preformance_Test_D3()
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            fmtlen = jm_snprintf(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
+            fmtlen = jm_snprintf(fmtbuf1, jm_countof(fmtbuf1), jm_countof(fmtbuf1) - 1,
                                  "%d, %d, %d, %d, %04d, %5d, %08d\n"
                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d\n"
                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
@@ -593,21 +489,9 @@ void Snprintf_Preformance_Test_D3()
         sw.stop();
         time = sw.getMillisec();
 
-        /*
-        printf("==============================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        len = jm_snprintf(buf, bufsize, count,\n"
-               "                          \"%%d, %%d, %%d, %%d, %%04d, %%5d, %%08d\\n\"\n"
-               "                          \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\",\n"
-               "                          123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-               "                          1, 1234, 12345678, 1, 1234, 12345678\");\n");
-        printf("    }\n\n");
-        printf("==============================================================================\n\n");
-        //*/
-
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
-        printf("result = \n%s\n\n", fmtbuf);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+        printf("result = \n%s\n\n", fmtbuf1);
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
         printf("time = %0.3f ms\n", time);
         printf("\n");
     }
@@ -618,9 +502,9 @@ void Snprintf_Preformance_Test_D3()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
 #ifdef _MSC_VER
-            fmtlen = _snprintf_s(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
+            fmtlen = _snprintf_s(fmtbuf1, jm_countof(fmtbuf1), jm_countof(fmtbuf1) - 1,
 #else
-            fmtlen =    snprintf(fmtbuf, sizeof(fmtbuf),
+            fmtlen =    snprintf(fmtbuf1, sizeof(fmtbuf1),
 #endif // _MSC_VER
                                  "%d, %d, %d, %d, %04d, %5d, %08d\n"
                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d\n"
@@ -632,18 +516,6 @@ void Snprintf_Preformance_Test_D3()
         sw.stop();
         time = sw.getMillisec();
         timeReference = time;
-
-        /*
-        printf("==============================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        len = _snprintf_s(buf, bufsize, count,\n"
-               "                          \"%%d, %%d, %%d, %%d, %%04d, %%5d, %%08d\\n\"\n"
-               "                          \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\",\n"
-               "                          123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-               "                          1, 1234, 12345678, 1, 1234, 12345678\");\n");
-        printf("    }\n\n");
-        printf("==============================================================================\n\n");
-        //*/
 
 #if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
   #ifdef _MSC_VER
@@ -657,8 +529,8 @@ void Snprintf_Preformance_Test_D3()
   #else
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
-        printf("result = \n%s\n\n", fmtbuf);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+        printf("result = \n%s\n\n", fmtbuf1);
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
         printf("time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_SHORT_DISPLAY
@@ -669,7 +541,7 @@ void Snprintf_Preformance_Test_D3()
     {
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            fmtlen = jmc_snprintf(fmtbuf, jm_countof(fmtbuf), jm_countof(fmtbuf) - 1,
+            fmtlen = jmc_snprintf(fmtbuf2, jm_countof(fmtbuf2), jm_countof(fmtbuf2) - 1,
                                   "%d, %d, %d, %d, %04d, %5d, %08d\n"
                                   "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d\n"
                                   "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
@@ -680,18 +552,6 @@ void Snprintf_Preformance_Test_D3()
         sw.stop();
         time = sw.getMillisec();
 
-        /*
-        printf("==============================================================================\n\n");
-        printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        len = jmc_snprintf(buf, bufsize, count,\n"
-               "                           \"%%d, %%d, %%d, %%d, %%04d, %%5d, %%08d\\n\"\n"
-               "                           \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\",\n"
-               "                           123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
-               "                           1, 1234, 12345678, 1, 1234, 12345678\");\n");
-        printf("    }\n\n");
-        printf("==============================================================================\n\n");
-        //*/
-
 #if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
@@ -701,8 +561,8 @@ void Snprintf_Preformance_Test_D3()
   #endif // _MSC_VER
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
-        printf("result = \n%s\n\n", fmtbuf);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+        printf("result = \n%s\n\n", fmtbuf2);
+        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
         printf("time = %0.3f ms, preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
   #else

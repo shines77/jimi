@@ -14,6 +14,8 @@
 #include <math.h>       // for isnan()
 #include <float.h>
 
+#include <jimic/string/jm_strings.h>
+
 /* 小端或大端, 为1表示小端存储 */
 #define JIMI_IS_LITTLE_ENDIAN           1
 
