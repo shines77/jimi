@@ -37,12 +37,21 @@ jmc_i64toa_radix10(jm_char *buf, int64_t val);
 // itoa_radix10_ex()
 JMC_INLINE_NONSTD(int)
 jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int flag,
-                    unsigned int fill, unsigned int width, unsigned int length);
+                    unsigned int fill, unsigned int width, int length);
 
 JMC_INLINE_NONSTD(int)
 jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
-                    unsigned int fill, unsigned int width, unsigned int length);
+                    unsigned int fill, unsigned int width, int length);
 
+JMC_INLINE_NONSTD(int)
+jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int flag,
+                      unsigned int fill, unsigned int width, int length);
+
+JMC_INLINE_NONSTD(int)
+jmc_i64toa_radix10_ex(jm_char *buf, size_t count, int64_t val, unsigned int flag,
+                      unsigned int fill, unsigned int width, int length);
+
+// is_nan(), is inf() for float
 JMC_INLINE_NONSTD(int)
 jmc_is_nan_f(float val);
 
@@ -55,6 +64,7 @@ jmc_is_nan_or_inf_f(float val);
 JMC_INLINE_NONSTD(int)
 jmc_ftest(float val);
 
+// is_nan(), is inf() for double
 JMC_INLINE_NONSTD(int)
 jmc_is_nan_d(double val);
 
@@ -69,18 +79,18 @@ jmc_dtest(double val);
 
 // ftos(), dtos()
 JMC_INLINE_NONSTD(int)
-jmc_ftos(jm_char *buf, float val, unsigned int width, unsigned int precision);
+jmc_ftos(jm_char *buf, float val, unsigned int filed_width, int precision);
 
 JMC_INLINE_NONSTD(int)
 jmc_ftos_ex(jm_char *buf, size_t count, float val, unsigned int flag,
-            unsigned int fill, unsigned int width, unsigned int precision);
+            unsigned int fill, unsigned int filed_width, int precision);
 
 JMC_INLINE_NONSTD(int)
-jmc_dtos(jm_char *buf, double val, unsigned int width, unsigned int precision);
+jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision);
 
 JMC_INLINE_NONSTD(int)
 jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
-            unsigned int fill, unsigned int width, unsigned int precision);
+            unsigned int fill, unsigned int filed_width, int precision);
 
 // to_hex()
 JMC_INLINE_NONSTD(int)
@@ -108,7 +118,7 @@ jmc_strncpy_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, s
 
 JMC_INLINE_NONSTD(size_t)
 jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
-               unsigned int flag, unsigned int fill, unsigned int width, unsigned int length);
+               unsigned int flag, unsigned int fill, unsigned int width, int length);
 
 #ifdef __cplusplus
 }

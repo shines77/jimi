@@ -2298,7 +2298,10 @@ void template_inherit_test()
 void Double_And_Float_Test()
 {
     char buf[128];
-    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "%8.3f", 12.345);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "double = %f\n", 12.345);
+    //jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "double = %8.3f\n", 12.345);
+    printf("%s", buf);
+    printf("\n");
 
     #define NAN_DOUBLE          ((double)(INFINITY * 0.0F))
     #define DOUBLE_INFINITY     ((double)(_HUGE_ENUF * _HUGE_ENUF))

@@ -131,7 +131,8 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
     register jm_char c;
 
     jm_char        *end, *cur;
-    unsigned int    flag, align, fill, width, precision, sign;
+    unsigned int    flag, align, fill, width;
+    int             precision;
     jm_char        *first;
     size_t          len;
     jm_char        *s;
@@ -149,8 +150,6 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
     jimic_assert(buf != NULL);
     jimic_assert(fmt != NULL);
     jimic_assert(count != 0);
-
-    sign = 0;
 
     cur = (jm_char *)fmt;
     end = buf + JIMIC_MIN(count, countOfElements - 1);
@@ -186,7 +185,7 @@ vslprintf_try_next:
             align = FMT_ALIGN_DEFAULT;
             fill  = FMT_FILL_DEFAULT;
             width = 0;
-            precision = 0;
+            precision = -1;
             cur++;
             first = cur;
 

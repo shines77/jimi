@@ -9,7 +9,7 @@
 #include <jimi/platform/jimi_platform_def.h>
 
 /* 是否使用简化的测试输出结果, 为1代表使用 */
-#define VSNPRINTF_SHORT_DISPLAY         1
+#define VSNPRINTF_SHORT_DISPLAY         0
 
 /* 是否运行jm_snprintf()的测试, 为1代表运行 */
 #define VSNPRINTF_TEST_JM_SNPRINTF      1
