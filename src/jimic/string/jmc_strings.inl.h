@@ -63,8 +63,12 @@
 // Reference: http://ascii.911cha.com/
 //
 
-#ifndef FMT_DEFAULT_FLOAT_PRECISION
-#define FMT_DEFAULT_FLOAT_PRECISION     6
+#ifndef FMT_DEFAULT_DOUBLE_PRECISION
+#define FMT_DEFAULT_DOUBLE_PRECISION    6
+#endif
+
+#ifndef FMT_MAX_DOUBLE_PRECISION
+#define FMT_MAX_DOUBLE_PRECISION        20
 #endif
 
 #define JM_FIS_NORMAL                   0
@@ -991,16 +995,16 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
 
     if (precision < 0) {
         jimic_assert(precision < 0);
-        precision = FMT_DEFAULT_FLOAT_PRECISION;
+        precision = FMT_DEFAULT_DOUBLE_PRECISION;
         scale = 1000000;
-        num_width = filed_width - FMT_DEFAULT_FLOAT_PRECISION - 1;
+        num_width = filed_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
     }
     else if (precision == 0) {
         scale = 1;
         num_width = filed_width;
     }
     else {
-#if 1
+#if 0
         if (precision <= 10) {
             jimic_assert(precision >= 0 && precision <= 10);
             scale = scales32[precision];
@@ -1009,7 +1013,7 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
             jimic_assert(precision > 10 && precision <= 20);
             scale = scales64[precision - 11];
         }
-#elif 0
+#elif 1
         if (precision <= 10) {
             jimic_assert(precision >= 0 && precision <= 10);
             scale32 = 1;
@@ -1081,6 +1085,7 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
             *buf++ = '.';
             len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT, '0', precision, 0) + 1;
         }
+        return len;
     }
     else if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
              || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)) {
@@ -1112,7 +1117,6 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
             return 4;
         }
     }
-    return len;
 }
 
 JMC_INLINE_NONSTD(int)

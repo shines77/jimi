@@ -32,6 +32,9 @@
     <ClCompile Include="..\..\src\UnitTests\String_StrLen_Test.cpp">
       <Filter>src\UnitTests</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\UnitTests\ftol_test.cpp">
+      <Filter>src\UnitTests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\FastMemcpy.h">
@@ -56,6 +59,9 @@
       <Filter>src\UnitTests</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\UnitTests\String_StrLen_Test.h">
+      <Filter>src\UnitTests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\UnitTests\ftol_test.h">
       <Filter>src\UnitTests</Filter>
     </ClInclude>
   </ItemGroup>

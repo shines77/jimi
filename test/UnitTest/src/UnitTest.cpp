@@ -11,6 +11,7 @@
 #include "UnitTests/String_StrLen_Test.h"
 #include "UnitTests/String_StrLwr_Test.h"
 #include "UnitTests/snprintf_test.h"
+#include "UnitTests/ftol_test.h"
 
 #include "SampleThread.h"
 #include "FastMemcpy.h"
@@ -2496,6 +2497,16 @@ int UnitTest_Main(int argc, char *argv[])
     if (true && 0) {
         ::system("pause");
         sLog.log_end();
+        return 0;
+    }
+#endif
+
+#if 1
+    ftol_test_main();
+    dtol_test_main();
+    if (true && 1) {
+        sLog.log_end();
+        ::system("pause");
         return 0;
     }
 #endif
