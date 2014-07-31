@@ -20,6 +20,9 @@
 /* 小端或大端, 为1表示小端存储 */
 #define JIMI_IS_LITTLE_ENDIAN           1
 
+/* UINT的最大值 */
+#define JIMIC_UINT_MAX                  UINT_MAX
+
 //
 // Printf() 输出格式控制
 // Reference: http://bbs.csdn.net/topics/330107715
@@ -679,7 +682,7 @@ jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int fla
     int padding;
 
     cur = digits;
-    if (val <= (uint64_t)UINT_MAX) {
+    if (val <= (uint64_t)JIMIC_UINT_MAX) {
         val32 = (uint32_t)val;
         do {
             digval = val32 % 10;
@@ -761,6 +764,175 @@ jmc_i64toa_radix10_ex(jm_char *buf, size_t count, int64_t val, unsigned int flag
         val = -val;
     }
     return jmc_u64toa_radix10_ex(buf, count, val, flag, fill, width, length);
+}
+
+JMC_INLINE_NONSTD(int)
+jmc_u64toa_radix10_for_integer_part(jm_char *buf, int64_t val, int sign,
+                                    unsigned int filed_width)
+{
+    unsigned int digval, digital;
+    uint32_t val32;
+    jm_char *cur;
+    int padding;
+    const unsigned int fill = ' ';
+    char digits[32];    // 实际最多只会用到20个bytes
+
+    cur = digits;
+    if (val <= (uint64_t)JIMIC_UINT_MAX) {
+        val32 = (uint32_t)val;
+        do {
+            digval = val32 % 10;
+            val32 /= 10;
+
+            *cur++ = (jm_char)(digval + '0');
+        } while (val32 != 0);
+    }
+    else {
+        do {
+            digval = val % 10;
+            val /= 10;
+
+            *cur++ = (jm_char)(digval + '0');
+        } while (val != 0);
+    }
+
+#if 1
+    digital = (cur - digits) + sign;
+    padding = filed_width - digital;
+    if (padding < 0) {
+        filed_width = digital;
+    }
+    else {
+        // align to right, fill ' ' into right padding space
+        while (padding > 0) {
+            // fill is ' '
+            *buf++ = (jm_char)fill;
+            padding--;
+        }
+    }
+#else
+    digital = cur - digits;
+    if (sign == 0) {
+        padding = filed_width - digital;
+        if (padding < 0)
+            filed_width = digital;
+    }
+    else {
+        padding = filed_width - digital - 1;
+        if (padding < 0)
+            filed_width = digital + 1;
+    }
+
+    // align to right
+    while (padding > 0) {
+        // fill is ' '
+        *buf++ = (jm_char)fill;
+        padding--;
+    }
+#endif
+
+    if (sign != 0)
+        *buf++ = '-';
+
+#if 0
+    do {
+        --cur;
+        *buf++ = *cur;
+    } while (cur != digits);
+#else
+    cur--;
+    while (cur >= digits)
+        *buf++ = *cur--;
+#endif
+
+    *buf = '\0';
+    return filed_width;
+}
+
+JMC_INLINE_NONSTD(int)
+jmc_i64toa_radix10_for_integer_part(jm_char *buf, int64_t val,
+                                    unsigned int filed_width)
+{
+#if 1
+    if (val >= 0)
+        return jmc_u64toa_radix10_for_integer_part(buf,  val, 0, filed_width);
+    else
+        return jmc_u64toa_radix10_for_integer_part(buf, -val, 1, filed_width);   
+#else
+    int sign;
+    sign = 0;
+    if (val < 0) {
+        sign = 1;
+        val = -val;
+    }
+    else {
+        //sign = 0;
+    }
+    return jmc_u64toa_radix10_for_integer_part(buf, val, sign, filed_width);
+#endif
+}
+
+JMC_INLINE_NONSTD(int)
+jmc_u64toa_radix10_for_frac_part(jm_char *buf, uint64_t val, unsigned int precision)
+{
+    unsigned int digval, digital;
+    uint32_t val32;
+    jm_char *cur;
+    int padding;
+    const unsigned int fill = '0';
+    char digits[32];    // 实际最多只会用到20个bytes
+
+    cur = digits;
+    if (val <= (uint64_t)JIMIC_UINT_MAX) {
+        val32 = (uint32_t)val;
+        do {
+            digval = val32 % 10;
+            val32 /= 10;
+
+            *cur++ = (jm_char)(digval + '0');
+        } while (val32 != 0);
+    }
+    else {
+        do {
+            digval = val % 10;
+            val /= 10;
+
+            *cur++ = (jm_char)(digval + '0');
+        } while (val != 0);
+    }
+
+    digital = cur - digits;
+
+#if 0
+    do {
+        --cur;
+        *buf++ = *cur;
+    } while (cur != digits);
+#else
+    cur--;
+    while (cur >= digits)
+        *buf++ = *cur--;
+#endif
+
+    padding = precision - digital;
+    if (padding <= 0) {
+        *buf = '\0';
+        return digital;
+    }
+    else {
+        *buf++ = (jm_char)fill;
+        padding--;
+
+        // fractional part's tail is like as "0000000...."
+        while (padding > 0) {
+            // fill is '0'
+            *buf++ = (jm_char)fill;
+            padding--;
+        }
+
+        *buf = '\0';
+        return precision;
+    }
 }
 
 JMC_INLINE_NONSTD(int)
@@ -1108,7 +1280,9 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
                 buf += len;
             }
             else {
-                len = jmc_i64toa_radix10_ex(buf, -1, i64, FMT_ALIGN_RIGHT, ' ', num_width, 0);
+                // for integer part of double
+                len = jmc_i64toa_radix10_for_integer_part(buf, i64, num_width);
+                //len = jmc_i64toa_radix10_ex(buf, -1, i64, FMT_ALIGN_RIGHT, ' ', num_width, 0);
                 buf += len;
             }
         }
@@ -1128,14 +1302,19 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
                 buf += len;
             }
             else {
-                len = jmc_i64toa_radix10_ex(buf, -1, i64, FMT_ALIGN_RIGHT, ' ', num_width, 0);
+                // for integer part of double
+                len = jmc_i64toa_radix10_for_integer_part(buf, i64, num_width);
+                //len = jmc_i64toa_radix10_ex(buf, -1, i64, FMT_ALIGN_RIGHT, ' ', num_width, 0);
                 buf += len;
             }
         }
 
         if (precision > 0) {
+            // output decimal
             *buf++ = '.';
-            len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT, '0', precision, 0) + 1;
+            // for fractional part of double
+            len += jmc_u64toa_radix10_for_frac_part(buf, frac, precision) + 1;
+            //len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT, '0', precision, 0) + 1;
         }
         return len;
     }
