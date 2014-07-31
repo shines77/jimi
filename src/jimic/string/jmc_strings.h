@@ -51,6 +51,18 @@ JMC_INLINE_NONSTD(int)
 jmc_i64toa_radix10_ex(jm_char *buf, size_t count, int64_t val, unsigned int flag,
                       unsigned int fill, unsigned int width, int length);
 
+JMC_INLINE_NONSTD(int)
+jmc_u64toa_radix10_for_integer_part(jm_char *buf, uint64_t val, int sign,
+                                    unsigned int filed_width);
+
+JMC_INLINE_NONSTD(int)
+jmc_i64toa_radix10_for_integer_part(jm_char *buf, int64_t val,
+                                    unsigned int filed_width);
+
+JMC_INLINE_NONSTD(int)
+jmc_u64toa_radix10_for_frac_part(jm_char *buf, uint64_t val,
+                                 unsigned int precision);
+
 // is_nan(), is inf() for float
 JMC_INLINE_NONSTD(int)
 jmc_is_nan_f(float val);
