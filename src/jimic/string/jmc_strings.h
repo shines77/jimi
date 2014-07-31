@@ -97,12 +97,25 @@ JMC_INLINE_NONSTD(int)
 jmc_ftos_ex(jm_char *buf, size_t count, float val, unsigned int flag,
             unsigned int fill, unsigned int filed_width, int precision);
 
+#if 1
+
+JMC_DECLARE_NONSTD(int)
+jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision);
+
+JMC_DECLARE_NONSTD(int)
+jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
+            unsigned int fill, unsigned int filed_width, int precision);
+
+#else
+
 JMC_INLINE_NONSTD(int)
 jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision);
 
 JMC_INLINE_NONSTD(int)
 jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
             unsigned int fill, unsigned int filed_width, int precision);
+
+#endif
 
 // to_hex()
 JMC_INLINE_NONSTD(int)

@@ -412,6 +412,7 @@ vslprintf_out_double:
                     //if ((flag | fill) == (FMT_DEFAULT_FLAG | FMT_ALIGN_DEFAULT | FMT_FILL_DEFAULT)) {
                     if ((flag | fill) == FMT_DEFAULT_STATUS) {
                         len = jmc_dtos(buf, dbl, width, precision);
+                        //len = jmc_dtos_ex(buf, -1, dbl, flag, fill, width, precision);
                         buf += len;
                         cur++;
                         goto vslprintf_try_next;

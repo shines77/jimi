@@ -1187,7 +1187,9 @@ jmc_ftos_ex(jm_char *buf, size_t count, float val, unsigned int flag,
     return 0;
 }
 
-JMC_INLINE_NONSTD(int)
+#if 0
+
+JMC_DECLARE_NONSTD(int)
 jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
 {
     int len;
@@ -1344,12 +1346,14 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
     }
 }
 
-JMC_INLINE_NONSTD(int)
+JMC_DECLARE_NONSTD(int)
 jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
             unsigned int fill, unsigned int width, int precision)
 {
     return 0;
 }
+
+#endif
 
 JMC_INLINE_NONSTD(int)
 jmc_ptohex(jm_char *buf, void *p)

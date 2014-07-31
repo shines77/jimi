@@ -2521,20 +2521,22 @@ int UnitTest_Main(int argc, char *argv[])
     String_Snprintf_Test();
   #endif
 
+  #if 1
+    Sprintf_Preformance_Test_Integer();
+
+    Snprintf_Preformance_Test_Integer1();
+    Snprintf_Preformance_Test_Integer2();
+    Snprintf_Preformance_Test_Integer3();
+  #endif
+
     Snprintf_Preformance_Test_Double1();
     Snprintf_Preformance_Test_Double2();
-
-    //Sprintf_Preformance_Test_Integer();
-
-    //Snprintf_Preformance_Test_Integer1();
-    //Snprintf_Preformance_Test_Integer2();
-    //Snprintf_Preformance_Test_Integer3();
 
     //OStringStream_Performance_Test();
 
     if (true && 1) {
-        ::system("pause");
         sLog.log_end();
+        ::system("pause");
         return 0;
     }
 #endif
