@@ -409,8 +409,8 @@ vslprintf_out_double:
                     // FMT_DEFAULT_STATUS = (FMT_DEFAULT_FLAG | FMT_ALIGN_DEFAULT | FMT_FILL_DEFAULT);
                     //if (width == 0 && flag == FMT_DEFAULT_FLAG
                     //    && align == FMT_ALIGN_DEFAULT && fill == FMT_FILL_DEFAULT) {
-                    if ((flag | fill) == ((FMT_DEFAULT_FLAG | FMT_ALIGN_DEFAULT)
-                        | FMT_FILL_DEFAULT)) {
+                    //if ((flag | fill) == (FMT_DEFAULT_FLAG | FMT_ALIGN_DEFAULT | FMT_FILL_DEFAULT)) {
+                    if ((flag | fill) == FMT_DEFAULT_STATUS) {
                         len = jmc_dtos(buf, dbl, width, precision);
                         buf += len;
                         cur++;

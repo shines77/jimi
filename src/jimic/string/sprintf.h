@@ -31,11 +31,11 @@ jmc_vsprintf(jm_char *buf, JM_CONST jm_char *fmt, va_list args);
 
 JMC_INLINE_NONSTD(int)
 jmc_vsnprintf(jm_char *buf, size_t countOfElements, size_t count,
-                    JM_CONST jm_char *fmt, va_list args);
+              JM_CONST jm_char *fmt, va_list args);
 
 JMC_INLINE_NONSTD(jm_char *)
 jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
-                    JM_CONST jm_char *fmt, va_list args);
+              JM_CONST jm_char *fmt, va_list args);
 
 #ifdef __cplusplus
 }

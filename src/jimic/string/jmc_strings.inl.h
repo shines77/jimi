@@ -15,6 +15,7 @@
 #include <stdarg.h>
 #include <math.h>       // for isnan(), isinf()
 #include <float.h>
+#include <limits.h>     // for UINT_MAX
 
 /* 小端或大端, 为1表示小端存储 */
 #define JIMI_IS_LITTLE_ENDIAN           1
@@ -332,16 +333,28 @@ JMC_INLINE_NONSTD(int)
 jmc_u64toa_radix10(jm_char *buf, uint64_t val)
 {
     unsigned int digval, digital;
+    uint32_t val32;
     jm_char *cur;
     char digits[32];    // 实际最多只会用到20个bytes
 
     cur = digits;
-    do {
-        digval = val % 10;
-        val /= 10;
+    if (val <= (uint64_t)UINT_MAX) {
+        val32 = (uint32_t)val;
+        do {
+            digval = val32 % 10;
+            val32 /= 10;
 
-        *cur++ = (jm_char)digval + '0';
-    } while (val != 0);
+            *cur++ = (jm_char)digval + '0';
+        } while (val32 != 0);
+    }
+    else {
+        do {
+            digval = val % 10;
+            val /= 10;
+
+            *cur++ = (jm_char)digval + '0';
+        } while (val != 0);
+    }
 
     digital = cur - digits;
 
@@ -655,22 +668,60 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int falg,
+jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int flag,
                       unsigned int fill, unsigned int width, int length)
 {
     unsigned int digval, digital;
+    uint32_t val32;
     jm_char *cur;
     char digits[32];    // 实际最多只会用到20个bytes
+    int sign_char;
+    int padding;
 
     cur = digits;
-    do {
-        digval = val % 10;
-        val /= 10;
+    if (val <= (uint64_t)UINT_MAX) {
+        val32 = (uint32_t)val;
+        do {
+            digval = val32 % 10;
+            val32 /= 10;
 
-        *cur++ = (jm_char)digval + '0';
-    } while (val != 0);
+            *cur++ = (jm_char)digval + '0';
+        } while (val32 != 0);
+    }
+    else {
+        do {
+            digval = val % 10;
+            val /= 10;
+
+            *cur++ = (jm_char)digval + '0';
+        } while (val != 0);
+    }
 
     digital = cur - digits;
+
+    if ((flag & FMT_SIGN_MASK) == 0) {
+        sign_char = '\0';
+        padding = width - digital;
+        if (padding < 0)
+            width = digital;
+    }
+    else {
+        sign_char = '-';
+        padding = width - digital - 1;
+        if (padding < 0)
+            width = digital + 1;
+    }
+
+    if ((flag & FMT_ALIGN_LEFT) == 0) {
+        // align to right
+        while (padding > 0) {
+            *buf++ = fill;
+            padding--;
+        }
+    }
+
+    if (sign_char != '\0')
+        *buf++ = sign_char;
 
 #if 0
     do {
@@ -683,18 +734,17 @@ jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int fal
         *buf++ = *cur--;
 #endif
 
-    digval = width - digital;
-    if (digval <= 0) {
+    if (padding <= 0) {
         *buf = '\0';
-        return digital;
+        return width;
     }
     else {
         *buf++ = '0';
-        digval--;
+        padding--;
 
-        while (digval > 0) {
+        while (padding > 0) {
             *buf++ = '0';
-            digval--;
+            padding--;
         }
 
         *buf = '\0';
@@ -974,6 +1024,7 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
     fuint64_s *f64;
     unsigned int n = 0;
     int num_width;
+#if 0
     static const uint32_t scales32[] = {
         1, 10, 100, 1000, 10000, 100000,
         1000000, 10000000, 100000000, 1000000000
@@ -983,6 +1034,7 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
         100000000000000, 1000000000000000, 10000000000000000, 100000000000000000,
         1000000000000000000, 10000000000000000000
     };
+#endif
 
     if (sizeof(fuint64_s) != sizeof(double)) {
         // maybe have some error!
@@ -999,11 +1051,7 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
         scale = 1000000;
         num_width = filed_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
     }
-    else if (precision == 0) {
-        scale = 1;
-        num_width = filed_width;
-    }
-    else {
+    else if (precision > 0) {
 #if 0
         if (precision <= 10) {
             jimic_assert(precision >= 0 && precision <= 10);
@@ -1035,12 +1083,16 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
 #endif
         num_width = filed_width - precision - 1;
     }
+    else {
+        scale = 1;
+        num_width = filed_width;
+    }
 
     f64 = (fuint64_s *)&val;
     // is NaN or INF ? (exponent is maxium ?)
     if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
         i64 = (int64_t)val;
-        if (val >= 0.0) {
+        if (i64 >= 0.0) {
             frac = (uint64_t)((val - (double)i64) * scale + 0.5);
             if (frac == scale) {
                 i64++;

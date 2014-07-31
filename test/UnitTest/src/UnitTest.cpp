@@ -2300,7 +2300,8 @@ void Double_And_Float_Test()
 {
     char buf[128];
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "double = %f\n", 12.345);
-    //jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "double = %8.3f\n", 12.345);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "double = %8.3f\n", 12.345);
     printf("%s", buf);
     printf("\n");
 
@@ -2501,7 +2502,7 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 1
+#if 0
     ftol_test_main();
     dtol_test_main();
     if (true && 1) {
@@ -2520,10 +2521,14 @@ int UnitTest_Main(int argc, char *argv[])
     String_Snprintf_Test();
   #endif
 
-    Sprintf_Preformance_Test_D1();
-    Snprintf_Preformance_Test_D1();
-    Snprintf_Preformance_Test_D2();
-    Snprintf_Preformance_Test_D3();
+    Snprintf_Preformance_Test_Double1();
+    Snprintf_Preformance_Test_Double2();
+
+    //Sprintf_Preformance_Test_Integer();
+
+    //Snprintf_Preformance_Test_Integer1();
+    //Snprintf_Preformance_Test_Integer2();
+    //Snprintf_Preformance_Test_Integer3();
 
     //OStringStream_Performance_Test();
 

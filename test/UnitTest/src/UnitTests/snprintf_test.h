@@ -20,13 +20,17 @@ extern "C" {
 
 void String_Snprintf_Test();
 
-void Sprintf_Preformance_Test_D1();
+void Sprintf_Preformance_Test_Integer();
 
-void Snprintf_Preformance_Test_D1();
+void Snprintf_Preformance_Test_Integer1();
 
-void Snprintf_Preformance_Test_D2();
+void Snprintf_Preformance_Test_Integer2();
 
-void Snprintf_Preformance_Test_D3();
+void Snprintf_Preformance_Test_Integer3();
+
+void Snprintf_Preformance_Test_Double1();
+
+void Snprintf_Preformance_Test_Double2();
 
 #ifdef __cplusplus
 }
