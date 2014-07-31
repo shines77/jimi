@@ -23,6 +23,9 @@
 /* UINT的最大值 */
 #define JIMIC_UINT_MAX                  UINT_MAX
 
+/* UINT的最大值 */
+#define JIMIC_UINT_MAX64                (0x00000000FFFFFFFFULL)
+
 //
 // Printf() 输出格式控制
 // Reference: http://bbs.csdn.net/topics/330107715
@@ -338,11 +341,18 @@ jmc_u64toa_radix10(jm_char *buf, uint64_t val)
     unsigned int digval, digital;
     uint32_t val32;
     jm_char *cur;
+    fuint64_s *u64;
     char digits[32];    // 实际最多只会用到20个bytes
 
     cur = digits;
-    if (val <= (uint64_t)UINT_MAX) {
+#if 0
+    if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
+#else
+    u64 = (fuint64_s *)&val;
+    if (u64->high == 0) {
+        val32 = (uint32_t)u64->low;
+#endif
         do {
             digval = val32 % 10;
             val32 /= 10;
@@ -679,11 +689,18 @@ jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int fla
     jm_char *cur;
     int sign_char;
     int padding;
+    fuint64_s *u64;
     char digits[32];    // 实际最多只会用到20个bytes
 
     cur = digits;
-    if (val <= (uint64_t)JIMIC_UINT_MAX) {
+#if 0
+    if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
+#else
+    u64 = (fuint64_s *)&val;
+    if (u64->high == 0) {
+        val32 = (uint32_t)u64->low;
+#endif
         do {
             digval = val32 % 10;
             val32 /= 10;
@@ -774,12 +791,19 @@ jmc_u64toa_radix10_for_integer_part(jm_char *buf, uint64_t val, int sign,
     uint32_t val32;
     jm_char *cur;
     int padding;
+    fuint64_s *u64;
     char digits[32];    // 实际最多只会用到20个bytes
     const unsigned int fill = ' ';
 
     cur = digits;
-    if (val <= (uint64_t)JIMIC_UINT_MAX) {
+#if 0
+    if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
+#else
+    u64 = (fuint64_s *)&val;
+    if (u64->high == 0) {
+        val32 = (uint32_t)u64->low;
+#endif
         do {
             digval = val32 % 10;
             val32 /= 10;
@@ -878,12 +902,19 @@ jmc_u64toa_radix10_for_frac_part(jm_char *buf, uint64_t val, unsigned int precis
     uint32_t val32;
     jm_char *cur;
     int padding;
+    fuint64_s *u64;
     char digits[32];    // 实际最多只会用到20个bytes
     const unsigned int fill = '0';
 
     cur = digits;
-    if (val <= (uint64_t)JIMIC_UINT_MAX) {
+#if 0
+    if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
+#else
+    u64 = (fuint64_s *)&val;
+    if (u64->high == 0) {
+        val32 = (uint32_t)u64->low;
+#endif
         do {
             digval = val32 % 10;
             val32 /= 10;
@@ -922,8 +953,8 @@ jmc_u64toa_radix10_for_frac_part(jm_char *buf, uint64_t val, unsigned int precis
         // fractional part's tail is like as "0000000...."
 
         // fill is '0'
-        *buf++ = (jm_char)fill;
-        padding--;
+        //*buf++ = (jm_char)fill;
+        //padding--;
 
         while (padding > 0) {
             // fill is '0'
@@ -1187,7 +1218,7 @@ jmc_ftos_ex(jm_char *buf, size_t count, float val, unsigned int flag,
     return 0;
 }
 
-#if 0
+#if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
 
 JMC_DECLARE_NONSTD(int)
 jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
@@ -1223,7 +1254,7 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
     if (precision < 0) {
         jimic_assert(precision < 0);
         precision = FMT_DEFAULT_DOUBLE_PRECISION;
-        scale = 1000000;
+        scale = 1000000ULL;
         num_width = filed_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
     }
     else if (precision > 0) {
@@ -1239,14 +1270,14 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
 #elif 1
         if (precision <= 10) {
             jimic_assert(precision >= 0 && precision <= 10);
-            scale32 = 1;
+            scale32 = 1ULL;
             for (n = precision; n > 0; --n)
                 scale32 *= 10;
             scale = scale32;
         }
         else {
             jimic_assert(precision > 10 && precision <= 20);
-            scale = 10000000000;
+            scale = 10000000000ULL;
             for (n = precision - 11; n > 0; --n)
                 scale *= 10;
         }
@@ -1353,7 +1384,7 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
     return 0;
 }
 
-#endif
+#endif  /* JMC_DTOS_INLINE_DECLARE */
 
 JMC_INLINE_NONSTD(int)
 jmc_ptohex(jm_char *buf, void *p)

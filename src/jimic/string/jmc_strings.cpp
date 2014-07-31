@@ -7,6 +7,8 @@
 #include <float.h>
 #include <limits.h>     // for UINT_MAX
 
+#if !defined(JMC_DTOS_INLINE_DECLARE) || (JMC_DTOS_INLINE_DECLARE == 0)
+
 JMC_DECLARE_NONSTD(int)
 jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
 {
@@ -170,3 +172,5 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
 {
     return 0;
 }
+
+#endif  /* !JMC_DTOS_INLINE_DECLARE */

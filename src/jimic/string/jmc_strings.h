@@ -9,6 +9,10 @@
 #include <jimi/platform/jimi_platform_def.h>
 #include <jimic/core/jimic_def.h>
 
+#ifndef JMC_DTOS_INLINE_DECLARE
+#define JMC_DTOS_INLINE_DECLARE         0
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -97,16 +101,7 @@ JMC_INLINE_NONSTD(int)
 jmc_ftos_ex(jm_char *buf, size_t count, float val, unsigned int flag,
             unsigned int fill, unsigned int filed_width, int precision);
 
-#if 1
-
-JMC_DECLARE_NONSTD(int)
-jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision);
-
-JMC_DECLARE_NONSTD(int)
-jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
-            unsigned int fill, unsigned int filed_width, int precision);
-
-#else
+#if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
 
 JMC_INLINE_NONSTD(int)
 jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision);
@@ -115,7 +110,16 @@ JMC_INLINE_NONSTD(int)
 jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
             unsigned int fill, unsigned int filed_width, int precision);
 
-#endif
+#else  /* !JMC_DTOS_INLINE_DECLARE */
+
+JMC_DECLARE_NONSTD(int)
+jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision);
+
+JMC_DECLARE_NONSTD(int)
+jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
+            unsigned int fill, unsigned int filed_width, int precision);
+
+#endif  /* JMC_DTOS_INLINE_DECLARE */
 
 // to_hex()
 JMC_INLINE_NONSTD(int)
