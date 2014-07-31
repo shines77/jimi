@@ -775,6 +775,7 @@ jmc_u64toa_radix10_for_integer_part(jm_char *buf, uint64_t val, int sign,
     jm_char *cur;
     int padding;
     char digits[32];    // 实际最多只会用到20个bytes
+    const unsigned int fill = ' ';
 
     cur = digits;
     if (val <= (uint64_t)JIMIC_UINT_MAX) {
@@ -805,7 +806,7 @@ jmc_u64toa_radix10_for_integer_part(jm_char *buf, uint64_t val, int sign,
         // align to right, fill ' ' into right padding space
         while (padding > 0) {
             // fill is ' '
-            *buf++ = (jm_char)' ';
+            *buf++ = (jm_char)fill;
             padding--;
         }
     }
@@ -825,7 +826,7 @@ jmc_u64toa_radix10_for_integer_part(jm_char *buf, uint64_t val, int sign,
     // align to right
     while (padding > 0) {
         // fill is ' '
-        *buf++ = (jm_char)' ';
+        *buf++ = (jm_char)fill;
         padding--;
     }
 #endif
@@ -878,6 +879,7 @@ jmc_u64toa_radix10_for_frac_part(jm_char *buf, uint64_t val, unsigned int precis
     jm_char *cur;
     int padding;
     char digits[32];    // 实际最多只会用到20个bytes
+    const unsigned int fill = '0';
 
     cur = digits;
     if (val <= (uint64_t)JIMIC_UINT_MAX) {
@@ -917,13 +919,15 @@ jmc_u64toa_radix10_for_frac_part(jm_char *buf, uint64_t val, unsigned int precis
         return digital;
     }
     else {
-        *buf++ = (jm_char)'0';
+        // fractional part's tail is like as "0000000...."
+
+        // fill is '0'
+        *buf++ = (jm_char)fill;
         padding--;
 
-        // fractional part's tail is like as "0000000...."
         while (padding > 0) {
             // fill is '0'
-            *buf++ = (jm_char)'0';
+            *buf++ = (jm_char)fill;
             padding--;
         }
 
