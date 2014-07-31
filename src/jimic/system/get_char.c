@@ -110,7 +110,7 @@ char jimi_getche(void)
 
 void jimi_sleep(int millisec)
 {
-    ::Sleep(millisec);
+    Sleep(millisec);
 }
 
 #else  /* other unknown os */

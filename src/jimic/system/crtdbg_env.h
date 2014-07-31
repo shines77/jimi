@@ -61,7 +61,15 @@
 
 #include <jimic/system/vs_vld.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* 设置CRTDBG的环境(Debug模式下, 检查内存越界和内存泄漏问题) */
 void jimi_set_crtdbg_env(int display_memory_leak, int always_check_bounds);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  /* !_JIMIC_SYSTEM_CRTDEG_ENV_H_ */

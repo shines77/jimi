@@ -28,14 +28,15 @@ set_c_assertion_handler(jimic_assertion_handler_type new_handler) {
 }
 
 void JIMIC_EXPORTED_FUNC jimic_assertion_failure(const char * filename, int line,
-                                          const char * expression, const char * comment) {
-    if (jimic_assertion_handler_type assert_handler = jimic_assertion_handler) {
+                                                 const char * expression, const char * comment) {
+    jimic_assertion_handler_type assert_handler;
+    static int already_failed;
+    if (assert_handler = jimic_assertion_handler) {
         (*jimic_assertion_handler)(filename, line, expression, comment);
     }
     else {
-        static bool already_failed;
         if (!already_failed) {
-            already_failed = true;
+            already_failed = TRUE;
             fprintf(stderr, "Assertion %s failed on line %d of file %s\n", expression, line, filename);
             if (comment)
                 fprintf(stderr, "Detailed description: %s\n", comment);

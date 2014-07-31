@@ -106,7 +106,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h" />
-    <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.c" />
     <ClInclude Include="..\..\..\..\src\jimic\string\csharp_sprintf.inl.h">
       <FileType>CppCode</FileType>
     </ClInclude>
@@ -131,10 +131,10 @@
     <ClInclude Include="..\..\..\..\src\jimic\system\vs_vld.h" />
     <ClInclude Include="..\..\..\..\src\jimic\util\utils.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.h" />
-    <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\console.cpp" />
-    <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.cpp" />
-    <ClCompile Include="..\..\..\..\src\jimic\system\get_char.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\get_char.c" />
     <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert.cpp">
       <FileType>CppHeader</FileType>
     </ClCompile>

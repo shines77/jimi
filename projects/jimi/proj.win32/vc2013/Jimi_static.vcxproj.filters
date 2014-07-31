@@ -376,26 +376,26 @@
     <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.cpp">
       <Filter>src\jimic\string</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\system\console.cpp">
-      <Filter>src\jimic\system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.cpp">
-      <Filter>src\jimic\system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\system\get_char.cpp">
-      <Filter>src\jimic\system</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert.cpp">
       <Filter>src\jimi\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.cpp">
-      <Filter>src\jimic\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimi\thread\Thread.cpp">
       <Filter>src\jimi\thread</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.cpp">
+    <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.c">
       <Filter>src\jimic\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.c">
+      <Filter>src\jimic\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.c">
+      <Filter>src\jimic\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\system\get_char.c">
+      <Filter>src\jimic\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\system\console.cpp">
+      <Filter>src\jimic\system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
