@@ -61,6 +61,8 @@ void * __stdcall memcpy_mmx1(void *dest, const void *src, size_t len)
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
 
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+
     //修改此值有可能实现更高的速度
     //int n = (int)((len / CACHE_BLOCK_SIZE) * CACHE_BLOCK_SIZE);
     int m = (int)(len & (CACHE_BLOCK_SIZE - 1));
@@ -140,6 +142,8 @@ WriteLoop:
     if (m > 0) {
         memcpy((char*)dest + len - m, (char*)src + len - m, m);
     }
+#endif
+
     return dest;
 }
 
@@ -147,6 +151,8 @@ void * __stdcall memcpy_mmx2(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
+
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
 
     //int n = (int)((len / CACHE_BLOCK_SIZE) * CACHE_BLOCK_SIZE);
     int n = (int)(len - (len & (CACHE_BLOCK_SIZE - 1)));
@@ -283,6 +289,8 @@ CopyLoop:
     // 拷贝剩余的字节数据
     if (nLeftBytes > 0)
         memcpy((char*)dest + len - nLeftBytes, (char*)src + len - nLeftBytes, nLeftBytes);
+#endif
+
     return dest;
 }
 
@@ -290,6 +298,8 @@ void * __stdcall memcpy_mmx3(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
+
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
 
     //int n = (int)((len / CACHE_BLOCK_SIZE) * CACHE_BLOCK_SIZE);
     int n = (int)(len - (len & (CACHE_BLOCK_SIZE - 1)));
@@ -430,6 +440,8 @@ CopyLoop:
     // 拷贝剩余的字节数据
     if (nLeftBytes > 0)
         memcpy((char*)dest + len - nLeftBytes, (char*)src + len - nLeftBytes, nLeftBytes);
+
+#endif
     return dest;
 }
 
@@ -437,6 +449,8 @@ void * __stdcall memcpy_mmx4(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
+
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
 
     if (len <= (1024 * 1024)) {
         __asm {
@@ -557,6 +571,8 @@ MainLoop_NTQ:
             emms
         }
     }
+#endif
+
     return dest;
 }
 
@@ -564,6 +580,8 @@ void * __stdcall memcpy_sse2a(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
+
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
 
     //int n = (int)((len / CACHE_BLOCK_SIZE) * CACHE_BLOCK_SIZE);
     size_t len_n = (len & (CACHE_BLOCK_SIZE - 1));
@@ -686,6 +704,8 @@ CopyLoop:
     // 拷贝剩余的字节数据
     if (nLeftBytes > 0)
         memcpy((char*)dest + len - nLeftBytes, (char*)src + len - nLeftBytes, nLeftBytes);
+
+#endif
     return dest;
 }
 
@@ -693,6 +713,8 @@ void * __stdcall memcpy_sse2c(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE || !m_bIsSSE2)
         return NULL;
+
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
 
     __asm {
 
@@ -760,6 +782,7 @@ rest_sse2:
         //*/
     }
 
+#endif
     return dest;
 }
 
@@ -767,6 +790,8 @@ void * __stdcall memcpy_sse2d(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE || !m_bIsSSE2)
         return NULL;
+
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
 
     __asm {
 
@@ -835,6 +860,7 @@ rest_sse2:
         pop edx
         //*/
     }
+#endif
 
     return dest;
 }
@@ -843,6 +869,8 @@ void * __stdcall memcpy_sse2e(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
+
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
 
     //int n = (int)((len / CACHE_BLOCK_SIZE) * CACHE_BLOCK_SIZE);
     int n = (int)(len - (len & (CACHE_BLOCK_SIZE - 1)));
@@ -964,5 +992,7 @@ CopyLoop:
     // 拷贝剩余的字节数据
     if (nLeftBytes > 0)
         memcpy((char*)dest + len - nLeftBytes, (char*)src + len - nLeftBytes, nLeftBytes);
+
+#endif
     return dest;
 }

@@ -45,7 +45,8 @@ public:
     static const int kDefaultFill = detail::FillNone;
 
 public:
-    format_setting() : align(kDefaultAlign), fill(kDefaultFill) {}
+    format_setting() : align(format_setting::kDefaultAlign),
+        fill(format_setting::kDefaultFill) {}
     format_setting(const unsigned short _align, const unsigned short _fill)
         : align(_align), fill(_fill) {}
     ~format_setting() {}
@@ -69,8 +70,10 @@ public:
     static const int kDefaultFloatPrecision = 15;
 
 public:
-    float_setting() : format_setting(kDefaultFloatAlign, kDefaultFloatFill),
-        width(kDefaultFloatWidth), precision(kDefaultFloatPrecision) {}
+    float_setting() : format_setting(float_setting::kDefaultFloatAlign,
+                                     float_setting::kDefaultFloatFill),
+        width(float_setting::kDefaultFloatWidth),
+        precision(float_setting::kDefaultFloatPrecision) {}
     ~float_setting() {}
 
     void setDetail(unsigned int _align, unsigned int _fill,
@@ -112,8 +115,9 @@ public:
     static const int kDefaultIntegerWidth = 0;
 
 public:
-    integer_setting() : format_setting(kDefaultIntegerAlign, kDefaultIntegerFill),
-        width(kDefaultIntegerWidth) {}
+    integer_setting() : format_setting(integer_setting::kDefaultIntegerAlign,
+                                       integer_setting::kDefaultIntegerFill),
+        width(integer_setting::kDefaultIntegerWidth) {}
     ~integer_setting() {}
 
     void setDetail(unsigned int _align, unsigned int _fill, unsigned int _width) {
@@ -151,8 +155,9 @@ public:
     static const int kDefaultStringWidth = 0;
 
 public:
-    string_setting() : format_setting(kDefaultStringAlign, kDefaultStringFill),
-        width(kDefaultStringWidth) {}
+    string_setting() : format_setting(string_setting::kDefaultStringAlign,
+                                      string_setting::kDefaultStringFill),
+        width(string_setting::kDefaultStringWidth) {}
     ~string_setting() {}
 
     void setDetail(unsigned int _align, unsigned int _fill, unsigned int _width) {

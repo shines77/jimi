@@ -62,11 +62,7 @@ template<class T>
 class stop_watch_base
 {
 public:
-#ifdef _MSC_VER
-    typedef typename int64_t timestamp_t;
-#else
     typedef int64_t timestamp_t;
-#endif
 
 public:
     //! Construct an absolute timestamp initialized to zero.

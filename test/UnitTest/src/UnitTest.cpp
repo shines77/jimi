@@ -45,7 +45,10 @@
 #include <conio.h>
 #endif // _MSC_VER
 #include <time.h>
+
+#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
 #include <intrin.h>
+#endif
 
 #include <math.h>
 #include <float.h>
@@ -72,6 +75,8 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #endif
 
+#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+
 /**
  * for asmlib header file
  */
@@ -81,6 +86,15 @@
  * for asmlib lib import
  */
 #pragma comment(lib, "libacof32.lib")
+
+#else
+
+void * A_memcpy (void * dest, const void * src, size_t count)
+{
+    return memcpy(dest, src, count);
+}
+
+#endif
 
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -2141,6 +2155,8 @@ bool win_iconv_test()
 {
     bool echo_result = false;
 
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+
     char *szAnsi_Test1 = "23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
         "英雄所见略同, 不经历风雨怎么见彩虹???jfkljdl4348972949384iyjdhfjdgjfg3h4eih3k19283变形金刚4, 变形金刚四⑦⑦";
     wchar_t *szUtf16_Test1 = L"23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
@@ -2165,6 +2181,8 @@ bool win_iconv_test()
     win_iconv_unicode2ansi_test(szUtf16_Test2, echo_result);
 
     printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
+
+#endif
     return true;
 }
 

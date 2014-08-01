@@ -217,9 +217,6 @@ typedef struct JIMI_API LogConf_Global
     unsigned short  remote_port;
 } LogConf_Global;
 
-JIMI_EXPIMP_TEMPLATE template class JIMI_API_TPL std::allocator<LogConf_Node *>;
-JIMI_EXPIMP_TEMPLATE template class JIMI_API_TPL std::vector<LogConf_Node *, std::allocator<LogConf_Node *>>;
-
 class JIMI_API LogConfig
 {
 public:
@@ -347,6 +344,9 @@ extern _System  System;
 NS_JIMI_LOG_END
 
 NS_JIMI_END
+
+JIMI_EXPIMP_TEMPLATE template class JIMI_API_TPL std::allocator<jimi::log::LogConf_Node *>;
+JIMI_EXPIMP_TEMPLATE template class JIMI_API_TPL std::vector<jimi::log::LogConf_Node *, std::allocator<jimi::log::LogConf_Node *> >;
 
 #if defined(_MSC_VER)
     #pragma warning (pop)

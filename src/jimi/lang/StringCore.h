@@ -120,6 +120,7 @@ public:
     typedef size_t                  flag_type;
     typedef char_traits<char_type>  traits_type;
 
+protected:
     struct small_info_t;
     struct small_t;
     struct core_data_t;
@@ -129,6 +130,8 @@ public:
     typedef struct small_t      small_t;
     typedef struct core_data_t  core_data_t;
     typedef struct medium_large_t medium_large_t;
+
+public:
 
     // Constant
     static const char_type kNullChar    =  STRING_NULL_CHAR;

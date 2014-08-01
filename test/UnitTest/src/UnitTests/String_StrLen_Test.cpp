@@ -10,6 +10,8 @@
 
 #include <jimi/lang/Char_Traits.h>
 
+#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+
 /**
  * for asmlib header file
  */
@@ -19,6 +21,15 @@
  * for asmlib lib import
  */
 #pragma comment(lib, "libacof32.lib")
+
+#else
+
+size_t A_strlen (const char * str)
+{
+    return 0;
+}
+
+#endif
 
 static char jabberwocky[] =
     "'Twas brillig, and the slithy toves\n"
@@ -116,6 +127,9 @@ int strlen_my(const char *s) {
 //
 
 int strlen_AgnerFog(const char* s) {
+
+#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+
 	__asm {
         mov     eax, [s]               ; get pointer s 
         lea     edx, [eax+3]           ; pointer+3 used in the end 
@@ -137,11 +151,14 @@ l1:
         add     cl,  cl                ; test first byte 
         sbb     eax, edx               ; compute length 
 	}
+
+#endif
 }
 
 __declspec(naked)
 inline int __cdecl __builtin_clz(int bitmask)
 {
+#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
     __asm {
         mov eax, dword ptr [esp + 4]
         bsr eax, eax
@@ -149,16 +166,19 @@ inline int __cdecl __builtin_clz(int bitmask)
         add eax, 31
         ret
     }
+#endif
 }
 
 __declspec(naked)
 inline int __cdecl __builtin_ctz(int bitmask)
 {
+#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
     __asm {
         mov eax, dword ptr [esp + 4]
         bsf eax, eax
         ret
     }
+#endif
 }
 
 //
@@ -166,6 +186,7 @@ inline int __cdecl __builtin_ctz(int bitmask)
 //
 size_t sse2_strlen(const char* s)
 {
+#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
     __m128i zero = _mm_set1_epi8( 0 );
     __m128i *s_aligned = (__m128i*) (((long)s) & -0x10L);
     uint8_t misbits = ((long)s) & 0x0f;
@@ -184,6 +205,9 @@ size_t sse2_strlen(const char* s)
 
     // bsf only takes 1 clock cycle on modern cpus
     return ((( const char* ) s_aligned ) - s) + __builtin_ctz(bitmask);
+#else
+    return 0;
+#endif
 }
 
 //
@@ -200,11 +224,13 @@ size_t sse2_strlen(const char* s)
 size_t sse4_strlen(const char *str)
 {
    size_t len = 0;
+   int idx = 0;
+#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+
    __m128i z, c;
 
    z = _mm_setzero_si128();
 
-   int idx;
    while (true) {
       c = _mm_loadu_si128( (const __m128i*)(str) ); 
       idx = _mm_cmpistri(z, c, EQUAL_EACH);   //returns index of the first byte that matches
@@ -212,11 +238,14 @@ size_t sse4_strlen(const char *str)
       len += sizeof(__m128i);
       str += sizeof(__m128i); 
    }
+#endif
    return len + idx;
 }
 
 void String_StrLen_Test()
 {
+#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+
 #ifndef _DEBUG
     const int LOOP_TIMES = 1000000;
 #else
@@ -752,4 +781,6 @@ strlen_loop4_1:
     if (str1) ::free(str1);
     if (str2) ::free(str2);
     if (str3) ::free(str3);
+
+#endif
 }

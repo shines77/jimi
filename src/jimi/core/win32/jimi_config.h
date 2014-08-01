@@ -6,6 +6,10 @@
 #pragma once
 #endif
 
+#ifndef JIMI_MSC_CLANG
+#define JIMI_MSC_CLANG                      1
+#endif
+
 #ifndef JIMI_USE_VLD
 #define JIMI_USE_VLD                        1
 #endif
@@ -27,7 +31,12 @@
 #define JIMI_USE_THREADING_TOOLS            0
 #define JIMI_MALLOC_BUILD                   0
 
+#if defined(JIMI_MSC_CLANG) && (JIMI_MSC_CLANG != 0)
+#define JIMI_ATTRIBUTE_ALIGNED_PRESENT                  1
+#else
 #define JIMI_DECLSPEC_ALIGN_PRESENT                     1
+#endif
+
 #define JIMI_ALIGNOF_NOT_INSTANTIATED_TYPES_BROKEN      1
 
 #define JIMI_CONSTEXPR

@@ -132,7 +132,7 @@ int IocpServd_main(int argc, char *argv[])
 
      do {
         jimi::Object *object = new jimi::Object();
-        jimi::Object &newObject = object->Clone();
+        jimi::Object newObject = object->Clone();
         printf("newObject.Equals(object) = %d\n\n", newObject.Equals(object));
         object->Close();
         newObject.Close();

@@ -32,7 +32,9 @@ size_t __CDECL jmf_strlen(const char *str);
 
 ///////////////////////////////////////////////////////////////////////////
 
-#if (defined(JIMI_IS_MSVC) || defined(JIMI_IS_ICC)) && (defined(JIMI_JMF_USE_ASM) && (JIMI_JMF_USE_ASM != 0))
+#if (defined(JIMI_IS_MSVC) || defined(JIMI_IS_ICC)) \
+    && (defined(JIMI_JMF_USE_ASM) && (JIMI_JMF_USE_ASM != 0)) \
+    && (!defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0))
 
 /* Local STACK = 4 bytes */
 #define STACK           4
@@ -692,10 +694,11 @@ strlwr_386:
 
 #include <jimic/string/jm_strings.h>
 
-JIMI_INLINE __CDECL
-size_t __cdecl jmf_strlwr(char *str)
+JIMI_INLINE
+size_t __CDECL jmf_strlwr(char *str)
 {
-    return ::jm_strlwr(str);
+    jm_strlwr(str, (size_t)-1);
+    return jm_strlen(str);
 }
 
 ///////////////////////////////////////////////////////////////////////////

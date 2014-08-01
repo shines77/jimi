@@ -768,13 +768,13 @@ typename BASIC_STRING::const_reverse_iterator BASIC_STRING::crend() const
 // Added by C++11
 // C++11 21.4.5, element access:
 template <BASIC_STRING_CLASSES>
-typename const BASIC_STRING::value_type &BASIC_STRING::front() const
+const typename BASIC_STRING::value_type &BASIC_STRING::front() const
 {
     return *begin();
 }
 
 template <BASIC_STRING_CLASSES>
-typename const BASIC_STRING::value_type &BASIC_STRING::back() const
+const typename BASIC_STRING::value_type &BASIC_STRING::back() const
 {
     jimi_assert(!empty());
     // Should be begin()[size() - 1], but that branches twice

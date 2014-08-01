@@ -6,6 +6,10 @@
 #pragma once
 #endif
 
+#ifndef JIMIC_MSC_CLANG
+#define JIMIC_MSC_CLANG                     1
+#endif
+
 #if defined(_DEBUG) || !defined(NDEBUG)
 #define JIMIC_USE_DEBUG                     1
 #define JIMIC_USE_ASSERT                    1

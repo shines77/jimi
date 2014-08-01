@@ -81,7 +81,7 @@ jmc_csharp_vslprintf(jm_char *buf, size_t count, JM_CONST jm_char *fmt,
     jm_char    *end, *first;
     jm_char    *cur;
     jm_char     c;
-    size_t      index;
+    int         index;
     int         len;
 
     jimic_assert(buf != NULL);

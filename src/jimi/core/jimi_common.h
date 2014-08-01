@@ -129,14 +129,14 @@
 /**
  * jimi: for inline and noinline define
  */
-#if _MSC_VER || __INTEL_COMPILER
+#if (_MSC_VER || __INTEL_COMPILER) && (!defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0))
 
 #define JIMI_INLINE              __inline
 #define JIMI_FORCEINLINE         __forceinline
 #define JIMI_RESTRICT            __restrict
 #define JIMI_HAS_INLINE          1
 
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) && (defined(JIMI_MSC_CLANG) && (JIMI_MSC_CLANG != 0))
 
 #define JIMI_INLINE              inline
 #define JIMI_FORCEINLINE         inline
@@ -163,7 +163,7 @@
 /**
  * jimic: for inline define
  */
-#if defined(JIMI_MSC_VER) || defined(JIMI_IS_ICC)
+#if (defined(JIMI_MSC_VER) || defined(JIMI_IS_ICC)) && (!defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0))
 
 #define JMC_INLINE              __inline
 #define JMC_FORCEINLINE         __forceinline
@@ -177,9 +177,9 @@
 
 #endif  /* JIMI_MSC_VER */
 
-#if _MSC_VER || __INTEL_COMPILER
+#if (_MSC_VER || __INTEL_COMPILER) && (!defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0))
 #define JMC_NOINLINE(decl)      __declspec(noinline) decl
-#elif __GNUC__
+#elif __GNUC__ || (defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG != 0))
 #define JMC_NOINLINE(decl)      decl __attribute__ ((noinline))
 #else
 #define JMC_NOINLINE(decl)      decl

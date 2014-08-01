@@ -4,10 +4,6 @@
 #include <jimi/core/jimi_def.h>
 #include <jimi/system/stop_watch.h>
 
-#include <jimic/string/jm_strings.h>
-#include <jimic/string/sprintf.h>
-#include <jimic/string/csharp_sprintf.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -43,6 +39,9 @@ void ftol_test_fpu()
     unsigned short RC_Old;
     unsigned short RC_Edit;
     long isrc;
+
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+
     __asm {
         // 设置FPU的取整方式  为了直接使用fistp浮点指令
         FNSTCW  RC_Old             // 保存协处理器控制字,用来恢复
@@ -73,6 +72,8 @@ EndLoop:
         FWAIT
         FLDCW   RC_Old
     }
+
+#endif
 }
 
 
@@ -112,6 +113,9 @@ void ftol_test_ieee_M()
 
 void ftol_test_sse2()
 {
+
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+
     __asm {
         mov         ecx, testDataCount
         xor         eax, eax
@@ -130,6 +134,8 @@ StartLoop:
 EndLoop:
         mov         testResult, eax;
     }
+
+#endif
 }
 
 void dtol_test_0()
@@ -146,6 +152,9 @@ void dtol_test_fpu()
     unsigned short RC_Old;
     unsigned short RC_Edit;
     long isrc;
+
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+
     __asm  // 设置FPU的取整方式  为了直接使用fistp浮点指令
     {
         FNSTCW  RC_Old             // 保存协处理器控制字,用来恢复
@@ -175,6 +184,8 @@ EndLoop:
         FWAIT
         FLDCW   RC_Old 
     }
+
+#endif
 }
 
 inline int64_t _dtol_ieee(double f)
@@ -230,6 +241,9 @@ void dtol_test_ieee_MagicNumber2()
 
 void dtol_test_sse2()
 {
+
+#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+
     __asm {
         mov         ecx, testDataCount
         xor         eax, eax
@@ -248,6 +262,8 @@ StartLoop:
 EndLoop:
         mov         testResult, eax;
     }
+
+#endif
 }
 
 void ftol_test_main()

@@ -6,6 +6,8 @@
 # pragma once
 #endif
 
+#include <jimi/core/jimi_def.h>
+
 #if defined(_WIN32) || defined(_WIN64)
 
 #define WIN_ICONV_USE_NEW_DELETE        0
@@ -20,17 +22,31 @@
 
 #define WIN_ICONV_FREE(p)   \
     delete [] p
+#else
+
+#if defined(JIMI_MSC_CLANG) && (JIMI_MSC_CLANG != 0)
+
+#define WIN_ICONV_MALLOC(size, type) \
+    (type *)malloc((size_t)(size) * sizeof(type))
+
+#define WIN_ICONV_MALLOC_EX(size, type, alignment, offset) \
+    (type *)malloc((size_t)(size) * sizeof(type))
+
+#define WIN_ICONV_FREE(p)   \
+    free((void *)(p))
 
 #else
 
 #define WIN_ICONV_MALLOC(size, type) \
-    (##type##*)malloc((size_t)(size) * sizeof(type))
+    (##type## *)malloc((size_t)(size) * sizeof(type))
 
 #define WIN_ICONV_MALLOC_EX(size, type, alignment, offset) \
-    (##type##*)malloc((size_t)(size) * sizeof(type))
+    (##type## *)malloc((size_t)(size) * sizeof(type))
 
 #define WIN_ICONV_FREE(p)   \
     free((void *)(p))
+
+#endif
 
 #endif
 
