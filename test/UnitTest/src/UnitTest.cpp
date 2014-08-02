@@ -2323,6 +2323,68 @@ void Double_And_Float_Test()
     printf("%s", buf);
     printf("\n");
 
+    printf("--------------------------------------------\n\n");
+
+    printf("printf():       int = %-012.3d,\n",  123456);
+    printf("printf():       int = %-012.3d,\n", -123456);
+    printf("printf():       int = %012.3d,\n",   123456);
+    printf("printf():       int = %012.3d,\n",  -123456);
+    printf("printf():       int = %-012.8d,\n",  123456);
+    printf("printf():       int = %-012.8d,\n", -123456);
+    printf("printf():       int = %012.8d,\n",   123456);
+    printf("printf():       int = %012.8d,\n",  -123456);
+    printf("\n");
+
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %-012.3d,\n",  123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %-012.3d,\n", -123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %012.3d,\n",   123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %012.3d,\n",  -123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %-012.8d,\n",  123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %-012.8d,\n", -123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %012.8d,\n",   123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %012.8d,\n",  -123456);
+    printf("%s", buf);
+    printf("\n");
+
+    printf("--------------------------------------------\n\n");
+
+    printf("printf():       int = %-12.3d,\n",  123456);
+    printf("printf():       int = %-12.3d,\n", -123456);
+    printf("printf():       int = %12.3d,\n",   123456);
+    printf("printf():       int = %12.3d,\n",  -123456);
+    printf("printf():       int = %-12.8d,\n",  123456);
+    printf("printf():       int = %-12.8d,\n", -123456);
+    printf("printf():       int = %12.8d,\n",   123456);
+    printf("printf():       int = %12.8d,\n",  -123456);
+    printf("\n");
+
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %-12.3d,\n",  123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %-12.3d,\n", -123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %12.3d,\n",   123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %12.3d,\n",  -123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %-12.8d,\n",  123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %-12.8d,\n", -123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %12.8d,\n",   123456);
+    printf("%s", buf);
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(): int = %12.8d,\n",  -123456);
+    printf("%s", buf);
+    printf("\n");
+
+    printf("--------------------------------------------\n\n");
+
     #define NAN_DOUBLE          ((double)(INFINITY * 0.0F))
     #define DOUBLE_INFINITY     ((double)(_HUGE_ENUF * _HUGE_ENUF))
 
@@ -2539,7 +2601,7 @@ int UnitTest_Main(int argc, char *argv[])
     String_Snprintf_Test();
   #endif
 
-  #if 1
+  #if 0
     Sprintf_Preformance_Test_Integer();
 
     Snprintf_Preformance_Test_Integer1();
@@ -2549,6 +2611,7 @@ int UnitTest_Main(int argc, char *argv[])
 
     Snprintf_Preformance_Test_Double1();
     Snprintf_Preformance_Test_Double2();
+    Snprintf_Preformance_Test_Double3();
 
     //OStringStream_Performance_Test();
 

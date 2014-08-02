@@ -401,4 +401,9 @@
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\src\jimic\string\jmc_strings.impl.inl">
+      <Filter>src\jimic\string</Filter>
+    </None>
+  </ItemGroup>
 </Project>

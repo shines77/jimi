@@ -489,6 +489,24 @@ vslprintf_out_string:
                     cur++;
                     goto vslprintf_try_next;
 
+                case '-':   // 0x2D
+                    align = FMT_ALIGN_LEFT;
+                    cur++;
+                    c = *cur;
+                    break;
+
+                case ' ':   // 0x20
+                    flag |= FMT_SPACE_FLAG;
+                    cur++;
+                    c = *cur;
+                    break;
+
+                case '+':   // 0x2B
+                    align = FMT_PLUS_FLAG;
+                    cur++;
+                    c = *cur;
+                    break;
+
                 case '*':   // 0x2A
                     flag |= FMT_FIELDWIDTH_FLAG;
                     // get filed width from the next argument
@@ -500,18 +518,6 @@ vslprintf_out_string:
                     cur++;
                     c = *cur;
                     //goto vslprintf_continue;
-                    break;
-
-                case '-':   // 0x2D
-                    align = FMT_ALIGN_LEFT;
-                    cur++;
-                    c = *cur;
-                    break;
-
-                case ' ':   // 0x20
-                    flag |= FMT_SPACE_FLAG;
-                    cur++;
-                    c = *cur;
                     break;
 
                 case '%':   // 0x25
@@ -535,12 +541,6 @@ vslprintf_out_string:
                         c = *cur;
                     }
 #endif
-                    break;
-
-                case '+':   // 0x2B
-                    align = FMT_PLUS_FLAG;
-                    cur++;
-                    c = *cur;
                     break;
 
                 case '#':   // 0x23

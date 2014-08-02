@@ -7,7 +7,7 @@
 #endif
 
 #ifndef JIMIC_MSC_CLANG
-#define JIMIC_MSC_CLANG                     1
+#define JIMIC_MSC_CLANG                     0
 #endif
 
 #if defined(_DEBUG) || !defined(NDEBUG)

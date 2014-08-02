@@ -12,7 +12,7 @@
 #define VSNPRINTF_SHORT_DISPLAY         0
 
 /* 是否运行jm_snprintf()的测试, 为1代表运行 */
-#define VSNPRINTF_TEST_JM_SNPRINTF      1
+#define VSNPRINTF_TEST_JM_SNPRINTF      0
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,6 +31,8 @@ void Snprintf_Preformance_Test_Integer3();
 void Snprintf_Preformance_Test_Double1();
 
 void Snprintf_Preformance_Test_Double2();
+
+void Snprintf_Preformance_Test_Double3();
 
 #ifdef __cplusplus
 }

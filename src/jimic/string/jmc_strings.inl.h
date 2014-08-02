@@ -411,13 +411,13 @@ jmc_i64toa_radix10(jm_char *buf, int64_t val)
 
 JMC_INLINE_NONSTD(int)
 jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int flag,
-                    unsigned int fill, unsigned int width, int length)
+                    unsigned int fill, unsigned int filed_width, int length)
 {
     unsigned int digval, digital;
-    int fill_cnt;
-    int padding;
     jm_char *end, *cur;
     int sign_char;
+    int fill_cnt;
+    int padding;
     char digits[16];    // 实际最多只会用到10个bytes
 
     jimic_assert(buf != NULL);
@@ -434,35 +434,15 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
 
     digital = end - cur;
 
-    if ((flag & (FMT_SIGN_MASK | FMT_SPACE_FLAG | FMT_SHARP_FLAG)) == 0) {
+    if ((flag & (FMT_SIGN_MASK | FMT_SPACE_FLAG | FMT_PLUS_FLAG)) == 0) {
         sign_char = '\0';
-        fill_cnt = width - digital;
-#if 0
-        if (fill_cnt > 0) {
-            goto utoa_radix10_ex_L001;
-        }
-        else {
-#if 0
-            do {
-                ++cur;
-                *buf++ = *cur;
-            } while (cur != end);
-#else
-            cur++;
-            while (cur <= end)
-                *buf++ = *cur++;
-#endif
-            *buf = '\0';
-
-            return digital;
-        }
-#endif
+        fill_cnt = filed_width - digital;
     }
     else {
         if ((flag & FMT_SPACE_FLAG) == 0) {
             // '+' is 0x2B, '-' is 0x2D
             sign_char = '+' + (flag & FMT_SIGN_MASK);
-            fill_cnt = width - digital - 1;
+            fill_cnt = filed_width - digital - 1;
         }
         else {
             // ' ' is 0x20, '-' is 0x2D
@@ -474,7 +454,7 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
             else
                 sign_char = '-';
 #endif
-            fill_cnt = width - digital - 1;
+            fill_cnt = filed_width - digital - 1;
         }
     }
 
@@ -500,23 +480,35 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
             return digital + 1;
     }
     else {
-//utoa_radix10_ex_L001:
         // when legnth <= 0 || legnth >= witdh, align to right or left is same
-        if (length <= 0 || length >= (int)width) {
-            // add sign
-            if (sign_char != '\0')
-                *buf++ = (jm_char)sign_char;
+        if (length <= 0 || length >= (int)filed_width) {
+            if (fill == FMT_FILL_SPACE) {
+                // fill normal
+                while (fill_cnt > 0) {
+                    *buf++ = fill;
+                    fill_cnt--;
+                }
 
-            // fill normal
-            do {
-                *buf++ = fill;
-                fill_cnt--;
-            } while (fill_cnt > 0);
+                // add sign
+                if (sign_char != '\0')
+                    *buf++ = (jm_char)sign_char;
+            }
+            else {
+                // add sign
+                if (sign_char != '\0')
+                    *buf++ = (jm_char)sign_char;
+
+                // fill normal
+                while (fill_cnt > 0) {
+                    *buf++ = fill;
+                    fill_cnt--;
+                }
+            }
         }
         else {
             if ((flag & FMT_ALIGN_LEFT) == 0) {
-                // align to right, when (length < width)
-                jimic_assert(length < (int)width);
+                // align to right, when (length < filed_width)
+                jimic_assert(length < (int)filed_width);
 
                 padding = length - digital;
                 if (padding > 0) {
@@ -549,8 +541,8 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
                 }
             }
             else {
-                // align to left, when (length < width)
-                jimic_assert(length < (int)width);
+                // align to left, when (length < filed_width)
+                jimic_assert(length < (int)filed_width);
 
                 // add sign
                 if (sign_char != '\0')
@@ -560,10 +552,10 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
                 padding = length - digital;
                 if (padding > 0) {
                     fill_cnt -= padding;
-                    do {
+                    while (padding > 0) {
                         *buf++ = fill;
                         padding--;
-                    } while (padding > 0);
+                    }
                 }
 
 #if 0
@@ -601,29 +593,29 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
 utoa_radix10_ex_exit:
     *buf = '\0';
 
-    return width;
+    return filed_width;
 }
 
 JMC_INLINE_NONSTD(int)
 jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
-                    unsigned int fill, unsigned int width, int length)
+                    unsigned int fill, unsigned int filed_width, int length)
 {
 #if 1
     if (val < 0) {
         flag |= FMT_SIGN_MASK;
         val = -val;
     }
-    return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length);
+    return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length);
 #elif 0
     if ((flag & FMT_SPACE_FLAG) == 0) {
         if (val >= 0) {
-            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length);
+            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length);
         }
         else {
             *buf++ = '-';
             val = -val;
             flag |= FMT_SIGN_MASK;
-            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + 1;
+            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
         }
     }
     else {
@@ -635,17 +627,17 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
             val = -val;
         }
         flag |= FMT_SIGN_MASK;
-        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + 1;
+        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
     }
 #elif 0
     if ((flag & FMT_SPACE_FLAG) == 0) {
         if (val < 0) {
             *buf++ = '-';
             val = -val;
-            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + 1;
+            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
         }
         else
-            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length);
+            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length);
     }
     else {
         if (val >= 0) {
@@ -655,7 +647,7 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
             *buf++ = '-';
             val = -val;
         }
-        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + 1;
+        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
     }
 #else
     int sign;
@@ -665,7 +657,7 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
             *buf++ = '-';
             val = -val;
         }
-        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + sign;
+        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length) + sign;
     }
     else {
         if (val < 0) {
@@ -675,24 +667,26 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
         else {
             *buf++ = '+';
         }
-        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, width, length) + 1;
+        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
     }
 #endif
 }
 
 JMC_INLINE_NONSTD(int)
 jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int flag,
-                      unsigned int fill, unsigned int width, int length)
+                      unsigned int fill, unsigned int filed_width, int length)
 {
     unsigned int digval, digital;
     uint32_t val32;
-    jm_char *cur;
+    jm_char *end, *cur;
     int sign_char;
+    int fill_cnt;
     int padding;
     fuint64_s *u64;
     char digits[32];    // 实际最多只会用到20个bytes
 
-    cur = digits;
+    end = digits + jm_countof(digits) - 1;
+    cur = end;
 #if 0
     if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
@@ -705,7 +699,7 @@ jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int fla
             digval = val32 % 10;
             val32 /= 10;
 
-            *cur++ = (jm_char)(digval + '0');
+            *cur-- = (jm_char)(digval + '0');
         } while (val32 != 0);
     }
     else {
@@ -713,74 +707,183 @@ jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int fla
             digval = val % 10;
             val /= 10;
 
-            *cur++ = (jm_char)(digval + '0');
+            *cur-- = (jm_char)(digval + '0');
         } while (val != 0);
     }
 
-    digital = cur - digits;
+    digital = end - cur;
 
-    if ((flag & FMT_SIGN_MASK) == 0) {
+    if ((flag & (FMT_SIGN_MASK | FMT_SPACE_FLAG | FMT_PLUS_FLAG)) == 0) {
         sign_char = '\0';
-        padding = width - digital;
-        if (padding < 0)
-            width = digital;
+        fill_cnt = filed_width - digital;
     }
     else {
-        sign_char = '-';
-        padding = width - digital - 1;
-        if (padding < 0)
-            width = digital + 1;
-    }
-
-    if ((flag & FMT_ALIGN_LEFT) == 0) {
-        // align to right
-        while (padding > 0) {
-            *buf++ = (jm_char)fill;
-            padding--;
+        if ((flag & FMT_SPACE_FLAG) == 0) {
+            // '+' is 0x2B, '-' is 0x2D
+            sign_char = '+' + (flag & FMT_SIGN_MASK);
+            fill_cnt = filed_width - digital - 1;
+        }
+        else {
+            // ' ' is 0x20, '-' is 0x2D
+#if 0
+            sign_char = ((flag & FMT_SIGN_MASK) == 0) ? ' ' : '-';
+#else
+            if ((flag & FMT_SIGN_MASK) == 0)
+                sign_char = ' ';
+            else
+                sign_char = '-';
+#endif
+            fill_cnt = filed_width - digital - 1;
         }
     }
 
-    if (sign_char != '\0')
-        *buf++ = sign_char;
+    if (fill_cnt <= 0) {
+        // add sign
+        if (sign_char != '\0')
+            *buf++ = (jm_char)sign_char;
+#if 0
+        do {
+            ++cur;
+            *buf++ = *cur;
+        } while (cur != end);
+#else
+        cur++;
+        while (cur <= end)
+            *buf++ = *cur++;
+#endif
+        *buf = '\0';
+
+        if (sign_char == '\0')
+            return digital;
+        else
+            return digital + 1;
+    }
+    else {
+        // when legnth <= 0 || legnth >= witdh, align to right or left is same
+        if (length <= 0 || length >= (int)filed_width) {
+            if (fill == FMT_FILL_SPACE) {
+                // fill normal
+                while (fill_cnt > 0) {
+                    *buf++ = fill;
+                    fill_cnt--;
+                }
+
+                // add sign
+                if (sign_char != '\0')
+                    *buf++ = (jm_char)sign_char;
+            }
+            else {
+                // add sign
+                if (sign_char != '\0')
+                    *buf++ = (jm_char)sign_char;
+
+                // fill normal
+                while (fill_cnt > 0) {
+                    *buf++ = fill;
+                    fill_cnt--;
+                }
+            }
+        }
+        else {
+            if ((flag & FMT_ALIGN_LEFT) == 0) {
+                // align to right, when (length < filed_width)
+                jimic_assert(length < (int)filed_width);
+
+                padding = length - digital;
+                if (padding > 0) {
+                    // fill right padding space
+                    while (fill_cnt > padding) {
+                        *buf++ = ' ';
+                        fill_cnt--;
+                    }
+
+                    // add sign
+                    if (sign_char != '\0')
+                        *buf++ = (jm_char)sign_char;
+
+                    // fill normal
+                    while (fill_cnt > 0) {
+                        *buf++ = fill;
+                        fill_cnt--;
+                    }
+                }
+                else {
+                    // fill right padding space
+                    while (fill_cnt > 0) {
+                        *buf++ = ' ';
+                        fill_cnt--;
+                    }
+
+                    // add sign
+                    if (sign_char != '\0')
+                        *buf++ = (jm_char)sign_char;
+                }
+            }
+            else {
+                // align to left, when (length < filed_width)
+                jimic_assert(length < (int)filed_width);
+
+                // add sign
+                if (sign_char != '\0')
+                    *buf++ = (jm_char)sign_char;
+
+                // fill normal
+                padding = length - digital;
+                if (padding > 0) {
+                    fill_cnt -= padding;
+                    while (padding > 0) {
+                        *buf++ = fill;
+                        padding--;
+                    }
+                }
+
+#if 0
+                do {
+                    ++cur;
+                    *buf++ = *cur;
+                } while (cur != end);
+#else
+                cur++;
+                while (cur <= end)
+                    *buf++ = *cur++;
+#endif
+                // fill left padding space
+                while (fill_cnt > 0) {
+                    *buf++ = ' ';
+                    fill_cnt--;
+                }
+
+                goto u64toa_radix10_ex_exit;
+            }
+        }
+    }
 
 #if 0
     do {
-        --cur;
+        ++cur;
         *buf++ = *cur;
-    } while (cur != digits);
+    } while (cur != end);
 #else
-    cur--;
-    while (cur >= digits)
-        *buf++ = *cur--;
+    cur++;
+    while (cur <= end)
+        *buf++ = *cur++;
 #endif
 
-    if (padding <= 0) {
-        *buf = '\0';
-        return width;
-    }
-    else {
-        *buf++ = '0';
-        padding--;
+u64toa_radix10_ex_exit:
+    *buf = '\0';
 
-        while (padding > 0) {
-            *buf++ = '0';
-            padding--;
-        }
-
-        *buf = '\0';
-        return width;
-    }
+    return filed_width;
 }
 
 JMC_INLINE_NONSTD(int)
 jmc_i64toa_radix10_ex(jm_char *buf, size_t count, int64_t val, unsigned int flag,
-                      unsigned int fill, unsigned int width, int length)
+                      unsigned int fill, unsigned int filed_width, int length)
 {
     if (val < 0) {
         flag |= FMT_SIGN_MASK;
         val = -val;
     }
-    return jmc_u64toa_radix10_ex(buf, count, val, flag, fill, width, length);
+    return jmc_u64toa_radix10_ex(buf, count, val, flag, fill, filed_width, length);
 }
 
 JMC_INLINE_NONSTD(int)
@@ -951,10 +1054,6 @@ jmc_u64toa_radix10_for_frac_part(jm_char *buf, uint64_t val, unsigned int precis
     }
     else {
         // fractional part's tail is like as "0000000...."
-
-        // fill is '0'
-        //*buf++ = (jm_char)fill;
-        //padding--;
 
         while (padding > 0) {
             // fill is '0'
@@ -1220,169 +1319,8 @@ jmc_ftos_ex(jm_char *buf, size_t count, float val, unsigned int flag,
 
 #if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
 
-JMC_DECLARE_NONSTD(int)
-jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
-{
-    int len;
-    int64_t i64;
-    uint32_t scale32;
-    uint64_t scale, frac;
-    fuint64_s *f64;
-    unsigned int n;
-    int num_width;
-#if 0
-    static const uint32_t scales32[] = {
-        1, 10, 100, 1000, 10000, 100000,
-        1000000, 10000000, 100000000, 1000000000
-    };
-    static const uint64_t scales64[] = {
-        10000000000,     100000000000,     1000000000000,     10000000000000,
-        100000000000000, 1000000000000000, 10000000000000000, 100000000000000000,
-        1000000000000000000, 10000000000000000000
-    };
-#endif
-
-    if (sizeof(fuint64_s) != sizeof(double)) {
-        // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_dtos() maybe have some error!"
-#endif // _MSC_VER
-        jimic_assert(sizeof(fuint64_s) == sizeof(double));
-        return 0;
-    }
-
-    if (precision < 0) {
-        jimic_assert(precision < 0);
-        precision = FMT_DEFAULT_DOUBLE_PRECISION;
-        scale = 1000000ULL;
-        num_width = filed_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
-    }
-    else if (precision > 0) {
-#if 0
-        if (precision <= 10) {
-            jimic_assert(precision >= 0 && precision <= 10);
-            scale = scales32[precision];
-        }
-        else {
-            jimic_assert(precision > 10 && precision <= 20);
-            scale = scales64[precision - 11];
-        }
-#elif 1
-        if (precision <= 10) {
-            jimic_assert(precision >= 0 && precision <= 10);
-            scale32 = 1ULL;
-            for (n = precision; n > 0; --n)
-                scale32 *= 10;
-            scale = scale32;
-        }
-        else {
-            jimic_assert(precision > 10 && precision <= 20);
-            scale = 10000000000ULL;
-            for (n = precision - 11; n > 0; --n)
-                scale *= 10;
-        }
-#else
-        jimic_assert(precision >= 0 && precision <= 20);
-        scale = 1;
-        for (n = precision; n > 0; --n)
-            scale *= 10;
-#endif
-        num_width = filed_width - precision - 1;
-    }
-    else {
-        scale = 1;
-        num_width = filed_width;
-    }
-
-    f64 = (fuint64_s *)&val;
-    // is NaN or INF ? (exponent is maxium ?)
-    if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
-        i64 = (int64_t)val;
-        //if (val >= 0.0) {
-        if (i64 >= 0) {
-            frac = (uint64_t)((val - (double)i64) * scale + 0.5);
-            if (frac == scale) {
-                i64++;
-                frac = 0;
-            }
-        }
-        else {
-            frac = (uint64_t)(((double)i64 - val) * scale + 0.5);
-            if (frac == scale) {
-                i64--;
-                frac = 0;
-            }
-        }
-#if 0
-        if (((precision != 0) && ((int)filed_width <= (precision + 1 + 1)))
-            || ((precision == 0) && (filed_width <= (0 + 1)))) {
-#else
-        if (num_width <= 1) {
-#endif
-            len = jmc_i64toa_radix10(buf, i64);
-            buf += len;
-        }
-        else {
-#if 1
-            // for integer part of double
-            len = jmc_i64toa_radix10_for_integer_part(buf, i64, num_width);
-#else
-            len = jmc_i64toa_radix10_ex(buf, -1, i64, FMT_ALIGN_RIGHT, ' ', num_width, 0);
-#endif
-            buf += len;
-        }
-
-        if (precision > 0) {
-            // output decimal
-            *buf++ = '.';
-#if 1
-            // for fractional part of double
-            len += jmc_u64toa_radix10_for_frac_part(buf, frac, precision) + 1;
-#else
-            len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT, '0', precision, 0) + 1;
-#endif
-        }
-
-        return len;
-    }
-    else if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
-             || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)) {
-        // is NaN, not a number
-        *buf        = 'N';
-        *(buf + 1)  = 'a';
-        *(buf + 2)  = 'N';
-        *(buf + 3)  = '\0';
-        return 3;
-    }
-    else {
-        // is +INF or -INF
-        if ((f64->high & JM_DOUBLE_SIGN_BIT32) == 0) {
-            // '+', 0x2B
-            *buf        = 'I';
-            *(buf + 1)  = 'n';
-            *(buf + 2)  = 'f';
-            *(buf + 3)  = '\0';
-            return 3;
-        }
-        else {
-            // '-', 0x2D
-//          *buf        = '+' + ((f64->high & JM_DOUBLE_SIGN_BIT32) >> 30);
-            *buf        = '-';
-            *(buf + 1)  = 'I';
-            *(buf + 2)  = 'n';
-            *(buf + 3)  = 'f';
-            *(buf + 4)  = '\0';
-            return 4;
-        }
-    }
-}
-
-JMC_DECLARE_NONSTD(int)
-jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
-            unsigned int fill, unsigned int width, int precision)
-{
-    return 0;
-}
+/* implement source code for .cpp or .inl.h */
+#include <jimic/string/jmc_strings.impl.inl>
 
 #endif  /* JMC_DTOS_INLINE_DECLARE */
 

@@ -7,7 +7,7 @@
 #endif
 
 #ifndef JIMI_MSC_CLANG
-#define JIMI_MSC_CLANG                      1
+#define JIMI_MSC_CLANG                      0
 #endif
 
 #ifndef JIMI_USE_VLD
