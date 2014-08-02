@@ -104,20 +104,20 @@ jmc_ftos_ex(jm_char *buf, size_t count, float val, unsigned int flag,
 #if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
 
 JMC_INLINE_NONSTD(int)
-jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision);
+jmc_dtos(jm_char *buf, double val, int filed_width, int precision);
 
 JMC_INLINE_NONSTD(int)
 jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
-            unsigned int fill, unsigned int filed_width, int precision);
+            unsigned int fill, int filed_width, int precision);
 
 #else  /* !JMC_DTOS_INLINE_DECLARE */
 
 JMC_DECLARE_NONSTD(int)
-jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision);
+jmc_dtos(jm_char *buf, double val, int filed_width, int precision);
 
 JMC_DECLARE_NONSTD(int)
 jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
-            unsigned int fill, unsigned int filed_width, int precision);
+            unsigned int fill, int filed_width, int precision);
 
 #endif  /* JMC_DTOS_INLINE_DECLARE */
 

@@ -23,7 +23,7 @@ JMC_DECLARE_NONSTD(int)
 #else
 JMC_INLINE_NONSTD(int)
 #endif
-jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
+jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
 {
     int len;
     int64_t i64;
@@ -150,23 +150,41 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
     else if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
              || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)) {
         // is NaN, not a number
+        len = JIMIC_MAX(filed_width, 3);
+        filed_width -= 3;
+        while (filed_width > 0) {
+            *buf++ = ' ';
+            filed_width--;
+        }
         *buf        = 'N';
         *(buf + 1)  = 'a';
         *(buf + 2)  = 'N';
         *(buf + 3)  = '\0';
-        return 3;
+        return len;
     }
     else {
         // is +INF or -INF
         if ((f64->high & JM_DOUBLE_SIGN_BIT32) == 0) {
+            len = JIMIC_MAX(filed_width, 3);
+            filed_width -= 3;
+            while (filed_width > 0) {
+                *buf++ = ' ';
+                filed_width--;
+            }
             // '+', 0x2B
             *buf        = 'I';
             *(buf + 1)  = 'n';
             *(buf + 2)  = 'f';
             *(buf + 3)  = '\0';
-            return 3;
+            return len;
         }
         else {
+            len = JIMIC_MAX(filed_width, 4);
+            filed_width -= 4;
+            while (filed_width > 0) {
+                *buf++ = ' ';
+                filed_width--;
+            }
             // '-', 0x2D
 //          *buf        = '+' + ((f64->high & JM_DOUBLE_SIGN_BIT32) >> 30);
             *buf        = '-';
@@ -174,7 +192,7 @@ jmc_dtos(jm_char *buf, double val, unsigned int filed_width, int precision)
             *(buf + 2)  = 'n';
             *(buf + 3)  = 'f';
             *(buf + 4)  = '\0';
-            return 4;
+            return len;
         }
     }
 }
@@ -185,7 +203,7 @@ JMC_DECLARE_NONSTD(int)
 JMC_INLINE_NONSTD(int)
 #endif
 jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
-            unsigned int fill, unsigned int filed_width, int precision)
+            unsigned int fill, int filed_width, int precision)
 {
     int len;
     int64_t i64;
@@ -193,7 +211,6 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
     uint64_t scale, frac;
     fuint64_s *f64;
     unsigned int n;
-    int filed_width2;
     int num_width;
 #if 0
     static const uint32_t scales32[] = {
@@ -219,8 +236,6 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
     f64 = (fuint64_s *)&val;
     // is NaN or INF ? (exponent is maxium ?)
     if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
-
-        filed_width2 = (int)filed_width;
         if (precision > 0) {
 #if 0
             if (precision <= 10) {
@@ -238,7 +253,7 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
                 for (n = precision; n > 0; --n)
                     scale32 *= 10;
                 scale = scale32;
-        }
+            }
             else {
                 jimic_assert(precision > 10 && precision <= 20);
                 scale = 10000000000;
@@ -251,17 +266,17 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
             for (n = precision; n > 0; --n)
                 scale *= 10;
 #endif
-            num_width = filed_width2 - precision - 1;
-    }
+            num_width = filed_width - precision - 1;
+        }
         else if (precision < 0) {
             jimic_assert(precision < 0);
             precision = FMT_DEFAULT_DOUBLE_PRECISION;
             scale = 1000000;
-            num_width = filed_width2 - FMT_DEFAULT_DOUBLE_PRECISION - 1;
+            num_width = filed_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
         }
         else {
             scale = 1;
-            num_width = filed_width2;
+            num_width = filed_width;
         }
 
         i64 = (int64_t)val;
@@ -282,16 +297,10 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
         }
 
         // for integer part of double
-        if ((flag & FMT_ALIGN_LEFT) != 0) {
-            len = jmc_i64toa_radix10_ex(buf, -1, i64, flag, fill, 0, 0);
-        }
-        else {
-            if (num_width < 0)
-                num_width = 0;
-            len = jmc_i64toa_radix10_ex(buf, -1, i64, flag, fill, num_width, num_width);
-        }
-            
-        filed_width2 -= len;
+        if (((flag & FMT_ALIGN_LEFT) != 0) || (num_width < 0))
+            num_width = 0;
+        len = jmc_i64toa_radix10_ex(buf, -1, i64, flag, fill, num_width, num_width);
+        filed_width -= len;
         buf += len;
 
         if (precision > 0) {
@@ -299,13 +308,13 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
             *buf++ = '.';
 
             // for fractional part of double
-            if (precision >= filed_width2 - 1) {
+            if (precision >= filed_width - 1) {
                 len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
-                                             '0', precision, filed_width2 - 1) + 1;
+                                             '0', precision, filed_width - 1) + 1;
             }
             else {
                 len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
-                                             '0', filed_width2 - 1, precision) + 1;
+                                             '0', filed_width - 1, precision) + 1;
             }
         }
         return len;
@@ -313,31 +322,135 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
     else if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
              || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)) {
         // is NaN, not a number
-        *buf        = 'N';
-        *(buf + 1)  = 'a';
-        *(buf + 2)  = 'N';
-        *(buf + 3)  = '\0';
-        return 3;
+        len = JIMIC_MAX(filed_width, 3);
+        filed_width -= 3;
+        if ((flag & FMT_ALIGN_LEFT) != 0) {
+            // align to left
+            *buf        = 'N';
+            *(buf + 1)  = 'a';
+            *(buf + 2)  = 'N';
+            *(buf + 3)  = ' ';
+            buf += 3;
+            while (filed_width > 0) {
+                *buf++ = ' ';
+                filed_width--;
+            }
+            *buf = '\0';
+            return len;
+        }
+        else {
+            // align to right
+            while (filed_width > 0) {
+                *buf++ = ' ';
+                filed_width--;
+            }
+            *buf        = 'N';
+            *(buf + 1)  = 'a';
+            *(buf + 2)  = 'N';
+            *(buf + 3)  = '\0';
+            return len;
+        }
     }
     else {
         // is +INF or -INF
         if ((f64->high & JM_DOUBLE_SIGN_BIT32) == 0) {
-            // '+', 0x2B
-            *buf        = 'I';
-            *(buf + 1)  = 'n';
-            *(buf + 2)  = 'f';
-            *(buf + 3)  = '\0';
-            return 3;
+            if ((flag & FMT_PLUS_FLAG) == 0) {
+                len = JIMIC_MAX(filed_width, 3);
+                filed_width -= 3;
+                if ((flag & FMT_ALIGN_LEFT) != 0) {
+                    // align to left
+                    *buf        = 'I';
+                    *(buf + 1)  = 'n';
+                    *(buf + 2)  = 'f';
+                    *(buf + 3)  = ' ';
+                    buf += 3;
+                    while (filed_width > 0) {
+                        *buf++ = ' ';
+                        filed_width--;
+                    }
+                    *buf = '\0';
+                    return len;
+                }
+                else {
+                    // align to right
+                    while (filed_width > 0) {
+                        *buf++ = ' ';
+                        filed_width--;
+                    }
+                    *buf        = 'I';
+                    *(buf + 1)  = 'n';
+                    *(buf + 2)  = 'f';
+                    *(buf + 3)  = '\0';
+                    return len;
+                }
+            }
+            else {
+                len = JIMIC_MAX(filed_width, 4);
+                filed_width -= 4;
+                if ((flag & FMT_ALIGN_LEFT) != 0) {
+                    // align to left
+                    // '+', 0x2B
+                    *buf        = '+';
+                    *(buf + 1)  = 'I';
+                    *(buf + 2)  = 'n';
+                    *(buf + 3)  = 'f';
+                    buf += 4;
+                    while (filed_width > 0) {
+                        *buf++ = ' ';
+                        filed_width--;
+                    }
+                    *buf = '\0';
+                    return len;
+                }
+                else {
+                    // align to right
+                    while (filed_width > 0) {
+                        *buf++ = ' ';
+                        filed_width--;
+                    }
+                    // '+', 0x2B
+                    *buf        = '+';
+                    *(buf + 1)  = 'I';
+                    *(buf + 2)  = 'n';
+                    *(buf + 3)  = 'f';
+                    *(buf + 4)  = '\0';
+                    return len;
+                }
+            }
+
         }
         else {
-            // '-', 0x2D
-//          *buf        = '+' + ((f64->high & JM_DOUBLE_SIGN_BIT32) >> 30);
-            *buf        = '-';
-            *(buf + 1)  = 'I';
-            *(buf + 2)  = 'n';
-            *(buf + 3)  = 'f';
-            *(buf + 4)  = '\0';
-            return 4;
+            len = JIMIC_MAX(filed_width, 4);
+            filed_width -= 4;
+            if ((flag & FMT_ALIGN_LEFT) != 0) {
+                // align to left
+                // '-', 0x2D
+                *buf        = '-';
+                *(buf + 1)  = 'I';
+                *(buf + 2)  = 'n';
+                *(buf + 3)  = 'f';
+                buf += 4;
+                while (filed_width > 0) {
+                    *buf++ = ' ';
+                    filed_width--;
+                }
+                *buf = '\0';
+                return len;
+            }
+            else {
+                // align to right
+                while (filed_width > 0) {
+                    *buf++ = ' ';
+                    filed_width--;
+                }
+                // '-', 0x2D
+                *buf        = '-';
+                *(buf + 1)  = 'I';
+                *(buf + 2)  = 'n';
+                *(buf + 3)  = 'f';
+                *(buf + 4)  = '\0';
+                return len;
+            }
         }
     }
 }
