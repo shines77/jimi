@@ -233,52 +233,52 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
         return 0;
     }
 
+    if (precision > 0) {
+#if 0
+        if (precision <= 10) {
+            jimic_assert(precision >= 0 && precision <= 10);
+            scale = scales32[precision];
+        }
+        else {
+            jimic_assert(precision > 10 && precision <= 20);
+            scale = scales64[precision - 11];
+        }
+#elif 1
+        if (precision <= 10) {
+            jimic_assert(precision >= 0 && precision <= 10);
+            scale32 = 1;
+            for (n = precision; n > 0; --n)
+                scale32 *= 10;
+            scale = scale32;
+        }
+        else {
+            jimic_assert(precision > 10 && precision <= 20);
+            scale = 10000000000;
+            for (n = precision - 11; n > 0; --n)
+                scale *= 10;
+        }
+#else
+        jimic_assert(precision >= 0 && precision <= 20);
+        scale = 1;
+        for (n = precision; n > 0; --n)
+            scale *= 10;
+#endif
+        num_width = filed_width - precision - 1;
+    }
+    else if (precision < 0) {
+        jimic_assert(precision < 0);
+        precision = FMT_DEFAULT_DOUBLE_PRECISION;
+        scale = 1000000;
+        num_width = filed_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
+    }
+    else {
+        scale = 1;
+        num_width = filed_width;
+    }
+
     f64 = (fuint64_s *)&val;
     // is NaN or INF ? (exponent is maxium ?)
     if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
-        if (precision > 0) {
-#if 0
-            if (precision <= 10) {
-                jimic_assert(precision >= 0 && precision <= 10);
-                scale = scales32[precision];
-            }
-            else {
-                jimic_assert(precision > 10 && precision <= 20);
-                scale = scales64[precision - 11];
-            }
-#elif 1
-            if (precision <= 10) {
-                jimic_assert(precision >= 0 && precision <= 10);
-                scale32 = 1;
-                for (n = precision; n > 0; --n)
-                    scale32 *= 10;
-                scale = scale32;
-            }
-            else {
-                jimic_assert(precision > 10 && precision <= 20);
-                scale = 10000000000;
-                for (n = precision - 11; n > 0; --n)
-                    scale *= 10;
-            }
-#else
-            jimic_assert(precision >= 0 && precision <= 20);
-            scale = 1;
-            for (n = precision; n > 0; --n)
-                scale *= 10;
-#endif
-            num_width = filed_width - precision - 1;
-        }
-        else if (precision < 0) {
-            jimic_assert(precision < 0);
-            precision = FMT_DEFAULT_DOUBLE_PRECISION;
-            scale = 1000000;
-            num_width = filed_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
-        }
-        else {
-            scale = 1;
-            num_width = filed_width;
-        }
-
         i64 = (int64_t)val;
         //if (val >= 0.0) {
         if (i64 >= 0) {

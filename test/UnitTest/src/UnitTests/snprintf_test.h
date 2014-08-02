@@ -34,6 +34,8 @@ void Snprintf_Preformance_Test_Double2();
 
 void Snprintf_Preformance_Test_Double3();
 
+void Snprintf_Preformance_Test_Double4();
+
 #ifdef __cplusplus
 }
 #endif
