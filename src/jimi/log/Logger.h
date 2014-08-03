@@ -129,7 +129,7 @@ using namespace std;
 #define LOG_TITLE_MIN_LENGTH        (LOG_TITLE_EDGE_LENGTH * 2 + 2)
 #define LOG_TITLE_STR_BEGIN         "Begin"
 #define LOG_TITLE_STR_END           "End"
-#define LOG_TITLE_STR_REPEAT_SEC    "========="
+#define LOG_TITLE_STR_REPEAT_SEC    "========"
 #define LOG_TITLE_STR_REPEAT        "="
 
 ////////////////////////////////////////////////////////////////
