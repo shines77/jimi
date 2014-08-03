@@ -28,7 +28,10 @@ int jimi_getch(void)
 int jimi_getche(void)
 {
     int ch = _getch();
-    printf("%d", ch);
+    if (ch != EOF)
+        printf("%c", (char)ch);
+    else
+        printf("EOF: (%d)", ch);
     return ch;
 }
 
@@ -104,7 +107,10 @@ int jimi_getch(void)
 int jimi_getche(void)
 {
     int ch = _getch();
-    printf("%d", ch);
+    if (ch != EOF)
+        printf("%c", (char)ch);
+    else
+        printf("EOF: (%d)", ch);
     return ch;
 }
 
