@@ -24,15 +24,15 @@ void init_terminal_os(int echo);
 void reset_terminal_os(void);
 
 /* Read 1 character - echo defines echo mode */
-char jimi_getch_term(int echo);
+int jimi_getch_term(int echo);
 
 #endif  /* __linux__ */
 
 /* Read 1 character without echo */
-char jimi_getch(void);
+int jimi_getch(void);
 
 /* Read 1 character with echo */
-char jimi_getche(void);
+int jimi_getche(void);
 
 void jimi_sleep(int millisec);
 

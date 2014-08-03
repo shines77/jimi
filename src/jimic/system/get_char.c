@@ -19,15 +19,15 @@
 #if defined(__MINGW32__)
 
 /* Read 1 character without echo */
-char jimi_getch(void)
+int jimi_getch(void)
 {
     return _getch();
 }
 
 /* Read 1 character with echo */
-char jimi_getche(void)
+int jimi_getche(void)
 {
-    char ch = _getch();
+    int ch = _getch();
     printf("%d", ch);
     return ch;
 }
@@ -66,9 +66,9 @@ void reset_terminal_os(void)
 }
 
 /* Read 1 character - echo defines echo mode */
-char jimi_getch_term(int echo)
+int jimi_getch_term(int echo)
 {
-    char ch;
+    int ch;
     init_terminal_os(echo);
     ch = getchar();
     reset_terminal_os();
@@ -76,13 +76,13 @@ char jimi_getch_term(int echo)
 }
 
 /* Read 1 character without echo */
-char jimi_getch(void)
+int jimi_getch(void)
 {
     return jimi_getch_term(0);
 }
 
 /* Read 1 character with echo */
-char jimi_getche(void)
+int jimi_getche(void)
 {
     return jimi_getch_term(1);
 }
@@ -95,15 +95,15 @@ void jimi_sleep(int millisec)
 #elif defined(_MSC_VER)
 
 /* Read 1 character without echo */
-char jimi_getch(void)
+int jimi_getch(void)
 {
     return _getch();
 }
 
 /* Read 1 character with echo */
-char jimi_getche(void)
+int jimi_getche(void)
 {
-    char ch = _getch();
+    int ch = _getch();
     printf("%d", ch);
     return ch;
 }
@@ -116,15 +116,15 @@ void jimi_sleep(int millisec)
 #else  /* other unknown os */
 
 /* Read 1 character without echo */
-char jimi_getch(void)
+int jimi_getch(void)
 {
-    return -1;
+    return (int)-1;
 }
 
 /* Read 1 character with echo */
-char jimi_getche(void)
+int jimi_getche(void)
 {
-    return -1;
+    return (int)-1;
 }
 
 void jimi_sleep(int millisec)

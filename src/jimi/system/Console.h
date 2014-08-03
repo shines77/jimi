@@ -61,8 +61,12 @@ public:
         }
         else {
             keyCode = jimi_getch();
-            if (echoInput)
-                printf("%c", keyCode);
+            if (echoInput) {
+                if (keyCode != EOF)
+                    printf("%c", (char)keyCode);
+                else
+                    printf("EOF: (%d)", keyCode);
+            }
         }
         return keyCode;
     }
