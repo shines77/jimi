@@ -2601,7 +2601,7 @@ int UnitTest_Main(int argc, char *argv[])
     String_Snprintf_Test();
   #endif
 
-  #if 0
+  #if 1
     Sprintf_Preformance_Test_Integer();
 
     Snprintf_Preformance_Test_Integer1();

@@ -10,7 +10,11 @@
 #include <jimic/core/jimic_def.h>
 
 #ifndef JMC_DTOS_INLINE_DECLARE
-#define JMC_DTOS_INLINE_DECLARE         0
+#define JMC_DTOS_INLINE_DECLARE             0
+#endif
+
+#ifndef JMC_STRNCPY_EX_INLINE_DECLARE
+#define JMC_STRNCPY_EX_INLINE_DECLARE       0
 #endif
 
 #ifdef __cplusplus
@@ -156,9 +160,19 @@ jmc_strncpy_null(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, s
 JMC_INLINE_NONSTD(size_t)
 jmc_strncpy_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count);
 
+#if defined(JMC_STRNCPY_EX_INLINE_DECLARE) && (JMC_STRNCPY_EX_INLINE_DECLARE != 0)
+
 JMC_INLINE_NONSTD(size_t)
 jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
                unsigned int flag, unsigned int fill, unsigned int width, int length);
+
+#else  /* !JMC_STRNCPY_EX_INLINE_DECLARE */
+
+JMC_DECLARE_NONSTD(size_t)
+jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
+               unsigned int flag, unsigned int fill, unsigned int width, int length);
+
+#endif  /* JMC_STRNCPY_EX_INLINE_DECLARE */
 
 #ifdef __cplusplus
 }

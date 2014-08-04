@@ -18,10 +18,10 @@
 #include <float.h>
 #include <limits.h>     // for UINT_MAX
 
-#if !defined(JMC_DTOS_INLINE_DECLARE) || (JMC_DTOS_INLINE_DECLARE == 0)
-JMC_DECLARE_NONSTD(int)
-#else
+#if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
 JMC_INLINE_NONSTD(int)
+#else
+JMC_DECLARE_NONSTD(int)
 #endif
 jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
 {
@@ -197,10 +197,10 @@ jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
     }
 }
 
-#if !defined(JMC_DTOS_INLINE_DECLARE) || (JMC_DTOS_INLINE_DECLARE == 0)
-JMC_DECLARE_NONSTD(int)
-#else
+#if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
 JMC_INLINE_NONSTD(int)
+#else
+JMC_DECLARE_NONSTD(int)
 #endif
 jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
             unsigned int fill, int filed_width, int precision)
@@ -462,10 +462,10 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
     }
 }
 
-#if !defined(JMC_DTOS_INLINE_DECLARE) || (JMC_DTOS_INLINE_DECLARE == 0)
-JMC_DECLARE_NONSTD(int)
-#else
+#if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
 JMC_INLINE_NONSTD(int)
+#else
+JMC_DECLARE_NONSTD(int)
 #endif
 jmc_dtos_ex2(jm_char *buf, size_t count, double val, unsigned int flag,
              unsigned int fill, int filed_width, int precision)
@@ -804,6 +804,131 @@ jmc_dtos_ex2(jm_char *buf, size_t count, double val, unsigned int flag,
             }
         }
     }
+}
+
+#if defined(JMC_STRNCPY_EX_INLINE_DECLARE) && (JMC_STRNCPY_EX_INLINE_DECLARE != 0)
+JMC_INLINE_NONSTD(size_t)
+#else
+JMC_DECLARE_NONSTD(size_t)
+#endif
+jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
+               unsigned int flag, unsigned int fill, unsigned int width, int length)
+{
+    jm_char *end;
+    unsigned int copy_len;
+    int fill_cnt, padding;
+
+    jimic_assert(dest != NULL);
+    jimic_assert(src  != NULL);
+
+    count = JIMIC_MIN(count, countOfElements - 1);
+    copy_len = JIMIC_MIN(JIMIC_MIN((unsigned int)length, width), count);
+    end = (jm_char *)src + copy_len;
+
+    fill_cnt = width - copy_len;
+    if (fill_cnt <= 0) {
+        // copy from src
+        while (src < end) {
+            *dest++ = *src++;
+        }
+        *dest = '\0';
+        return copy_len;
+    }
+    else {
+        // when legnth <= 0 || legnth >= witdh, align to right or left is same
+        if (length <= 0 || length >= (int)width) {
+            // fill normal
+            while (fill_cnt > 0) {
+                *dest++ = fill;
+                fill_cnt--;
+            }
+
+            // copy from src
+            while (src < end) {
+                *dest++ = *src++;
+            }
+
+            *dest = '\0';
+            return width;
+        }
+        else {
+            if ((flag & FMT_ALIGN_LEFT) == 0) {
+                // align to right, when (length < width)
+                jimic_assert(length < (int)width);
+
+                // fill right padding space
+                padding = length - count;
+                if (padding > 0) {
+                    // fill right padding space
+                    while (fill_cnt > padding) {
+                        *dest++ = ' ';
+                        fill_cnt--;
+                    }
+
+                    // fill normal
+                    while (fill_cnt > 0) {
+                        *dest++ = fill;
+                        fill_cnt--;
+                    }
+                }
+                else {
+                    // fill right padding space
+                    while (fill_cnt > 0) {
+                        *dest++ = ' ';
+                        fill_cnt--;
+                    }
+                }
+
+                // copy from src
+                while (src < end) {
+                    *dest++ = *src++;
+                }
+
+                *dest = '\0';
+                return width;
+            }
+            else {
+                // align to left, when (length < width)
+                jimic_assert(length < (int)width);
+
+                // copy from src
+                while (src < end) {
+                    *dest++ = *src++;
+                }
+
+                // fill normal
+                padding = length - count;
+                if (padding > 0) {
+                    fill_cnt -= padding;
+                    while (padding > 0) {
+                        *dest++ = fill;
+                        padding--;
+                    }
+                }
+
+                // fill left padding space
+                while (fill_cnt > 0) {
+                    *dest++ = ' ';
+                    fill_cnt--;
+                }
+
+                //goto jmc_strncpy_ex_exit;
+                *dest = '\0';
+                return width;
+            }
+        }
+    }
+
+#if 0
+    // copy from src
+    while (src < end) {
+        *dest++ = *src++;
+    }
+
+//jmc_strncpy_ex_exit:
+    *dest = '\0';
+    return width;
+#endif
 }
 
 #endif  /* !_JIMIC_STRING_JMC_STRINGS_IMPL_INL_ */
