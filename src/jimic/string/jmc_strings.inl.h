@@ -1357,7 +1357,18 @@ jmc_strcpy(jm_char *dest, JM_CONST jm_char *src)
 JMC_INLINE_NONSTD(size_t)
 jmc_strncpy(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count)
 {
-    return 0;
+    count = JIMIC_MIN(count, countOfElements - 1);
+    memcpy(dest, src, count * sizeof(jm_char));
+    return count;
+}
+
+JMC_INLINE_NONSTD(size_t)
+jmc_strncpy_null(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count)
+{
+    count = JIMIC_MIN(count, countOfElements - 1);
+    // including the null terminator.
+    memcpy(dest, src, (count + 1) * sizeof(jm_char));
+    return count;
 }
 
 JMC_INLINE_NONSTD(size_t)
@@ -1378,12 +1389,14 @@ jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, siz
                unsigned int flag, unsigned int fill, unsigned int width, int length)
 {
     jm_char *end;
-    size_t copy_len, len;
+    unsigned int copy_len;
     int fill_cnt, padding;
+
+    jimic_assert(dest != NULL);
+    jimic_assert(src  != NULL);
+
     count = JIMIC_MIN(count, countOfElements - 1);
-    if (length < 0) length = 0;
     copy_len = JIMIC_MIN(JIMIC_MIN((unsigned int)length, width), count);
-    len = JIMIC_MAX(width, count);
     end = (jm_char *)src + copy_len;
 
     fill_cnt = width - copy_len;
@@ -1396,13 +1409,21 @@ jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, siz
         return copy_len;
     }
     else {
-        // when legnth == 0 || legnth >= witdh, align to right or left is same
-        if (length == 0 || length >= (int)width) {
+        // when legnth <= 0 || legnth >= witdh, align to right or left is same
+        if (length <= 0 || length >= (int)width) {
             // fill normal
-            do {
+            while (fill_cnt > 0) {
                 *dest++ = fill;
                 fill_cnt--;
-            } while (fill_cnt > 0);
+            }
+
+            // copy from src
+            while (src < end) {
+                *dest++ = *src++;
+            }
+
+            *dest = '\0';
+            return width;
         }
         else {
             if ((flag & FMT_ALIGN_LEFT) == 0) {
@@ -1431,24 +1452,32 @@ jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, siz
                         fill_cnt--;
                     }
                 }
+
+                // copy from src
+                while (src < end) {
+                    *dest++ = *src++;
+                }
+
+                *dest = '\0';
+                return width;
             }
             else {
                 // align to left, when (length < width)
                 jimic_assert(length < (int)width);
 
+                // copy from src
+                while (src < end) {
+                    *dest++ = *src++;
+                }
+
                 // fill normal
                 padding = length - count;
                 if (padding > 0) {
                     fill_cnt -= padding;
-                    do {
+                    while (padding > 0) {
                         *dest++ = fill;
                         padding--;
-                    } while (padding > 0);
-                }
-
-                // copy from src
-                while (src < end) {
-                    *dest++ = *src++;
+                    }
                 }
 
                 // fill left padding space
@@ -1456,19 +1485,24 @@ jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, siz
                     *dest++ = ' ';
                     fill_cnt--;
                 }
-                goto jmc_strncpy_ex_exit;
+
+                //goto jmc_strncpy_ex_exit;
+                *dest = '\0';
+                return width;
             }
         }
     }
 
+#if 0
     // copy from src
     while (src < end) {
         *dest++ = *src++;
     }
 
-jmc_strncpy_ex_exit:
+//jmc_strncpy_ex_exit:
     *dest = '\0';
-    return len;
+    return width;
+#endif
 }
 
 #endif  /* !_JIMIC_STRING_JMC_STRIGNS_INL_H_ */

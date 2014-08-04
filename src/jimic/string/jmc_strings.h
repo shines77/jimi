@@ -151,6 +151,9 @@ JMC_INLINE_NONSTD(size_t)
 jmc_strncpy(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count);
 
 JMC_INLINE_NONSTD(size_t)
+jmc_strncpy_null(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count);
+
+JMC_INLINE_NONSTD(size_t)
 jmc_strncpy_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count);
 
 JMC_INLINE_NONSTD(size_t)

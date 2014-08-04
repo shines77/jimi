@@ -2614,6 +2614,10 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Double3();
     Snprintf_Preformance_Test_Double4();
 
+    Snprintf_Preformance_Test_String1();
+    Snprintf_Preformance_Test_String2();
+    Snprintf_Preformance_Test_String3();
+
     //OStringStream_Performance_Test();
 
     if (true && 1) {

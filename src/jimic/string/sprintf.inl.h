@@ -138,7 +138,7 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
     jm_char        *s;
     int             i32;
     double          dbl;
-    jm_uchar        ch;
+    jm_char         ch;
     void           *p;
     unsigned int    u32;
     long            l32;
@@ -427,18 +427,23 @@ vslprintf_out_double:
                 case 's':
 vslprintf_out_string:
                     // char *
-                    s = va_arg(args, jm_char *);
+                    s = (jm_char *)va_arg(args, jm_char *);
                     len = jmc_strlen(s);
                     if ((buf + JIMIC_MAX(len, width)) >= end)
                         goto vslprintf_exit;
                     //if (width == 0 && flag == FMT_DEFAULT_FLAG) {
                     if ((width | flag) == (0 | FMT_DEFAULT_FLAG)) {
-                        len = jmc_strncpy(buf, (size_t)-1, s, len);
+                        len = jmc_strncpy_null(buf, (size_t)-1, s, len);
                         buf += len;
+                        //*buf = '\0';
                         cur++;
                         goto vslprintf_try_next;
                     }
                     else {
+#ifdef _DEBUG
+                        if (len == 21)
+                            len = len;
+#endif
                         flag |= align;
                         len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
                         buf += len;
@@ -447,10 +452,12 @@ vslprintf_out_string:
                     }
 
                 case 'c':
-                    ch = (jm_uchar)va_arg(args, int);
+                    // char
+                    ch = (jm_char)va_arg(args, int);
                     *buf++ = (jm_char)ch;
                     if (buf >= end)
                         goto vslprintf_exit;
+                    *buf++ = (jm_char)'\0';
                     cur++;
                     goto vslprintf_try_next;
 

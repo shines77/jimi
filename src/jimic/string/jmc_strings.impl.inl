@@ -303,14 +303,26 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
             *buf++ = '.';
 
             // for fractional part of double
-            if (precision >= filed_width - 1) {
+#if 0
+            filed_width--;
+            if (precision < filed_width) {
+                num_width = precision;
+                precision = filed_width;
+                filed_width = num_width;
+            }
+            len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                                         '0', precision, filed_width - 1) + 1;
+#else
+            filed_width--;
+            if (precision >= filed_width) {
                 len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
-                                             '0', precision, filed_width - 1) + 1;
+                                             '0', precision, filed_width) + 1;
             }
             else {
                 len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
-                                             '0', filed_width - 1, precision) + 1;
+                                             '0', filed_width, precision) + 1;
             }
+#endif
         }
         return len;
     }
