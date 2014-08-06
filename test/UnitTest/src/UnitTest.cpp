@@ -69,6 +69,9 @@
 #include <functional>
 #include <cctype>
 
+#include <type_traits>
+#include <array>        // for std::array
+
 #if defined(JIMI_HAS_BOOST_LOCALE) && (JIMI_HAS_BOOST_LOCALE != 0)
 #include <boost/locale.hpp>
 #include <boost/locale/encoding.hpp>
@@ -2314,6 +2317,85 @@ void template_inherit_test()
     //delete a;
 }
 
+class Widget
+{
+public:
+    Widget(void) : data_(0)
+                    { std::cout << "ctor" << std::endl; }
+    Widget(unsigned int data) : data_(data)
+                    { std::cout << "ctor" << std::endl; }
+    Widget(const Widget &src) : data_(src.getData())
+                    { std::cout << "copy assignment" << std::endl; }
+    ~Widget()       { std::cout << "~dtor, data = " << getData() << std::endl; }
+
+    unsigned int getData() const { return data_; }
+    void setData(unsigned int data) { data_ = data; }
+    
+    void f()        { std::cout << "Widget::f(),  data = " << getData() << std::endl; }
+    void cf() const { std::cout << "Widget::cf(), data = " << getData() << std::endl; }
+
+private:
+    unsigned int data_;
+};
+
+Widget func(const Widget & w)
+{
+    std::cout << "func(): data = " << w.getData() << std::endl;
+    return w;
+}
+
+Widget && func_rvalue(const Widget & w)
+{
+    std::cout << "func_rvalue(): data = " << w.getData() << std::endl;
+    return std::move(const_cast<Widget &>(w));
+    //return std::forward<Widget>(const_cast<Widget &>(w));
+}
+
+template <class T, size_t N>
+class ObjectArray
+{
+public:
+    typedef T (&ArrayType)[N];
+
+    ObjectArray()  {}
+    ~ObjectArray() {}
+
+    ArrayType getArray() { return array; }
+
+private:
+    T array[N];
+};
+
+typedef Widget (&WidgetArray8)[8];
+
+WidgetArray8 getWidgetArray(const WidgetArray8 &array)
+{
+    return array;
+}
+
+void auto_rvalue_test()
+{
+    std::cout << "----------- start ------------" << std::endl;
+
+    //auto && p = func_rvalue(Widget(100));
+    auto && p = func(Widget(100));
+    //Widget p = func(Widget(100));
+    p.setData(199);
+    p.f();
+    p.cf();
+
+    Widget widgetArray[8] = { 0 };
+    WidgetArray8 array8 = getWidgetArray(widgetArray);
+
+    typedef ObjectArray<Widget, 8>::ArrayType ObjectArray8;
+    ObjectArray<Widget, 8> objArray;
+    ObjectArray8 array8b = objArray.getArray();
+
+    std::array<Widget, 8> a;
+
+    std::cout << "------------  end  -----------" << std::endl;
+}
+
 void Double_And_Float_Test()
 {
     char buf[128];
@@ -2466,9 +2548,18 @@ int UnitTest_Main(int argc, char *argv[])
 
 #if 0
     if (true) {
-        template_inherit_test();
-        ::system("pause");
+        auto_rvalue_test();
         sLog.log_end();
+        Console.ReadKey();
+        return 0;
+    }
+#endif
+
+#if 0
+    if (true) {
+        template_inherit_test();
+        sLog.log_end();
+        ::system("pause");
         return 0;
     }
 #endif

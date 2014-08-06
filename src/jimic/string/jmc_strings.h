@@ -166,11 +166,19 @@ JMC_INLINE_NONSTD(size_t)
 jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
                unsigned int flag, unsigned int fill, unsigned int width, int length);
 
+JMC_INLINE_NONSTD(size_t)
+jmc_strncpy_ex_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
+                    unsigned int flag, unsigned int fill, unsigned int width, int length);
+
 #else  /* !JMC_STRNCPY_EX_INLINE_DECLARE */
 
 JMC_DECLARE_NONSTD(size_t)
 jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
                unsigned int flag, unsigned int fill, unsigned int width, int length);
+
+JMC_DECLARE_NONSTD(size_t)
+jmc_strncpy_ex_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
+                    unsigned int flag, unsigned int fill, unsigned int width, int length);
 
 #endif  /* JMC_STRNCPY_EX_INLINE_DECLARE */
 

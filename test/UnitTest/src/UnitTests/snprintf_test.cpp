@@ -571,9 +571,9 @@ void Snprintf_Preformance_Test_Integer3()
 #if defined(VSNPRINTF_SHORT_DISPLAY) && (VSNPRINTF_SHORT_DISPLAY != 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
-        printf("jmc_snprintf()  preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
+        printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
   #else
-        printf("jmc_snprintf()  preformance is snprintf() %0.3f X times.\n\n", timeReference / time);
+        printf("jmc_snprintf() preformance is snprintf() %0.3f X times.\n\n", timeReference / time);
   #endif // _MSC_VER
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");

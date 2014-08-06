@@ -431,25 +431,80 @@ vslprintf_out_string:
                     len = jmc_strlen(s);
                     if ((buf + JIMIC_MAX(len, width)) >= end)
                         goto vslprintf_exit;
+#if 1
+                    if (len < 256) {
+                        //if (width == 0 && flag == FMT_DEFAULT_FLAG) {
+                        if ((width | flag) == (0 | FMT_DEFAULT_FLAG)) {
+                            len = jmc_strncpy(buf, (size_t)-1, s, len);
+                            buf += len;
+                            // 在snprintf内部, 写入'\0'这个操作是多余的, 我们在snprintf结尾总会补一个'\0'
+                            //*buf = (jm_char)'\0';
+                            cur++;
+                            goto vslprintf_try_next;
+                        }
+                        else {
+                            flag |= align;
+                            len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
+                            buf += len;
+                            cur++;
+                            goto vslprintf_try_next;
+                        }
+                    }
+                    else {
+                        //if (width == 0 && flag == FMT_DEFAULT_FLAG) {
+                        if ((width | flag) == (0 | FMT_DEFAULT_FLAG)) {
+                            len = jmc_strncpy_fast(buf, (size_t)-1, s, len);
+                            buf += len;
+                            // 在snprintf内部, 写入'\0'这个操作是多余的, 我们在snprintf结尾总会补一个'\0'
+                            //*buf = (jm_char)'\0';
+                            cur++;
+                            goto vslprintf_try_next;
+                        }
+                        else {
+                            flag |= align;
+                            len = jmc_strncpy_ex_fast(buf, (size_t)-1, s, len, flag, fill, width, precision);
+                            buf += len;
+                            cur++;
+                            goto vslprintf_try_next;
+                        }
+                    }
+#else
                     //if (width == 0 && flag == FMT_DEFAULT_FLAG) {
                     if ((width | flag) == (0 | FMT_DEFAULT_FLAG)) {
-                        len = jmc_strncpy_null(buf, (size_t)-1, s, len);
+                        len = jmc_strncpy(buf, (size_t)-1, s, len);
                         buf += len;
-                        //*buf = '\0';
+                        // 在snprintf内部, 写入'\0'这个操作是多余的, 我们在snprintf结尾总会补一个'\0'
+                        //*buf = (jm_char)'\0';
                         cur++;
                         goto vslprintf_try_next;
                     }
                     else {
-#ifdef _DEBUG
-                        if (len == 21)
-                            len = len;
-#endif
                         flag |= align;
-                        len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
+#if 0
+                        if (len < 256) {
+                            len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
+                            buf += len;
+                            cur++;
+                            goto vslprintf_try_next;
+                        }
+                        else {
+                            len = jmc_strncpy_ex_fast(buf, (size_t)-1, s, len, flag, fill, width, precision);
+                            buf += len;
+                            cur++;
+                            goto vslprintf_try_next;
+                        }
+#else
+                        if (len < 256)
+                            len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
+                        else
+                            len = jmc_strncpy_ex_fast(buf, (size_t)-1, s, len, flag, fill, width, precision);
+
                         buf += len;
                         cur++;
                         goto vslprintf_try_next;
+#endif
                     }
+#endif
 
                 case 'c':
                     // char
@@ -457,7 +512,8 @@ vslprintf_out_string:
                     *buf++ = (jm_char)ch;
                     if (buf >= end)
                         goto vslprintf_exit;
-                    *buf++ = (jm_char)'\0';
+                    // 在snprintf内部, 写入'\0'这个操作是多余的, 我们在snprintf结尾总会补一个'\0'
+                    //*buf = (jm_char)'\0';
                     cur++;
                     goto vslprintf_try_next;
 
@@ -625,40 +681,8 @@ vslprintf_out_string:
 
                 default:
 #if 0
-                    if (c >= 'A' && c <= 'Z') {
-                        if (c == 'X') {
-                            // HEX32
-                            if ((buf + 16) >= end)
-                                goto vslprintf_exit;
-                            hex32 = va_arg(args, uint32_t);
-                            len = jmc_uitohex(buf, hex32, TRUE);
-                            buf += len;
-                            cur++;
-                            goto vslprintf_try_next;
-                        }
-                        else if (c == 'U') {
-                            // uint64_t
-                            if ((buf + 20) >= end)
-                                goto vslprintf_exit;
-                            u64 = va_arg(args, uint64_t);
-                            len = jmc_u64toa_radix10(buf, u64);
-                            buf += len;
-                            cur++;
-                            goto vslprintf_try_next;
-                        }
-                        else if (c == 'L') {
-                            // unsigned long
-                            if ((buf + 10) >= end)
-                                goto vslprintf_exit;
-                            ul32 = va_arg(args, unsigned long);
-                            len = jmc_ultoa_radix10(buf, ul32);
-                            buf += len;
-                            cur++;
-                            goto vslprintf_try_next;
-                        }
-                    }
 #if 0
-                    else if (c == '\0') {
+                    if (c == '\0') {
                         //goto vslprintf_exit;
                         goto vslprintf_try_next;
                     }

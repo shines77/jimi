@@ -605,6 +605,7 @@ jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
         flag |= FMT_SIGN_MASK;
         val = -val;
     }
+
     return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length);
 #elif 0
     if ((flag & FMT_SPACE_FLAG) == 0) {
@@ -1357,15 +1358,26 @@ jmc_strcpy(jm_char *dest, JM_CONST jm_char *src)
 JMC_INLINE_NONSTD(size_t)
 jmc_strncpy(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count)
 {
-    count = JIMIC_MIN(count, countOfElements - 1);
-    memcpy(dest, src, count * sizeof(jm_char));
+    jm_char *end;
+    if (countOfElements == (size_t)-1);
+        // do nothing !!
+    else
+        count = JIMIC_MIN(count, countOfElements - 1);
+    end = (jm_char *)src + count;
+    while (src < end) {
+        *dest++ = *src++;
+    }
+    //*dest = '\0';
     return count;
 }
 
 JMC_INLINE_NONSTD(size_t)
 jmc_strncpy_null(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count)
 {
-    count = JIMIC_MIN(count, countOfElements - 1);
+    if (countOfElements == (size_t)-1);
+        // do nothing !!
+    else
+        count = JIMIC_MIN(count, countOfElements - 1);
     // has including the null terminator.
     memcpy(dest, src, (count + 1) * sizeof(jm_char));
     return count;
@@ -1374,13 +1386,11 @@ jmc_strncpy_null(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, s
 JMC_INLINE_NONSTD(size_t)
 jmc_strncpy_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count)
 {
-    jm_char *end;
-    count = JIMIC_MIN(count, countOfElements - 1);
-    end = (jm_char *)src + count;
-    while (src < end) {
-        *dest++ = *src++;
-    }
-    *dest = '\0';
+    if (countOfElements == (size_t)-1);
+        // do nothing !!
+    else
+        count = JIMIC_MIN(count, countOfElements - 1);
+    memcpy(dest, src, count * sizeof(jm_char));
     return count;
 }
 
