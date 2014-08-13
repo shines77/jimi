@@ -26,6 +26,10 @@
 /* UINT的最大值 */
 #define JIMIC_UINT_MAX64                (0x00000000FFFFFFFFULL)
 
+#ifndef FMT_NULL_STRING
+#define FMT_NULL_STRING                 "(null)"
+#endif
+
 //
 // Printf() 输出格式控制
 // Reference: http://bbs.csdn.net/topics/330107715
@@ -1392,6 +1396,39 @@ jmc_strncpy_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, s
         count = JIMIC_MIN(count, countOfElements - 1);
     memcpy(dest, src, count * sizeof(jm_char));
     return count;
+}
+
+JMC_INLINE_NONSTD(size_t)
+jmc_out_null_string(jm_char *dest, size_t countOfElements)
+{
+    /* Write "(null)" if there's space.  */
+    if (countOfElements == (size_t)-1) {
+        *(dest + 0)  = '(';
+        *(dest + 1)  = 'n';
+        *(dest + 2)  = 'u';
+        *(dest + 3)  = 'l';
+        *(dest + 4)  = 'l';
+        *(dest + 5)  = ')';
+        *(dest + 6)  = '\0';
+        *(dest + 7)  = '\0';
+        return 6;
+    }
+    else {
+        if (countOfElements >= (size_t)sizeof(FMT_NULL_STRING)) {
+            *(dest + 0)  = '(';
+            *(dest + 1)  = 'n';
+            *(dest + 2)  = 'u';
+            *(dest + 3)  = 'l';
+            *(dest + 4)  = 'l';
+            *(dest + 5)  = ')';
+            *(dest + 6)  = '\0';
+            return 6;
+        }
+        else {
+            *dest = '\0';
+            return 0;
+        }
+    }
 }
 
 #if defined(JMC_STRNCPY_EX_INLINE_DECLARE) && (JMC_STRNCPY_EX_INLINE_DECLARE != 0)

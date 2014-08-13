@@ -806,9 +806,6 @@ jmc_dtos_ex2(jm_char *buf, size_t count, double val, unsigned int flag,
     }
 }
 
-/* jmc_strncpy_ex() 是否使用memcpy复制字符串 */
-#define JMC_STRNCPY_EX_FAST_USE_MEMCPY       1
-
 #if defined(JMC_STRNCPY_EX_INLINE_DECLARE) && (JMC_STRNCPY_EX_INLINE_DECLARE != 0)
 JMC_INLINE_NONSTD(size_t)
 #else
@@ -1037,6 +1034,168 @@ jmc_strncpy_ex_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src
                     *dest++ = *src++;
                 }
 #endif
+                // fill normal
+                padding = length - count;
+                if (padding > 0) {
+                    fill_cnt -= padding;
+                    while (padding > 0) {
+                        *dest++ = fill;
+                        padding--;
+                    }
+                }
+
+                // fill left padding space
+                while (fill_cnt > 0) {
+                    *dest++ = ' ';
+                    fill_cnt--;
+                }
+
+                return width;
+            }
+        }
+    }
+}
+
+/* 是否使用直接顺序写入字符串 */
+#define OUT_NULL_STRING_EX_DIRECT_WRITE     1
+
+#if defined(JMC_STRNCPY_EX_INLINE_DECLARE) && (JMC_STRNCPY_EX_INLINE_DECLARE != 0)
+JMC_INLINE_NONSTD(size_t)
+#else
+JMC_DECLARE_NONSTD(size_t)
+#endif
+jmc_out_null_string_ex(jm_char *dest, size_t countOfElements, unsigned int flag,
+                       unsigned int fill, unsigned int width, int length)
+{
+#if !defined(OUT_NULL_STRING_EX_DIRECT_WRITE) || (OUT_NULL_STRING_EX_DIRECT_WRITE == 0)
+    jm_char *end;
+    jm_char *src;
+#endif  /* OUT_NULL_STRING_EX_DIRECT_WRITE */
+    size_t count;
+    unsigned int copy_len;
+    int fill_cnt, padding;
+
+    jimic_assert(dest != NULL);
+
+    count = JIMIC_MIN(6, countOfElements - 1);
+    copy_len = JIMIC_MIN(JIMIC_MIN((unsigned int)length, width), count);
+
+    fill_cnt = width - copy_len;
+    if (fill_cnt <= 0) {
+        /* Write "(null)" if there's space.  */
+        if (copy_len >= (int)sizeof(FMT_NULL_STRING) - 1) {
+            *(dest + 0)  = '(';
+            *(dest + 1)  = 'n';
+            *(dest + 2)  = 'u';
+            *(dest + 3)  = 'l';
+            *(dest + 4)  = 'l';
+            *(dest + 5)  = ')';
+            *(dest + 6)  = '\0';
+            return 6;
+        }
+        else {
+            *dest = '\0';
+            return 0;
+        }
+    }
+    else {
+#if !defined(OUT_NULL_STRING_EX_DIRECT_WRITE) || (OUT_NULL_STRING_EX_DIRECT_WRITE == 0)
+        src = FMT_NULL_STRING;
+        end = (jm_char *)src + copy_len;
+#endif  /* OUT_NULL_STRING_EX_DIRECT_WRITE */
+
+        // when legnth <= 0 || legnth >= witdh, align to right or left is same
+        if (length <= 0 || length >= (int)width) {
+            // fill normal
+            while (fill_cnt > 0) {
+                *dest++ = fill;
+                fill_cnt--;
+            }
+
+#if defined(OUT_NULL_STRING_EX_DIRECT_WRITE) && (OUT_NULL_STRING_EX_DIRECT_WRITE != 0)
+            // copy from "(null)"
+            *(dest + 0)  = '(';
+            *(dest + 1)  = 'n';
+            *(dest + 2)  = 'u';
+            *(dest + 3)  = 'l';
+            *(dest + 4)  = 'l';
+            *(dest + 5)  = ')';
+            *(dest + 6)  = '\0';
+#else
+            // copy from src
+            while (src < end) {
+                *dest++ = *src++;
+            }
+#endif  /* OUT_NULL_STRING_EX_DIRECT_WRITE */
+            return width;
+        }
+        else {
+            if ((flag & FMT_ALIGN_LEFT) == 0) {
+                // align to right, when (length < width)
+                jimic_assert(length < (int)width);
+
+                // fill right padding space
+                padding = length - count;
+                if (padding > 0) {
+                    // fill right padding space
+                    while (fill_cnt > padding) {
+                        *dest++ = ' ';
+                        fill_cnt--;
+                    }
+
+                    // fill normal
+                    while (fill_cnt > 0) {
+                        *dest++ = fill;
+                        fill_cnt--;
+                    }
+                }
+                else {
+                    // fill right padding space
+                    while (fill_cnt > 0) {
+                        *dest++ = ' ';
+                        fill_cnt--;
+                    }
+                }
+
+#if defined(OUT_NULL_STRING_EX_DIRECT_WRITE) && (OUT_NULL_STRING_EX_DIRECT_WRITE != 0)
+                // copy from "(null)"
+                *(dest + 0) = '(';
+                *(dest + 1) = 'n';
+                *(dest + 2) = 'u';
+                *(dest + 3) = 'l';
+                *(dest + 4) = 'l';
+                *(dest + 5) = ')';
+                *(dest + 6) = '\0';
+#else
+                // copy from src
+                while (src < end) {
+                    *dest++ = *src++;
+                }
+#endif  /* OUT_NULL_STRING_EX_DIRECT_WRITE */
+
+                return width;
+            }
+            else {
+                // align to left, when (length < width)
+                jimic_assert(length < (int)width);
+
+#if defined(OUT_NULL_STRING_EX_DIRECT_WRITE) && (OUT_NULL_STRING_EX_DIRECT_WRITE != 0)
+                // copy from "(null)"
+                *(dest + 0) = '(';
+                *(dest + 1) = 'n';
+                *(dest + 2) = 'u';
+                *(dest + 3) = 'l';
+                *(dest + 4) = 'l';
+                *(dest + 5) = ')';
+                *(dest + 6) = '\0';
+                dest += 6;
+#else
+                // copy from src
+                while (src < end) {
+                    *dest++ = *src++;
+                }
+#endif  /* OUT_NULL_STRING_EX_DIRECT_WRITE */
+
                 // fill normal
                 padding = length - count;
                 if (padding > 0) {

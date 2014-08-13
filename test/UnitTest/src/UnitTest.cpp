@@ -139,6 +139,11 @@ NS_UNITEST_BEGIN
 #define SetCPUAffinityMask8(m1, m2, m3, m4, m5, m6, m7, m8) \
     ((SetCPUAffinityMask4(m5, m6, m7, m8) << 4) | SetCPUAffinityMask4(m1, m2, m3, m4))
 
+//
+// linux: sched_setaffinity()
+//        http://man7.org/linux/man-pages/man2/sched_setaffinity.2.html
+//
+
 void set_thread_affinity(uint32_t dwCPUMask)
 {
 #if defined(_MSC_VER)
@@ -2708,6 +2713,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_String1();
     Snprintf_Preformance_Test_String2();
     Snprintf_Preformance_Test_String3();
+    Snprintf_Preformance_Test_String4();
 
     //OStringStream_Performance_Test();
 

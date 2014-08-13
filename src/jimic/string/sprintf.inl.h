@@ -428,11 +428,48 @@ vslprintf_out_double:
 vslprintf_out_string:
                     // char *
                     s = (jm_char *)va_arg(args, jm_char *);
-                    len = jmc_strlen(s);
-                    if ((buf + JIMIC_MAX(len, width)) >= end)
-                        goto vslprintf_exit;
+                    if (s != NULL) {
+                        len = jmc_strlen(s);
+                        if ((buf + JIMIC_MAX(len, width)) >= end)
+                            goto vslprintf_exit;
 #if 1
-                    if (len < 256) {
+                        if (len < 256) {
+                            //if (width == 0 && flag == FMT_DEFAULT_FLAG) {
+                            if ((width | flag) == (0 | FMT_DEFAULT_FLAG)) {
+                                len = jmc_strncpy(buf, (size_t)-1, s, len);
+                                buf += len;
+                                // 在snprintf内部, 写入'\0'这个操作是多余的, 我们在snprintf结尾总会补一个'\0'
+                                //*buf = (jm_char)'\0';
+                                cur++;
+                                goto vslprintf_try_next;
+                            }
+                            else {
+                                flag |= align;
+                                len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
+                                buf += len;
+                                cur++;
+                                goto vslprintf_try_next;
+                            }
+                        }
+                        else {
+                            //if (width == 0 && flag == FMT_DEFAULT_FLAG) {
+                            if ((width | flag) == (0 | FMT_DEFAULT_FLAG)) {
+                                len = jmc_strncpy_fast(buf, (size_t)-1, s, len);
+                                buf += len;
+                                // 在snprintf内部, 写入'\0'这个操作是多余的, 我们在snprintf结尾总会补一个'\0'
+                                //*buf = (jm_char)'\0';
+                                cur++;
+                                goto vslprintf_try_next;
+                            }
+                            else {
+                                flag |= align;
+                                len = jmc_strncpy_ex_fast(buf, (size_t)-1, s, len, flag, fill, width, precision);
+                                buf += len;
+                                cur++;
+                                goto vslprintf_try_next;
+                            }
+                        }
+#else
                         //if (width == 0 && flag == FMT_DEFAULT_FLAG) {
                         if ((width | flag) == (0 | FMT_DEFAULT_FLAG)) {
                             len = jmc_strncpy(buf, (size_t)-1, s, len);
@@ -444,67 +481,55 @@ vslprintf_out_string:
                         }
                         else {
                             flag |= align;
-                            len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
+#if 0
+                            if (len < 256) {
+                                len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
+                                buf += len;
+                                cur++;
+                                goto vslprintf_try_next;
+                            }
+                            else {
+                                len = jmc_strncpy_ex_fast(buf, (size_t)-1, s, len, flag, fill, width, precision);
+                                buf += len;
+                                cur++;
+                                goto vslprintf_try_next;
+                            }
+#else
+                            if (len < 256)
+                                len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
+                            else
+                                len = jmc_strncpy_ex_fast(buf, (size_t)-1, s, len, flag, fill, width, precision);
+
                             buf += len;
                             cur++;
                             goto vslprintf_try_next;
+#endif
                         }
+#endif
                     }
                     else {
-                        //if (width == 0 && flag == FMT_DEFAULT_FLAG) {
+                        // string is null
+                        len = sizeof(FMT_NULL_STRING) - 1;
+                        if ((buf + JIMIC_MAX(len, width)) >= end)
+                            goto vslprintf_exit;
+
+                        /* Write "(null)" if there's space. */
+#if 1
                         if ((width | flag) == (0 | FMT_DEFAULT_FLAG)) {
-                            len = jmc_strncpy_fast(buf, (size_t)-1, s, len);
-                            buf += len;
-                            // 在snprintf内部, 写入'\0'这个操作是多余的, 我们在snprintf结尾总会补一个'\0'
-                            //*buf = (jm_char)'\0';
-                            cur++;
-                            goto vslprintf_try_next;
+                            len = jmc_out_null_string(buf, (size_t)-1);
                         }
                         else {
                             flag |= align;
-                            len = jmc_strncpy_ex_fast(buf, (size_t)-1, s, len, flag, fill, width, precision);
-                            buf += len;
-                            cur++;
-                            goto vslprintf_try_next;
+                            len = jmc_out_null_string_ex(buf, (size_t)-1, flag, fill, width, precision);
                         }
-                    }
 #else
-                    //if (width == 0 && flag == FMT_DEFAULT_FLAG) {
-                    if ((width | flag) == (0 | FMT_DEFAULT_FLAG)) {
-                        len = jmc_strncpy(buf, (size_t)-1, s, len);
-                        buf += len;
-                        // 在snprintf内部, 写入'\0'这个操作是多余的, 我们在snprintf结尾总会补一个'\0'
-                        //*buf = (jm_char)'\0';
-                        cur++;
-                        goto vslprintf_try_next;
-                    }
-                    else {
                         flag |= align;
-#if 0
-                        if (len < 256) {
-                            len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
-                            buf += len;
-                            cur++;
-                            goto vslprintf_try_next;
-                        }
-                        else {
-                            len = jmc_strncpy_ex_fast(buf, (size_t)-1, s, len, flag, fill, width, precision);
-                            buf += len;
-                            cur++;
-                            goto vslprintf_try_next;
-                        }
-#else
-                        if (len < 256)
-                            len = jmc_strncpy_ex(buf, (size_t)-1, s, len, flag, fill, width, precision);
-                        else
-                            len = jmc_strncpy_ex_fast(buf, (size_t)-1, s, len, flag, fill, width, precision);
-
+                        len = jmc_strncpy_ex(buf, (size_t)-1, FMT_NULL_STRING, len, flag, fill, width, precision);
+#endif
                         buf += len;
                         cur++;
                         goto vslprintf_try_next;
-#endif
                     }
-#endif
 
                 case 'c':
                     // char

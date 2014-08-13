@@ -1,0 +1,3 @@
+
+IocpServd.exe -uninstall
+pause
