@@ -18,6 +18,11 @@
     #ifndef JIMI_DECLARE_EXPORT
         #define JIMI_DECLARE_EXPORT
     #endif
+    #undef JIMIC_DECLARE_STATIC
+    #undef JIMIC_DECLARE_IMPORT
+    #ifndef JIMIC_DECLARE_EXPORT
+        #define JIMIC_DECLARE_EXPORT
+    #endif
 #elif defined(USE_DLL) || defined(JIMI_USE_DLL) || defined(JIMI_HAS_DLL) \
     || defined(JIMI_IMPORT) || defined(JIMI_DECLARE_IMPORT) || defined(DECLARE_IMPORT) \
     || defined(JIMI_USE_SHARED) || defined(USE_SHARED)
@@ -26,6 +31,11 @@
     #undef JIMI_DECLARE_EXPORT
     #ifndef JIMI_DECLARE_IMPORT
         #define JIMI_DECLARE_IMPORT
+    #endif
+    #undef JIMIC_DECLARE_STATIC
+    #undef JIMIC_DECLARE_EXPORT
+    #ifndef JIMIC_DECLARE_IMPORT
+        #define JIMIC_DECLARE_IMPORT
     #endif
 #else /* defined(_LIB) || defined(USE_LIB) || defined(BUILD_LIB) \
          || defined(JIMI_LIB) || defined(JIMI_IS_LIB) \
@@ -38,6 +48,11 @@
     #ifndef JIMI_DECLARE_STATIC
         #define JIMI_DECLARE_STATIC
     #endif
+    #undef JIMIC_DECLARE_EXPORT
+    #undef JIMIC_DECLARE_IMPORT
+    #ifndef JIMIC_DECLARE_STATIC
+        #define JIMIC_DECLARE_STATIC
+    #endif
 #endif
 
 /**************************************************************************************
@@ -46,7 +61,7 @@
 **************************************************************************************/
 
 #ifdef JIMI_API
-    #undef JIMI_API
+#undef JIMI_API
 #endif
 
 #if defined(JIMI_IS_MSVC)  /* is microsoft visual studio ? */
@@ -86,5 +101,16 @@
         #define JIMI_EXPIMP_TEMPLATE
     #endif
 #endif
+
+#ifdef JIMIC_API
+#undef JIMIC_API
+#endif
+
+#ifdef JIMIC_PRIVATE
+#undef JIMIC_PRIVATE
+#endif
+
+#define JIMIC_API               JIMI_API
+#define JIMIC_PRIVATE           JIMI_PRIVATE
 
 #endif  /* _JIMI_EXPORT_H_ */

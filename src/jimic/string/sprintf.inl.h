@@ -128,24 +128,24 @@ JMC_INLINE_NONSTD(jm_char *)
 jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
               JM_CONST jm_char *fmt, va_list args)
 {
-    register jm_char c;
+    register jm_char        c;
 
-    jm_char        *end, *cur;
-    unsigned int    flag, align, fill, width;
-    int             precision;
-    jm_char        *first;
-    size_t          len;
-    jm_char        *s;
-    int             i32;
-    double          dbl;
-    jm_char         ch;
-    void           *p;
-    unsigned int    u32;
-    long            l32;
-    unsigned long   ul32 = 0;
-    int64_t         i64;
-    uint64_t        u64;
-    int32_t         hex32;
+    jm_char                *end, *cur;
+    unsigned int            flag, align, fill, width;
+    int                     precision;
+    jm_char                 *first;
+    size_t                  len;
+    register jm_char       *s;
+    register int            i32;
+    double                  dbl;
+    register jm_char        ch;
+    register void          *p;
+    register unsigned int   u32;
+    register long           l32;
+    register unsigned long  ul32;
+    register int64_t        i64;
+    register uint64_t       u64;
+    register int32_t        hex32;
 
     jimic_assert(buf != NULL);
     jimic_assert(fmt != NULL);
@@ -522,6 +522,9 @@ vslprintf_out_string:
                             flag |= align;
                             len = jmc_out_null_string_ex(buf, (size_t)-1, flag, fill, width, precision);
                         }
+#elif 0
+                        flag |= align;
+                        len = jmc_out_null_string_ex(buf, (size_t)-1, flag, fill, width, precision);
 #else
                         flag |= align;
                         len = jmc_strncpy_ex(buf, (size_t)-1, FMT_NULL_STRING, len, flag, fill, width, precision);

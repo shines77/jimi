@@ -6,8 +6,16 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
+#include <jimic/core/jimic_def.h>
 
-void JIMI_API jimi_cpu_warmup(int delayTime);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void JIMIC_API jimi_cpu_warmup(int delayTime);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  /* !_JIMIC_SYSTEM_CONSOLE_H_ */

@@ -128,6 +128,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\system\console.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\crtdbg_env.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\get_char.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\system\sys_timer.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\vs_vld.h" />
     <ClInclude Include="..\..\..\..\src\jimic\util\utils.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.h" />
@@ -135,6 +136,7 @@
     <ClCompile Include="..\..\..\..\src\jimic\system\console.cpp" />
     <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\get_char.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\sys_timer.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert.cpp">
       <FileType>CppHeader</FileType>
     </ClCompile>

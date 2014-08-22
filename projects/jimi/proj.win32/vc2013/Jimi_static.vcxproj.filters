@@ -353,6 +353,9 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.inl.h">
       <Filter>src\jimic\string</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\system\sys_timer.h">
+      <Filter>src\jimic\system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">
@@ -395,6 +398,9 @@
       <Filter>src\jimic\system</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\system\console.cpp">
+      <Filter>src\jimic\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\system\sys_timer.cpp">
       <Filter>src\jimic\system</Filter>
     </ClCompile>
   </ItemGroup>

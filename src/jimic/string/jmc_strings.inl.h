@@ -1363,8 +1363,9 @@ JMC_INLINE_NONSTD(size_t)
 jmc_strncpy(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count)
 {
     jm_char *end;
-    if (countOfElements == (size_t)-1);
+    if (countOfElements == (size_t)-1) {
         // do nothing !!
+    }
     else
         count = JIMIC_MIN(count, countOfElements - 1);
     end = (jm_char *)src + count;
@@ -1378,8 +1379,9 @@ jmc_strncpy(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t
 JMC_INLINE_NONSTD(size_t)
 jmc_strncpy_null(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count)
 {
-    if (countOfElements == (size_t)-1);
+    if (countOfElements == (size_t)-1) {
         // do nothing !!
+    }
     else
         count = JIMIC_MIN(count, countOfElements - 1);
     // has including the null terminator.
@@ -1390,8 +1392,9 @@ jmc_strncpy_null(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, s
 JMC_INLINE_NONSTD(size_t)
 jmc_strncpy_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count)
 {
-    if (countOfElements == (size_t)-1);
+    if (countOfElements == (size_t)-1) {
         // do nothing !!
+    }
     else
         count = JIMIC_MIN(count, countOfElements - 1);
     memcpy(dest, src, count * sizeof(jm_char));

@@ -2521,7 +2521,12 @@ void Double_And_Float_Test()
     printf("printf(-INFINITY)        = %f\n", -INFINITY);
     printf("printf(DOUBLE_INFINITY)  = %f\n", DOUBLE_INFINITY);
     printf("printf(-DOUBLE_INFINITY) = %f\n", -DOUBLE_INFINITY);
+    printf("printf(1.0E+200)         = %f\n", 1.234567890123456789E+200);
     printf("\n");
+
+    double d = 1.234567890123456789E+200;
+    uint64_t u64 = (uint64_t)d;
+    printf("printf(1.0E+200)         = %I64u\n", u64);
 
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(INFINITY)         = %f\n", INFINITY);
     printf("%s", buf);
@@ -2705,15 +2710,20 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Integer3();
   #endif
 
+  #if 1
     Snprintf_Preformance_Test_Double1();
     Snprintf_Preformance_Test_Double2();
     Snprintf_Preformance_Test_Double3();
     Snprintf_Preformance_Test_Double4();
+  #endif
 
+  #if 1
     Snprintf_Preformance_Test_String1();
     Snprintf_Preformance_Test_String2();
     Snprintf_Preformance_Test_String3();
     Snprintf_Preformance_Test_String4();
+    Snprintf_Preformance_Test_String5();
+  #endif
 
     //OStringStream_Performance_Test();
 
