@@ -36,8 +36,8 @@ JMC_INLINE jmc_timestamp jmc_get_now_ms(void);
 jmc_timestamp JIMIC_API jmc_get_timestamp(void);
 jmc_timestamp JIMIC_API jmc_get_millisec(void);
 
-jmc_timestamp JIMIC_API jmc_now_time(void);
-jmc_timefloat JIMIC_API jmc_now_timef(void);
+jmc_timestamp JIMIC_API jmc_get_time(void);
+jmc_timefloat JIMIC_API jmc_get_timef(void);
 
 ////////////////////////////////////////////////////////////////////////////////
 

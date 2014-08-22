@@ -15,7 +15,7 @@ void JIMIC_API jimi_cpu_warmup(int delayTime)
     jmc_timestamp delayTimeLimit = (jmc_timestamp)delayTime;
     printf("CPU warm up start ...\n");
     fflush(stdout);
-    startTime = jmc_now_time();
+    startTime = jmc_get_time();
     do {
         // 如果有聪明的编译器能发现这是一个固定值就NB了, 应该没有
         for (int i = 0; i < 10000; ++i) {
@@ -25,7 +25,7 @@ void JIMIC_API jimi_cpu_warmup(int delayTime)
                 sum -= j;
             }
         }
-        stopTime = jmc_now_time();
+        stopTime = jmc_get_time();
         elapsedTime += stopTime - startTime;
     } while (elapsedTime < delayTimeLimit);
 

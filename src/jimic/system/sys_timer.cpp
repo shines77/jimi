@@ -11,12 +11,12 @@ jmc_timestamp jmc_get_millisec()
     return jmc_get_now_ms();
 }
 
-jmc_timestamp jmc_now_time()
+jmc_timestamp jmc_get_time()
 {
     return jmc_get_now_ms();
 }
 
-jmc_timefloat jmc_now_timef(void)
+jmc_timefloat jmc_get_timef(void)
 {
     return jmc_get_nowf();
 }
