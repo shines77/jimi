@@ -46,14 +46,14 @@ inline void pod_move(Pod *dest, const Pod *src, size_t size) {
 }
 
 template <class Pod, class T>
-inline void pod_fill(Pod *dest, size_t size, T c) {
+inline void pod_fill(Pod *dest, T c, size_t size) {
     jimi_assert(dest && size > 0);
-    if (sizeof(T) == 1) {   /*static*/
+    if (sizeof(T) == 1) {   /* static for char */
         ::memset(dest, c, size);
     }
     else {
-        const Pod *ee = dest + (size & ~(size_t)7u);
-        for (; dest != ee; dest += 8) {
+        const Pod *align_end = dest + (size & ~(size_t)7u);
+        for (; dest != align_end; dest += 8) {
             dest[0] = c;
             dest[1] = c;
             dest[2] = c;

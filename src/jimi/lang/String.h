@@ -466,7 +466,7 @@ BASIC_STRING &BASIC_STRING::append(const value_type c, size_type n)
     resize(size() + n, c);
 #else
     char_type *oldDataEnd = _store.expand_noinit(n);
-    string_detail::pod_fill(oldDataEnd, n, c);
+    string_detail::pod_fill(oldDataEnd, c, n);
     // No need to call writeNull(), we have done it within expand_noinit().
 #endif
     return *this;
@@ -685,7 +685,7 @@ void BASIC_STRING::resize(const size_type newSize, const value_type c /* = value
         jimi_assert(capacity >= oldSize);
         value_type *oldDataEnd = _store.expandTo_noinit(newSize);
         if (needInit) {
-            string_detail::pod_fill(oldDataEnd, newSize - oldSize, c);
+            string_detail::pod_fill(oldDataEnd, c, newSize - oldSize);
             // No need to call writeNull(), we have done it within expandTo_noinit().
             //_store.writeNullForce();
         }

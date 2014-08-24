@@ -2175,10 +2175,10 @@ bool win_iconv_test()
     printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
 
     win_iconv_ansi2unicode_test(szAnsi_Test1, echo_result);
-    //::system("pause");
+    //Console.ReadKey();
 
     win_iconv_unicode2ansi_test(szUtf16_Test1, echo_result);
-    //::system("pause");
+    //Console.ReadKey();
 
     char *szAnsi_Test2 = "我们都是中国人, 我们都是地球人";
     wchar_t *szUtf16_Test2 = L"我们都是中国人, 我们都是地球人";
@@ -2186,7 +2186,7 @@ bool win_iconv_test()
     printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
 
     win_iconv_ansi2unicode_test(szAnsi_Test2, echo_result);
-    //::system("pause");
+    //Console.ReadKey();
 
     win_iconv_unicode2ansi_test(szUtf16_Test2, echo_result);
 
@@ -2571,7 +2571,7 @@ int UnitTest_Main(int argc, char *argv[])
     if (true) {
         template_inherit_test();
         sLog.log_end();
-        ::system("pause");
+        Console.ReadKey();
         return 0;
     }
 #endif
@@ -2582,7 +2582,7 @@ int UnitTest_Main(int argc, char *argv[])
 #if 0
     malloc_addr_test();
 
-    ::system("pause");
+    Console.ReadKey();
     return 0;
 #endif
 
@@ -2628,7 +2628,7 @@ int UnitTest_Main(int argc, char *argv[])
     printf("\n");
 
     if (true && 1) {
-        ::system("pause");
+        Console.ReadKey();
         sLog.log_end();
         return 0;
     }
@@ -2637,7 +2637,7 @@ int UnitTest_Main(int argc, char *argv[])
 #if 0
     bool result = win_iconv_test();
     if (result && 0) {
-        ::system("pause");
+        Console.ReadKey();
         sLog.log_end();
         return 0;
     }
@@ -2661,16 +2661,16 @@ int UnitTest_Main(int argc, char *argv[])
     OStringStream_Test();
 
     if (true && 1) {
-        ::system("pause");
+        Console.ReadKey();
         sLog.log_end();
         return 0;
     }
 #endif
 
-#if 0
+#if 1
     String_Base_Test();
     if (true && 0) {
-        ::system("pause");
+        Console.ReadKey();
         sLog.log_end();
         return 0;
     }
@@ -2679,8 +2679,8 @@ int UnitTest_Main(int argc, char *argv[])
 #if 0
     String_Format_Test();
     if (true && 0) {
-        ::system("pause");
         sLog.log_end();
+        Console.ReadKey();
         return 0;
     }
 #endif
@@ -2690,7 +2690,7 @@ int UnitTest_Main(int argc, char *argv[])
     dtol_test_main();
     if (true && 1) {
         sLog.log_end();
-        ::system("pause");
+        Console.ReadKey();
         return 0;
     }
 #endif
@@ -2720,7 +2720,7 @@ int UnitTest_Main(int argc, char *argv[])
     printf("smallString2<char , 128>.c_str()     = \"%s\".\n", smallString2.c_str());
     printf("\n");
     
-    if (true && 1) {
+    if (true && 0) {
         sLog.log_end();
         Console.ReadKey();
         return 0;
@@ -2757,7 +2757,7 @@ int UnitTest_Main(int argc, char *argv[])
 
     //OStringStream_Performance_Test();
 
-    if (true && 1) {
+    if (true && 0) {
         sLog.log_end();
         Console.ReadKey();
         return 0;
@@ -2861,7 +2861,7 @@ int UnitTest_Main(int argc, char *argv[])
 
     sLog.log_end();
 
-    //::system("pause");
+    //Console.ReadKey();
     //jimi::Console::ReadKey();
     jimi::Console.ReadKey();
     return 0;

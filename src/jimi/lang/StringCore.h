@@ -599,7 +599,10 @@ STRING_CORE::string_core(const char_type c, size_type n)
 {
     if (n < kMaxSmallSize) {
         // Small: small string optimized
-        ::memset((void *)&_small.buf[0], c, n * sizeof(char_type));
+        if (sizeof(size_type) == sizeof(char))
+            ::memset((void *)&_small.buf[0], c, n * sizeof(char_type));
+        else
+            string_detail::pod_fill(_small.buf, c, n);
         _small.buf[n] = '\0';
         _small.info.size = n;
         _small.info.type = kIsSmallX;
@@ -608,7 +611,10 @@ STRING_CORE::string_core(const char_type c, size_type n)
         // Medium: eager copy
         size_type capacitySize = calc_capacity(n);
         char_type *newData = traits_type::mem_alloc(capacitySize);
-        ::memset((void *)newData, c, n * sizeof(char_type));
+        if (sizeof(size_type) == sizeof(char))
+            ::memset((void *)newData, c, n * sizeof(char_type));
+        else
+            string_detail::pod_fill(newData, c, n);
         newData[n] = '\0';
         _ml.core.data = newData;
         _ml.core.size = 0;
@@ -620,7 +626,10 @@ STRING_CORE::string_core(const char_type c, size_type n)
         size_type effectiveCapacity = calc_capacity(n);
         refcount_type *newRC = refcount_type::create(&effectiveCapacity);
         char_type *newData = newRC->data();
-        ::memset((void *)newData, c, n * sizeof(char_type));
+        if (sizeof(size_type) == sizeof(char))
+            ::memset((void *)newData, c, n * sizeof(char_type));
+        else
+            string_detail::pod_fill(newData, c, n);
         newData[n] = '\0';
         _ml.core.data = newData;
         _ml.core.size = 0;
