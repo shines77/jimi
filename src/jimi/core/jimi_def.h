@@ -143,6 +143,37 @@
 #define JIMI_MIN(a, b)          ((a) < (b) ? (a) : (b))
 #define JIMI_MAX(a, b)          ((a) > (b) ? (a) : (b))
 
+#if defined(_WIN64) || defined(_MX64)
+#define JIMI_SIZE_T_SIZEOF      8
+#else
+#define JIMI_SIZE_T_SIZEOF      4
+#endif
+
+/**
+ * macro for address aligned to n bytes
+ */
+#define JIMI_ALIGNED_TO(n, alignment)   \
+    (((n) + ((alignment) - 1)) & ~size_t((alignment) - 1))
+
+/**
+ * macro for round to power of 2
+ */
+#define jimi_b2(x)              (        (x) | (        (x) >>  1))
+#define jimi_b4(x)              ( jimi_b2(x) | ( jimi_b2(x) >>  2))
+#define jimi_b8(x)              ( jimi_b4(x) | ( jimi_b4(x) >>  4))
+#define jimi_b16(x)             ( jimi_b8(x) | ( jimi_b8(x) >>  8))  
+#define jimi_b32(x)             (jimi_b16(x) | (jimi_b16(x) >> 16))
+#define jimi_b64(x)             (jimi_b32(x) | (jimi_b32(x) >> 32))
+
+#define jimi_next_power_of_2(x)     (jimi_b32((x) - 1) + 1)
+#define jimi_next_power_of_2_64(x)  (jimi_b64((x) - 1) + 1)
+
+#if defined(JIMI_SIZE_T_SIZEOF) && (JIMI_SIZE_T_SIZEOF == 8)
+#define JIMI_ROUND_TO_POW2(N)   jimi_next_power_of_2_64(N)
+#else
+#define JIMI_ROUND_TO_POW2(N)   jimi_next_power_of_2(N)
+#endif
+
 NS_JIMI_BEGIN
 
 template <typename value_type>

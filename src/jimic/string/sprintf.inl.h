@@ -137,7 +137,7 @@ jmc_vslprintf(jm_char *buf, size_t countOfElements, size_t count,
     size_t                  len;
     register jm_char       *s;
     register int            i32;
-    double                  dbl;
+    register double         dbl;
     register jm_char        ch;
     register void          *p;
     register unsigned int   u32;
@@ -303,7 +303,7 @@ vslprintf_continue:
                     // 但是不知道为什么, 跳 vslprintf_try_next 执行的时候反而还要快一些,
                     // 可能 vslprintf_try_next 在代码缓存里是比较"热"的, 分支预测也是"热"的.
                     // 所以, 即使多执行了一些语句, 还是要稍微快一些......
-                    // 不过, 不是所有情况都快了, 但是即使不是最快的时候, 也没慢多少, 是值得的!
+                    // 不过, 不是所有情况都快了, 但是即使不是最快的时候, 也没慢多少, 还是值得的!
                     goto vslprintf_try_next;
                     //goto vslprintf_exit;
 #endif

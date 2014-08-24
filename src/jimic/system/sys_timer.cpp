@@ -20,4 +20,3 @@ jmc_timefloat jmc_get_timef(void)
 {
     return jmc_get_nowf();
 }
-

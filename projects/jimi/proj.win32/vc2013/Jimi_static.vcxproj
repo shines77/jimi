@@ -167,6 +167,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\lang\Object.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\ObjectBase.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\RefCounted.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\SmallString.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\String.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\String.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\StringCore.h" />

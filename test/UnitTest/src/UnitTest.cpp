@@ -28,6 +28,8 @@
 #include <jimi/lang/String.h>
 #include <jimi/lang/Formatter.h>
 
+#include <jimi/lang/SmallString.h>
+
 #include <jimi/log/Logger.h>
 #include <jimi/system/stop_watch.h>
 #include <jimi/system/Program.h>
@@ -2698,6 +2700,34 @@ int UnitTest_Main(int argc, char *argv[])
 #endif
 
 #if 1
+    jimi::SmallString<char, 120, 15> smallString1("small string test");
+    jimi::SmallString<char, 122, 31> smallString2("small string test! small string test! small string test! "
+                                                  "small string test! small string test! small string test! "
+                                                  "small string test! small string test! small string test! "
+                                                  "small string test! small string test! small string test! ");
+
+    printf("smallString1<char , 128>.capacity()  = %u byte(s),\n", smallString1.capacity());
+    printf("smallString1<char , 128>.alignment() = %u byte(s),\n", smallString1.alignment());
+    printf("smallString1<char , 128>.data()      = 0x%p,\n", smallString1.data());
+    printf("smallString1<char , 128>.size()      = %u byte(s),\n", smallString1.size());
+    printf("smallString1<char , 128>.c_str()     = \"%s\".\n", smallString1.c_str());
+    printf("\n");
+
+    printf("smallString2<char , 128>.capacity()  = %u byte(s),\n", smallString2.capacity());
+    printf("smallString2<char , 128>.alignment() = %u byte(s),\n", smallString2.alignment());
+    printf("smallString2<char , 128>.data()      = 0x%p,\n", smallString2.data());
+    printf("smallString2<char , 128>.size()      = %u byte(s),\n", smallString2.size());
+    printf("smallString2<char , 128>.c_str()     = \"%s\".\n", smallString2.c_str());
+    printf("\n");
+    
+    if (true && 1) {
+        sLog.log_end();
+        Console.ReadKey();
+        return 0;
+    }
+#endif
+
+#if 1
   #if !defined(VSNPRINTF_SHORT_DISPLAY) || (VSNPRINTF_SHORT_DISPLAY == 0)
     String_Snprintf_Test();
   #endif
@@ -2729,7 +2759,7 @@ int UnitTest_Main(int argc, char *argv[])
 
     if (true && 1) {
         sLog.log_end();
-        ::system("pause");
+        Console.ReadKey();
         return 0;
     }
 #endif

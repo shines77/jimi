@@ -29,9 +29,6 @@
 //#define JIMI_STRING_PERVERSE
 //#define JIMI_STRING_CONSERVATIVE
 
-#define JIMI_ALIGNED_TO(x, alignment)   \
-    ((x + ((alignment) - 1)) & ~size_t((alignment) - 1))
-
 NS_JIMI_BEGIN
 
 ////////////////////////////////////////////////////////////////////////////////
