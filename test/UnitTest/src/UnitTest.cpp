@@ -752,6 +752,7 @@ void String_Base_Test()
         printf("time = %0.3f ms, delta = %d.\n\n", time, delta);
         printf("strTest.size()  = %d bytes\n", strTest.size());
         printf("\n");
+        printf("d\n");
     }
 #endif
 

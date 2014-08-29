@@ -661,7 +661,7 @@ JMC_INLINE_NONSTD(int) jm_str2lwr(char *dest, char *src, size_t n)
         --n;
     }
     *dest = '\0';
-    return (dest - orig);
+    return (int)(dest - orig);
 }
 
 /**
@@ -681,7 +681,7 @@ JMC_INLINE_NONSTD(int) jm_str2upr(char *dest, char *src, size_t n)
         --n;
     }
     *dest = '\0';
-    return (dest - orig);
+    return (int)(dest - orig);
 }
 
 /**
@@ -699,7 +699,7 @@ JMC_INLINE_NONSTD(int) jm_strlwr_s(char *src, size_t n)
             break;
         --n;
     }
-    return (src - orig);
+    return (int)(src - orig);
 }
 
 /**
@@ -717,7 +717,7 @@ JMC_INLINE_NONSTD(int) jm_strupr_s(char *src, size_t n)
             break;
         --n;
     }
-    return (src - orig);
+    return (int)(src - orig);
 }
 
 /**

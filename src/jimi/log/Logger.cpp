@@ -206,7 +206,7 @@ int LogConfig::get_max_tag_len()
     int max_tag_len = 0;
     int max_list_length = jm_countof(default_LogTypeList);
     for (int i = 1; i < max_list_length; ++i) {
-        int len = jm_strlen(default_LogTypeList[i].tag_name);
+        int len = (int)jm_strlen(default_LogTypeList[i].tag_name);
         if (len > max_tag_len) {
             max_tag_len = len;
         }
@@ -1030,7 +1030,7 @@ void Logger::log_title_section(const char *title, bool isBegin)
     int line_length = LOG_TITLE_LINE_LENGTH;
 
     if (line_length < ((int)str_len + title_max_add_len + LOG_TITLE_MIN_LENGTH))
-        line_length = str_len + title_max_add_len + LOG_TITLE_MIN_LENGTH;
+        line_length = (int)str_len + title_max_add_len + LOG_TITLE_MIN_LENGTH;
 
     // printf("===========================================\r\n");
     n = line_length / title_str_repeat_len;
@@ -1060,7 +1060,7 @@ void Logger::log_title_section(const char *title, bool isBegin)
     }
     else {
         // printf("==             %s End            ==\r\n", title);
-        main_title_len = str_len + title_end_len + 4;
+        main_title_len = (int)str_len + title_end_len + 4;
         main_title = new char[main_title_len];
         if (main_title) {
             main_title[0] = '\0';

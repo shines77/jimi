@@ -110,7 +110,7 @@ public:
         return values.size();
     }
 
-    int addValue(std::string value)
+    size_t addValue(std::string value)
     {
         values.push_back(value);
         return values.size();

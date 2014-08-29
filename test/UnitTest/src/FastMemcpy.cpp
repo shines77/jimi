@@ -53,10 +53,54 @@ bool verify_buffer_val(void *buffer, size_t size, int val)
     return verify_ok;
 }
 
+#if defined(_WIN64)
+
+void * memcpy_mmx1(void *dest, const void *src, size_t len)
+{
+    return memcpy(dest, src, len);
+}
+
+void * memcpy_mmx2(void *dest, const void *src, size_t len)
+{
+    return memcpy(dest, src, len);
+}
+
+void * memcpy_mmx3(void *dest, const void *src, size_t len)
+{
+    return memcpy(dest, src, len);
+}
+
+void * memcpy_mmx4(void *dest, const void *src, size_t len)
+{
+    return memcpy(dest, src, len);
+}
+
+void * memcpy_sse2a(void *dest, const void *src, size_t len)
+{
+    return memcpy(dest, src, len);
+}
+
+void * memcpy_sse2c(void *dest, const void *src, size_t len)
+{
+    return memcpy(dest, src, len);
+}
+
+void * memcpy_sse2d(void *dest, const void *src, size_t len)
+{
+    return memcpy(dest, src, len);
+}
+
+void * memcpy_sse2e(void *dest, const void *src, size_t len)
+{
+    return memcpy(dest, src, len);
+}
+
+#else /* !_WIN64 */
+
 //
 // 用MMX指令实现的内存拷贝函数，相比于memcpy函数可以提高50%的效率
 //
-void * __stdcall memcpy_mmx1(void *dest, const void *src, size_t len)
+void * memcpy_mmx1(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
@@ -147,7 +191,7 @@ WriteLoop:
     return dest;
 }
 
-void * __stdcall memcpy_mmx2(void *dest, const void *src, size_t len)
+void * memcpy_mmx2(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
@@ -294,7 +338,7 @@ CopyLoop:
     return dest;
 }
 
-void * __stdcall memcpy_mmx3(void *dest, const void *src, size_t len)
+void * memcpy_mmx3(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
@@ -445,7 +489,7 @@ CopyLoop:
     return dest;
 }
 
-void * __stdcall memcpy_mmx4(void *dest, const void *src, size_t len)
+void * memcpy_mmx4(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
@@ -576,7 +620,7 @@ MainLoop_NTQ:
     return dest;
 }
 
-void * __stdcall memcpy_sse2a(void *dest, const void *src, size_t len)
+void * memcpy_sse2a(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
@@ -709,7 +753,7 @@ CopyLoop:
     return dest;
 }
 
-void * __stdcall memcpy_sse2c(void *dest, const void *src, size_t len)
+void * memcpy_sse2c(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE || !m_bIsSSE2)
         return NULL;
@@ -786,7 +830,7 @@ rest_sse2:
     return dest;
 }
 
-void * __stdcall memcpy_sse2d(void *dest, const void *src, size_t len)
+void * memcpy_sse2d(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE || !m_bIsSSE2)
         return NULL;
@@ -865,7 +909,7 @@ rest_sse2:
     return dest;
 }
 
-void * __stdcall memcpy_sse2e(void *dest, const void *src, size_t len)
+void * memcpy_sse2e(void *dest, const void *src, size_t len)
 {
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
@@ -996,3 +1040,5 @@ CopyLoop:
 #endif
     return dest;
 }
+
+#endif /* _WIN64 */

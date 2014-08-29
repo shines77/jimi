@@ -308,7 +308,7 @@ int iconv_ansi_to_unicode(const char *ansi_str, int ansi_size, wchar_t *dest_uni
 
     if ((unicode_size == 0) && (GetLastError() == ERROR_NO_UNICODE_TRANSLATION)) {
         // ansi_size includes the null character
-        ansi_size = strlen(ansi_str);
+        ansi_size = (int)strlen(ansi_str);
         unicode_size = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, ansi_str, ansi_size, NULL, 0);
         if ((unicode_size == 0) && (GetLastError() == ERROR_NO_UNICODE_TRANSLATION)) {
             unicode_size = MultiByteToWideChar(CP_ACP, 0, ansi_str, ansi_size, NULL, 0);
@@ -394,7 +394,7 @@ int iconv_ansi_to_unicode_auto(const char *ansi_str, int ansi_size, wchar_t **de
     unicode_size = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, ansi_str, ansi_size, NULL, 0);
     if ((unicode_size == 0) && (GetLastError() == ERROR_NO_UNICODE_TRANSLATION)) {
         // ansi_size includes the null character
-        ansi_size = strlen(ansi_str);
+        ansi_size = (int)strlen(ansi_str);
         unicode_size = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, ansi_str, ansi_size, NULL, 0);
         if ((unicode_size == 0) && (GetLastError() == ERROR_NO_UNICODE_TRANSLATION)) {
             unicode_size = MultiByteToWideChar(CP_ACP, 0, ansi_str, ansi_size, NULL, 0);

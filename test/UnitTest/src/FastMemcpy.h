@@ -19,16 +19,16 @@ void buffer_set_val(void *buffer, int val, size_t size);
 void init_buffer_index(void *buffer, size_t size);
 bool verify_buffer_val(void *buffer, size_t size, int val);
 
-void * __stdcall memcpy_mmx1(void *dest, const void *src, size_t len);
-void * __stdcall memcpy_mmx2(void *dest, const void *src, size_t len);
-void * __stdcall memcpy_mmx3(void *dest, const void *src, size_t len);
-void * __stdcall memcpy_mmx4(void *dest, const void *src, size_t len);
+void * memcpy_mmx1(void *dest, const void *src, size_t len);
+void * memcpy_mmx2(void *dest, const void *src, size_t len);
+void * memcpy_mmx3(void *dest, const void *src, size_t len);
+void * memcpy_mmx4(void *dest, const void *src, size_t len);
 
-void * __stdcall memcpy_sse2a(void *dest, const void *src, size_t len);
+void * memcpy_sse2a(void *dest, const void *src, size_t len);
 
-void * __stdcall memcpy_sse2c(void *dest, const void *src, size_t len);
-void * __stdcall memcpy_sse2d(void *dest, const void *src, size_t len);
-void * __stdcall memcpy_sse2e(void *dest, const void *src, size_t len);
+void * memcpy_sse2c(void *dest, const void *src, size_t len);
+void * memcpy_sse2d(void *dest, const void *src, size_t len);
+void * memcpy_sse2e(void *dest, const void *src, size_t len);
 
 #ifdef __cplusplus
 }

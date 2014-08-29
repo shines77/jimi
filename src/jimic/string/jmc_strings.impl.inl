@@ -29,7 +29,7 @@ jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
     int64_t i64;
     uint32_t scale32;
     uint64_t scale, frac;
-    fuint64_s *f64;
+    fuint64_t *f64;
     unsigned int n;
     int num_width;
 #if 0
@@ -44,12 +44,12 @@ jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
     };
 #endif
 
-    if (sizeof(fuint64_s) != sizeof(double)) {
+    if (sizeof(fuint64_t) != sizeof(double)) {
         // maybe have some error!
 #ifndef _MSC_VER
         #error "jmc_dtos() maybe have some error!"
 #endif // _MSC_VER
-        jimic_assert(sizeof(fuint64_s) == sizeof(double));
+        jimic_assert(sizeof(fuint64_t) == sizeof(double));
         return 0;
     }
 
@@ -96,7 +96,7 @@ jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
         num_width = filed_width;
     }
 
-    f64 = (fuint64_s *)&val;
+    f64 = (fuint64_t *)&val;
     // is NaN or INF ? (exponent is maxium ?)
     if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
         i64 = (int64_t)val;
@@ -209,7 +209,7 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
     int64_t i64;
     uint32_t scale32;
     uint64_t scale, frac;
-    fuint64_s *f64;
+    fuint64_t *f64;
     unsigned int n;
     int num_width;
 #if 0
@@ -224,12 +224,12 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
     };
 #endif
 
-    if (sizeof(fuint64_s) != sizeof(double)) {
+    if (sizeof(fuint64_t) != sizeof(double)) {
         // maybe have some error!
 #ifndef _MSC_VER
         #error "jmc_dtos_ex() maybe have some error!"
 #endif // _MSC_VER
-        jimic_assert(sizeof(fuint64_s) == sizeof(double));
+        jimic_assert(sizeof(fuint64_t) == sizeof(double));
         return 0;
     }
 
@@ -271,7 +271,7 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
         num_width = filed_width;
     }
 
-    f64 = (fuint64_s *)&val;
+    f64 = (fuint64_t *)&val;
     // is NaN or INF ? (exponent is maxium ?)
     if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
         i64 = (int64_t)val;
@@ -474,7 +474,7 @@ jmc_dtos_ex2(jm_char *buf, size_t count, double val, unsigned int flag,
     int64_t i64;
     uint32_t scale32;
     uint64_t scale, frac;
-    fuint64_s *f64;
+    fuint64_t *f64;
     unsigned int n;
     int num_width;
 #if 0
@@ -489,12 +489,12 @@ jmc_dtos_ex2(jm_char *buf, size_t count, double val, unsigned int flag,
     };
 #endif
 
-    if (sizeof(fuint64_s) != sizeof(double)) {
+    if (sizeof(fuint64_t) != sizeof(double)) {
         // maybe have some error!
 #ifndef _MSC_VER
         #error "jmc_dtos_ex2() maybe have some error!"
 #endif // _MSC_VER
-        jimic_assert(sizeof(fuint64_s) == sizeof(double));
+        jimic_assert(sizeof(fuint64_t) == sizeof(double));
         return 0;
     }
 
@@ -535,7 +535,7 @@ jmc_dtos_ex2(jm_char *buf, size_t count, double val, unsigned int flag,
             scale = 1;
         }
 
-        f64 = (fuint64_s *)&val;
+        f64 = (fuint64_t *)&val;
         // is NaN or INF ? (exponent is maxium ?)
         if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
             i64 = (int64_t)val;
@@ -691,7 +691,7 @@ jmc_dtos_ex2(jm_char *buf, size_t count, double val, unsigned int flag,
             num_width = filed_width;
         }
 
-        f64 = (fuint64_s *)&val;
+        f64 = (fuint64_t *)&val;
         // is NaN or INF ? (exponent is maxium ?)
         if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
             i64 = (int64_t)val;
@@ -815,7 +815,7 @@ jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, siz
                unsigned int flag, unsigned int fill, unsigned int width, int length)
 {
     jm_char *end;
-    unsigned int copy_len;
+    size_t copy_len;
     int fill_cnt, padding;
 
     jimic_assert(dest != NULL);
@@ -932,7 +932,7 @@ jmc_strncpy_ex_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src
 #else
     jm_char *end;
 #endif
-    unsigned int copy_len;
+    size_t copy_len;
     int fill_cnt, padding;
 
     jimic_assert(dest != NULL);
@@ -1072,7 +1072,7 @@ jmc_out_null_string_ex(jm_char *dest, size_t countOfElements, unsigned int flag,
     jm_char *src;
 #endif  /* OUT_NULL_STRING_EX_DIRECT_WRITE */
     size_t count;
-    unsigned int copy_len;
+    size_t copy_len;
     int fill_cnt, padding;
 
     jimic_assert(dest != NULL);

@@ -24,7 +24,8 @@ extern "C" {
 #endif
 
 JIMI_INLINE
-size_t __FASTCALL jmf_strlen(const char *str);
+//size_t __FASTCALL jmf_strlen(const char *str);
+size_t jmf_strlen(const char *str);
 
 #ifdef __cplusplus
 }
@@ -76,8 +77,9 @@ size_t __FASTCALL jmf_strlen(const char *str);
 ///////////////////////////////////////////////////////////////////////////
 
 JIMI_INLINE
-__declspec(naked)
-size_t __FASTCALL jmf_strlen(const char *str)
+//__declspec(naked)
+//size_t __FASTCALL jmf_strlen(const char *str)
+size_t jmf_strlen(const char *str)
 {
     __asm {
 #if defined(ARGS) && (ARGS > 0)

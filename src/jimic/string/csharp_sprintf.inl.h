@@ -136,7 +136,7 @@ jmc_csharp_vslprintf(jm_char *buf, size_t count, JM_CONST jm_char *fmt,
 #endif
                             // write '{'
                             *buf++ = '{';
-                            len = cur - first;
+                            len = (int)(cur - first);
                             if (buf + len >= end)
                                 break;
                             // write '0-9'

@@ -213,7 +213,7 @@ int cmd_line::checkToken(int n, const char *arg, std::string &opt)
                     opt = arg;
                     if (lenSub < len)
                         opt.substr(l_pos, lenSub);
-                    return l_pos;
+                    return (int)l_pos;
                 }
             }
         }

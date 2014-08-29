@@ -5,9 +5,17 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -22,7 +30,18 @@
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -34,7 +53,15 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="ProjEnv\ProjEnvProperty_32.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="ProjEnv\ProjEnvProperty_32.props" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="ProjEnv\ProjEnvProperty_32.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="ProjEnv\ProjEnvProperty_32.props" />
   </ImportGroup>
@@ -46,9 +73,14 @@
     <OutDir>$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)\</OutDir>
     <IntDir>$(SolutionDir)gen\tmp\$(MsvcPlatformToolset)\$(ProjectName)\$(MsvcPlatformShortName)-$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)\</OutDir>
     <IntDir>$(SolutionDir)gen\tmp\$(MsvcPlatformToolset)\$(ProjectName)\$(MsvcPlatformShortName)-$(Configuration)\</IntDir>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -69,6 +101,23 @@
       <AdditionalLibraryDirectories>..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);..\..\..\..\lib;..\..\..\..\deps;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);$(SolutionDir)lib;$(SolutionDir)deps;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);.\lib;.\deps;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);$(ProjectDir)lib;$(ProjectDir)deps;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;$(SolutionDir)src;$(SolutionDir)include;.\src;.\include;.\test;.\deps;$(ProjectDir)src;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;JIMI_LIB;JIMI_USE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)_debug.lib</OutputFile>
+      <AdditionalLibraryDirectories>..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);..\..\..\..\lib;..\..\..\..\deps;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);$(SolutionDir)lib;$(SolutionDir)deps;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);.\lib;.\deps;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);$(ProjectDir)lib;$(ProjectDir)deps;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
@@ -78,6 +127,24 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);..\..\..\..\lib;..\..\..\..\deps;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);$(SolutionDir)lib;$(SolutionDir)deps;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);.\lib;.\deps;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName);$(ProjectDir)lib;$(ProjectDir)deps;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;$(SolutionDir)src;$(SolutionDir)include;.\src;.\include;.\test;.\deps;$(ProjectDir)src;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;JIMI_LIB;JIMI_USE_STATIC;_HAS_EXCEPTIONS_=0;JIMI_MSC_CLANG=0;JIMIC_MSC_CLANG=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -114,10 +181,12 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.h">
       <FileType>CppCode</FileType>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.inl.h">
       <FileType>CppCode</FileType>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\sprintf.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\sprintf.inl.h" />
@@ -133,7 +202,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\util\utils.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.h" />
     <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.c" />
-    <ClCompile Include="..\..\..\..\src\jimic\system\console.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\console.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\get_char.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\sys_timer.cpp" />

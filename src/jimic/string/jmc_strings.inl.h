@@ -103,7 +103,7 @@
 #define JM_DOUBLE_MANTISSA_MASK_LOW     \
                         (uint32_t)(JM_DOUBLE_MANTISSA_MASK & 0x00000000FFFFFFFFULL)
 
-typedef struct fuint64_s {
+typedef struct fuint64_t {
     union {
 #if defined(JIMI_IS_LITTLE_ENDIAN) && (JIMI_IS_LITTLE_ENDIAN != 0)
         // 小端存储
@@ -121,11 +121,11 @@ typedef struct fuint64_s {
         uint64_t        u64;
         double          d;
     };
-} fuint64_s;
+} fuint64_t;
 
 typedef struct fvariant_t {
     union {
-        fuint64_s       f64;
+        fuint64_t       f64;
         int64_t         i64;
         uint64_t        u64;
         int             i32;
@@ -162,7 +162,7 @@ jmc_utoa_radix10(jm_char *buf, unsigned int val)
         *cur = (jm_char)(digval + '0');
     } while (val != 0);
 
-    digital = end - cur;
+    digital = (unsigned int)(end - cur);
     digval = digital;
 
 #if 1
@@ -299,7 +299,7 @@ jmc_ultoa_radix10(jm_char *buf, unsigned long val)
         *cur++ = (jm_char)digval + '0';
     } while (val != 0);
 
-    digital = cur - digits;
+    digital = (unsigned long)(cur - digits);
 
 #if 0
     do {
@@ -345,7 +345,7 @@ jmc_u64toa_radix10(jm_char *buf, uint64_t val)
     unsigned int digval, digital;
     uint32_t val32;
     jm_char *cur;
-    fuint64_s *u64;
+    fuint64_t *u64;
     char digits[32];    // 实际最多只会用到20个bytes
 
     cur = digits;
@@ -353,7 +353,7 @@ jmc_u64toa_radix10(jm_char *buf, uint64_t val)
     if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
 #else
-    u64 = (fuint64_s *)&val;
+    u64 = (fuint64_t *)&val;
     if (u64->high == 0) {
         val32 = (uint32_t)u64->low;
 #endif
@@ -373,7 +373,7 @@ jmc_u64toa_radix10(jm_char *buf, uint64_t val)
         } while (val != 0);
     }
 
-    digital = cur - digits;
+    digital = (unsigned int)(cur - digits);
 
 #if 0
     do {
@@ -436,7 +436,7 @@ jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int f
         *cur-- = (jm_char)(digval + '0');
     } while (val != 0);
 
-    digital = end - cur;
+    digital = (unsigned int)(end - cur);
 
     if ((flag & (FMT_SIGN_MASK | FMT_SPACE_FLAG | FMT_PLUS_FLAG)) == 0) {
         sign_char = '\0';
@@ -687,7 +687,7 @@ jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int fla
     int sign_char;
     int fill_cnt;
     int padding;
-    fuint64_s *u64;
+    fuint64_t *u64;
     char digits[32];    // 实际最多只会用到20个bytes
 
     end = digits + jm_countof(digits) - 1;
@@ -696,7 +696,7 @@ jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int fla
     if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
 #else
-    u64 = (fuint64_s *)&val;
+    u64 = (fuint64_t *)&val;
     if (u64->high == 0) {
         val32 = (uint32_t)u64->low;
 #endif
@@ -716,7 +716,7 @@ jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int fla
         } while (val != 0);
     }
 
-    digital = end - cur;
+    digital = (unsigned int)(end - cur);
 
     if ((flag & (FMT_SIGN_MASK | FMT_SPACE_FLAG | FMT_PLUS_FLAG)) == 0) {
         sign_char = '\0';
@@ -899,7 +899,7 @@ jmc_u64toa_radix10_for_integer_part(jm_char *buf, uint64_t val, int sign,
     uint32_t val32;
     jm_char *cur;
     int padding;
-    fuint64_s *u64;
+    fuint64_t *u64;
     char digits[32];    // 实际最多只会用到20个bytes
     const unsigned int fill = ' ';
 
@@ -908,7 +908,7 @@ jmc_u64toa_radix10_for_integer_part(jm_char *buf, uint64_t val, int sign,
     if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
 #else
-    u64 = (fuint64_s *)&val;
+    u64 = (fuint64_t *)&val;
     if (u64->high == 0) {
         val32 = (uint32_t)u64->low;
 #endif
@@ -929,7 +929,7 @@ jmc_u64toa_radix10_for_integer_part(jm_char *buf, uint64_t val, int sign,
     }
 
 #if 1
-    digital = (cur - digits) + sign;
+    digital = (unsigned int)(cur - digits) + sign;
     padding = filed_width - digital;
     if (padding < 0) {
         filed_width = digital;
@@ -1010,7 +1010,7 @@ jmc_u64toa_radix10_for_frac_part(jm_char *buf, uint64_t val, unsigned int precis
     uint32_t val32;
     jm_char *cur;
     int padding;
-    fuint64_s *u64;
+    fuint64_t *u64;
     char digits[32];    // 实际最多只会用到20个bytes
     const unsigned int fill = '0';
 
@@ -1019,7 +1019,7 @@ jmc_u64toa_radix10_for_frac_part(jm_char *buf, uint64_t val, unsigned int precis
     if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
 #else
-    u64 = (fuint64_s *)&val;
+    u64 = (fuint64_t *)&val;
     if (u64->high == 0) {
         val32 = (uint32_t)u64->low;
 #endif
@@ -1039,7 +1039,7 @@ jmc_u64toa_radix10_for_frac_part(jm_char *buf, uint64_t val, unsigned int precis
         } while (val != 0);
     }
 
-    digital = cur - digits;
+    digital = (unsigned int)(cur - digits);
 
 #if 0
     do {
@@ -1148,12 +1148,12 @@ jmc_is_nan_or_inf_f(float val)
 JMC_INLINE_NONSTD(int)
 jmc_isnan_d(double val)
 {
-    fuint64_s *f64;
+    fuint64_t *f64;
 #if defined(_DEBUG)
     uint32_t exponent;
 #endif
-    if (sizeof(fuint64_s) == sizeof(double)) {
-        f64 = (fuint64_s *)&val;
+    if (sizeof(fuint64_t) == sizeof(double)) {
+        f64 = (fuint64_t *)&val;
 #if defined(_DEBUG)
         exponent = f64->high & JM_DOUBLE_EXPONENT_MASK32;
 #endif
@@ -1176,12 +1176,12 @@ jmc_isnan_d(double val)
 JMC_INLINE_NONSTD(int)
 jmc_isinf_d(double val)
 {
-    fuint64_s *f64;
+    fuint64_t *f64;
 #if defined(_DEBUG)
     uint32_t exponent;
 #endif
-    if (sizeof(fuint64_s) == sizeof(double)) {
-        f64 = (fuint64_s *)&val;
+    if (sizeof(fuint64_t) == sizeof(double)) {
+        f64 = (fuint64_t *)&val;
 #if defined(_DEBUG)
         exponent = f64->high & JM_DOUBLE_EXPONENT_MASK32;
 #endif
@@ -1204,9 +1204,9 @@ jmc_isinf_d(double val)
 JMC_INLINE_NONSTD(int)
 jmc_is_nan_or_inf_d(double val)
 {
-    fuint64_s *f64;
-    if (sizeof(fuint64_s) == sizeof(double)) {
-        f64 = (fuint64_s *)&val;
+    fuint64_t *f64;
+    if (sizeof(fuint64_t) == sizeof(double)) {
+        f64 = (fuint64_t *)&val;
         if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) == JM_DOUBLE_EXPONENT_MASK32)
             return 1;
         else
@@ -1278,10 +1278,10 @@ jmc_ftest(float val)
 JMC_INLINE_NONSTD(int)
 jmc_dtest(double val)
 {
-    fuint64_s *f64;
+    fuint64_t *f64;
     uint32_t exponent;
-    if (sizeof(fuint64_s) == sizeof(double)) {
-        f64 = (fuint64_s *)&val;
+    if (sizeof(fuint64_t) == sizeof(double)) {
+        f64 = (fuint64_t *)&val;
         exponent = f64->high & JM_DOUBLE_EXPONENT_MASK32;
         if (exponent == JM_DOUBLE_EXPONENT_MASK32) {
             if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
@@ -1304,7 +1304,7 @@ jmc_dtest(double val)
 #ifndef _MSC_VER
         #error "jmc_dtest() maybe have some error!"
 #endif // _MSC_VER
-        jimic_assert(sizeof(fuint64_s) == sizeof(double));
+        jimic_assert(sizeof(fuint64_t) == sizeof(double));
         return JM_FIS_NORMAL;
     }
 }
