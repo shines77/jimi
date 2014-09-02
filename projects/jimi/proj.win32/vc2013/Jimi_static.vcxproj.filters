@@ -400,10 +400,10 @@
     <ClCompile Include="..\..\..\..\src\jimic\system\get_char.c">
       <Filter>src\jimic\system</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\system\sys_timer.cpp">
+    <ClCompile Include="..\..\..\..\src\jimic\system\console.c">
       <Filter>src\jimic\system</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\system\console.c">
+    <ClCompile Include="..\..\..\..\src\jimic\system\sys_timer.c">
       <Filter>src\jimic\system</Filter>
     </ClCompile>
   </ItemGroup>

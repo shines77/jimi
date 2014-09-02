@@ -205,7 +205,7 @@
     <ClCompile Include="..\..\..\..\src\jimic\system\console.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\get_char.c" />
-    <ClCompile Include="..\..\..\..\src\jimic\system\sys_timer.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\sys_timer.c" />
     <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert.cpp">
       <FileType>CppHeader</FileType>
     </ClCompile>

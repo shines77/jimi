@@ -26,7 +26,7 @@ void JIMIC_API jimi_cpu_warmup(int delayTime)
             }
         }
         stopTime = jmc_get_timestamp();
-        elapsedTime += jmc_timestamp_interval_millisecf(stopTime - startTime);
+        elapsedTime += jmc_get_interval_millisecf(stopTime - startTime);
     } while (elapsedTime < delayTimeLimit);
 
     // 输出sum的值只是为了防止编译器把循环优化掉

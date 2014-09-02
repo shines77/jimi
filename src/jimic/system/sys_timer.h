@@ -37,9 +37,9 @@ static JMC_INLINE jmc_timefloat jmc_get_millisecf(void);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static JMC_INLINE jmc_timestamp jmc_timestamp_interval_millisec(jmc_timestamp time_interval);
-static JMC_INLINE jmc_timefloat jmc_timestamp_interval_millisecf(jmc_timestamp time_interval);
-static JMC_INLINE jmc_timefloat jmc_timestamp_interval_secondf(jmc_timestamp time_interval);
+static JMC_INLINE jmc_timestamp jmc_get_interval_millisec(jmc_timestamp time_interval);
+static JMC_INLINE jmc_timefloat jmc_get_interval_millisecf(jmc_timestamp time_interval);
+static JMC_INLINE jmc_timefloat jmc_get_interval_secondf(jmc_timestamp time_interval);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -186,7 +186,7 @@ jmc_timefloat jmc_get_millisecf(void)
 /* 根据timestamp间隔值得出流逝时间的毫秒值, 单位: 毫秒(millisecond), 返回值: int64_t. */
 static
 JMC_INLINE
-jmc_timestamp jmc_timestamp_interval_millisec(jmc_timestamp time_interval)
+jmc_timestamp jmc_get_interval_millisec(jmc_timestamp time_interval)
 {
     jmc_timestamp result;
 
@@ -206,7 +206,7 @@ jmc_timestamp jmc_timestamp_interval_millisec(jmc_timestamp time_interval)
 /* 根据timestamp间隔值得出流逝时间的毫秒值, 单位: 毫秒(millisecond), 返回值: 浮点值. */
 static
 JMC_INLINE
-jmc_timefloat jmc_timestamp_interval_millisecf(jmc_timestamp time_interval)
+jmc_timefloat jmc_get_interval_millisecf(jmc_timestamp time_interval)
 {
     jmc_timefloat result;
 
@@ -226,7 +226,7 @@ jmc_timefloat jmc_timestamp_interval_millisecf(jmc_timestamp time_interval)
 /* 根据timestamp间隔值得出流逝时间的秒数, 单位: 秒(second), 返回值: 浮点值. */
 static
 JMC_INLINE
-jmc_timefloat jmc_timestamp_interval_secondf(jmc_timestamp time_interval)
+jmc_timefloat jmc_get_interval_secondf(jmc_timestamp time_interval)
 {
     jmc_timefloat result;
 
