@@ -29,16 +29,17 @@ typedef double  jmc_timefloat;
 
 static JMC_INLINE jmc_timestamp jmc_get_timestamp(void);
 
-static JMC_INLINE jmc_timestamp jmc_get_sys_nsec(void);
-static JMC_INLINE jmc_timestamp jmc_get_sys_millisec(void);
+static JMC_INLINE jmc_timestamp jmc_get_nanosec(void);
+static JMC_INLINE jmc_timestamp jmc_get_millisec(void);
 
-static JMC_INLINE jmc_timefloat jmc_get_sys_secondf(void);
-static JMC_INLINE jmc_timefloat jmc_get_sys_millisecf(void);
+static JMC_INLINE jmc_timefloat jmc_get_secondf(void);
+static JMC_INLINE jmc_timefloat jmc_get_millisecf(void);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static JMC_INLINE jmc_timestamp jmc_get_millisec(jmc_timestamp time_interval);
-static JMC_INLINE jmc_timefloat jmc_get_millisecf(jmc_timestamp time_interval);
+static JMC_INLINE jmc_timestamp jmc_timestamp_interval_millisec(jmc_timestamp time_interval);
+static JMC_INLINE jmc_timefloat jmc_timestamp_interval_millisecf(jmc_timestamp time_interval);
+static JMC_INLINE jmc_timefloat jmc_timestamp_interval_secondf(jmc_timestamp time_interval);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -74,10 +75,10 @@ jmc_timestamp jmc_get_timestamp(void)
     return result;
 }
 
-/* 最小单位: 纳秒(nsec), 返回值: int64_t. */
+/* 最小单位: 纳秒(nanosecond), 返回值: int64_t. */
 static
 JMC_INLINE
-jmc_timestamp jmc_get_sys_nsec(void)
+jmc_timestamp jmc_get_nanosec(void)
 {
     jmc_timestamp result;
 
@@ -110,7 +111,7 @@ jmc_timestamp jmc_get_sys_nsec(void)
 /* 单位: 毫秒(millisecond), 返回值: int64_t. */
 static
 JMC_INLINE
-jmc_timestamp jmc_get_sys_millisec(void)
+jmc_timestamp jmc_get_millisec(void)
 {
     jmc_timestamp result;
 
@@ -143,12 +144,12 @@ jmc_timestamp jmc_get_sys_millisec(void)
 /* 单位: 秒(second), 返回值: 浮点值 */
 static
 JMC_INLINE
-jmc_timefloat jmc_get_sys_secondf(void)
+jmc_timefloat jmc_get_secondf(void)
 {
     jmc_timefloat result;
 
     jmc_timestamp time_usecs;
-    time_usecs = jmc_get_sys_nsec();
+    time_usecs = jmc_get_nanosec();
 
 #if _WIN32 || _WIN64
     result = (jmc_timefloat)time_usecs * 1E-9;
@@ -164,12 +165,12 @@ jmc_timefloat jmc_get_sys_secondf(void)
 /* 单位: 毫秒(millisecond), 浮点值. */
 static
 JMC_INLINE
-jmc_timefloat jmc_get_sys_millisecf(void)
+jmc_timefloat jmc_get_millisecf(void)
 {
     jmc_timefloat result;
 
     jmc_timestamp time_usecs;
-    time_usecs = jmc_get_sys_nsec();
+    time_usecs = jmc_get_nanosec();
 
 #if _WIN32 || _WIN64
     result = (jmc_timefloat)time_usecs * 1E-6;
@@ -185,7 +186,7 @@ jmc_timefloat jmc_get_sys_millisecf(void)
 /* 根据timestamp间隔值得出流逝时间的毫秒值, 单位: 毫秒(millisecond), 返回值: int64_t. */
 static
 JMC_INLINE
-jmc_timestamp jmc_get_millisec(jmc_timestamp time_interval)
+jmc_timestamp jmc_timestamp_interval_millisec(jmc_timestamp time_interval)
 {
     jmc_timestamp result;
 
@@ -205,7 +206,7 @@ jmc_timestamp jmc_get_millisec(jmc_timestamp time_interval)
 /* 根据timestamp间隔值得出流逝时间的毫秒值, 单位: 毫秒(millisecond), 返回值: 浮点值. */
 static
 JMC_INLINE
-jmc_timefloat jmc_get_millisecf(jmc_timestamp time_interval)
+jmc_timefloat jmc_timestamp_interval_millisecf(jmc_timestamp time_interval)
 {
     jmc_timefloat result;
 
@@ -225,7 +226,7 @@ jmc_timefloat jmc_get_millisecf(jmc_timestamp time_interval)
 /* 根据timestamp间隔值得出流逝时间的秒数, 单位: 秒(second), 返回值: 浮点值. */
 static
 JMC_INLINE
-jmc_timefloat jmc_get_secondf(jmc_timestamp time_interval)
+jmc_timefloat jmc_timestamp_interval_secondf(jmc_timestamp time_interval)
 {
     jmc_timefloat result;
 
