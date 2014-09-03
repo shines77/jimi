@@ -19,7 +19,7 @@ NS_JIMI_BEGIN
 template <class _CharT = char,
           size_t _Capacity = 32,
           size_t _Alignment = 8,
-          class _Traits  = char_traits<_CharT> >
+          class _Traits = char_traits<_CharT> >
 class JIMI_API SmallString
 {
 public:

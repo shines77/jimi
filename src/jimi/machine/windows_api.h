@@ -68,7 +68,9 @@ inline HANDLE WINAPI inlineCreateEventEx(LPSECURITY_ATTRIBUTES lpEventAttributes
 #endif // RTL_SRWLOCK_INIT
 
 #else
+  #ifndef _MSC_VER
     #error "jimi/machine/windows_api.h should only be used for Windows based platforms"
+  #endif
 #endif // JIMI_IS_WINDOWS
 
 #endif  /* _JIMI_MACHINE_WINDOWS_API_H_ */

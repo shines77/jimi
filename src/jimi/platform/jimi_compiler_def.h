@@ -240,7 +240,9 @@
 
 // check user set compiler
 #if !JIMI_TARGET_COMPILER
+  #ifndef _MSC_VER
     #error "Cannot recognize the target compiler; are you targeting an unsupported compiler?"
+  #endif
 #endif
 
 #endif  /* _JIMI_COMPILER_DEF_H_ */

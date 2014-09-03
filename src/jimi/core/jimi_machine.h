@@ -41,7 +41,9 @@ struct JIMI_machine_type_with_alignment_##PowerOf2 {  \
 #define jimi_alignof(T)     __alignof(T)
 
 #else /* A compiler with unknown syntax for data alignment */
-#error Must define JIMI_TypeWithAlignmentAtLeastAsStrict(T)
+  #ifndef _MSC_VER
+    #error Must define JIMI_TypeWithAlignmentAtLeastAsStrict(T)
+  #endif
 #endif
 
 /* Now declare types aligned to useful powers of two */

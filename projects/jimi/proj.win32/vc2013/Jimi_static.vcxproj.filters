@@ -215,18 +215,6 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h">
       <Filter>src\jimic\string</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.inl.h">
-      <Filter>src\jimic\string\win32\intel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.inl.h">
-      <Filter>src\jimic\string\win32\intel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.inl.h">
-      <Filter>src\jimic\string\win32\intel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.inl.h">
-      <Filter>src\jimic\string\win32\intel</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\jimic_all.h">
       <Filter>src\jimic\core</Filter>
     </ClInclude>
@@ -359,6 +347,18 @@
     <ClInclude Include="..\..\..\..\src\jimi\lang\SmallString.h">
       <Filter>src\jimi\lang</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.h">
+      <Filter>src\jimic\string\win32\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.h">
+      <Filter>src\jimic\string\win32\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.h">
+      <Filter>src\jimic\string\win32\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.h">
+      <Filter>src\jimic\string\win32\intel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">
@@ -405,6 +405,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\system\sys_timer.c">
       <Filter>src\jimic\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.c">
+      <Filter>src\jimic\string\win32\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.c">
+      <Filter>src\jimic\string\win32\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.c">
+      <Filter>src\jimic\string\win32\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.c">
+      <Filter>src\jimic\string\win32\intel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

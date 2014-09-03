@@ -190,10 +190,10 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\sprintf.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\sprintf.inl.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.inl.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.inl.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.inl.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\console.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\crtdbg_env.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\get_char.h" />
@@ -202,6 +202,10 @@
     <ClInclude Include="..\..\..\..\src\jimic\util\utils.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.h" />
     <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\console.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\get_char.c" />

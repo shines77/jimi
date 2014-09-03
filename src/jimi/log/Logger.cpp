@@ -323,7 +323,7 @@ bool LogConfig::copy_from_global(LogConf_Global &_global, LogConf_Node *_node, i
         _node->attrib     = _global.node.attrib;
         _node->max_log_file_size   = _global.node.max_log_file_size;
         _node->log_flush_threshold = _global.node.log_flush_threshold;
-        _node->tag_id    = _default->tag_id;
+        _node->tag_id     = _default->tag_id;
         memcpy(_node->tag_name, _default->tag_name, sizeof(_default->tag_name));
         return true;
     }

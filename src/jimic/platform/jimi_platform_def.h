@@ -263,7 +263,9 @@
 
 // check user set platform
 #if !defined(JIMI_TARGET_PLATFORM) || !JIMI_TARGET_PLATFORM
+  #ifndef _MSC_VER
     #error "Cannot recognize the target platform; are you targeting an unsupported platform?"
+  #endif
 #endif
 
 #if (JIMI_TARGET_PLATFORM == JIMI_PLATFORM_WIN32 || JIMI_TARGET_PLATFORM == JIMI_PLATFORM_WIN64)
