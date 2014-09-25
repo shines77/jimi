@@ -8,33 +8,53 @@
 
 #include <jimic/core/jimic_def.h>
 
-#define jimi_abs_marco(val)     (((val) >= 0) ? (val) : -(val))
+#define jmc_abs_32(val)        (val & 0x7FFFFFFFUL)
+#define jmc_abs_64(val)        (val & 0x7FFFFFFFFFFFFFFFULL)
+#define jmc_abs_marco(val)     (((val) >= 0) ? (val) : -(val))
 
-JIMI_INLINE
-int jimi_abs(const int val)
+JMC_INLINE
+unsigned int
+jmc_abs(int val)
 {
-    if (val < 0)
-        return -val;
-    else
+#if 1
+    return (unsigned int)(val & 0x7FFFFFFFUL);
+#else
+    if (val >= 0)
         return val;
+    else
+        return -val;
+#endif
 }
 
-JIMI_INLINE
-long jimi_labs(const long val)
+JMC_INLINE
+unsigned long
+jmc_labs(long val)
 {
-    if (val < 0)
-        return -val;
+#if 1
+    if (sizeof(long) == 4)
+        return (unsigned long)(val & 0x7FFFFFFFUL);
     else
+        return (unsigned long)(val & 0x7FFFFFFFFFFFFFFFULL);
+#else
+    if (val >= 0)
         return val;
+    else
+        return -val;
+#endif
 }
 
-JIMI_INLINE
-int64_t jimi_llabs(const int64_t val)
+JMC_INLINE
+uint64_t
+jmc_llabs(int64_t val)
 {
-    if (val < 0)
-        return -val;
-    else
+#if 1
+    return (uint64_t)(val & 0x7FFFFFFFFFFFFFFFULL);
+#else
+    if (val >= 0)
         return val;
+    else
+        return -val;
+#endif
 }
 
 #endif  /* !_JIMIC_UTIL_UTILS_H_ */
