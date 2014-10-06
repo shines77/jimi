@@ -18,6 +18,152 @@
 #include <float.h>
 #include <limits.h>     // for UINT_MAX
 
+static const double pow10_table[] = {
+    1.0E+19,  1.0E+38,  1.0E+57,  1.0E+76,
+    1.0E+95,  1.0E+114, 1.0E+133, 1.0E+152,
+    1.0E+171, 1.0E+190, 1.0E+209, 1.0E+228,
+    1.0E+247, 1.0E+266, 1.0E+285, 1.0E+304
+};
+
+static const double pow10_remain_table[] = {
+    1.0E+4, 1.0E+8, 1.0E+12, 1.0E+16
+};
+
+JMC_DECLARE_NONSTD(int)
+jmc_log10(double val)
+{
+    fuint64_t *f64;
+    int exponent;
+    int exp10;
+    int exp10_remain;
+
+    f64 = (fuint64_t *)&val;
+    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
+        - JM_DOUBLE_EXPONENT_0_32;
+
+    // exponent is positive (exponent >= 0 && exponent <= 1024)
+    if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
+        // exp10 = (exponent / 64) * 19;
+        exp10 = (exponent >> 6) * 19;
+        // exp10_remain = (exponent & 63) * 19 / 64 / 4 * 4;
+        //exp10_remain = (((exponent & 63) * 19) >> 8);
+        //exp10 += (exp10_remain << 2);
+        exp10_remain = (((exponent & 63) * 19) >> 6);
+        exp10 += exp10_remain;
+    }
+    else {
+        exp10 = 0;
+    }
+    return exp10;
+}
+
+/* log10(2^64) = 19.265919722494796493679289262368 */
+
+JMC_DECLARE_NONSTD(int)
+jmc_log10_fast1(double val)
+{
+    fuint64_t *f64;
+    int exponent;
+    int exp10;
+    int exp10_remain;
+
+    f64 = (fuint64_t *)&val;
+    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
+        - JM_DOUBLE_EXPONENT_0_32;
+
+    // exponent is positive (exponent >= 0 && exponent <= 1024)
+    if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
+        // must 19,265,919 < 33,554,432 ( 2^32 / 64 / 2)
+        // exp10 = (exponent / 64) * 19265919;
+        exp10 = (exponent >> 6) * 19265919;
+        // exp10_remain = (exponent & 63) * 19265919 / 64 / 4 * 4;
+        //exp10_remain = (((exponent & 63) * 19265919) >> 8);
+        //exp10 += (exp10_remain << 2);
+        exp10_remain = (((exponent & 63) * 19265919) >> 6);
+        exp10 += exp10_remain;
+        exp10 = exp10 / 1000000;
+    }
+    else {
+        exp10 = 0;
+    }
+    return exp10;
+}
+
+/**
+ * log10(2^64) = 19.265919722494796493679289262368
+ * 1048576 / 1000000 = 1.048576
+ * log10(2^64) * 1048576 / 1000000 = 20.201781038934703728156254417576
+ */
+
+JMC_DECLARE_NONSTD(int)
+jmc_log10_fast2(double val)
+{
+    fuint64_t *f64;
+    int exponent;
+    int exp10;
+    int exp10_remain;
+
+    f64 = (fuint64_t *)&val;
+    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
+        - JM_DOUBLE_EXPONENT_0_32;
+
+    // exponent is positive (exponent >= 0 && exponent <= 1024)
+    if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
+        // must 20,201,781 < 33,554,432 ( 2^32 / 64 / 2)
+        // exp10 = (exponent / 64) * 20201781;
+        exp10 = (exponent >> 6) * 20201781;
+        // exp10_remain = (exponent & 63) * 20201781 / 64 / 4 * 4;
+        //exp10_remain = (((exponent & 63) * 20201781) >> 8);
+        //exp10 += (exp10_remain << 2);
+        exp10_remain = (((exponent & 63) * 20201781) >> 6);
+        exp10 += exp10_remain;
+        // exp10 = exp10 / 1048576;
+        exp10 >>= 20;
+    }
+    else {
+        exp10 = 0;
+    }
+    return exp10;
+}
+
+/**
+ * log10(2^64) = 19.265919722494796493679289262368
+ * 2^27 / 100000000 = 1.34217728
+ * log10(2^64) * 2^27 / 100000000 = 25.858279729836420772040005654498
+ * zoom = 2585827972.9836420772040005654498
+ */
+
+JMC_DECLARE_NONSTD(int)
+jmc_log10_fast(double val)
+{
+    fuint64_t *f64;
+    int exponent;
+    int exp10;
+    fuint64_t exp10_64;
+
+    f64 = (fuint64_t *)&val;
+    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
+        - JM_DOUBLE_EXPONENT_0_32;
+
+    // exponent is positive (exponent >= 0 && exponent <= 1024)
+    if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
+        // must 20,201,781 < 33,554,432 ( 2^32 / 64 / 2)
+        // exp10 = (exponent / 64) * 2585827972;
+        exp10_64.u64 = (uint64_t)(exponent * 2585827972ULL);
+        // exp10 = exp10 / 134217728;   // 2^27
+        //exp10 >>= 27;
+        exp10 = exp10_64.high >> 1;
+    }
+    else {
+        exp10 = 0;
+    }
+    return exp10;
+}
+
 #if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
 JMC_INLINE_NONSTD(int)
 #else
@@ -32,6 +178,12 @@ jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
     fuint64_t *f64;
     unsigned int n;
     int num_width;
+    int exponent;
+    int pow10_index;
+    int pow10_remain_index;
+    int exp10;
+    int exp10_remain;
+    double pow10;
 #if 0
     static const uint32_t scales32[] = {
         1, 10, 100, 1000, 10000, 100000,
@@ -51,6 +203,38 @@ jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
 #endif // _MSC_VER
         jimic_assert(sizeof(fuint64_t) == sizeof(double));
         return 0;
+    }
+
+    exp10 = 0;
+
+    f64 = (fuint64_t *)&val;
+    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
+        - JM_DOUBLE_EXPONENT_0_32;
+
+    // exponent is positive (exponent >= 0 && exponent <= 1024)
+    if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
+        // pow10_index = exponent / 64 - 1;
+        pow10_index = (exponent >> 6) - 1;
+        if (pow10_index >= 0) {
+            pow10 = pow10_table[pow10_index];
+            // exp10 = (exponent / 64) * 19;
+            exp10 = (exponent >> 6) * 19;
+            // exp10_remain = (exponent & 63) * 19 / 64 / 4 * 4;
+            exp10_remain = (((exponent & 63) * 19) >> 8);
+            exp10 += (exp10_remain << 2);
+            // pow10_remain_index = (exponent & 63) * 19 / 64 / 4 - 1;
+            pow10_remain_index = exp10_remain - 1;
+
+            // adjust the double value to 0 ~ 2^64-1
+            if (pow10_remain_index >= 0) {
+                pow10 *= pow10_remain_table[pow10_remain_index];
+                val /= pow10;
+            }
+        }
+        else {
+            //
+        }
     }
 
     if (precision < 0) {
@@ -212,6 +396,14 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
     fuint64_t *f64;
     unsigned int n;
     int num_width;
+
+    int exponent;
+    int pow10_index;
+    int pow10_remain_index;
+    int exp10;
+    int exp10_remain;
+    double pow10;
+
 #if 0
     static const uint32_t scales32[] = {
         1, 10, 100, 1000, 10000, 100000,
@@ -223,6 +415,40 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
         1000000000000000000, 10000000000000000000
     };
 #endif
+
+    exp10 = (int)floor(log(val) / log((double)10.0));
+
+    exp10 = 0;
+
+    f64 = (fuint64_t *)&val;
+    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
+        - JM_DOUBLE_EXPONENT_0_32;
+
+    // exponent is positive (exponent >= 0 && exponent <= 1024)
+    if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
+        // pow10_index = exponent / 64 - 1;
+        pow10_index = (exponent >> 6) - 1;
+        if (pow10_index >= 0) {
+            pow10 = pow10_table[pow10_index];
+            // exp10 = (exponent / 64) * 19;
+            exp10 = (exponent >> 6) * 19;
+            // exp10_remain = (exponent & 63) * 19 / 64 / 4 * 4;
+            exp10_remain = (((exponent & 63) * 19) >> 8);
+            exp10 += (exp10_remain << 2);
+            // pow10_remain_index = (exponent & 63) * 19 / 64 / 4 - 1;
+            pow10_remain_index = exp10_remain - 1;
+
+            // adjust the double value to 0 ~ 2^64-1
+            if (pow10_remain_index >= 0) {
+                pow10 *= pow10_remain_table[pow10_remain_index];
+                val /= pow10;
+            }
+        }
+        else {
+            //
+        }
+    }
 
     if (sizeof(fuint64_t) != sizeof(double)) {
         // maybe have some error!

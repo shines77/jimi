@@ -89,19 +89,51 @@
 #define JM_FIS_ZERO                     0x08
 #define JM_FIS_SUBNORMAL                0x10
 
+////////////////////////////////////////////////////////////////////////////////
+
+/* for float */
 #define JM_FLOAT_SIGN_BIT               (0x80000000UL)
 #define JM_FLOAT_EXPONENT_MASK          (0x7F800000UL)
 #define JM_FLOAT_MANTISSA_MASK          (0x007FFFFFUL)
 
+////////////////////////////////////////////////////////////////////////////////
+
+/* for double */
 #define JM_DOUBLE_SIGN_BIT              (0x8000000000000000ULL)
 #define JM_DOUBLE_EXPONENT_MASK         (0x7FF0000000000000ULL)
 #define JM_DOUBLE_MANTISSA_MASK         (0x000FFFFFFFFFFFFFULL)
 
-#define JM_DOUBLE_SIGN_BIT32            (uint32_t)(JM_DOUBLE_SIGN_BIT      >> 32)
-#define JM_DOUBLE_EXPONENT_MASK32       (uint32_t)(JM_DOUBLE_EXPONENT_MASK >> 32)
-#define JM_DOUBLE_MANTISSA_MASK_HIGH    (uint32_t)(JM_DOUBLE_MANTISSA_MASK >> 32)
+#define JM_DOUBLE_EXPONENT_0_MASK       (0x3FF0000000000000ULL)
+
+#define JM_DOUBLE_SIGN_SHIFT            63
+#define JM_DOUBLE_EXPONENT_SHIFT        52
+#define JM_DOUBLE_MANTISSA_SHIFT        0
+
+/* double exponent 0 is 1023 */
+#define JM_DOUBLE_EXPONENT_0            ((JM_DOUBLE_EXPONENT_0_MASK) >> (JM_DOUBLE_EXPONENT_SHIFT))
+
+/* for double (high 32 bits) */
+#define JM_DOUBLE_SIGN_BIT32            ((uint32_t)(JM_DOUBLE_SIGN_BIT      >> 32))
+#define JM_DOUBLE_EXPONENT_MASK32       ((uint32_t)(JM_DOUBLE_EXPONENT_MASK >> 32))
+#define JM_DOUBLE_MANTISSA_MASK_HIGH    ((uint32_t)(JM_DOUBLE_MANTISSA_MASK >> 32))
 #define JM_DOUBLE_MANTISSA_MASK_LOW     \
-                        (uint32_t)(JM_DOUBLE_MANTISSA_MASK & 0x00000000FFFFFFFFULL)
+                        ((uint32_t)(JM_DOUBLE_MANTISSA_MASK & 0x00000000FFFFFFFFULL))
+
+#define JM_DOUBLE_EXPONENT_0_MASK32     ((uint32_t)(JM_DOUBLE_EXPONENT_0_MASK >> 32))
+
+#define JM_DOUBLE_SIGN_SHIFT32          (63 - 32)
+#define JM_DOUBLE_EXPONENT_SHIFT32      (52 - 32)
+#define JM_DOUBLE_MANTISSA_SHIFT32      0
+
+/* double exponent 0 is 1023 */
+#define JM_DOUBLE_EXPONENT_0_32         (JM_DOUBLE_EXPONENT_0_MASK32 >> JM_DOUBLE_EXPONENT_SHIFT32)
+
+/* double exponent maxium is  1024 = (2047 - 1023) */
+#define JM_DOUBLE_EXPONENT_MAX          ((JM_DOUBLE_EXPONENT_MASK32 >> JM_DOUBLE_EXPONENT_SHIFT32) - JM_DOUBLE_EXPONENT_0_32)
+/* double exponent minium is -1023 = (0 - 1023) */
+#define JM_DOUBLE_EXPONENT_MIN          (0 - JM_DOUBLE_EXPONENT_0_32)
+
+////////////////////////////////////////////////////////////////////////////////
 
 typedef struct fuint64_t {
     union {

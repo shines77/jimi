@@ -8,8 +8,8 @@
 
 #include <jimic/core/jimic_def.h>
 
-#define jmc_abs_32(val)        (val & 0x7FFFFFFFUL)
-#define jmc_abs_64(val)        (val & 0x7FFFFFFFFFFFFFFFULL)
+#define jmc_abs_32(val)        ((val) & 0x7FFFFFFFUL)
+#define jmc_abs_64(val)        ((val) & 0x7FFFFFFFFFFFFFFFULL)
 #define jmc_abs_marco(val)     (((val) >= 0) ? (val) : -(val))
 
 JMC_INLINE

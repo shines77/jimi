@@ -42,6 +42,8 @@
 #include <jimic/string/sprintf.h>
 #include <jimic/string/csharp_sprintf.h>
 
+#include <math.h>
+
 #include <stdlib.h>
 #ifdef _MSC_VER
 #include <conio.h>
@@ -2404,6 +2406,141 @@ void auto_rvalue_test()
     std::cout << "------------  end  -----------" << std::endl;
 }
 
+int ieee754_log10_crt_1(double val)
+{
+    static const double s_log10 = (double)::log((double)10.0);
+    return (int)((double)::log(val) / s_log10);
+}
+
+int ieee754_log10_crt_2(double val)
+{
+    return (int)((double)::log10(val));
+}
+
+void Log10_Test()
+{
+#ifndef _DEBUG
+    const int LOOP_TIMES = 1000000;
+#else
+    const int LOOP_TIMES = 2000;
+#endif
+    double time1, time2, time3, time4, time5, time6;
+    double val;
+    int exp10;
+    int i, loop_times = 0;
+    jimi::stop_watch sw;
+
+    printf("==============================================================================\n\n");
+    printf("  Log10_Test()\n\n");
+    printf("==============================================================================\n\n");
+
+    val = 1000000000.0;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += ieee754_log10_crt_1(val);
+        val += 100.0;
+    }
+    sw.stop();
+    time1 = sw.getMillisec();
+    printf("time = %0.6f ms, exp10 = %d.\n\n", time1, exp10);
+
+    val = 1000000000.0;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += ieee754_log10_crt_2(val);
+        val += 100.0;
+    }
+    sw.stop();
+    time2 = sw.getMillisec();
+    printf("time = %0.6f ms, exp10 = %d.\n\n", time2, exp10);
+
+    val = 1000000000.0;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += jmc_log10(val);
+        val += 100.0;
+    }
+    sw.stop();
+    time3 = sw.getMillisec();
+    printf("time = %0.6f ms, exp10 = %d.\n\n", time3, exp10);
+
+    val = 1000000000.0;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += jmc_log10_fast1(val);
+        val += 100.0;
+    }
+    sw.stop();
+    time4 = sw.getMillisec();
+    printf("time = %0.6f ms, exp10 = %d.\n\n", time4, exp10);
+
+    val = 1000000000.0;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += jmc_log10_fast2(val);
+        val += 100.0;
+    }
+    sw.stop();
+    time5 = sw.getMillisec();
+    printf("time = %0.6f ms, exp10 = %d.\n\n", time5, exp10);
+
+    val = 1000000000.0;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += jmc_log10_fast(val);
+        val += 100.0;
+    }
+    sw.stop();
+    time6 = sw.getMillisec();
+    printf("time = %0.6f ms, exp10 = %d.\n\n", time6, exp10);
+
+    printf("\n");
+}
+
+void Log10_Test2(double val)
+{
+    int exp10;
+
+    printf("==============================================================================\n\n");
+    printf("  Log10_Test2()\n\n");
+    printf("==============================================================================\n\n");
+
+    //val = 1E+308;
+    printf("val = %0.12E\n\n", val);
+
+    exp10 = ieee754_log10_crt_1(val);
+    printf("log10_crt_1(val)        = %d.\n", exp10);
+
+    exp10 = ieee754_log10_crt_2(val);
+    printf("log10_crt_2(val)        = %d.\n", exp10);
+
+    exp10 = jmc_log10(val);
+    printf("jmc_log10(val)          = %d.\n", exp10);
+
+    exp10 = jmc_log10_fast1(val);
+    printf("jmc_log10_fast1(val)    = %d.\n", exp10);
+
+    exp10 = jmc_log10_fast2(val);
+    printf("jmc_log10_fast2(val)    = %d.\n", exp10);
+
+    exp10 = jmc_log10_fast(val);
+    printf("jmc_log10_fast(val)     = %d.\n", exp10);
+
+    printf("\n");
+}
+
 void Double_And_Float_Test()
 {
     char buf[128];
@@ -2524,12 +2661,16 @@ void Double_And_Float_Test()
     printf("printf(-INFINITY)        = %f\n", -INFINITY);
     printf("printf(DOUBLE_INFINITY)  = %f\n", DOUBLE_INFINITY);
     printf("printf(-DOUBLE_INFINITY) = %f\n", -DOUBLE_INFINITY);
-    printf("printf(1.0E+200)         = %f\n", 1.234567890123456789E+200);
+    //printf("printf(1.23456789E+200)  = %f\n", 1.2345678901234567890123456789E+200);
+    printf("printf(1.23456789E+200)  = %f\n", 1.234567890123456789E+200);
     printf("\n");
 
-    double d = 1.234567890123456789E+200;
+    double d = 1.2345678901234567890123456789E+200;
     uint64_t u64 = (uint64_t)d;
-    printf("printf(1.0E+200)         = %I64u\n", u64);
+    printf("printf(1.234567890123E+19) = %I64u\n", (uint64_t)1.234567890123E+19);
+
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(1.23456789E+200)  = %0.20f\n", d);
+    printf("%s", buf);
 
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(INFINITY)         = %f\n", INFINITY);
     printf("%s", buf);
@@ -2540,6 +2681,8 @@ void Double_And_Float_Test()
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(-DOUBLE_INFINITY) = %f\n", -DOUBLE_INFINITY);
     printf("%s", buf);
     printf("\n");
+
+    Console.ReadKey();
 }
 
 int UnitTest_Main(int argc, char *argv[])
@@ -2668,7 +2811,7 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 1
+#if 0
     String_Base_Test();
     if (true && 0) {
         Console.ReadKey();
@@ -2697,6 +2840,8 @@ int UnitTest_Main(int argc, char *argv[])
 #endif
 
 #if 1
+    Log10_Test();
+    Log10_Test2(1E+308);
     Double_And_Float_Test();
 #endif
 

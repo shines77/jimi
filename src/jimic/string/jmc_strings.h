@@ -21,6 +21,18 @@
 extern "C" {
 #endif
 
+JMC_DECLARE_NONSTD(int)
+jmc_log10(double val);
+
+JMC_DECLARE_NONSTD(int)
+jmc_log10_fast1(double val);
+
+JMC_DECLARE_NONSTD(int)
+jmc_log10_fast2(double val);
+
+JMC_DECLARE_NONSTD(int)
+jmc_log10_fast(double val);
+
 // itoa_radix10()
 JMC_INLINE_NONSTD(int)
 jmc_utoa_radix10(jm_char *buf, unsigned int val);
