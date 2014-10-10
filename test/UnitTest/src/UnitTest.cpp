@@ -2444,7 +2444,7 @@ void Log10_Test()
     }
     sw.stop();
     time1 = sw.getMillisec();
-    printf("time = %0.6f ms, exp10 = %d.\n\n", time1, exp10);
+    printf("ieee754_log10_crt_1():  time = %0.6f ms, exp10 = %d.\n\n", time1, exp10);
 
     val = 1000000000.0;
     exp10 = 0;
@@ -2456,7 +2456,7 @@ void Log10_Test()
     }
     sw.stop();
     time2 = sw.getMillisec();
-    printf("time = %0.6f ms, exp10 = %d.\n\n", time2, exp10);
+    printf("ieee754_log10_crt_2():  time = %0.6f ms, exp10 = %d.\n\n", time2, exp10);
 
     val = 1000000000.0;
     exp10 = 0;
@@ -2468,7 +2468,7 @@ void Log10_Test()
     }
     sw.stop();
     time3 = sw.getMillisec();
-    printf("time = %0.6f ms, exp10 = %d.\n\n", time3, exp10);
+    printf("jmc_log10():            time = %0.6f ms, exp10 = %d.\n\n", time3, exp10);
 
     val = 1000000000.0;
     exp10 = 0;
@@ -2480,7 +2480,7 @@ void Log10_Test()
     }
     sw.stop();
     time4 = sw.getMillisec();
-    printf("time = %0.6f ms, exp10 = %d.\n\n", time4, exp10);
+    printf("jmc_log10_fast1():      time = %0.6f ms, exp10 = %d.\n\n", time4, exp10);
 
     val = 1000000000.0;
     exp10 = 0;
@@ -2492,7 +2492,7 @@ void Log10_Test()
     }
     sw.stop();
     time5 = sw.getMillisec();
-    printf("time = %0.6f ms, exp10 = %d.\n\n", time5, exp10);
+    printf("jmc_log10_fast2():      time = %0.6f ms, exp10 = %d.\n\n", time5, exp10);
 
     val = 1000000000.0;
     exp10 = 0;
@@ -2504,7 +2504,7 @@ void Log10_Test()
     }
     sw.stop();
     time6 = sw.getMillisec();
-    printf("time = %0.6f ms, exp10 = %d.\n\n", time6, exp10);
+    printf("jmc_log10_fast():       time = %0.6f ms, exp10 = %d.\n\n", time6, exp10);
 
     printf("\n");
 }
@@ -2666,11 +2666,45 @@ void Double_And_Float_Test()
     printf("\n");
 
     double d = 1.2345678901234567890123456789E+200;
+    double dd = d;
     uint64_t u64 = (uint64_t)d;
-    printf("printf(1.234567890123E+19) = %I64u\n", (uint64_t)1.234567890123E+19);
+    printf("printf(1.2345678901234567E+19) = %I64u\n", (uint64_t)1.234567890123456789E+19);
+    jmc_adjust_dbl((double *)&dd);
+    printf("printf(1.23456789E+200)        = %0.20f\n", dd);
 
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(1.23456789E+200)  = %0.20f\n", d);
     printf("%s", buf);
+    printf("\n");
+
+    printf("printf(1.23456789E+0)          = %0.20f\n", (double)1.2345678901234567890123456789);
+
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(1.23456789E+0)    = %0.20f\n", (double)1.2345678901234567890123456789);
+    printf("%s", buf);
+    printf("\n");
+
+    printf("printf(12.3456789E+0)          = %0.20f\n", (double)12.345678901234567890123456789);
+
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(12.3456789E+0)    = %0.20f\n", (double)12.345678901234567890123456789);
+    printf("%s", buf);
+    printf("\n");
+
+    printf("printf(123.456789E+0)          = %0.20f\n", (double)123.45678901234567890123456789);
+
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(123.456789E+0)    = %0.20f\n", (double)123.45678901234567890123456789);
+    printf("%s", buf);
+    printf("\n");
+
+    printf("printf(1234.56789E+0)          = %0.20f\n", (double)1234.5678901234567890123456789);
+
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(1234.56789E+0)    = %0.20f\n", (double)1234.5678901234567890123456789);
+    printf("%s", buf);
+    printf("\n");
+
+    printf("printf(12345.6789E+0)          = %0.20f\n", (double)12345.678901234567890123456789);
+
+    jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(12345.6789E+0)    = %0.20f\n", (double)12345.678901234567890123456789);
+    printf("%s", buf);
+    printf("\n");
 
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(INFINITY)         = %f\n", INFINITY);
     printf("%s", buf);
@@ -2842,6 +2876,8 @@ int UnitTest_Main(int argc, char *argv[])
 #if 1
     Log10_Test();
     Log10_Test2(1E+308);
+    Log10_Test2(1E+200);
+    Log10_Test2(1E+100);
     Double_And_Float_Test();
 #endif
 
@@ -2884,6 +2920,8 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Integer1();
     Snprintf_Preformance_Test_Integer2();
     Snprintf_Preformance_Test_Integer3();
+
+    Console.ReadKey();
   #endif
 
   #if 1
@@ -2891,6 +2929,8 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Double2();
     Snprintf_Preformance_Test_Double3();
     Snprintf_Preformance_Test_Double4();
+
+    Console.ReadKey();
   #endif
 
   #if 1
@@ -2899,6 +2939,8 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_String3();
     Snprintf_Preformance_Test_String4();
     Snprintf_Preformance_Test_String5();
+
+    Console.ReadKey();
   #endif
 
     //OStringStream_Performance_Test();

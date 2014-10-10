@@ -18,15 +18,37 @@
 #include <float.h>
 #include <limits.h>     // for UINT_MAX
 
-static const double pow10_table[] = {
+static const double dbl_pow10_remain_16[] = {
+    1.0E+0, 1.0E+4, 1.0E+9, 1.0E+14
+};
+
+static const double dbl_pow10_remain_8[] = {
+    1.0E+0,  1.0E+2,  1.0E+4,  1.0E+7,
+    1.0E+9,  1.0E+12, 1.0E+14, 1.0E+16,
+};
+
+static const double dbl_pow10_base_64[] = {
     1.0E+19,  1.0E+38,  1.0E+57,  1.0E+76,
     1.0E+95,  1.0E+114, 1.0E+133, 1.0E+152,
     1.0E+171, 1.0E+190, 1.0E+209, 1.0E+228,
-    1.0E+247, 1.0E+266, 1.0E+285, 1.0E+304
+    1.0E+247, 1.0E+266, 1.0E+285, 1.0E+304,
+    // last 3 items is fill for address aligned to 64 bytes (cache line size)
+    1.0E+308, 1.0E+308, 1.0E+308, 1.0E+308
 };
 
-static const double pow10_remain_table[] = {
-    1.0E+4, 1.0E+8, 1.0E+12, 1.0E+16
+static const uint32_t float_scales32[] = {
+    1, 10, 100, 1000, 10000, 100000,
+    1000000, 10000000, 100000000, 1000000000,
+    // fill for address aligned to 64 bytes (cache line size)
+    1, 1, 1, 1, 1, 1
+};
+
+static const uint64_t float_scales64[] = {
+    10000000000ULL,         100000000000ULL,
+    1000000000000ULL,       10000000000000ULL,
+    100000000000000ULL,     1000000000000000ULL,
+    10000000000000000ULL,   100000000000000000ULL,
+    1000000000000000000ULL, 10000000000000000000ULL
 };
 
 JMC_DECLARE_NONSTD(int)
@@ -93,12 +115,45 @@ jmc_log10_fast1(double val)
 
 /**
  * log10(2^64) = 19.265919722494796493679289262368
+ * 131072 / 100000 = 1.31072
+ * log10(2^64) * 131072 / 100000 = 25.25222629866837966019531802197
+ * zoom = 2525222.629866837966019531802197
+ */
+
+JMC_DECLARE_NONSTD(int)
+jmc_log10_fast2(double val)
+{
+    fuint64_t *f64;
+    int exponent;
+    unsigned int exp10;
+
+    f64 = (fuint64_t *)&val;
+    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
+        - JM_DOUBLE_EXPONENT_0_32;
+
+    // exponent is positive (exponent >= 0 && exponent <= 1024)
+    if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
+        // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
+        // exp10 = exponent * 2525222UL;
+        exp10 = (unsigned int)exponent * 2525222UL;
+        // exp10 = exp10 / 131072 / 64;
+        exp10 >>= 23;
+    }
+    else {
+        exp10 = 0;
+    }
+    return (int)exp10;
+}
+
+/**
+ * log10(2^64) = 19.265919722494796493679289262368
  * 1048576 / 1000000 = 1.048576
  * log10(2^64) * 1048576 / 1000000 = 20.201781038934703728156254417576
  */
 
 JMC_DECLARE_NONSTD(int)
-jmc_log10_fast2(double val)
+jmc_log10_fast2a(double val)
 {
     fuint64_t *f64;
     int exponent;
@@ -137,7 +192,7 @@ jmc_log10_fast2(double val)
  */
 
 JMC_DECLARE_NONSTD(int)
-jmc_log10_fast(double val)
+jmc_log10_fast3(double val)
 {
     fuint64_t *f64;
     int exponent;
@@ -153,7 +208,7 @@ jmc_log10_fast(double val)
     if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
         // must 20,201,781 < 33,554,432 ( 2^32 / 64 / 2)
         // exp10 = (exponent / 64) * 2585827972;
-        exp10_64.u64 = (uint64_t)(exponent * 2585827972ULL);
+        exp10_64.u64 = (uint64_t)((unsigned int)exponent * 2585827972ULL);
         // exp10 = exp10 / 134217728;   // 2^27
         //exp10 >>= 27;
         exp10 = exp10_64.high >> 1;
@@ -162,6 +217,98 @@ jmc_log10_fast(double val)
         exp10 = 0;
     }
     return exp10;
+}
+
+/**
+ * log10(2^64) = 19.265919722494796493679289262368
+ * 2^26 / 100000000 = 0.67108864
+ * log10(2^64) * 2^26 / 100000000 = 12.929139864918210386020002827249
+ * zoom = 1292913986.4918210386020002827249
+ */
+
+JMC_DECLARE_NONSTD(int)
+jmc_log10_fast(double val)
+{
+    fuint64_t *f64;
+    int exponent;
+    int exp10;
+    fuint64_t exp10_64 = { 0 };
+
+    f64 = (fuint64_t *)&val;
+    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
+        - JM_DOUBLE_EXPONENT_0_32;
+
+    // exponent is positive (exponent >= 0 && exponent <= 1024)
+    if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
+        // must 20,201,781 < 33,554,432 ( 2^32 / 64 / 2)
+        // exp10 = (exponent / 64) * 1292913986;
+        //exp10_64.u64 = (uint64_t)((unsigned int)exponent * 1292913986ULL);
+        // exp10 = exp10 / 134217728;   // 2^26
+        //exp10 >>= 26;
+        //exp10 = (int)exp10_64.high;
+        exp10 = (int)((uint64_t)((unsigned int)exponent * 1292913986ULL) >> 32);
+    }
+    else {
+        exp10 = 0;
+    }
+    return exp10;
+}
+
+#if defined(JMC_DBL_ADJUST_INLINE_DECLARE) && (JMC_DBL_ADJUST_INLINE_DECLARE != 0)
+JMC_INLINE_NONSTD(int)
+#else
+JMC_DECLARE_NONSTD(int)
+#endif
+jmc_adjust_dbl(double *pval)
+{
+    int exp10;
+    fuint64_t *f64;
+    int exponent;
+    int pow10_base_index;
+    int pow10_remain_index;
+    double pow10;
+
+    jimic_assert(pval != NULL);
+
+    f64 = (fuint64_t *)pval;
+    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
+        - JM_DOUBLE_EXPONENT_0_32;
+
+    //if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
+    if (exponent >= 0) {
+        // if exponent is positive
+        // zoom coeff must satisfy 2,525,222 < 4,194,304 ( 2^32 / 1024)
+        // exp10 = exponent * 2525222UL;
+        exp10 = (unsigned int)exponent * 2525222UL;
+        // exp10 = exp10 / 131072 / 64, 131072 = 2^17;
+        exp10 = (int)((unsigned int)exp10 >> 23);
+
+        pow10_base_index = (exponent >> 6);
+        if (pow10_base_index > 0) {
+            pow10 = dbl_pow10_base_64[pow10_base_index - 1];
+            pow10_remain_index = (exponent & 63) >> 3;
+            pow10 *= dbl_pow10_remain_8[pow10_remain_index];
+            *pval = (*pval) / pow10;
+        }
+        return exp10;
+    }
+    else {
+        // if exponent is negative
+        // exp10 = exponent * 2525222UL;
+        exponent = -exponent;
+        exp10 = (unsigned int)exponent * 2525222UL;
+        // exp10 = exp10 / 131072 / 64, 131072 = 2^17;
+        exp10 = (int)((unsigned int)exp10 >> 23);
+
+        pow10_base_index = ((exponent + 8) >> 6);
+        pow10 = dbl_pow10_base_64[pow10_base_index];
+        pow10_remain_index = (exponent & 63) >> 3;
+        pow10 *= dbl_pow10_remain_8[pow10_remain_index];
+        *pval = (*pval) * pow10;
+        return -exp10;
+    }
 }
 
 #if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
@@ -178,23 +325,7 @@ jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
     fuint64_t *f64;
     unsigned int n;
     int num_width;
-    int exponent;
-    int pow10_index;
-    int pow10_remain_index;
     int exp10;
-    int exp10_remain;
-    double pow10;
-#if 0
-    static const uint32_t scales32[] = {
-        1, 10, 100, 1000, 10000, 100000,
-        1000000, 10000000, 100000000, 1000000000
-    };
-    static const uint64_t scales64[] = {
-        10000000000,     100000000000,     1000000000000,     10000000000000,
-        100000000000000, 1000000000000000, 10000000000000000, 100000000000000000,
-        1000000000000000000, 10000000000000000000
-    };
-#endif
 
     if (sizeof(fuint64_t) != sizeof(double)) {
         // maybe have some error!
@@ -205,37 +336,7 @@ jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
         return 0;
     }
 
-    exp10 = 0;
-
-    f64 = (fuint64_t *)&val;
-    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
-    exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
-        - JM_DOUBLE_EXPONENT_0_32;
-
-    // exponent is positive (exponent >= 0 && exponent <= 1024)
-    if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
-        // pow10_index = exponent / 64 - 1;
-        pow10_index = (exponent >> 6) - 1;
-        if (pow10_index >= 0) {
-            pow10 = pow10_table[pow10_index];
-            // exp10 = (exponent / 64) * 19;
-            exp10 = (exponent >> 6) * 19;
-            // exp10_remain = (exponent & 63) * 19 / 64 / 4 * 4;
-            exp10_remain = (((exponent & 63) * 19) >> 8);
-            exp10 += (exp10_remain << 2);
-            // pow10_remain_index = (exponent & 63) * 19 / 64 / 4 - 1;
-            pow10_remain_index = exp10_remain - 1;
-
-            // adjust the double value to 0 ~ 2^64-1
-            if (pow10_remain_index >= 0) {
-                pow10 *= pow10_remain_table[pow10_remain_index];
-                val /= pow10;
-            }
-        }
-        else {
-            //
-        }
-    }
+    exp10 = jmc_adjust_dbl(&val);
 
     if (precision < 0) {
         jimic_assert(precision < 0);
@@ -245,27 +346,34 @@ jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
     }
     else if (precision > 0) {
 #if 0
-        if (precision <= 10) {
-            jimic_assert(precision >= 0 && precision <= 10);
-            scale = scales32[precision];
+        if (precision <= 9) {
+            jimic_assert(precision > 0 && precision <= 9);
+            scale = float_scales32[precision];
         }
         else {
-            jimic_assert(precision > 10 && precision <= 20);
-            scale = scales64[precision - 11];
+            jimic_assert(precision > 9 && precision <= 20);
+            scale = float_scales64[precision - 11];
         }
 #elif 1
-        if (precision <= 10) {
-            jimic_assert(precision >= 0 && precision <= 10);
-            scale32 = 1;
+        if (precision <= 9) {
+            jimic_assert(precision > 0 && precision <= 9);
+            scale32 = 10;
             for (n = precision; n > 0; --n)
                 scale32 *= 10;
             scale = scale32;
         }
         else {
-            jimic_assert(precision > 10 && precision <= 20);
-            scale = 10000000000;
-            for (n = precision - 11; n > 0; --n)
-                scale *= 10;
+            jimic_assert(precision > 9);
+            if (precision <= FMT_MAX_DOUBLE_PRECISION) {
+                scale = 10000000000ULL;
+                for (n = precision - 10; n > 0; --n)
+                    scale *= 10;
+            }
+            else {
+                precision = FMT_MAX_DOUBLE_PRECISION;
+                scale = 100000000000000000ULL;
+            }
+            jimic_assert(precision <= FMT_MAX_DOUBLE_PRECISION);
         }
 #else
         jimic_assert(precision >= 0 && precision <= 20);
@@ -391,64 +499,17 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
 {
     int len;
     int64_t i64;
+    uint64_t val64;
+    uint32_t val32;
+    unsigned int digital;
     uint32_t scale32;
     uint64_t scale, frac;
     fuint64_t *f64;
+    register fuint64_t *u64;
     unsigned int n;
     int num_width;
-
-    int exponent;
-    int pow10_index;
-    int pow10_remain_index;
     int exp10;
-    int exp10_remain;
-    double pow10;
-
-#if 0
-    static const uint32_t scales32[] = {
-        1, 10, 100, 1000, 10000, 100000,
-        1000000, 10000000, 100000000, 1000000000
-    };
-    static const uint64_t scales64[] = {
-        10000000000,     100000000000,     1000000000000,     10000000000000,
-        100000000000000, 1000000000000000, 10000000000000000, 100000000000000000,
-        1000000000000000000, 10000000000000000000
-    };
-#endif
-
-    exp10 = (int)floor(log(val) / log((double)10.0));
-
-    exp10 = 0;
-
-    f64 = (fuint64_t *)&val;
-    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
-    exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
-        - JM_DOUBLE_EXPONENT_0_32;
-
-    // exponent is positive (exponent >= 0 && exponent <= 1024)
-    if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
-        // pow10_index = exponent / 64 - 1;
-        pow10_index = (exponent >> 6) - 1;
-        if (pow10_index >= 0) {
-            pow10 = pow10_table[pow10_index];
-            // exp10 = (exponent / 64) * 19;
-            exp10 = (exponent >> 6) * 19;
-            // exp10_remain = (exponent & 63) * 19 / 64 / 4 * 4;
-            exp10_remain = (((exponent & 63) * 19) >> 8);
-            exp10 += (exp10_remain << 2);
-            // pow10_remain_index = (exponent & 63) * 19 / 64 / 4 - 1;
-            pow10_remain_index = exp10_remain - 1;
-
-            // adjust the double value to 0 ~ 2^64-1
-            if (pow10_remain_index >= 0) {
-                pow10 *= pow10_remain_table[pow10_remain_index];
-                val /= pow10;
-            }
-        }
-        else {
-            //
-        }
-    }
+    int frac_prec;
 
     if (sizeof(fuint64_t) != sizeof(double)) {
         // maybe have some error!
@@ -456,52 +517,124 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
         #error "jmc_dtos_ex() maybe have some error!"
 #endif // _MSC_VER
         jimic_assert(sizeof(fuint64_t) == sizeof(double));
-        return 0;
-    }
-
-    if (precision > 0) {
-#if 0
-        if (precision <= 10) {
-            jimic_assert(precision >= 0 && precision <= 10);
-            scale = scales32[precision];
-        }
-        else {
-            jimic_assert(precision > 10 && precision <= 20);
-            scale = scales64[precision - 11];
-        }
-#else
-        if (precision <= 10) {
-            jimic_assert(precision >= 0 && precision <= 10);
-            scale32 = 1;
-            for (n = precision; n > 0; --n)
-                scale32 *= 10;
-            scale = scale32;
-        }
-        else {
-            jimic_assert(precision > 10 && precision <= 20);
-            scale = 10000000000;
-            for (n = precision - 11; n > 0; --n)
-                scale *= 10;
-        }
-#endif
-        num_width = filed_width - precision - 1;
-    }
-    else if (precision < 0) {
-        jimic_assert(precision < 0);
-        precision = FMT_DEFAULT_DOUBLE_PRECISION;
-        scale = 1000000;
-        num_width = filed_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
-    }
-    else {
-        scale = 1;
-        num_width = filed_width;
+        return -1;
     }
 
     f64 = (fuint64_t *)&val;
     // is NaN or INF ? (exponent is maxium ?)
     if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
+        // adjust double value to range (1 ~ 2^64) * 10^N
+        exp10 = jmc_adjust_dbl(&val);
+
         i64 = (int64_t)val;
-        //if (val >= 0.0) {
+        u64 = (fuint64_t *)&i64;
+        // calc the digitals of the double integer part
+        //if (i64 <= (uint64_t)JIMIC_UINT_MAX64) {
+        if (u64->high == 0) {
+            val32 = (uint32_t)u64->low;
+            digital = 0;
+            do {
+                digital++;
+                val32 /= 10;
+            } while (val32 != 0);
+        }
+        else {
+            if (i64 >= 0)
+                val64 = i64;
+            else
+                val64 = -i64;
+            digital = 0;
+            do {
+                digital++;
+                val64 /= 10;
+            } while (val64 != 0);
+        }
+
+#if 1
+        if (precision > 0) {
+            jimic_assert(precision > 0);
+            num_width = filed_width - precision - 1;
+        }
+        else if (precision < 0) {
+            jimic_assert(precision < 0);
+            precision = FMT_DEFAULT_DOUBLE_PRECISION;
+            num_width = filed_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
+        }
+        else {
+            jimic_assert(precision == 0);
+            num_width = filed_width;
+        }
+#else
+        if (precision < 0) {
+            jimic_assert(precision < 0);
+            precision = FMT_DEFAULT_DOUBLE_PRECISION;
+            num_width = filed_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
+        }
+        else {
+            jimic_assert(precision >= 0);
+            num_width = filed_width - precision;
+            if (precision > 0)
+                num_width--;
+        }
+#endif
+
+        if (i64 != 0) {
+            if ((precision + digital) <= FMT_MAX_DOUBLE_PRECISION)
+                frac_prec = precision - digital;
+            else
+                frac_prec = FMT_MAX_DOUBLE_PRECISION - digital;
+        }
+        else {
+            if (precision <= FMT_MAX_DOUBLE_PRECISION)
+                frac_prec = precision;
+            else
+                frac_prec = FMT_MAX_DOUBLE_PRECISION;
+        }
+
+#if 0
+        if (frac_prec > 0) {
+            jimic_assert(frac_prec > 0);
+            if (frac_prec <= 9) {
+                jimic_assert(frac_prec > 0 && frac_prec <= 9);
+                scale = float_scales32[frac_prec];
+            }
+            else {
+                jimic_assert(frac_prec > 9 && precision <= FMT_MAX_DOUBLE_PRECISION);
+                scale = float_scales64[frac_prec - 10];
+            }
+        }
+        else {
+            jimic_assert(frac_prec <= 0);
+            scale = 1;
+        }
+#else
+        if (frac_prec > 0) {
+            jimic_assert(frac_prec > 0);
+            if (frac_prec <= 9) {
+                jimic_assert(frac_prec > 0 && frac_prec <= 9);
+                scale32 = 10;
+                for (n = frac_prec; n > 0; --n)
+                    scale32 *= 10;
+                scale = scale32;
+            }
+            else {
+                jimic_assert(frac_prec > 9 && frac_prec <= FMT_MAX_DOUBLE_PRECISION);
+                if (frac_prec < FMT_MAX_DOUBLE_PRECISION) {
+                    scale = 10000000000ULL;
+                    for (n = frac_prec - 10; n > 0; --n)
+                        scale *= 10;
+                }
+                else {
+                    scale = 100000000000000000ULL;
+                }
+            }
+        }
+        else {
+            jimic_assert(frac_prec <= 0);
+            scale = 1;
+        }
+#endif
+
         if (i64 >= 0) {
             frac = (uint64_t)((val - (double)i64) * scale + 0.5);
             if (frac == scale) {
@@ -541,8 +674,22 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
 #else
             filed_width--;
             if (precision >= filed_width) {
-                len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
-                                             '0', precision, filed_width) + 1;
+                int tail_zero = precision - frac_prec;
+                if (tail_zero <= 0) {
+                    len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                                                 '0', precision, filed_width) + 1;
+                }
+                else {
+                    len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                                                 '0', frac_prec, precision) + tail_zero + 1;
+                    buf += frac_prec;
+                    // fill tail zeros
+                    do {
+                        *buf++ = '0';
+                        tail_zero--;
+                    } while (tail_zero > 0);
+                    *buf = '\0';
+                }
             }
             else {
                 len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,

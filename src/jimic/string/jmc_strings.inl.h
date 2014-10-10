@@ -79,7 +79,7 @@
 #endif
 
 #ifndef FMT_MAX_DOUBLE_PRECISION
-#define FMT_MAX_DOUBLE_PRECISION        20
+#define FMT_MAX_DOUBLE_PRECISION        17
 #endif
 
 #define JM_FIS_NORMAL                   0
@@ -721,6 +721,15 @@ jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int fla
     int padding;
     fuint64_t *u64;
     char digits[32];    // 实际最多只会用到20个bytes
+
+    if (sizeof(fuint64_t) != sizeof(uint64_t)) {
+        // maybe have some error!
+#ifndef _MSC_VER
+        #error "jmc_u64toa_radix10_ex() maybe have some error!"
+#endif // _MSC_VER
+        jimic_assert(sizeof(fuint64_t) == sizeof(uint64_t));
+        return -1;
+    }
 
     end = digits + jm_countof(digits) - 1;
     cur = end;

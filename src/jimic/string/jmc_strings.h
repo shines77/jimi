@@ -9,6 +9,10 @@
 #include <jimi/platform/jimi_platform_def.h>
 #include <jimic/core/jimic_def.h>
 
+#ifndef JMC_DBL_ADJUST_INLINE_DECLARE
+#define JMC_DBL_ADJUST_INLINE_DECLARE       0
+#endif
+
 #ifndef JMC_DTOS_INLINE_DECLARE
 #define JMC_DTOS_INLINE_DECLARE             0
 #endif
@@ -117,6 +121,21 @@ JMC_INLINE_NONSTD(int)
 jmc_ftos_ex(jm_char *buf, size_t count, float val, unsigned int flag,
             unsigned int fill, unsigned int filed_width, int precision);
 
+/* JMC_DBL_ADJUST_INLINE_DECLARE */
+#if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
+
+JMC_INLINE_NONSTD(int)
+jmc_adjust_dbl(double *pval);
+
+#else  /* !JMC_DBL_ADJUST_INLINE_DECLARE */
+
+JMC_DECLARE_NONSTD(int)
+jmc_adjust_dbl(double *pval);
+
+#endif  /* JMC_DBL_ADJUST_INLINE_DECLARE */
+
+
+/* JMC_DTOS_INLINE_DECLARE */
 #if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
 
 JMC_INLINE_NONSTD(int)
@@ -175,6 +194,7 @@ jmc_strncpy_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, s
 JMC_INLINE_NONSTD(size_t)
 jmc_out_null_string(jm_char *dest, size_t countOfElements);
 
+/* JMC_STRNCPY_EX_INLINE_DECLARE */
 #if defined(JMC_STRNCPY_EX_INLINE_DECLARE) && (JMC_STRNCPY_EX_INLINE_DECLARE != 0)
 
 JMC_INLINE_NONSTD(size_t)
