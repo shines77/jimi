@@ -6,11 +6,11 @@
 #pragma once
 #endif
 
-#include <jimi/platform/jimi_platform_def.h>
-#include <jimi/platform/jimi_compiler_def.h>
+#include <jimi/core/jimi_platform_def.h>
+#include <jimi/core/jimi_compiler_def.h>
 
 #if JIMI_IS_WINDOWS
-    #include <jimi/platform/jimi_targetver.h>
+    #include <jimi/core/win32/jimi_targetver.h>
 #endif
 
 #include <jimi/core/win32/jimi_config.h>

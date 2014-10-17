@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include <jimi/platform/jimi_platform_def.h>
+#include <jimi/core/jimi_platform_def.h>
 #include <jimic/core/jimic_def.h>
 
 #ifndef JMC_DBL_ADJUST_INLINE_DECLARE

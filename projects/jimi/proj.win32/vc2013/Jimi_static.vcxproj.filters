@@ -110,9 +110,6 @@
     <ClInclude Include="..\..\..\..\src\jimi\core\win32\vs_stdint.h">
       <Filter>src\jimi\core\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_targetver.h">
-      <Filter>src\jimi\platform</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\lang\Allocator.h">
       <Filter>src\jimi\lang</Filter>
     </ClInclude>
@@ -233,9 +230,6 @@
     <ClInclude Include="..\..\..\..\src\jimic\core\win32\vs_stdint.h">
       <Filter>src\jimic\core\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\platform\jimic_targetver.h">
-      <Filter>src\jimic\platform</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\platform\linux\fast_memcpy.h">
       <Filter>src\jimic\platform\linux</Filter>
     </ClInclude>
@@ -262,18 +256,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\system\Console.h">
       <Filter>src\jimi\system</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_compiler_def.h">
-      <Filter>src\jimi\platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_platform_def.h">
-      <Filter>src\jimi\platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\platform\jimi_compiler_def.h">
-      <Filter>src\jimic\platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\platform\jimi_platform_def.h">
-      <Filter>src\jimic\platform</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.h">
       <Filter>src\jimi\core</Filter>
@@ -358,6 +340,24 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.h">
       <Filter>src\jimic\string\win32\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_compiler_def.h">
+      <Filter>src\jimic\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_platform_def.h">
+      <Filter>src\jimic\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\win32\jimic_targetver.h">
+      <Filter>src\jimic\core\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\win32\jimi_targetver.h">
+      <Filter>src\jimi\core\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_compiler_def.h">
+      <Filter>src\jimi\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_platform_def.h">
+      <Filter>src\jimi\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
