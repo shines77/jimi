@@ -122,7 +122,7 @@ jmc_ftos_ex(jm_char *buf, size_t count, float val, unsigned int flag,
             unsigned int fill, unsigned int filed_width, int precision);
 
 /* JMC_DBL_ADJUST_INLINE_DECLARE */
-#if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
+#if defined(JMC_DBL_ADJUST_INLINE_DECLARE) && (JMC_DBL_ADJUST_INLINE_DECLARE != 0)
 
 JMC_INLINE_NONSTD(int)
 jmc_adjust_dbl(double *pval);
@@ -133,7 +133,6 @@ JMC_DECLARE_NONSTD(int)
 jmc_adjust_dbl(double *pval);
 
 #endif  /* JMC_DBL_ADJUST_INLINE_DECLARE */
-
 
 /* JMC_DTOS_INLINE_DECLARE */
 #if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)

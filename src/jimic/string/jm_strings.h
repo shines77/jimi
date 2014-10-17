@@ -47,7 +47,7 @@ JMC_INLINE_NONSTD(void) jm_strnlwr_s(char *src, size_t n);
 JMC_INLINE_NONSTD(void) jm_strnupr_s(char *src, size_t n);
 
 
-#if defined(JIMI_IS_WINDOWS)
+#if defined(JIMI_IS_WINDOWS) && (JIMI_IS_WINDOWS != 0) && !defined(__MINGW32__)
 
 ///////////////////////////////////////////////////////////////////////////
 

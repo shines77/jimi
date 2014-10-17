@@ -66,7 +66,7 @@ public:
 
 public:
     //! Construct an absolute timestamp initialized to zero.
-    stop_watch_base() : startTime(0), stopTime(0) {};
+    stop_watch_base() : startTime(0), stopTime(0) { };
     stop_watch_base(const stop_watch_base &src);
 
     stop_watch_base &operator = (const stop_watch_base &t);
@@ -156,7 +156,8 @@ inline void stop_watch_base<T>::internal_getTimeStamp(timestamp_t &result)
 #endif /* JIMI_USE_ASSERT */
         clock_gettime(CLOCK_REALTIME, &ts);
     JIMI_ASSERT_EX(status == 0, "CLOCK_REALTIME not supported");
-    result = static_cast<timestamp_t>(static_cast<int64_t>(1000000000UL) * static_cast<int64_t>(ts.tv_sec) + static_cast<int64_t>(ts.tv_nsec));
+    result = static_cast<timestamp_t>(static_cast<int64_t>(1000000000UL) * static_cast<int64_t>(ts.tv_sec)
+                                      + static_cast<int64_t>(ts.tv_nsec));
 #else /* generic Unix */
     struct timeval tv;
 #if JIMI_USE_ASSERT
@@ -164,13 +165,15 @@ inline void stop_watch_base<T>::internal_getTimeStamp(timestamp_t &result)
 #endif /* JIMI_USE_ASSERT */
         gettimeofday(&tv, NULL);
     JIMI_ASSERT_EX(status == 0, "gettimeofday failed");
-    result = static_cast<timestamp_t>(static_cast<int64_t>(1000000UL) * static_cast<int64_t>(tv.tv_sec) + static_cast<int64_t>(tv.tv_usec));
+    result = static_cast<timestamp_t>(static_cast<int64_t>(1000000UL) * static_cast<int64_t>(tv.tv_sec)
+                                      + static_cast<int64_t>(tv.tv_usec));
 #endif /*(choice of OS) */
 }
 
 /* 单位: 纳秒, nsec */
 template<class T>
-inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::internal_now(void)
+inline typename stop_watch_base<T>::timestamp_t
+stop_watch_base<T>::internal_now(void)
 {
     timestamp_t result;
 
@@ -186,7 +189,8 @@ inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::internal_now
 #endif /* JIMI_USE_ASSERT */
         clock_gettime(CLOCK_REALTIME, &ts);
     JIMI_ASSERT_EX(status == 0, "CLOCK_REALTIME not supported");
-    result = static_cast<timestamp_t>(static_cast<int64_t>(1000000000UL) * static_cast<int64_t>(ts.tv_sec) + static_cast<int64_t>(ts.tv_nsec));
+    result = static_cast<timestamp_t>(static_cast<int64_t>(1000000000UL) * static_cast<int64_t>(ts.tv_sec)
+                                      + static_cast<int64_t>(ts.tv_nsec));
 #else /* generic Unix */
     struct timeval tv;
 #if JIMI_USE_ASSERT
@@ -194,7 +198,8 @@ inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::internal_now
 #endif /* JIMI_USE_ASSERT */
         gettimeofday(&tv, NULL);
     JIMI_ASSERT_EX(status == 0, "gettimeofday failed");
-    result = static_cast<timestamp_t>(static_cast<int64_t>(1000000000UL) * static_cast<int64_t>(tv.tv_sec) + static_cast<int64_t>(1000UL) * static_cast<int64_t>(tv.tv_usec));
+    result = static_cast<timestamp_t>(static_cast<int64_t>(1000000000UL) * static_cast<int64_t>(tv.tv_sec)
+                                      + static_cast<int64_t>(1000UL) * static_cast<int64_t>(tv.tv_usec));
 #endif /*(choice of OS) */
 
     return result;
@@ -207,14 +212,14 @@ inline double stop_watch_base<T>::internal_nowf(void)
     double result;
 
     timestamp_t time_usecs;
-    time_usecs = this->internal_now();
+    time_usecs = stop_watch_base<T>::internal_now();
 
 #if _WIN32 || _WIN64
-    result = (jmc_timefloat)time_usecs * 1E-9;
+    result = (double)time_usecs * 1E-9;
 #elif __linux__
-    result = (jmc_timefloat)time_usecs * 1E-9;
+    result = (double)time_usecs * 1E-9;
 #else  /* generic Unix */
-    result = (jmc_timefloat)time_usecs * 1E-6;
+    result = (double)time_usecs * 1E-6;
 #endif  /*(choice of OS) */
 
     return result;
@@ -222,7 +227,8 @@ inline double stop_watch_base<T>::internal_nowf(void)
 
 /* 单位: 毫秒, msec */
 template<class T>
-inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::internal_now_ms(void)
+inline typename stop_watch_base<T>::timestamp_t
+stop_watch_base<T>::internal_now_ms(void)
 {
     timestamp_t result;
 
@@ -238,7 +244,8 @@ inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::internal_now
 #endif /* JIMI_USE_ASSERT */
         clock_gettime(CLOCK_REALTIME, &ts);
     JIMI_ASSERT_EX(status == 0, "CLOCK_REALTIME not supported");
-    result = static_cast<timestamp_t>(static_cast<int64_t>(1000UL) * static_cast<int64_t>(ts.tv_sec) + static_cast<int64_t>(ts.tv_nsec) / static_cast<int64_t>(1000000UL));
+    result = static_cast<timestamp_t>(static_cast<int64_t>(1000UL) * static_cast<int64_t>(ts.tv_sec)
+                                      + static_cast<int64_t>(ts.tv_nsec) / static_cast<int64_t>(1000000UL));
 #else /* generic Unix */
     struct timeval tv;
 #if JIMI_USE_ASSERT
@@ -246,7 +253,8 @@ inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::internal_now
 #endif /* JIMI_USE_ASSERT */
         gettimeofday(&tv, NULL);
     JIMI_ASSERT_EX(status == 0, "gettimeofday failed");
-    result = static_cast<timestamp_t>(static_cast<int64_t>(1000UL) * static_cast<int64_t>(tv.tv_sec) + static_cast<int64_t>(tv.tv_usec) / static_cast<int64_t>(1000UL));
+    result = static_cast<timestamp_t>(static_cast<int64_t>(1000UL) * static_cast<int64_t>(tv.tv_sec)
+                                      + static_cast<int64_t>(tv.tv_usec) / static_cast<int64_t>(1000UL));
 #endif /*(choice of OS) */
 
     return result;
@@ -323,21 +331,23 @@ inline void stop_watch_base<T>::end(void)
 }
 
 template<class T>
-inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::now(void)
+inline typename stop_watch_base<T>::timestamp_t
+stop_watch_base<T>::now(void)
 {
-    return internal_now();
+    return stop_watch_base<T>::internal_now();
 }
 
 template<class T>
 inline double stop_watch_base<T>::nowf(void)
 {
-    return internal_nowf();
+    return stop_watch_base<T>::internal_nowf();
 }
 
 template<class T>
-inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::now_ms(void)
+inline typename stop_watch_base<T>::timestamp_t
+stop_watch_base<T>::now_ms(void)
 {
-    return internal_now_ms();
+    return stop_watch_base<T>::internal_now_ms();
 }
 
 template<class T>
@@ -355,7 +365,8 @@ inline double stop_watch_base<T>::intervalSeconds(double t1, double t2)
 }
 
 template<class T>
-inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::getTimeStamp(void)
+inline typename stop_watch_base<T>::timestamp_t
+stop_watch_base<T>::getTimeStamp(void)
 {
     timestamp_t timeStamp;
     internal_getTimeStamp(timeStamp);
@@ -363,7 +374,8 @@ inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::getTimeStamp
 }
 
 template<class T>
-inline typename stop_watch_base<T>::timestamp_t stop_watch_base<T>::currentTimeMillis(void)
+inline typename stop_watch_base<T>::timestamp_t
+stop_watch_base<T>::currentTimeMillis(void)
 {
     timestamp_t now_ms = stop_watch_base<T>::internal_now_ms();
     return now_ms;
@@ -435,7 +447,7 @@ class stop_watch : public stop_watch_base<stop_watch>
 {
 public:
     //! Construct an absolute timestamp initialized to zero.
-    stop_watch() : stop_watch_base<stop_watch>(), bIsRunning(false) {};
+    stop_watch() : stop_watch_base<stop_watch>(), bIsRunning(false) { };
     stop_watch(const stop_watch &src);
 
     stop_watch &operator = (const stop_watch &sw);
@@ -543,7 +555,7 @@ public:
     //! Construct an absolute timestamp initialized to zero.
     stop_watch_ex() : stop_watch_base<stop_watch_ex>(),
         suspendStartTime(0), suspendTotalTime(0), elapsedTimeTotal(0),
-        bIsRunning(false), bIsSuspended(false) {};
+        bIsRunning(false), bIsSuspended(false) { };
     stop_watch_ex(const stop_watch_ex &src);
 
     stop_watch_ex &operator = (const stop_watch_ex &sw);
@@ -591,7 +603,8 @@ protected:
     bool        bIsRunning, bIsSuspended;
 };
 
-inline stop_watch_ex::stop_watch_ex(const stop_watch_ex &src) : stop_watch_base<stop_watch_ex>(src)
+inline stop_watch_ex::stop_watch_ex(const stop_watch_ex &src)
+    : stop_watch_base<stop_watch_ex>(src)
 {
     suspendStartTime    = src.suspendStartTime;
     suspendTotalTime    = src.suspendTotalTime;

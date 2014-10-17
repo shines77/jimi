@@ -38,10 +38,10 @@
 #else
 
 #define WIN_ICONV_MALLOC(size, type) \
-    (##type## *)malloc((size_t)(size) * sizeof(type))
+    (type *)malloc((size_t)(size) * sizeof(type))
 
 #define WIN_ICONV_MALLOC_EX(size, type, alignment, offset) \
-    (##type## *)malloc((size_t)(size) * sizeof(type))
+    (type *)malloc((size_t)(size) * sizeof(type))
 
 #define WIN_ICONV_FREE(p)   \
     free((void *)(p))
