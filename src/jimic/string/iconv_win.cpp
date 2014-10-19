@@ -14,6 +14,21 @@
 #include <wchar.h>
 #endif
 
+/* backup __STRICT_ANSI__ define for MinGW(GCC) */
+#ifdef __STRICT_ANSI__
+#undef  _STRICT_ANSI_SAVE_
+#define _STRICT_ANSI_SAVE_  __STRICT_ANSI__
+#endif // __STRICT_ANSI__
+
+#undef __STRICT_ANSI__
+#include <string.h>
+
+/* restore __STRICT_ANSI__ define for MinGW(GCC) */
+#ifdef _STRICT_ANSI_SAVE_
+#define __STRICT_ANSI__     _STRICT_ANSI_SAVE_
+#undef _STRICT_ANSI_SAVE_
+#endif // _STRICT_ANSI_SAVE_
+
 #if defined(_WIN32) || defined(_WIN64)
 // Used to prevent dialog on memory fault.
 // Limits headers included by Windows.h

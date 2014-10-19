@@ -722,11 +722,10 @@ jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int fla
     fuint64_t *u64;
     char digits[32];    // 实际最多只会用到20个bytes
 
+    static_assert(sizeof(fuint64_t) == sizeof(uint64_t), "jmc_u64toa_radix10_ex() maybe have some error!");
+
     if (sizeof(fuint64_t) != sizeof(uint64_t)) {
         // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_u64toa_radix10_ex() maybe have some error!"
-#endif // _MSC_VER
         jimic_assert(sizeof(fuint64_t) == sizeof(uint64_t));
         return -1;
     }
@@ -1119,6 +1118,9 @@ jmc_isnan_f(float val)
 #if defined(_DEBUG)
     uint32_t exponent;
 #endif
+
+    static_assert(sizeof(uint32_t) == sizeof(float), "jmc_isnan_f() maybe have some error!");
+
     if (sizeof(uint32_t) == sizeof(float)) {
         u32 = (uint32_t *)&val;
 #if defined(_DEBUG)
@@ -1132,10 +1134,8 @@ jmc_isnan_f(float val)
     }
     else {
         // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_isnan_f() maybe have some error!"
-#endif // _MSC_VER
-        return 0;
+        jimic_assert(sizeof(uint32_t) == sizeof(float));
+        return -1;
     }
 }
 
@@ -1146,6 +1146,9 @@ jmc_isinf_f(float val)
 #if defined(_DEBUG)
     uint32_t exponent;
 #endif
+
+    static_assert(sizeof(uint32_t) == sizeof(float), "jmc_isinf_f() maybe have some error!");
+
     if (sizeof(uint32_t) == sizeof(float)) {
         u32 = (uint32_t *)&val;
 #if defined(_DEBUG)
@@ -1159,10 +1162,8 @@ jmc_isinf_f(float val)
     }
     else {
         // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_isinf_f() maybe have some error!"
-#endif // _MSC_VER
-        return 0;
+        jimic_assert(sizeof(uint32_t) == sizeof(float));
+        return -1;
     }
 }
 
@@ -1170,6 +1171,9 @@ JMC_INLINE_NONSTD(int)
 jmc_is_nan_or_inf_f(float val)
 {
     uint32_t *u32;
+
+    static_assert(sizeof(uint32_t) == sizeof(float), "jmc_is_nan_or_inf_f() maybe have some error!");
+
     if (sizeof(uint32_t) == sizeof(float)) {
         u32 = (uint32_t *)&val;
         if ((*u32 & JM_FLOAT_EXPONENT_MASK) == JM_FLOAT_EXPONENT_MASK)
@@ -1179,10 +1183,8 @@ jmc_is_nan_or_inf_f(float val)
     }
     else {
         // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_is_nan_or_inf_f() maybe have some error!"
-#endif // _MSC_VER
-        return 0;
+        jimic_assert(sizeof(uint32_t) == sizeof(float));
+        return -1;
     }
 }
 
@@ -1193,6 +1195,9 @@ jmc_isnan_d(double val)
 #if defined(_DEBUG)
     uint32_t exponent;
 #endif
+
+    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_isnan_d() maybe have some error!");
+
     if (sizeof(fuint64_t) == sizeof(double)) {
         f64 = (fuint64_t *)&val;
 #if defined(_DEBUG)
@@ -1207,10 +1212,8 @@ jmc_isnan_d(double val)
     }
     else {
         // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_isnan_d() maybe have some error!"
-#endif // _MSC_VER
-        return 0;
+        jimic_assert(sizeof(fuint64_t) == sizeof(double));
+        return -1;
     }
 }
 
@@ -1221,6 +1224,9 @@ jmc_isinf_d(double val)
 #if defined(_DEBUG)
     uint32_t exponent;
 #endif
+
+    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_isinf_d() maybe have some error!");
+
     if (sizeof(fuint64_t) == sizeof(double)) {
         f64 = (fuint64_t *)&val;
 #if defined(_DEBUG)
@@ -1235,10 +1241,8 @@ jmc_isinf_d(double val)
     }
     else {
         // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_isnan_d() maybe have some error!"
-#endif // _MSC_VER
-        return 0;
+        jimic_assert(sizeof(fuint64_t) == sizeof(double));
+        return -1;
     }
 }
 
@@ -1246,6 +1250,9 @@ JMC_INLINE_NONSTD(int)
 jmc_is_nan_or_inf_d(double val)
 {
     fuint64_t *f64;
+
+    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_is_nan_or_inf_d() maybe have some error!");
+
     if (sizeof(fuint64_t) == sizeof(double)) {
         f64 = (fuint64_t *)&val;
         if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) == JM_DOUBLE_EXPONENT_MASK32)
@@ -1255,10 +1262,8 @@ jmc_is_nan_or_inf_d(double val)
     }
     else {
         // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_is_nan_or_inf_d() maybe have some error!"
-#endif // _MSC_VER
-        return 0;
+        jimic_assert(sizeof(fuint64_t) == sizeof(double));
+        return -1;
     }
 }
 
@@ -1277,6 +1282,9 @@ jmc_ftest(float val)
 {
     uint32_t *u32;
     uint32_t exponent;
+
+    static_assert(sizeof(uint32_t) == sizeof(float), "jmc_ftest() maybe have some error!");
+
     if (sizeof(uint32_t) == sizeof(float)) {
         u32 = (uint32_t *)&val;
         exponent = *u32 & JM_FLOAT_EXPONENT_MASK;
@@ -1296,9 +1304,7 @@ jmc_ftest(float val)
     }
     else {
         // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_ftest() maybe have some error!"
-#endif // _MSC_VER
+        jimic_assert(sizeof(uint32_t) == sizeof(float));
         return JM_FIS_NORMAL;
     }
 }
@@ -1321,6 +1327,9 @@ jmc_dtest(double val)
 {
     fuint64_t *f64;
     uint32_t exponent;
+
+    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_dtest() maybe have some error!");
+
     if (sizeof(fuint64_t) == sizeof(double)) {
         f64 = (fuint64_t *)&val;
         exponent = f64->high & JM_DOUBLE_EXPONENT_MASK32;
@@ -1342,9 +1351,6 @@ jmc_dtest(double val)
     }
     else {
         // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_dtest() maybe have some error!"
-#endif // _MSC_VER
         jimic_assert(sizeof(fuint64_t) == sizeof(double));
         return JM_FIS_NORMAL;
     }

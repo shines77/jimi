@@ -46,7 +46,18 @@
 #endif  /* JIMI_IS_MSVC */
 
 /**
- * define __cdecl, __fastcall for windows
+ * define about __cdecl, __stdcall and __fastcall
+ */
+#undef __CDECL
+#undef __STDCALL
+#undef __FASTCALL
+
+#undef _CDECL_SUFFIX
+#undef _STDCALL_SUFFIX
+#undef _FASTCALL_SUFFIX
+
+/**
+ * define __cdecl, __stdcall and __fastcall for windows
  */
 #if defined(_MSC_VER)
 
@@ -62,18 +73,18 @@
 #define __FASTCALL          __fastcall
 #endif
 
-#undef _CDECL_SUFFIX
-#undef _STDCALL_SUFFIX
-#undef _FASTCALL_SUFFIX
-
 #define _CDECL_SUFFIX
 #define _STDCALL_SUFFIX
 #define _FASTCALL_SUFFIX
 
 /**
- * define __cdecl, __fastcall for linux
+ * define __cdecl, __stdcall and __fastcall for linux
  */
 #elif defined(__GNUC__)
+
+#define __CDECL
+#define __STDCALL
+#define __FASTCALL
 
 #ifndef _CDECL_SUFFIX
 #define _CDECL_SUFFIX       __attribute__ ((__cdecl__))
@@ -87,27 +98,14 @@
 #define _FASTCALL_SUFFIX    __attribute__ ((fastcall))
 #endif
 
-#undef __CDECL
-#undef __STDCALL
-#undef __FASTCALL
-
-#define _CDECL_SUFFIX
-#define _STDCALL_SUFFIX
-#define _FASTCALL_SUFFIX
-
+/**
+ * define __cdecl, __stdcall and __fastcall for another os
+ */
 #else  /* !_MSC_VER && !__GNUC__ */
-
-#undef __CDECL
-#undef __STDCALL
-#undef __FASTCALL
 
 #define __CDECL
 #define __STDCALL
 #define __FASTCALL
-
-#undef _CDECL_SUFFIX
-#undef _STDCALL_SUFFIX
-#undef _FASTCALL_SUFFIX
 
 #define _CDECL_SUFFIX
 #define _STDCALL_SUFFIX
@@ -125,6 +123,22 @@
     #define JIMI_EXPORTED_FUNC
     #define JIMI_EXPORTED_METHOD
 #endif
+
+#ifdef __cplusplus
+# define JIMI_CRT_INLINE        inline
+#else
+# if __GNUC_STDC_INLINE__
+#  define JIMI_CRT_INLINE       extern inline __attribute__((__gnu_inline__))
+# else
+#  define JIMI_CRT_INLINE       extern __inline__
+# endif
+#endif
+
+/* _CRTALIAS will be used when we have a function whose purpose is to return
+ * the value of a similar function. This alias function will contain one line
+ * of code.
+ */
+#define JIMI_CRT_FORCEINLINE    __CRT_INLINE __attribute__((__always_inline__))
 
 /**
  * jimi: for inline and noinline define

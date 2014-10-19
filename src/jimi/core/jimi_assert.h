@@ -87,6 +87,11 @@ namespace internal {
 }
 #endif
 
+namespace internal {
+    //! Report a debug error.
+    void JIMI_EXPORTED_FUNC handle_perror(int error_code, const char *error_info);
+}
+
 NS_JIMI_END
 
 #endif  /* !_JIMI_ASSERT_H_ */

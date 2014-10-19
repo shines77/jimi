@@ -1,12 +1,29 @@
 
-#include <fcntl.h>
+#include <jimi/log/Logger.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <io.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <share.h>
+#include <limits.h>  // for define "INT_MAX"
 
-#include <jimi/log/Logger.h>
+/* backup __STRICT_ANSI__ define for MinGW(GCC) */
+#ifdef __STRICT_ANSI__
+#undef  _STRICT_ANSI_SAVE_
+#define _STRICT_ANSI_SAVE_  __STRICT_ANSI__
+#endif // __STRICT_ANSI__
+
+/* for MinGW(GCC) define type "off64_t" */
+#undef __STRICT_ANSI__
+#include <io.h>
+
+/* restore __STRICT_ANSI__ define for MinGW(GCC) */
+#ifdef _STRICT_ANSI_SAVE_
+#define __STRICT_ANSI__     _STRICT_ANSI_SAVE_
+#undef _STRICT_ANSI_SAVE_
+#endif // _STRICT_ANSI_SAVE_
+
 #include <jimic/string/jm_strings.h>
 
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
@@ -593,10 +610,17 @@ FILE *Logger::open_file(const char *filename)
         this->close();
 
         int fd = 0;
+#ifdef _MSC_VER
         errno_t err;
-        err = ::_sopen_s((int *)&fd, filename, _O_CREAT|_O_TRUNC|_O_BINARY|_O_RDWR, _SH_DENYNO, _S_IREAD|_S_IWRITE);
+        err = ::_sopen_s((int *)&fd, filename, _O_RDWR | _O_CREAT | _O_TRUNC | _O_BINARY,
+                         _SH_DENYNO, _S_IREAD | _S_IWRITE);
         if (err == 0)
             log_file = (FILE *)fd;
+#else
+        fd = ::open(filename, O_RDWR | O_CREAT | O_TRUNC | O_BINARY);
+        if (fd != -1)
+            log_file = (FILE *)fd;
+#endif
     }
     return log_file;
 }
@@ -605,7 +629,11 @@ int Logger::close()
 {
     int ret_val = -1;
     if (m_log_file != NULL && m_log_file != INVALID_HANDLE_VALUE) {
+#ifdef _MSC_VER
         ret_val = ::_close((int)m_log_file);
+#else
+        ret_val = ::close((int)m_log_file);
+#endif
         if (ret_val == 0) {
             m_log_file = NULL;
             m_filename[0] = '\0';

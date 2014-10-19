@@ -27,7 +27,7 @@
   This file contains functions which improve and expand standard C-library
 */
 
-#if defined(__GUNC__)|| defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__)
+#if defined(__GUNC__) || defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__)
 
 #define HAVE_MMX            1
 

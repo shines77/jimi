@@ -29,7 +29,6 @@
 #include <tchar.h>
 #include <mbstring.h>
 #endif  /* JIMI_IS_WINDOWS */
-#include <string.h>
 
 #endif  /* NOT_IS_INLINE_INCLUDE */
 
@@ -37,6 +36,35 @@
 typedef unsigned int size_t;
 #define _SIZE_T_DEFINED
 #endif
+
+/* backup __STRICT_ANSI__ define for MinGW(GCC) */
+#ifdef __STRICT_ANSI__
+#undef  _STRICT_ANSI_SAVE_
+#define _STRICT_ANSI_SAVE_  __STRICT_ANSI__
+#endif // __STRICT_ANSI__
+
+#undef __STRICT_ANSI__
+#include <string.h>
+
+/* restore __STRICT_ANSI__ define for MinGW(GCC) */
+#ifdef _STRICT_ANSI_SAVE_
+#define __STRICT_ANSI__     _STRICT_ANSI_SAVE_
+#undef _STRICT_ANSI_SAVE_
+#endif // _STRICT_ANSI_SAVE_
+
+#if defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__)
+
+/**
+ * strdup error on g++ with c++0x
+ *
+ * refrence: http://stackoverflow.com/questions/5573775/strdup-error-on-g-with-c0x
+ */
+
+/* extern declare strdup() & _strdup() for MinGW(gcc) on Windows */
+extern _CRTIMP char* __cdecl __MINGW_NOTHROW	_strupr (char*);
+extern _CRTIMP char* __cdecl __MINGW_NOTHROW	strdup (const char*) __MINGW_ATTRIB_MALLOC;
+
+#endif  /* __MINGW__, __MINGW32__, __MINGW64__ */
 
 ///////////////////////////////////////////////////////////////////////////
 

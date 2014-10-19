@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+
 #if _MSC_VER
 #include <crtdbg.h>
 #ifndef JIMIC_USE_DBGBREAK_DLG

@@ -70,8 +70,16 @@ namespace internal {
         fprintf(stderr, "Jimi Warning: %s\n", str);
     }
 }  // namespace internal
-#endif
+#endif  /* JIMI_MALLOC_BUILD */
 
-#endif /* !JIMI_USE_ASSERT */
+#endif  /* !JIMI_USE_ASSERT */
+
+namespace internal {
+    //! Report a debug error.
+    void JIMI_EXPORTED_FUNC handle_perror(int error_code, const char *error_info)
+    {
+        //
+    }
+}
 
 NS_JIMI_END

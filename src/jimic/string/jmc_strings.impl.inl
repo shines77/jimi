@@ -6,12 +6,17 @@
 #pragma once
 #endif
 
-#ifndef _MSC_VER
+#if defined(_MSC_VER) && !defined(_JIMIC_STRING_JMC_STRIGNS_INL_H_)
     #error "jmc_strings.impl.inl only can include in jmc_strings.inl.h or jmc_strings.c!"
 #endif // _MSC_VER
 
+#ifndef _JIMIC_STRING_JMC_STRINGS_H_
 #include <jimic/string/jmc_strings.h>
+#endif
+
+#ifndef _JIMIC_STRING_JM_STRINGS_H_
 #include <jimic/string/jm_strings.h>
+#endif
 
 #include <stdarg.h>
 #include <math.h>       // for isnan(), isinf()
@@ -327,13 +332,12 @@ jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
     int num_width;
     int exp10;
 
+    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_dtos() maybe have some error!");
+
     if (sizeof(fuint64_t) != sizeof(double)) {
         // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_dtos() maybe have some error!"
-#endif // _MSC_VER
         jimic_assert(sizeof(fuint64_t) == sizeof(double));
-        return 0;
+        return -1;
     }
 
     exp10 = jmc_adjust_dbl(&val);
@@ -511,11 +515,10 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
     int exp10;
     int frac_prec;
 
+    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_dtos_ex() maybe have some error!");
+
     if (sizeof(fuint64_t) != sizeof(double)) {
         // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_dtos_ex() maybe have some error!"
-#endif // _MSC_VER
         jimic_assert(sizeof(fuint64_t) == sizeof(double));
         return -1;
     }
@@ -862,13 +865,12 @@ jmc_dtos_ex2(jm_char *buf, size_t count, double val, unsigned int flag,
     };
 #endif
 
+    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_dtos_ex2() maybe have some error!");
+
     if (sizeof(fuint64_t) != sizeof(double)) {
         // maybe have some error!
-#ifndef _MSC_VER
-        #error "jmc_dtos_ex2() maybe have some error!"
-#endif // _MSC_VER
         jimic_assert(sizeof(fuint64_t) == sizeof(double));
-        return 0;
+        return -1;
     }
 
     if ((flag & FMT_ALIGN_LEFT) != 0) {

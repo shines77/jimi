@@ -1,7 +1,7 @@
+#include <jimi/core/jimi_platform_def.h>
 
-#include <jimi/platform/jimi_platform_config.h>
-
-#if JIMI_IS_WINDOWS
+//#if JIMI_IS_WINDOWS
+#if (defined(_WIN32) || defined(_WIN64)) && !(defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__))
 
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
