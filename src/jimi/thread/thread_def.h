@@ -8,6 +8,8 @@
 
 #include <jimi/core/jimi_def.h>
 
+#if JIMI_IS_WINDOWS
+
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 
@@ -65,5 +67,7 @@ struct EventResetMode
 NS_JIMI_SYSTEM_END
 
 NS_JIMI_END
+
+#endif  /* JIMI_IS_WINDOWS */
 
 #endif  /* _JIMI_THREAD_DEF_H_ */

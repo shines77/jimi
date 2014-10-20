@@ -13,8 +13,18 @@
 #include <vector>
 #include <list>
 
+#if JIMI_IS_WINDOWS
+
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
+
+#else
+
+#ifndef MAX_PATH
+#define MAX_PATH    260
+#endif
+
+#endif
 
 using namespace std;
 

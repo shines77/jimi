@@ -10,9 +10,19 @@
 #include <jimi/thread/thread_def.h>
 #include <jimi/log/log.h>
 
+#if JIMI_IS_WINDOWS
+
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 #include <process.h>
+
+#else
+
+#ifndef CREATE_SUSPENDED
+#define CREATE_SUSPENDED        0x00000004
+#endif
+
+#endif  /* JIMI_IS_WINDOWS */
 
 #define TERMINATE_WAIT_TIME             5000
 
@@ -82,6 +92,11 @@ public:
 
 typedef void (*thread_proc_t)(void *lpParam);
 
+#if JIMI_IS_WINDOWS
+
+/**
+ * the Thread base class
+ */
 template <class T>
 class ThreadBase
 {
@@ -518,6 +533,54 @@ private:
     explicit Thread(const Thread &) { }
     void operator = (const Thread &) { }
 };
+
+#else
+
+/**
+ * the Thread base class
+ */
+template <class T>
+class ThreadBase {
+public:
+    ThreadBase(void);
+    ThreadBase(thread_proc_t thread_proc) { pThreadProc = thread_proc; }
+    ~ThreadBase(void);
+
+private:
+    explicit ThreadBase(const ThreadBase &) { }
+    void operator = (const ThreadBase &) { }
+
+protected:
+    thread_proc_t   pThreadProc;
+};
+
+template <class T>
+ThreadBase<T>::ThreadBase(void)
+: pThreadProc(NULL)
+{
+}
+
+template <class T>
+ThreadBase<T>::~ThreadBase(void)
+{
+}
+
+/**
+ * the Thread class
+ */
+class Thread : public ThreadBase<Thread>
+{
+public:
+    Thread(void) : ThreadBase<Thread>() { };
+    Thread(thread_proc_t thread_proc) { pThreadProc = thread_proc; }
+    ~Thread(void) { };
+
+private:
+    explicit Thread(const Thread &) { }
+    void operator = (const Thread &) { }
+};
+
+#endif  /* JIMI_IS_WINDOWS */
 
 NS_JIMI_SYSTEM_END
 

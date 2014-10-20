@@ -27,7 +27,8 @@
 #define JIMI_USE_THREADING_TOOLS            0
 #define JIMI_MALLOC_BUILD                   0
 
-#define JIMI_DECLSPEC_ALIGN_PRESENT                     1
+#define JIMI_ATTRIBUTE_ALIGNED_PRESENT                  1
+//#define JIMI_DECLSPEC_ALIGN_PRESENT                   0
 #define JIMI_ALIGNOF_NOT_INSTANTIATED_TYPES_BROKEN      1
 
 #define JIMI_CONSTEXPR

@@ -13,10 +13,14 @@
 #include <time.h>
 #include <windows.h>
 #elif __linux__
-#include <ctime>
-#else /* generic Unix */
+  #ifdef __cplusplus
+    #include <ctime>
+  #else
+    #include <time.h>   // for clock_gettime()
+  #endif
+#else  /* generic Unix */
 #include <sys/time.h>
-#endif /* (choice of OS) */
+#endif  /* (choice of OS) */
 
 #ifdef __cplusplus
 extern "C" {

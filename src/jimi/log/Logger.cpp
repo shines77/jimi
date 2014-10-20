@@ -5,8 +5,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdio.h>
+#if JIMI_IS_WINDOWS
 #include <share.h>
+#endif
 #include <limits.h>  // for define "INT_MAX"
+
+#if JIMI_IS_WINDOWS
 
 /* backup __STRICT_ANSI__ define for MinGW(GCC) */
 #ifdef __STRICT_ANSI__
@@ -20,14 +24,29 @@
 
 /* restore __STRICT_ANSI__ define for MinGW(GCC) */
 #ifdef _STRICT_ANSI_SAVE_
-#define __STRICT_ANSI__     _STRICT_ANSI_SAVE_
-#undef _STRICT_ANSI_SAVE_
+//#define __STRICT_ANSI__     _STRICT_ANSI_SAVE_
 #endif // _STRICT_ANSI_SAVE_
+
+#endif
 
 #include <jimic/string/jm_strings.h>
 
+#if (defined(JIMI_IS_WINDOWS) && (JIMI_IS_WINDOWS != 0)) \
+    || (defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__))
+
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
+
+#else
+
+#include <sys/time.h>   // for time(), localtime(), strftime() and gettimeofday()
+#include <unistd.h>     // for readlink() and close()
+
+#ifndef INVALID_HANDLE_VALUE
+#define INVALID_HANDLE_VALUE    (void *)(-1)
+#endif
+
+#endif
 
 NS_JIMI_BEGIN
 
@@ -64,7 +83,7 @@ const JIMI_MACRO_T s_compilers[] = {
 #ifdef JIMI_LOG_USE_STATIC    /* JIMI_LOG_USE_STATIC */
     JIMI_MAKE_STRING(JIMI_LOG_USE_STATIC),
 #endif
-    
+
 #ifdef __FILE__    /* __FILE__ */
     JIMI_MAKE_STRING(__FILE__),
 #endif
@@ -162,6 +181,8 @@ char *str_replace(const char *str_buf, const char *src_str, const char *dst_str,
 int get_datetime_str(char *datetime, int bufsize, bool use_millisec = true)
 {
     int n;
+#if (defined(JIMI_IS_WINDOWS) && (JIMI_IS_WINDOWS != 0)) \
+    || (defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__))
     SYSTEMTIME sysTime;
     GetLocalTime(&sysTime);
 
@@ -184,6 +205,20 @@ int get_datetime_str(char *datetime, int bufsize, bool use_millisec = true)
             sysTime.wMinute,
             sysTime.wSecond);
     }
+#else
+    time_t curtime;
+    struct tm *loctime;
+    struct timeval tv;
+    int status;
+    curtime = time(NULL);
+    loctime = localtime(&curtime);
+    n = (int)strftime(datetime, bufsize, "%Y-%m-%d %H:%M:%S", loctime);
+    if (use_millisec) {
+        status = gettimeofday(&tv, NULL);
+        JIMI_ASSERT_EX(status == 0, "gettimeofday failed");
+        n += (int)jm_snprintf(datetime + n, bufsize - n, bufsize - n - 1, ".%03d", tv.tv_usec / 1000);
+    }
+#endif
     return n;
 }
 
@@ -442,12 +477,25 @@ size_t Logger::get_app_path(char *app_path, size_t buf_len)
     if (app_path == NULL || buf_len <= 0)
         return 0;
 
+#if (defined(JIMI_IS_WINDOWS) && (JIMI_IS_WINDOWS != 0)) \
+    || (defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__))
     app_path[0] = '\0';
     size_t ret_len = GetModuleFileNameA(NULL, app_path, buf_len);
     if (ret_len <= 0) {
         // Can't get the app path
         return 0;
     }
+#else
+    memset(app_path, 0, buf_len * sizeof(char));
+    size_t ret_len = readlink("/proc/self/exe", app_path, buf_len);
+    if (ret_len < 0 || ret_len >= ret_len) {
+        // Can't get the app path
+        return 0;
+    }
+    else {
+        app_path[ret_len] = '\0';
+    }
+#endif
 
     int token_cnt = 0;
     size_t len = jm_strlen(app_path);
@@ -617,7 +665,11 @@ FILE *Logger::open_file(const char *filename)
         if (err == 0)
             log_file = (FILE *)fd;
 #else
-        fd = ::open(filename, O_RDWR | O_CREAT | O_TRUNC | O_BINARY);
+        //
+        // reference: Linux系统调用之open(), close()
+        //            http://joe.is-programmer.com/posts/17463.html
+        //
+        fd = ::open(filename, O_RDWR | O_CREAT | O_TRUNC, 0666);
         if (fd != -1)
             log_file = (FILE *)fd;
 #endif
@@ -684,7 +736,7 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
 {
 #if defined(JIMI_LOG_ENABLE) && (JIMI_LOG_ENABLE != 0)
     int n;
-    char msg_buf[MAX_LOG_TEXT_LEN];    
+    char msg_buf[MAX_LOG_TEXT_LEN];
     n = jm_vsnprintf(msg_buf, jm_countof(msg_buf), MAX_LOG_TEXT_LEN - 1, fmt, arglist);
 
 #if defined(JIMI_LOG_TO_SCREEN) && (JIMI_LOG_TO_SCREEN != 0)
@@ -791,8 +843,13 @@ void Logger::vprintf(bool newline, const char *tag_format, const char *tag_name,
             jm_strcat(msg_buf, jm_countof(msg_buf), STRING_CRLF);
         if (m_log_file == NULL || m_log_file == INVALID_HANDLE_VALUE)
             this->open(DEFAULT_LOG_FILENAME);
-        if (m_log_file)
+        if (m_log_file) {
+#if JIMI_IS_WINDOWS
             ::_write((int)m_log_file, msg_buf, jm_strlen(msg_buf));
+#else
+            ::write((int)m_log_file, msg_buf, jm_strlen(msg_buf));
+#endif
+        }
     }
 #endif  /* JIMI_LOG_TO_FILE */
 #endif  /* JIMI_LOG_ENABLE */
