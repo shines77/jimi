@@ -28,39 +28,46 @@ public:
     typedef void (*func_modern_main) (StringArray args);
     typedef void (*func_modern_wmain)(WStringArray args);
 
-    typedef enum Main_Mode {
+    enum Main_Mode {
         PlainMode = 0,
         ModernMode
-    } Main_Mode;
+    };
 
     Program() : m_nMode(PlainMode), m_nReturnValue(0), m_pfnMainVoid(NULL), m_pfnWMainVoid(NULL),
         m_pfnMainInt(NULL), m_pfnWMainInt(NULL), m_pfnModernMain(NULL), m_pfnModernWMain(NULL) {}
+
     Program(func_main_void pfnMain, int nReturnValue = 0)
         : m_nMode(PlainMode), m_nReturnValue(nReturnValue), m_pfnMainVoid(pfnMain), m_pfnWMainVoid(NULL),
           m_pfnMainInt(NULL), m_pfnWMainInt(NULL), m_pfnModernMain(NULL), m_pfnModernWMain(NULL) {}
+
     Program(func_wmain_void pfnMain, int nReturnValue = 0)
         : m_nMode(PlainMode), m_nReturnValue(nReturnValue), m_pfnMainVoid(NULL), m_pfnWMainVoid(pfnMain),
           m_pfnMainInt(NULL), m_pfnWMainInt(NULL), m_pfnModernMain(NULL), m_pfnModernWMain(NULL) {}
+
     Program(func_main_int pfnMain, int nReturnValue = 0)
         : m_nMode(PlainMode), m_nReturnValue(nReturnValue), m_pfnMainVoid(NULL), m_pfnWMainVoid(NULL),
           m_pfnMainInt(pfnMain), m_pfnWMainInt(NULL), m_pfnModernMain(NULL), m_pfnModernWMain(NULL) {}
+
     Program(func_wmain_int pfnMain, int nReturnValue = 0)
         : m_nMode(PlainMode), m_nReturnValue(nReturnValue), m_pfnMainVoid(NULL), m_pfnWMainVoid(NULL),
           m_pfnMainInt(NULL), m_pfnWMainInt(pfnMain), m_pfnModernMain(NULL), m_pfnModernWMain(NULL) {}
+
     Program(func_modern_main pfnMain, int nReturnValue = 0)
         : m_nMode(ModernMode), m_nReturnValue(nReturnValue), m_pfnMainVoid(NULL), m_pfnWMainVoid(NULL),
           m_pfnMainInt(NULL), m_pfnWMainInt(NULL), m_pfnModernMain(pfnMain), m_pfnModernWMain(NULL) {}
+
     Program(func_modern_wmain pfnMain, int nReturnValue = 0)
         : m_nMode(ModernMode), m_nReturnValue(nReturnValue), m_pfnMainVoid(NULL), m_pfnWMainVoid(NULL),
           m_pfnMainInt(NULL), m_pfnWMainInt(NULL), m_pfnModernMain(NULL), m_pfnModernWMain(pfnMain) {}
+
     ~Program() {};
 
-    void SetMain(func_main_void pfnMain)    { ClearMain(); m_pfnMainVoid    = pfnMain; m_nMode = PlainMode;  }
-    void SetMain(func_wmain_void pfnMain)   { ClearMain(); m_pfnWMainVoid   = pfnMain; m_nMode = PlainMode;  }
-    void SetMain(func_main_int pfnMain)     { ClearMain(); m_pfnMainInt     = pfnMain; m_nMode = PlainMode;  }
-    void SetMain(func_wmain_int pfnMain)    { ClearMain(); m_pfnWMainInt    = pfnMain; m_nMode = PlainMode;  }
-    void SetMain(func_modern_main pfnMain)  { ClearMain(); m_pfnModernMain  = pfnMain; m_nMode = ModernMode; }
-    void SetMain(func_modern_wmain pfnMain) { ClearMain(); m_pfnModernWMain = pfnMain; m_nMode = ModernMode; }
+    void SetMain(func_main_void pfnMain)    { ResetSettings(); m_pfnMainVoid    = pfnMain; m_nMode = PlainMode;  }
+    void SetMain(func_wmain_void pfnMain)   { ResetSettings(); m_pfnWMainVoid   = pfnMain; m_nMode = PlainMode;  }
+    void SetMain(func_main_int pfnMain)     { ResetSettings(); m_pfnMainInt     = pfnMain; m_nMode = PlainMode;  }
+    void SetMain(func_wmain_int pfnMain)    { ResetSettings(); m_pfnWMainInt    = pfnMain; m_nMode = PlainMode;  }
+    void SetMain(func_modern_main pfnMain)  { ResetSettings(); m_pfnModernMain  = pfnMain; m_nMode = ModernMode; }
+    void SetMain(func_modern_wmain pfnMain) { ResetSettings(); m_pfnModernWMain = pfnMain; m_nMode = ModernMode; }
 
     int GetMode() { return m_nMode; }
 
@@ -130,23 +137,23 @@ public:
     }
 
     virtual void Main(int argc, char *argv[]) {
-        // Do nothing!!
+        // TODO:
     }
 
     virtual void Main(int argc, wchar_t *argv[]) {
-        // Do nothing!!
+        // TODO:
     }
 
     virtual void Main(StringArray args) {
-        // Do nothing!!
+        // TODO:
     }
 
     virtual void Main(WStringArray args) {
-        // Do nothing!!
+        // TODO:
     }
 
 protected:
-    void ClearMain() {
+    void ResetSettings() {
         m_pfnMainVoid = NULL; m_pfnWMainVoid = NULL;  m_pfnMainInt = NULL;
         m_pfnWMainInt = NULL; m_pfnModernMain = NULL; m_pfnModernWMain = NULL;
     }

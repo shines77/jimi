@@ -187,23 +187,25 @@ int get_datetime_str(char *datetime, int bufsize, bool use_millisec = true)
     GetLocalTime(&sysTime);
 
     if (use_millisec) {
-        n = jm_snprintf(datetime, bufsize, bufsize - 1, "%04d-%02d-%02d %02d:%02d:%02d.%03d",
-            sysTime.wYear,
-            sysTime.wMonth,
-            sysTime.wDay,
-            sysTime.wHour,
-            sysTime.wMinute,
-            sysTime.wSecond,
-            sysTime.wMilliseconds);
+        n = jm_snprintf(datetime, bufsize, bufsize - 1,
+                        "%04d-%02d-%02d %02d:%02d:%02d.%03d",
+                        sysTime.wYear,
+                        sysTime.wMonth,
+                        sysTime.wDay,
+                        sysTime.wHour,
+                        sysTime.wMinute,
+                        sysTime.wSecond,
+                        sysTime.wMilliseconds);
     }
     else {
-        n = jm_snprintf(datetime, bufsize, bufsize - 1, "%04d-%02d-%02d %02d:%02d:%02d",
-            sysTime.wYear,
-            sysTime.wMonth,
-            sysTime.wDay,
-            sysTime.wHour,
-            sysTime.wMinute,
-            sysTime.wSecond);
+        n = jm_snprintf(datetime, bufsize, bufsize - 1,
+                        "%04d-%02d-%02d %02d:%02d:%02d",
+                        sysTime.wYear,
+                        sysTime.wMonth,
+                        sysTime.wDay,
+                        sysTime.wHour,
+                        sysTime.wMinute,
+                        sysTime.wSecond);
     }
 #else
     time_t curtime;
@@ -498,9 +500,9 @@ size_t Logger::get_app_path(char *app_path, size_t buf_len)
 #endif
 
     int token_cnt = 0;
-    size_t len = jm_strlen(app_path);
+    size_t path_len = jm_strlen(app_path);
     char *start = app_path;
-    char *end = app_path + len;
+    char *end = app_path + path_len;
     char *cur = end - 1;
     while ((cur != NULL) && (cur >= start)) {
         // find the last pos of the sign '\' or '/'
@@ -514,13 +516,18 @@ size_t Logger::get_app_path(char *app_path, size_t buf_len)
     }
 
     // check app path's tail, last char must be '\' or '/'
-    len = jm_strlen(app_path);
-    if (len > 0 && (app_path[len - 1] != '\\' && app_path[len - 1] != '/')) {
-        app_path[len - 1] = '\\';
-        len++;
+    path_len = jm_strlen(app_path);
+    if (path_len > 0 && (app_path[path_len - 1] != '\\' && app_path[path_len - 1] != '/')) {
+#if (defined(JIMI_IS_WINDOWS) && (JIMI_IS_WINDOWS != 0)) \
+    || (defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__))
+        app_path[path_len - 1] = '\\';
+#else
+        app_path[path_len - 1] = '/';
+#endif
+        path_len++;
     }
 
-    return len;
+    return path_len;
 }
 
 size_t Logger::make_app_filename(const char *filename, char **new_filename)

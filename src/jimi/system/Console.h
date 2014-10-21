@@ -70,6 +70,11 @@ public:
         }
         return keyCode;
     }
+
+    static int Read() {
+        int keyCode = 0;
+        return keyCode;
+    }
 };
 
 static class Console Console;
