@@ -5,8 +5,8 @@
 #include <jimi/system/stop_watch.h>
 
 #include <jimic/string/jm_strings.h>
-#include <jimic/string/sprintf.h>
-#include <jimic/string/csharp_sprintf.h>
+#include <jimic/stdio/sprintf.h>
+#include <jimic/stdio/csharp_sprintf.h>
 
 #include <iostream>
 #include <sstream>
@@ -93,7 +93,7 @@ void Sprintf_Preformance_Test_Integer()
     printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
     printf("        len = jmc_sprintf(buf, bufsize, count,\n"
            "                          \"%%d, %%d, %%d, %%d, %%d,\\n\"\n"
-           "                          \"%%d, %%d, %%d, %%d, %%d\",\n"
+           "                          \"%%d, %%d, %%d, %%d, %%d.\",\n"
            "                           12,  1234,  123456,  12345678,  123456789,\n"
            "                          -12, -1234, -123456, -12345678, -123456789);\n");
     printf("    }\n\n");
@@ -105,7 +105,7 @@ void Sprintf_Preformance_Test_Integer()
         for (i = 0; i < loop_times; ++i) {
             fmtlen = jm_sprintf(fmtbuf1, jm_countof(fmtbuf1),
                                 "%d, %d, %d, %d, %d,\n"
-                                "%d, %d, %d, %d, %d",
+                                "%d, %d, %d, %d, %d.",
                                  12,  1234,  123456,  12345678,  123456789,
                                 -12, -1234, -123456, -12345678, -123456789);
         }
@@ -130,7 +130,7 @@ void Sprintf_Preformance_Test_Integer()
         for (i = 0; i < loop_times; ++i) {
             fmtlen = sprintf(fmtbuf1,
                              "%d, %d, %d, %d, %d,\n"
-                             "%d, %d, %d, %d, %d",
+                             "%d, %d, %d, %d, %d.",
                               12,  1234,  123456,  12345678,  123456789,
                              -12, -1234, -123456, -12345678, -123456789);
         }
@@ -156,7 +156,7 @@ void Sprintf_Preformance_Test_Integer()
         for (i = 0; i < loop_times; ++i) {
             fmtlen = jmc_sprintf(fmtbuf2,
                                  "%d, %d, %d, %d, %d,\n"
-                                 "%d, %d, %d, %d, %d",
+                                 "%d, %d, %d, %d, %d.",
                                   12,  1234,  123456,  12345678,  123456789,
                                  -12, -1234, -123456, -12345678, -123456789);
         }
@@ -208,7 +208,7 @@ void Snprintf_Preformance_Test_Integer1()
     printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
     printf("        len = jmc_snprintf(buf, bufsize, count,\n"
            "                           \"%%d, %%d, %%d, %%d, %%d,\\n\"\n"
-           "                           \"%%d, %%d, %%d, %%d, %%d\",\n"
+           "                           \"%%d, %%d, %%d, %%d, %%d.\",\n"
            "                            12,  1234,  123456,  12345678,  123456789,\n"
            "                           -12, -1234, -123456, -12345678, -123456789);\n");
     printf("    }\n\n");
@@ -220,7 +220,7 @@ void Snprintf_Preformance_Test_Integer1()
         for (i = 0; i < loop_times; ++i) {
             fmtlen = jm_snprintf(fmtbuf1, jm_countof(fmtbuf1), jm_countof(fmtbuf1) - 1,
                                  "%d, %d, %d, %d, %d,\n"
-                                 "%d, %d, %d, %d, %d",
+                                 "%d, %d, %d, %d, %d.",
                                   12,  1234,  123456,  12345678,  123456789,
                                  -12, -1234, -123456, -12345678, -123456789);
         }
@@ -249,7 +249,7 @@ void Snprintf_Preformance_Test_Integer1()
             fmtlen =    snprintf(fmtbuf1, sizeof(fmtbuf1),
 #endif // _MSC_VER
                                  "%d, %d, %d, %d, %d,\n"
-                                 "%d, %d, %d, %d, %d",
+                                 "%d, %d, %d, %d, %d.",
                                   12,  1234,  123456,  12345678,  123456789,
                                  -12, -1234, -123456, -12345678, -123456789);
         }
@@ -283,7 +283,7 @@ void Snprintf_Preformance_Test_Integer1()
         for (i = 0; i < loop_times; ++i) {
             fmtlen = jmc_snprintf(fmtbuf2, jm_countof(fmtbuf2), jm_countof(fmtbuf2) - 1,
                                   "%d, %d, %d, %d, %d,\n"
-                                  "%d, %d, %d, %d, %d",
+                                  "%d, %d, %d, %d, %d.",
                                    12,  1234,  123456,  12345678,  123456789,
                                   -12, -1234, -123456, -12345678, -123456789);
         }
@@ -343,7 +343,7 @@ void Snprintf_Preformance_Test_Integer2()
     printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
     printf("        len = jmc_snprintf(buf, bufsize, count,\n"
            "                           \"%%d, %%d, %%d, %%d, %%04d, %%5d, %%08d,\\n\"\n"
-           "                           \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\",\n"
+           "                           \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d.\",\n"
            "                           123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
            "                           1, 1234, 12345678, 1, 1234, 12345678);\n");
     printf("    }\n\n");
@@ -355,7 +355,7 @@ void Snprintf_Preformance_Test_Integer2()
         for (i = 0; i < loop_times; ++i) {
             fmtlen = jm_snprintf(fmtbuf1, jm_countof(fmtbuf1), jm_countof(fmtbuf1) - 1,
                                  "%d, %d, %d, %d, %04d, %5d, %08d,\n"
-                                 "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
+                                 "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d.",
                                  123, 123456789, -123, -123456789, 777, 8888, 99999,
                                  1, 1234, 12345678, 1, 1234, 12345678);
         }
@@ -384,7 +384,7 @@ void Snprintf_Preformance_Test_Integer2()
             fmtlen =    snprintf(fmtbuf1, sizeof(fmtbuf1),
 #endif // _MSC_VER
                                  "%d, %d, %d, %d, %04d, %5d, %08d,\n"
-                                 "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
+                                 "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d.",
                                  123, 123456789, -123, -123456789, 777, 8888, 99999,
                                  1, 1234, 12345678, 1, 1234, 12345678);
         }
@@ -418,7 +418,7 @@ void Snprintf_Preformance_Test_Integer2()
         for (i = 0; i < loop_times; ++i) {
             fmtlen = jmc_snprintf(fmtbuf2, jm_countof(fmtbuf2), jm_countof(fmtbuf2) - 1,
                                   "%d, %d, %d, %d, %04d, %5d, %08d,\n"
-                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
+                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d.",
                                   123, 123456789, -123, -123456789, 777, 8888, 99999,
                                   1, 1234, 12345678, 1, 1234, 12345678);
         }
@@ -479,7 +479,7 @@ void Snprintf_Preformance_Test_Integer3()
     printf("        len = jmc_snprintf(buf, bufsize, count,\n"
            "                           \"%%d, %%d, %%d, %%d, %%04d, %%5d, %%08d,\\n\"\n"
            "                           \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d,\\n\"\n"
-           "                           \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\",\n"
+           "                           \"%%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d.\",\n"
            "                           123, 123456789, -123, -123456789, 777, 8888, 99999,\n"
            "                            1,  1234,  12345678,  1,  1234,  12345678,\n"
            "                           -1, -1234, -12345678, -1, -1234, -12345678);\n");
@@ -493,7 +493,7 @@ void Snprintf_Preformance_Test_Integer3()
             fmtlen = jm_snprintf(fmtbuf1, jm_countof(fmtbuf1), jm_countof(fmtbuf1) - 1,
                                  "%d, %d, %d, %d, %04d, %5d, %08d,\n"
                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d,\n"
-                                 "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
+                                 "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d.",
                                  123, 123456789, -123, -123456789, 777, 8888, 99999,
                                   1,  1234,  12345678,  1,  1234,  12345678,
                                  -1, -1234, -12345678, -1, -1234, -12345678);
@@ -524,7 +524,7 @@ void Snprintf_Preformance_Test_Integer3()
 #endif // _MSC_VER
                                  "%d, %d, %d, %d, %04d, %5d, %08d,\n"
                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d,\n"
-                                 "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
+                                 "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d.",
                                  123, 123456789, -123, -123456789, 777, 8888, 99999,
                                   1,  1234,  12345678,  1,  1234,  12345678,
                                  -1, -1234, -12345678, -1, -1234, -12345678);
@@ -560,7 +560,7 @@ void Snprintf_Preformance_Test_Integer3()
             fmtlen = jmc_snprintf(fmtbuf2, jm_countof(fmtbuf2), jm_countof(fmtbuf2) - 1,
                                   "%d, %d, %d, %d, %04d, %5d, %08d,\n"
                                   "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d,\n"
-                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d",
+                                  "%06.3d, %05.3d, %05.3d, %-06.3d, %-05.3d, %-05.3d, 05d.",
                                   123, 123456789, -123, -123456789, 777, 8888, 99999,
                                    1,  1234,  12345678,  1,  1234,  12345678,
                                   -1, -1234, -12345678, -1, -1234, -12345678);
@@ -1457,7 +1457,7 @@ void Snprintf_Preformance_Test_String3()
         for (i = 0; i < loop_times; ++i) {
             fmtlen = jm_snprintf(fmtbuf1, jm_countof(fmtbuf1), jm_countof(fmtbuf1) - 1,
                                  "%-12.6s, %-12.6s, %-15.6s, %-15.6s, %-20.6s,\n"
-                                 "%-12.6s, %-12.6s, %-15.6s, %-15.6s, %-20.6s",
+                                 "%-12.6s, %-12.6s, %-15.6s, %-15.6s, %-20.6s.",
                                  "12345",  "1234567",  "123456789",  "1234567890ABCDE",  "1234567890ABCDEFGHIJ",
                                  "123456", "12345678", "1234567890", "1234567890ABCDEF", "1234567890ABCDEFGHIJK");
         }

@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_platform_def.h>
+#include <jimic/core/jimic_platform_def.h>
 #include <jimic/core/jimic_def.h>
 
 #ifndef JMC_DBL_ADJUST_INLINE_DECLARE
@@ -39,52 +39,52 @@ jmc_log10_fast(double val);
 
 // itoa_radix10()
 JMC_INLINE_NONSTD(int)
-jmc_utoa_radix10(jm_char *buf, unsigned int val);
+jmc_utoa_radix10(char *buf, unsigned int val);
 
 JMC_INLINE_NONSTD(int)
-jmc_itoa_radix10(jm_char *buf, int val);
+jmc_itoa_radix10(char *buf, int val);
 
 // ltoa_radix10()
 JMC_INLINE_NONSTD(int)
-jmc_ultoa_radix10(jm_char *buf, unsigned long val);
+jmc_ultoa_radix10(char *buf, unsigned long val);
 
 JMC_INLINE_NONSTD(int)
-jmc_ltoa_radix10(jm_char *buf, long val);
+jmc_ltoa_radix10(char *buf, long val);
 
 // i64toa_radix10()
 JMC_INLINE_NONSTD(int)
-jmc_u64toa_radix10(jm_char *buf, uint64_t val);
+jmc_u64toa_radix10(char *buf, uint64_t val);
 
 JMC_INLINE_NONSTD(int)
-jmc_i64toa_radix10(jm_char *buf, int64_t val);
+jmc_i64toa_radix10(char *buf, int64_t val);
 
 // itoa_radix10_ex()
 JMC_INLINE_NONSTD(int)
-jmc_utoa_radix10_ex(jm_char *buf, size_t count, unsigned int val, unsigned int flag,
+jmc_utoa_radix10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
                     unsigned int fill, unsigned int width, int length);
 
 JMC_INLINE_NONSTD(int)
-jmc_itoa_radix10_ex(jm_char *buf, size_t count, int val, unsigned int flag,
+jmc_itoa_radix10_ex(char *buf, size_t count, int val, unsigned int flag,
                     unsigned int fill, unsigned int width, int length);
 
 JMC_INLINE_NONSTD(int)
-jmc_u64toa_radix10_ex(jm_char *buf, size_t count, uint64_t val, unsigned int flag,
+jmc_u64toa_radix10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
                       unsigned int fill, unsigned int filed_width, int length);
 
 JMC_INLINE_NONSTD(int)
-jmc_i64toa_radix10_ex(jm_char *buf, size_t count, int64_t val, unsigned int flag,
+jmc_i64toa_radix10_ex(char *buf, size_t count, int64_t val, unsigned int flag,
                       unsigned int fill, unsigned int filed_width, int length);
 
 JMC_INLINE_NONSTD(int)
-jmc_u64toa_radix10_for_integer_part(jm_char *buf, uint64_t val, int sign,
+jmc_u64toa_radix10_for_integer_part(char *buf, uint64_t val, int sign,
                                     unsigned int filed_width);
 
 JMC_INLINE_NONSTD(int)
-jmc_i64toa_radix10_for_integer_part(jm_char *buf, int64_t val,
+jmc_i64toa_radix10_for_integer_part(char *buf, int64_t val,
                                     unsigned int filed_width);
 
 JMC_INLINE_NONSTD(int)
-jmc_u64toa_radix10_for_frac_part(jm_char *buf, uint64_t val,
+jmc_u64toa_radix10_for_frac_part(char *buf, uint64_t val,
                                  unsigned int precision);
 
 // is_nan(), is inf() for float
@@ -115,10 +115,10 @@ jmc_dtest(double val);
 
 // ftos(), dtos()
 JMC_INLINE_NONSTD(int)
-jmc_ftos(jm_char *buf, float val, unsigned int filed_width, int precision);
+jmc_ftos(char *buf, float val, unsigned int filed_width, int precision);
 
 JMC_INLINE_NONSTD(int)
-jmc_ftos_ex(jm_char *buf, size_t count, float val, unsigned int flag,
+jmc_ftos_ex(char *buf, size_t count, float val, unsigned int flag,
             unsigned int fill, unsigned int filed_width, int precision);
 
 /* JMC_DBL_ADJUST_INLINE_DECLARE */
@@ -138,88 +138,88 @@ jmc_adjust_dbl(double *pval);
 #if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
 
 JMC_INLINE_NONSTD(int)
-jmc_dtos(jm_char *buf, double val, int filed_width, int precision);
+jmc_dtos(char *buf, double val, int filed_width, int precision);
 
 JMC_INLINE_NONSTD(int)
-jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
+jmc_dtos_ex(char *buf, size_t count, double val, unsigned int flag,
             unsigned int fill, int filed_width, int precision);
 
 JMC_INLINE_NONSTD(int)
-jmc_dtos_ex2(jm_char *buf, size_t count, double val, unsigned int flag,
+jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
              unsigned int fill, int filed_width, int precision);
 
 #else  /* !JMC_DTOS_INLINE_DECLARE */
 
 JMC_DECLARE_NONSTD(int)
-jmc_dtos(jm_char *buf, double val, int filed_width, int precision);
+jmc_dtos(char *buf, double val, int filed_width, int precision);
 
 JMC_DECLARE_NONSTD(int)
-jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
+jmc_dtos_ex(char *buf, size_t count, double val, unsigned int flag,
             unsigned int fill, int filed_width, int precision);
 
 JMC_DECLARE_NONSTD(int)
-jmc_dtos_ex2(jm_char *buf, size_t count, double val, unsigned int flag,
+jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
              unsigned int fill, int filed_width, int precision);
 
 #endif  /* JMC_DTOS_INLINE_DECLARE */
 
 // to_hex()
 JMC_INLINE_NONSTD(int)
-jmc_ptohex(jm_char *buf, void *p);
+jmc_ptohex(char *buf, void *p);
 
 JMC_INLINE_NONSTD(int)
-jmc_uitohex(jm_char *buf, uint32_t val, int isUpper);
+jmc_uitohex(char *buf, uint32_t val, int isUpper);
 
 JMC_INLINE_NONSTD(int)
-jmc_ui64tohex(jm_char *buf, uint64_t val);
+jmc_ui64tohex(char *buf, uint64_t val);
 
 // strings
 JMC_INLINE_NONSTD(size_t)
-jmc_strlen(jm_char *str);
+jmc_strlen(char *str);
 
 JMC_INLINE_NONSTD(size_t)
-jmc_strcpy(jm_char *dest, JM_CONST jm_char *src);
+jmc_strcpy(char *dest, jm_const char *src);
 
 // strncpy()
 JMC_INLINE_NONSTD(size_t)
-jmc_strncpy(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count);
+jmc_strncpy(char *dest, size_t countOfElements, jm_const char *src, size_t count);
 
 JMC_INLINE_NONSTD(size_t)
-jmc_strncpy_null(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count);
+jmc_strncpy_null(char *dest, size_t countOfElements, jm_const char *src, size_t count);
 
 JMC_INLINE_NONSTD(size_t)
-jmc_strncpy_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count);
+jmc_strncpy_fast(char *dest, size_t countOfElements, jm_const char *src, size_t count);
 
 JMC_INLINE_NONSTD(size_t)
-jmc_out_null_string(jm_char *dest, size_t countOfElements);
+jmc_out_null_string(char *dest, size_t countOfElements);
 
 /* JMC_STRNCPY_EX_INLINE_DECLARE */
 #if defined(JMC_STRNCPY_EX_INLINE_DECLARE) && (JMC_STRNCPY_EX_INLINE_DECLARE != 0)
 
 JMC_INLINE_NONSTD(size_t)
-jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
+jmc_strncpy_ex(char *dest, size_t countOfElements, jm_const char *src, size_t count,
                unsigned int flag, unsigned int fill, unsigned int width, int length);
 
 JMC_INLINE_NONSTD(size_t)
-jmc_strncpy_ex_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
+jmc_strncpy_ex_fast(char *dest, size_t countOfElements, jm_const char *src, size_t count,
                     unsigned int flag, unsigned int fill, unsigned int width, int length);
 
 JMC_INLINE_NONSTD(size_t)
-jmc_out_null_string_ex(jm_char *dest, size_t countOfElements,
+jmc_out_null_string_ex(char *dest, size_t countOfElements,
                        unsigned int flag, unsigned int fill, unsigned int width, int length);
 
 #else  /* !JMC_STRNCPY_EX_INLINE_DECLARE */
 
 JMC_DECLARE_NONSTD(size_t)
-jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
+jmc_strncpy_ex(char *dest, size_t countOfElements, jm_const char *src, size_t count,
                unsigned int flag, unsigned int fill, unsigned int width, int length);
 
 JMC_DECLARE_NONSTD(size_t)
-jmc_strncpy_ex_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
+jmc_strncpy_ex_fast(char *dest, size_t countOfElements, jm_const char *src, size_t count,
                     unsigned int flag, unsigned int fill, unsigned int width, int length);
 
 JMC_DECLARE_NONSTD(size_t)
-jmc_out_null_string_ex(jm_char *dest, size_t countOfElements,
+jmc_out_null_string_ex(char *dest, size_t countOfElements,
                        unsigned int flag, unsigned int fill, unsigned int width, int length);
 
 #endif  /* JMC_STRNCPY_EX_INLINE_DECLARE */

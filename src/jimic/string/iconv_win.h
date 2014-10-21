@@ -24,7 +24,7 @@
     delete [] p
 #else
 
-#if defined(JIMI_MSC_CLANG) && (JIMI_MSC_CLANG != 0)
+#if defined(JIMI_MSVC_CLANG) && (JIMI_MSVC_CLANG != 0)
 
 #define WIN_ICONV_MALLOC(size, type) \
     (type *)malloc((size_t)(size) * sizeof(type))

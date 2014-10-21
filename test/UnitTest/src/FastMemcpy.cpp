@@ -105,7 +105,7 @@ void * memcpy_mmx1(void *dest, const void *src, size_t len)
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     //修改此值有可能实现更高的速度
     //int n = (int)((len / CACHE_BLOCK_SIZE) * CACHE_BLOCK_SIZE);
@@ -196,7 +196,7 @@ void * memcpy_mmx2(void *dest, const void *src, size_t len)
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     //int n = (int)((len / CACHE_BLOCK_SIZE) * CACHE_BLOCK_SIZE);
     int n = (int)(len - (len & (CACHE_BLOCK_SIZE - 1)));
@@ -343,7 +343,7 @@ void * memcpy_mmx3(void *dest, const void *src, size_t len)
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     //int n = (int)((len / CACHE_BLOCK_SIZE) * CACHE_BLOCK_SIZE);
     int n = (int)(len - (len & (CACHE_BLOCK_SIZE - 1)));
@@ -494,7 +494,7 @@ void * memcpy_mmx4(void *dest, const void *src, size_t len)
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     if (len <= (1024 * 1024)) {
         __asm {
@@ -625,7 +625,7 @@ void * memcpy_sse2a(void *dest, const void *src, size_t len)
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     //int n = (int)((len / CACHE_BLOCK_SIZE) * CACHE_BLOCK_SIZE);
     size_t len_n = (len & (CACHE_BLOCK_SIZE - 1));
@@ -758,7 +758,7 @@ void * memcpy_sse2c(void *dest, const void *src, size_t len)
     if (!m_bIsMMX || !m_bIsSSE || !m_bIsSSE2)
         return NULL;
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     __asm {
 
@@ -835,7 +835,7 @@ void * memcpy_sse2d(void *dest, const void *src, size_t len)
     if (!m_bIsMMX || !m_bIsSSE || !m_bIsSSE2)
         return NULL;
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     __asm {
 
@@ -914,7 +914,7 @@ void * memcpy_sse2e(void *dest, const void *src, size_t len)
     if (!m_bIsMMX || !m_bIsSSE)
         return NULL;
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     //int n = (int)((len / CACHE_BLOCK_SIZE) * CACHE_BLOCK_SIZE);
     int n = (int)(len - (len & (CACHE_BLOCK_SIZE - 1)));

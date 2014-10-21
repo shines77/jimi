@@ -90,6 +90,12 @@
     <Filter Include="src\jimic\system">
       <UniqueIdentifier>{c848d8dd-192b-42b4-828d-9fa86df36104}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\jimic\stdio">
+      <UniqueIdentifier>{94dce0be-97b7-41b8-8d4f-300ba8a09969}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimic\libc">
+      <UniqueIdentifier>{db321161-3759-4a07-b805-6f9551178424}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\jimi\jimi_all.h">
@@ -296,9 +302,6 @@
     <ClInclude Include="..\..\..\..\src\jimic\system\get_char.h">
       <Filter>src\jimic\system</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\csharp_sprintf.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\core\jimic_assert.h">
       <Filter>src\jimic\core</Filter>
     </ClInclude>
@@ -306,15 +309,6 @@
       <Filter>src\jimic\string</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.inl.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\csharp_sprintf.inl.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\sprintf.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\sprintf.inl.h">
       <Filter>src\jimic\string</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.h">
@@ -358,6 +352,24 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_platform_def.h">
       <Filter>src\jimi\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\csharp_sprintf.h">
+      <Filter>src\jimic\stdio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\csharp_sprintf.inl.h">
+      <Filter>src\jimic\stdio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.h">
+      <Filter>src\jimic\stdio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.inl.h">
+      <Filter>src\jimic\stdio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\libc\ieee754.h">
+      <Filter>src\jimic\libc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\libc\endian.h">
+      <Filter>src\jimic\libc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -417,6 +429,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.c">
       <Filter>src\jimic\string\win32\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c">
+      <Filter>src\jimic\libc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

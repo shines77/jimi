@@ -39,8 +39,8 @@
 #include <jimic/string/jmf_strings.h>
 #include <jimic/string/iconv_win.h>
 #include <jimic/system/console.h>
-#include <jimic/string/sprintf.h>
-#include <jimic/string/csharp_sprintf.h>
+#include <jimic/stdio/sprintf.h>
+#include <jimic/stdio/csharp_sprintf.h>
 
 #include <math.h>
 
@@ -2168,7 +2168,7 @@ bool win_iconv_test()
 {
     bool echo_result = false;
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     char *szAnsi_Test1 = "23123213我们都是中国人, 我们都是地球人fkjadhhfkljdhfkljdhfkldhklfhdkjafhkldjhfkjadhfkjhdakjfhdkajhfkldash"
         "英雄所见略同, 不经历风雨怎么见彩虹???jfkljdl4348972949384iyjdhfjdgjfg3h4eih3k19283变形金刚4, 变形金刚四⑦⑦";

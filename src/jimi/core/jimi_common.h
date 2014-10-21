@@ -134,23 +134,23 @@
 # endif
 #endif
 
-/* _CRTALIAS will be used when we have a function whose purpose is to return
+/* JIMI_CRT_FORCEINLINE will be used when we have a function whose purpose is to return
  * the value of a similar function. This alias function will contain one line
  * of code.
  */
-#define JIMI_CRT_FORCEINLINE    __CRT_INLINE __attribute__((__always_inline__))
+#define JIMI_CRT_FORCEINLINE    JIMI_CRT_INLINE __attribute__((__always_inline__))
 
 /**
  * jimi: for inline and noinline define
  */
-#if (_MSC_VER || __INTEL_COMPILER) && (!defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0))
+#if (_MSC_VER || __INTEL_COMPILER) && (!defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0))
 
 #define JIMI_INLINE              __inline
 #define JIMI_FORCEINLINE         __forceinline
 #define JIMI_RESTRICT            __restrict
 #define JIMI_HAS_INLINE          1
 
-#elif defined(__GNUC__) && (defined(JIMI_MSC_CLANG) && (JIMI_MSC_CLANG != 0))
+#elif defined(__GNUC__) && (defined(JIMI_MSVC_CLANG) && (JIMI_MSVC_CLANG != 0))
 
 #define JIMI_INLINE              inline
 #define JIMI_FORCEINLINE         inline
@@ -177,23 +177,32 @@
 /**
  * jimic: for inline define
  */
-#if (defined(JIMI_MSC_VER) || defined(JIMI_IS_ICC)) && (!defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0))
+#if (defined(JIMI_MSC_VER) || defined(JIMI_IS_ICC)) && (!defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0))
 
 #define JMC_INLINE              __inline
 #define JMC_FORCEINLINE         __forceinline
+#define JMC_RESTRICT            __restrict
+#define JMC_HAS_INLINE          1
+
+#elif defined(__GNUC__) || (defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG != 0))
+
+#define JMC_INLINE              inline
+#define JMC_FORCEINLINE         inline
+#define JMC_RESTRICT            restrict
 #define JMC_HAS_INLINE          1
 
 #else
 
 #define JMC_INLINE              inline
 #define JMC_FORCEINLINE         inline
+#define JMC_RESTRICT
 #define JMC_HAS_INLINE          1
 
 #endif  /* JIMI_MSC_VER */
 
-#if (_MSC_VER || __INTEL_COMPILER) && (!defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0))
+#if (_MSC_VER || __INTEL_COMPILER) && (!defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0))
 #define JMC_NOINLINE(decl)      __declspec(noinline) decl
-#elif __GNUC__ || (defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG != 0))
+#elif defined(__GNUC__) || (defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG != 0))
 #define JMC_NOINLINE(decl)      decl __attribute__ ((noinline))
 #else
 #define JMC_NOINLINE(decl)      decl

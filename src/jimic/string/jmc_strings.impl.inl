@@ -23,6 +23,8 @@
 #include <float.h>
 #include <limits.h>     // for UINT_MAX
 
+#include <jimic/libc/ieee754.h>
+
 static const double dbl_pow10_remain_16[] = {
     1.0E+0, 1.0E+4, 1.0E+9, 1.0E+14
 };
@@ -67,7 +69,7 @@ jmc_log10(double val)
     f64 = (fuint64_t *)&val;
     // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
     exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
-        - JM_DOUBLE_EXPONENT_0_32;
+        - JM_DOUBLE_EXPONENT_BIAS_32;
 
     // exponent is positive (exponent >= 0 && exponent <= 1024)
     if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
@@ -98,7 +100,7 @@ jmc_log10_fast1(double val)
     f64 = (fuint64_t *)&val;
     // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
     exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
-        - JM_DOUBLE_EXPONENT_0_32;
+        - JM_DOUBLE_EXPONENT_BIAS_32;
 
     // exponent is positive (exponent >= 0 && exponent <= 1024)
     if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
@@ -135,7 +137,7 @@ jmc_log10_fast2(double val)
     f64 = (fuint64_t *)&val;
     // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
     exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
-        - JM_DOUBLE_EXPONENT_0_32;
+        - JM_DOUBLE_EXPONENT_BIAS_32;
 
     // exponent is positive (exponent >= 0 && exponent <= 1024)
     if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
@@ -168,7 +170,7 @@ jmc_log10_fast2a(double val)
     f64 = (fuint64_t *)&val;
     // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
     exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
-        - JM_DOUBLE_EXPONENT_0_32;
+        - JM_DOUBLE_EXPONENT_BIAS_32;
 
     // exponent is positive (exponent >= 0 && exponent <= 1024)
     if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
@@ -207,7 +209,7 @@ jmc_log10_fast3(double val)
     f64 = (fuint64_t *)&val;
     // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
     exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
-        - JM_DOUBLE_EXPONENT_0_32;
+        - JM_DOUBLE_EXPONENT_BIAS_32;
 
     // exponent is positive (exponent >= 0 && exponent <= 1024)
     if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
@@ -242,7 +244,7 @@ jmc_log10_fast(double val)
     f64 = (fuint64_t *)&val;
     // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
     exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
-        - JM_DOUBLE_EXPONENT_0_32;
+        - JM_DOUBLE_EXPONENT_BIAS_32;
 
     // exponent is positive (exponent >= 0 && exponent <= 1024)
     if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
@@ -279,7 +281,7 @@ jmc_adjust_dbl(double *pval)
     f64 = (fuint64_t *)pval;
     // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
     exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
-        - JM_DOUBLE_EXPONENT_0_32;
+        - JM_DOUBLE_EXPONENT_BIAS_32;
 
     //if (exponent >= 0 && exponent <= JM_DOUBLE_EXPONENT_MAX) {
     if (exponent >= 0) {
@@ -321,7 +323,7 @@ JMC_INLINE_NONSTD(int)
 #else
 JMC_DECLARE_NONSTD(int)
 #endif
-jmc_dtos(jm_char *buf, double val, int filed_width, int precision)
+jmc_dtos(char *buf, double val, int filed_width, int precision)
 {
     int len;
     int64_t i64;
@@ -498,7 +500,7 @@ JMC_INLINE_NONSTD(int)
 #else
 JMC_DECLARE_NONSTD(int)
 #endif
-jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
+jmc_dtos_ex(char *buf, size_t count, double val, unsigned int flag,
             unsigned int fill, int filed_width, int precision)
 {
     int len;
@@ -510,6 +512,7 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
     uint64_t scale, frac;
     fuint64_t *f64;
     register fuint64_t *u64;
+    jmc_ieee754_double *dbl64;
     unsigned int n;
     int num_width;
     int exp10;
@@ -522,6 +525,9 @@ jmc_dtos_ex(jm_char *buf, size_t count, double val, unsigned int flag,
         jimic_assert(sizeof(fuint64_t) == sizeof(double));
         return -1;
     }
+
+    dbl64 = (jmc_ieee754_double *)&val;
+    n = dbl64->ieee.exponent;
 
     f64 = (fuint64_t *)&val;
     // is NaN or INF ? (exponent is maxium ?)
@@ -843,7 +849,7 @@ JMC_INLINE_NONSTD(int)
 #else
 JMC_DECLARE_NONSTD(int)
 #endif
-jmc_dtos_ex2(jm_char *buf, size_t count, double val, unsigned int flag,
+jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
              unsigned int fill, int filed_width, int precision)
 {
     int len;
@@ -1186,10 +1192,10 @@ JMC_INLINE_NONSTD(size_t)
 #else
 JMC_DECLARE_NONSTD(size_t)
 #endif
-jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
+jmc_strncpy_ex(char *dest, size_t countOfElements, jm_const char *src, size_t count,
                unsigned int flag, unsigned int fill, unsigned int width, int length)
 {
-    jm_char *end;
+    char *end;
     size_t copy_len;
     int fill_cnt, padding;
 
@@ -1198,7 +1204,7 @@ jmc_strncpy_ex(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, siz
 
     count = JIMIC_MIN(count, countOfElements - 1);
     copy_len = JIMIC_MIN(JIMIC_MIN((unsigned int)length, width), count);
-    end = (jm_char *)src + copy_len;
+    end = (char *)src + copy_len;
 
     fill_cnt = width - copy_len;
     if (fill_cnt <= 0) {
@@ -1299,13 +1305,13 @@ JMC_INLINE_NONSTD(size_t)
 #else
 JMC_DECLARE_NONSTD(size_t)
 #endif
-jmc_strncpy_ex_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src, size_t count,
+jmc_strncpy_ex_fast(char *dest, size_t countOfElements, jm_const char *src, size_t count,
                     unsigned int flag, unsigned int fill, unsigned int width, int length)
 {
 #if defined(JMC_STRNCPY_EX_FAST_USE_MEMCPY) && (JMC_STRNCPY_EX_FAST_USE_MEMCPY != 0)
     // jmc_strncpy_ex_fast() use memcpy
 #else
-    jm_char *end;
+    char *end;
 #endif
     size_t copy_len;
     int fill_cnt, padding;
@@ -1318,7 +1324,7 @@ jmc_strncpy_ex_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src
 #if defined(JMC_STRNCPY_EX_FAST_USE_MEMCPY) && (JMC_STRNCPY_EX_FAST_USE_MEMCPY != 0)
     // jmc_strncpy_ex_fast() use memcpy
 #else
-    end = (jm_char *)src + copy_len;
+    end = (char *)src + copy_len;
 #endif
 
     fill_cnt = width - copy_len;
@@ -1326,7 +1332,7 @@ jmc_strncpy_ex_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src
 
 #if defined(JMC_STRNCPY_EX_FAST_USE_MEMCPY) && (JMC_STRNCPY_EX_FAST_USE_MEMCPY != 0)
         // copy from src
-        memcpy(dest, src, copy_len * sizeof(jm_char));
+        memcpy(dest, src, copy_len * sizeof(char));
 #else
         // copy from src
         while (src < end) {
@@ -1347,7 +1353,7 @@ jmc_strncpy_ex_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src
 
 #if defined(JMC_STRNCPY_EX_FAST_USE_MEMCPY) && (JMC_STRNCPY_EX_FAST_USE_MEMCPY != 0)
             // copy from src
-            memcpy(dest, src, copy_len * sizeof(jm_char));
+            memcpy(dest, src, copy_len * sizeof(char));
 #else
             // copy from src
             while (src < end) {
@@ -1386,7 +1392,7 @@ jmc_strncpy_ex_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src
 
 #if defined(JMC_STRNCPY_EX_FAST_USE_MEMCPY) && (JMC_STRNCPY_EX_FAST_USE_MEMCPY != 0)
                 // copy from src
-                memcpy(dest, src, copy_len * sizeof(jm_char));
+                memcpy(dest, src, copy_len * sizeof(char));
 #else
                 // copy from src
                 while (src < end) {
@@ -1401,7 +1407,7 @@ jmc_strncpy_ex_fast(jm_char *dest, size_t countOfElements, JM_CONST jm_char *src
 
 #if defined(JMC_STRNCPY_EX_FAST_USE_MEMCPY) && (JMC_STRNCPY_EX_FAST_USE_MEMCPY != 0)
                 // copy from src
-                memcpy(dest, src, copy_len * sizeof(jm_char));
+                memcpy(dest, src, copy_len * sizeof(char));
                 dest += copy_len;
 #else
                 // copy from src
@@ -1439,12 +1445,12 @@ JMC_INLINE_NONSTD(size_t)
 #else
 JMC_DECLARE_NONSTD(size_t)
 #endif
-jmc_out_null_string_ex(jm_char *dest, size_t countOfElements, unsigned int flag,
+jmc_out_null_string_ex(char *dest, size_t countOfElements, unsigned int flag,
                        unsigned int fill, unsigned int width, int length)
 {
 #if !defined(OUT_NULL_STRING_EX_DIRECT_WRITE) || (OUT_NULL_STRING_EX_DIRECT_WRITE == 0)
-    jm_char *end;
-    jm_char *src;
+    char *end;
+    char *src;
 #endif  /* OUT_NULL_STRING_EX_DIRECT_WRITE */
     size_t count;
     size_t copy_len;
@@ -1476,7 +1482,7 @@ jmc_out_null_string_ex(jm_char *dest, size_t countOfElements, unsigned int flag,
     else {
 #if !defined(OUT_NULL_STRING_EX_DIRECT_WRITE) || (OUT_NULL_STRING_EX_DIRECT_WRITE == 0)
         src = FMT_NULL_STRING;
-        end = (jm_char *)src + copy_len;
+        end = (char *)src + copy_len;
 #endif  /* OUT_NULL_STRING_EX_DIRECT_WRITE */
 
         // when legnth <= 0 || legnth >= witdh, align to right or left is same

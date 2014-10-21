@@ -40,7 +40,7 @@ void ftol_test_fpu()
     unsigned short RC_Edit;
     long isrc;
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     __asm {
         // 设置FPU的取整方式  为了直接使用fistp浮点指令
@@ -114,7 +114,7 @@ void ftol_test_ieee_M()
 void ftol_test_sse2()
 {
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     __asm {
         mov         ecx, testDataCount
@@ -153,7 +153,7 @@ void dtol_test_fpu()
     unsigned short RC_Edit;
     long isrc;
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     __asm  // 设置FPU的取整方式  为了直接使用fistp浮点指令
     {
@@ -242,7 +242,7 @@ void dtol_test_ieee_MagicNumber2()
 void dtol_test_sse2()
 {
 
-#if !defined(JIMI_MSC_CLANG) || (JIMI_MSC_CLANG == 0)
+#if !defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0)
 
     __asm {
         mov         ecx, testDataCount

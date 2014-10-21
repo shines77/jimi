@@ -166,17 +166,20 @@
     <ClInclude Include="..\..\..\..\src\jimic\core\win32\jimic_targetver.h" />
     <ClInclude Include="..\..\..\..\src\jimic\core\win32\vs_stdint.h" />
     <ClInclude Include="..\..\..\..\src\jimic\jimic_all.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\libc\endian.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\libc\ieee754.h" />
     <ClInclude Include="..\..\..\..\src\jimic\platform\linux\fast_memcpy.h" />
     <ClInclude Include="..\..\..\..\src\jimic\platform\win\fast_memcpy.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\csharp_sprintf.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\csharp_sprintf.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\csharp_sprintf.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h" />
     <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.c" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\csharp_sprintf.inl.h">
-      <FileType>CppCode</FileType>
-    </ClInclude>
+    <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.cpp" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.h">
       <FileType>CppCode</FileType>
@@ -188,8 +191,6 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\sprintf.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\sprintf.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.h" />

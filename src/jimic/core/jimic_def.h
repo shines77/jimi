@@ -164,8 +164,8 @@ typedef struct JIMIC_MACRO_T
     const char *value;
 } JIMIC_MACRO_T;
 
-#ifndef JM_CONST
-#define JM_CONST        const
+#ifndef jm_const
+#define jm_const        const
 #endif  /* JM_CONST */
 
 #ifndef JM_CHAR_DEFINED
