@@ -364,7 +364,7 @@ jmc_dtos(char *buf, double val, int filed_width, int precision)
         if (precision <= 9) {
             jimic_assert(precision > 0 && precision <= 9);
             scale32 = 10;
-            for (n = precision; n > 0; --n)
+            for (n = precision - 1; n > 0; --n)
                 scale32 *= 10;
             scale = scale32;
         }
@@ -390,7 +390,7 @@ jmc_dtos(char *buf, double val, int filed_width, int precision)
         num_width = filed_width - precision - 1;
     }
     else {
-        scale = 1;
+        scale = 1ULL;
         num_width = filed_width;
     }
 
@@ -512,7 +512,7 @@ jmc_dtos_ex(char *buf, size_t count, double val, unsigned int flag,
     uint64_t scale, frac;
     fuint64_t *f64;
     register fuint64_t *u64;
-    jmc_ieee754_double *dbl64;
+    jmc_ieee754_double *d64;
     unsigned int n;
     int num_width;
     int exp10;
@@ -526,8 +526,7 @@ jmc_dtos_ex(char *buf, size_t count, double val, unsigned int flag,
         return -1;
     }
 
-    dbl64 = (jmc_ieee754_double *)&val;
-    n = dbl64->ieee.exponent;
+    d64 = (jmc_ieee754_double *)&val;
 
     f64 = (fuint64_t *)&val;
     // is NaN or INF ? (exponent is maxium ?)
@@ -589,7 +588,7 @@ jmc_dtos_ex(char *buf, size_t count, double val, unsigned int flag,
 
         if (i64 != 0) {
             if ((precision + digital) <= FMT_MAX_DOUBLE_PRECISION)
-                frac_prec = precision - digital;
+                frac_prec = precision;
             else
                 frac_prec = FMT_MAX_DOUBLE_PRECISION - digital;
         }
@@ -622,7 +621,7 @@ jmc_dtos_ex(char *buf, size_t count, double val, unsigned int flag,
             if (frac_prec <= 9) {
                 jimic_assert(frac_prec > 0 && frac_prec <= 9);
                 scale32 = 10;
-                for (n = frac_prec; n > 0; --n)
+                for (n = frac_prec - 1; n > 0; --n)
                     scale32 *= 10;
                 scale = scale32;
             }
@@ -640,7 +639,7 @@ jmc_dtos_ex(char *buf, size_t count, double val, unsigned int flag,
         }
         else {
             jimic_assert(frac_prec <= 0);
-            scale = 1;
+            scale = 1ULL;
         }
 #endif
 

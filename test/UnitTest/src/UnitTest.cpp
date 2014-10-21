@@ -2715,8 +2715,6 @@ void Double_And_Float_Test()
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(-DOUBLE_INFINITY) = %f\n", -DOUBLE_INFINITY);
     printf("%s", buf);
     printf("\n");
-
-    Console.ReadKey();
 }
 
 int UnitTest_Main(int argc, char *argv[])
@@ -2839,8 +2837,8 @@ int UnitTest_Main(int argc, char *argv[])
     OStringStream_Test();
 
     if (true && 1) {
-        Console.ReadKey();
         sLog.log_end();
+        jimi::Console.ReadKey();
         return 0;
     }
 #endif
@@ -2848,8 +2846,8 @@ int UnitTest_Main(int argc, char *argv[])
 #if 0
     String_Base_Test();
     if (true && 0) {
-        Console.ReadKey();
         sLog.log_end();
+        jimi::Console.ReadKey();
         return 0;
     }
 #endif
@@ -2858,7 +2856,7 @@ int UnitTest_Main(int argc, char *argv[])
     String_Format_Test();
     if (true && 0) {
         sLog.log_end();
-        Console.ReadKey();
+        jimi::Console.ReadKey();
         return 0;
     }
 #endif
@@ -2868,9 +2866,10 @@ int UnitTest_Main(int argc, char *argv[])
     dtol_test_main();
     if (true && 1) {
         sLog.log_end();
-        Console.ReadKey();
+        jimi::Console.ReadKey();
         return 0;
     }
+    jimi::Console.ReadKey();
 #endif
 
 #if 1
@@ -2879,6 +2878,8 @@ int UnitTest_Main(int argc, char *argv[])
     Log10_Test2(1E+200);
     Log10_Test2(1E+100);
     Double_And_Float_Test();
+
+    jimi::Console.ReadKey();
 #endif
 
 #if 1
@@ -2904,13 +2905,13 @@ int UnitTest_Main(int argc, char *argv[])
     
     if (true && 0) {
         sLog.log_end();
-        Console.ReadKey();
+        jimi::Console.ReadKey();
         return 0;
     }
 #endif
 
 #if 1
-  #if !defined(VSNPRINTF_SHORT_DISPLAY) || (VSNPRINTF_SHORT_DISPLAY == 0)
+  #if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
     String_Snprintf_Test();
   #endif
 
@@ -2921,7 +2922,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Integer2();
     Snprintf_Preformance_Test_Integer3();
 
-    Console.ReadKey();
+    jimi::Console.ReadKey();
   #endif
 
   #if 1
@@ -2930,7 +2931,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Double3();
     Snprintf_Preformance_Test_Double4();
 
-    Console.ReadKey();
+    jimi::Console.ReadKey();
   #endif
 
   #if 1
@@ -2940,14 +2941,14 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_String4();
     Snprintf_Preformance_Test_String5();
 
-    Console.ReadKey();
+    jimi::Console.ReadKey();
   #endif
 
     //OStringStream_Performance_Test();
 
     if (true && 0) {
         sLog.log_end();
-        Console.ReadKey();
+        jimi::Console.ReadKey();
         return 0;
     }
 #endif
@@ -2955,10 +2956,13 @@ int UnitTest_Main(int argc, char *argv[])
 #if 1
     String_Performance_Test();
     String_Performance_Test2();
+
+    jimi::Console.ReadKey();
 #endif
 
 #if 1
     String_StrLen_Test();
+    jimi::Console.ReadKey();
 #endif
 
     Jimi_StrLwr_Verify();
@@ -2975,6 +2979,8 @@ int UnitTest_Main(int argc, char *argv[])
     String_StrLwr_Test(128);
     String_StrLwr_Test(256);
     String_StrLwr_Test(1024);
+
+    jimi::Console.ReadKey();
 #endif
 
 #if 0
@@ -3049,8 +3055,6 @@ int UnitTest_Main(int argc, char *argv[])
 
     sLog.log_end();
 
-    //Console.ReadKey();
-    //jimi::Console::ReadKey();
     jimi::Console.ReadKey();
     return 0;
 }

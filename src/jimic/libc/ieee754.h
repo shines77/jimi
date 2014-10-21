@@ -19,14 +19,14 @@ union jmc_ieee754_float
     struct {
 #if JMC_BYTE_ORDER == JMC_LITTLE_ENDIAN
         /* Little endian. */
-        unsigned int mantissa:23;
-        unsigned int exponent: 8;
-        unsigned int negative: 1;
+        unsigned int mantissa: 23;
+        unsigned int exponent:  8;
+        unsigned int negative:  1;
 #elif JMC_BYTE_ORDER == JMC_BIG_ENDIAN
         /* Big endian. */
-        unsigned int negative: 1;
-        unsigned int exponent: 8;
-        unsigned int mantissa:23;
+        unsigned int negative:  1;
+        unsigned int exponent:  8;
+        unsigned int mantissa: 23;
 #endif
     } ieee;
 
@@ -34,16 +34,16 @@ union jmc_ieee754_float
     struct {
 #if JMC_BYTE_ORDER == JMC_LITTLE_ENDIAN
         /* Little endian. */
-        unsigned int mantissa:22;
-        unsigned int quiet_nan:1;
-        unsigned int exponent: 8;
-        unsigned int negative: 1;
+        unsigned int mantissa: 22;
+        unsigned int quiet_nan: 1;
+        unsigned int exponent:  8;
+        unsigned int negative:  1;
 #elif JMC_BYTE_ORDER == JMC_BIG_ENDIAN
         /* Big endian. */
-        unsigned int negative: 1;
-        unsigned int exponent: 8;
-        unsigned int quiet_nan:1;
-        unsigned int mantissa:22;
+        unsigned int negative:  1;
+        unsigned int exponent:  8;
+        unsigned int quiet_nan: 1;
+        unsigned int mantissa: 22;
 #endif  /* JMC_BYTE_ORDER == JMC_LITTLE_ENDIAN */
     } ieee_NaN;
 };
