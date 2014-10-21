@@ -81,6 +81,9 @@ IcUpdateLog.htm
 # For Code::Blocks backup file
 *.sav
 
+# For Sublime Text 2 dump file
+*.dump
+
 # tmp and obj files
 /obj
 /gen
