@@ -96,6 +96,9 @@
     <Filter Include="src\jimic\libc">
       <UniqueIdentifier>{db321161-3759-4a07-b805-6f9551178424}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\jimic\stdlib">
+      <UniqueIdentifier>{40ae0128-ce81-46ca-904c-4fafbe4d3017}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\jimi\jimi_all.h">
@@ -371,6 +374,9 @@
     <ClInclude Include="..\..\..\..\src\jimic\libc\endian.h">
       <Filter>src\jimic\libc</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\dtos.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">
@@ -432,6 +438,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c">
       <Filter>src\jimic\libc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\dtos.c">
+      <Filter>src\jimic\string</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

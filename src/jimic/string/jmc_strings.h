@@ -6,16 +6,7 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_platform_def.h>
 #include <jimic/core/jimic_def.h>
-
-#ifndef JMC_DBL_ADJUST_INLINE_DECLARE
-#define JMC_DBL_ADJUST_INLINE_DECLARE       0
-#endif
-
-#ifndef JMC_DTOS_INLINE_DECLARE
-#define JMC_DTOS_INLINE_DECLARE             0
-#endif
 
 #ifndef JMC_STRNCPY_EX_INLINE_DECLARE
 #define JMC_STRNCPY_EX_INLINE_DECLARE       0
@@ -35,7 +26,7 @@ JMC_DECLARE_NONSTD(int)
 jmc_log10_fast2(double val);
 
 JMC_DECLARE_NONSTD(int)
-jmc_log10_fast(double val);
+jmc_log10_fast_64(double val);
 
 // itoa_radix10()
 JMC_INLINE_NONSTD(int)
@@ -112,56 +103,6 @@ jmc_is_nan_or_inf_d(double val);
 
 JMC_INLINE_NONSTD(int)
 jmc_dtest(double val);
-
-// ftos(), dtos()
-JMC_INLINE_NONSTD(int)
-jmc_ftos(char *buf, float val, unsigned int filed_width, int precision);
-
-JMC_INLINE_NONSTD(int)
-jmc_ftos_ex(char *buf, size_t count, float val, unsigned int flag,
-            unsigned int fill, unsigned int filed_width, int precision);
-
-/* JMC_DBL_ADJUST_INLINE_DECLARE */
-#if defined(JMC_DBL_ADJUST_INLINE_DECLARE) && (JMC_DBL_ADJUST_INLINE_DECLARE != 0)
-
-JMC_INLINE_NONSTD(int)
-jmc_adjust_dbl(double *pval);
-
-#else  /* !JMC_DBL_ADJUST_INLINE_DECLARE */
-
-JMC_DECLARE_NONSTD(int)
-jmc_adjust_dbl(double *pval);
-
-#endif  /* JMC_DBL_ADJUST_INLINE_DECLARE */
-
-/* JMC_DTOS_INLINE_DECLARE */
-#if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
-
-JMC_INLINE_NONSTD(int)
-jmc_dtos(char *buf, double val, int filed_width, int precision);
-
-JMC_INLINE_NONSTD(int)
-jmc_dtos_ex(char *buf, size_t count, double val, unsigned int flag,
-            unsigned int fill, int filed_width, int precision);
-
-JMC_INLINE_NONSTD(int)
-jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
-             unsigned int fill, int filed_width, int precision);
-
-#else  /* !JMC_DTOS_INLINE_DECLARE */
-
-JMC_DECLARE_NONSTD(int)
-jmc_dtos(char *buf, double val, int filed_width, int precision);
-
-JMC_DECLARE_NONSTD(int)
-jmc_dtos_ex(char *buf, size_t count, double val, unsigned int flag,
-            unsigned int fill, int filed_width, int precision);
-
-JMC_DECLARE_NONSTD(int)
-jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
-             unsigned int fill, int filed_width, int precision);
-
-#endif  /* JMC_DTOS_INLINE_DECLARE */
 
 // to_hex()
 JMC_INLINE_NONSTD(int)

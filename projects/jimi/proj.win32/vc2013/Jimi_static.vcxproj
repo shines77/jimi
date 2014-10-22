@@ -174,12 +174,14 @@
     <ClInclude Include="..\..\..\..\src\jimic\stdio\csharp_sprintf.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.h" />
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\dtos.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h" />
     <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.c" />
     <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\dtos.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.cpp" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.h">
       <FileType>CppCode</FileType>

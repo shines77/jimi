@@ -17,9 +17,6 @@
 #include <float.h>
 #include <limits.h>     // for UINT_MAX
 
-/* 小端或大端, 为1表示小端存储 */
-#define JIMI_IS_LITTLE_ENDIAN           1
-
 /* UINT的最大值 */
 #define JIMIC_UINT_MAX                  UINT_MAX
 
@@ -137,7 +134,7 @@
 
 typedef struct fuint64_t {
     union {
-#if defined(JIMI_IS_LITTLE_ENDIAN) && (JIMI_IS_LITTLE_ENDIAN != 0)
+#if defined(JIMIC_IS_LITTLE_ENDIAN) && (JIMIC_IS_LITTLE_ENDIAN != 0)
         // 小端存储
         struct {
             uint32_t    low;
@@ -195,9 +192,9 @@ jmc_utoa_radix10(char *buf, unsigned int val)
     } while (val != 0);
 
     digital = (unsigned int)(end - cur);
-    digval = digital;
 
 #if 1
+    digval = digital;
     while (digval > 0) {
         *buf++ = *cur++;
         digval--;
@@ -288,23 +285,34 @@ jmc_utoa_radix10(char *buf, unsigned int val)
 JMC_INLINE_NONSTD(int)
 jmc_itoa_radix10(char *buf, int val)
 {
-#if 1
+#if 0
+    int sign;
+    if (val < 0) {
+        *buf++ = '-';
+        val = -val;
+        sign = 1;
+    }
+    else {
+        sign = 0;
+    }
+    return jmc_utoa_radix10(buf, (unsigned int)val) + sign;
+#elif 1
     if (val >= 0) {
-        return jmc_utoa_radix10(buf, val);
+        return jmc_utoa_radix10(buf, (unsigned int)val);
     }
     else {
         *buf++ = '-';
         val = -val;
-        return jmc_utoa_radix10(buf, val) + 1;
+        return jmc_utoa_radix10(buf, (unsigned int)val) + 1;
     }
 #elif 0
     if (val < 0) {
         *buf++ = '-';
         val = -val;
-        return jmc_utoa_radix10(buf, val) + 1;
+        return jmc_utoa_radix10(buf, (unsigned int)val) + 1;
     }
     else
-        return jmc_utoa_radix10(buf, val);
+        return jmc_utoa_radix10(buf, (unsigned int)val);
 #else
     register int sign;
     sign = (val < 0);
@@ -312,7 +320,7 @@ jmc_itoa_radix10(char *buf, int val)
         *buf++ = '-';
         val = -val;
     }
-    return jmc_utoa_radix10(buf, val) + sign;
+    return jmc_utoa_radix10(buf, (unsigned int)val) + sign;
 #endif
 }
 
@@ -1355,26 +1363,6 @@ jmc_dtest(double val)
         return JM_FIS_NORMAL;
     }
 }
-
-JMC_INLINE_NONSTD(int)
-jmc_ftos(char *buf, float val, unsigned int width, int precision)
-{
-    return 0;
-}
-
-JMC_INLINE_NONSTD(int)
-jmc_ftos_ex(char *buf, size_t count, float val, unsigned int flag,
-            unsigned int fill, unsigned int width, int precision)
-{
-    return 0;
-}
-
-#if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
-
-/* implement source code for .cpp or .inl.h */
-#include <jimic/string/jmc_strings.impl.inl>
-
-#endif  /* JMC_DTOS_INLINE_DECLARE */
 
 JMC_INLINE_NONSTD(int)
 jmc_ptohex(char *buf, void *p)

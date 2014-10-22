@@ -25,7 +25,7 @@
 #endif
 
 #if _MSC_VER
-#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+#if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
 #include <intrin.h>
 #include <xmmintrin.h>
 #include <emmintrin.h>

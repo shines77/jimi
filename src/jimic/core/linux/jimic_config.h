@@ -23,4 +23,13 @@
 #define JIMI_HAVE_SSE                       1
 #define JIMI_HAVE_SSE2                      1
 
+#include <jimic/libc/endian.h>
+
+/* 小端或大端, 非0表示小端存储 */
+#if (JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN)
+#define JIMIC_IS_LITTLE_ENDIAN              1
+#else
+#define JIMIC_IS_LITTLE_ENDIAN              0
+#endif
+
 #endif  /* !_JIMIC_CORE_LINUX_CONFIG_H_ */

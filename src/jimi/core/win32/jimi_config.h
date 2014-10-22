@@ -28,6 +28,15 @@
 #define JIMI_USE_VLD                        0
 #endif
 
+#include <jimic/libc/endian.h>
+
+/* 小端或大端, 非0表示小端存储 */
+#if (JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN)
+#define JIMI_IS_LITTLE_ENDIAN               1
+#else
+#define JIMI_IS_LITTLE_ENDIAN               0
+#endif
+
 #define JIMI_USE_THREADING_TOOLS            0
 #define JIMI_MALLOC_BUILD                   0
 

@@ -11,6 +11,7 @@
 #endif
 
 #include <jimic/string/jmc_strings.h>
+#include <jimic/string/dtos.h>
 
 #if defined(_MSC_VER) && (_MSC_VER != 0)
 #pragma warning(push)
@@ -64,8 +65,8 @@
 JMC_INLINE_NONSTD(int)
 jmc_sprintf(char * JMC_RESTRICT buf, const char * JMC_RESTRICT fmt, ...)
 {
-    int         len;
-    va_list     args;
+    int     len;
+    va_list args;
 
     va_start(args, fmt);
     len = jmc_vsnprintf(buf, (size_t)-1, (size_t)-1, fmt, args);
@@ -77,8 +78,8 @@ JMC_INLINE_NONSTD(int)
 jmc_snprintf(char * JMC_RESTRICT buf, size_t countOfElements, size_t count,
              const char * JMC_RESTRICT fmt, ...)
 {
-    int         len;
-    va_list     args;
+    int     len;
+    va_list args;
 
     va_start(args, fmt);
     len = jmc_vsnprintf(buf, countOfElements, count, fmt, args);
@@ -90,8 +91,8 @@ JMC_INLINE_NONSTD(char *)
 jmc_slprintf(char * JMC_RESTRICT buf, size_t countOfElements, size_t count,
              const char * JMC_RESTRICT fmt, ...)
 {
-    char    *last;
-    va_list     args;
+    char   *last;
+    va_list args;
 
     va_start(args, fmt);
     last = jmc_vslprintf(buf, countOfElements, count, fmt, args);
@@ -109,8 +110,8 @@ JMC_INLINE_NONSTD(int)
 jmc_vsnprintf(char * JMC_RESTRICT buf, size_t countOfElements, size_t count,
               const char * JMC_RESTRICT fmt, va_list args)
 {
-    int         len;
-    char    *last;
+    int     len;
+    char   *last;
     last = jmc_vslprintf(buf, countOfElements, count, fmt, args);
     len = (int)(last - buf);
     return len;
@@ -128,17 +129,18 @@ JMC_INLINE_NONSTD(char *)
 jmc_vslprintf(char * JMC_RESTRICT buf, size_t countOfElements, size_t count,
               const char * JMC_RESTRICT fmt, va_list args)
 {
-    register char        c;
+    register char           c;
 
-    char                *end, *cur;
+    char                   *end, *cur;
     unsigned int            flag, align, fill, width;
     int                     precision;
-    char                 *first;
+    char                   *first;
     size_t                  len;
-    register char       *s;
+    register char          *s;
     register int            i32;
+    register int            prec_val;
     register double         dbl;
-    register char        ch;
+    register char           ch;
     register void          *p;
     register unsigned int   u32;
     register long           l32;
@@ -346,10 +348,10 @@ vslprintf_get_precision:
                     }
                     else if (c == '*') {
                         // get filed precision from the next argument
-                        i32 = (jm_uchar)va_arg(args, int);
+                        prec_val = va_arg(args, int);
                         /* ignore negative precision */
-                        if (i32 >= 0)
-                            precision = i32;
+                        if (prec_val >= 0)
+                            precision = prec_val;
                         c = *++cur;
                         //continue;
                     }

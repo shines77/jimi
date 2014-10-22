@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#ifndef JIMIC_MSC_CLANG
-#define JIMIC_MSC_CLANG                     0
+#ifndef JIMIC_MSVC_CLANG
+#define JIMIC_MSVC_CLANG                    0
 #endif
 
 #if defined(_DEBUG) || !defined(NDEBUG)
@@ -26,5 +26,14 @@
 #define JIMI_HAVE_MMX2                      1
 #define JIMI_HAVE_SSE                       1
 #define JIMI_HAVE_SSE2                      1
+
+#include <jimic/libc/endian.h>
+
+/* 小端或大端, 非0表示小端存储 */
+#if (JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN)
+#define JIMIC_IS_LITTLE_ENDIAN              1
+#else
+#define JIMIC_IS_LITTLE_ENDIAN              0
+#endif
 
 #endif  /* !_JIMIC_CORE_WIN32_CONFIG_H_ */

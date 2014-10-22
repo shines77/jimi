@@ -41,6 +41,7 @@
 #include <jimic/system/console.h>
 #include <jimic/stdio/sprintf.h>
 #include <jimic/stdio/csharp_sprintf.h>
+#include <jimic/string/dtos.h>
 
 #include <math.h>
 
@@ -50,7 +51,7 @@
 #endif // _MSC_VER
 #include <time.h>
 
-#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+#if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
 #include <intrin.h>
 #endif
 
@@ -82,7 +83,7 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #endif
 
-#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+#if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
 
 /**
  * for asmlib header file
@@ -2669,7 +2670,7 @@ void Double_And_Float_Test()
     double dd = d;
     uint64_t u64 = (uint64_t)d;
     printf("printf(1.2345678901234567E+19) = %I64u\n", (uint64_t)1.234567890123456789E+19);
-    jmc_adjust_dbl((double *)&dd);
+    jmc_dadjust_to_exp64((double *)&dd, jmc_dget_exponent((double *)&dd));
     printf("printf(1.23456789E+200)        = %0.20f\n", dd);
 
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(1.23456789E+200)  = %0.20f\n", d);
@@ -2861,7 +2862,7 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 1
+#if 0
     ftol_test_main();
     dtol_test_main();
     if (true && 0) {

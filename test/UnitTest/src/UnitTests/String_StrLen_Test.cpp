@@ -10,7 +10,7 @@
 
 #include <jimi/lang/Char_Traits.h>
 
-#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+#if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
 
 /**
  * for asmlib header file
@@ -128,7 +128,7 @@ int strlen_my(const char *s) {
 
 int strlen_AgnerFog(const char* s) {
 
-#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+#if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
 
 	__asm {
         mov     eax, [s]               ; get pointer s 
@@ -158,7 +158,7 @@ l1:
 __declspec(naked)
 inline int __cdecl __builtin_clz(int bitmask)
 {
-#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+#if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
     __asm {
         mov eax, dword ptr [esp + 4]
         bsr eax, eax
@@ -172,7 +172,7 @@ inline int __cdecl __builtin_clz(int bitmask)
 __declspec(naked)
 inline int __cdecl __builtin_ctz(int bitmask)
 {
-#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+#if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
     __asm {
         mov eax, dword ptr [esp + 4]
         bsf eax, eax
@@ -186,7 +186,7 @@ inline int __cdecl __builtin_ctz(int bitmask)
 //
 size_t sse2_strlen(const char* s)
 {
-#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+#if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
     __m128i zero = _mm_set1_epi8( 0 );
     __m128i *s_aligned = (__m128i*) (((long)s) & -0x10L);
     uint8_t misbits = ((long)s) & 0x0f;
@@ -225,7 +225,7 @@ size_t sse4_strlen(const char *str)
 {
    size_t len = 0;
    int idx = 0;
-#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+#if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
 
    __m128i z, c;
 
@@ -244,7 +244,7 @@ size_t sse4_strlen(const char *str)
 
 void String_StrLen_Test()
 {
-#if !defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0)
+#if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
 
 #ifndef _DEBUG
     const int LOOP_TIMES = 1000000;

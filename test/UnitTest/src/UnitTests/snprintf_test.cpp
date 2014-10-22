@@ -30,7 +30,7 @@ void String_Snprintf_Test()
     printf("jmc_csharp_snprintf(buf, count,\n"
            "    \"{0:%%d}, {1:%%0.3f}, {2:%%5d}, {3:%%08d}, {4:%%-20.8s}, 0x{5:%%08X}, {6{:%%05d}, {025d:05d}\");\n\n");
     printf("buf = %s\n\n", fmtbuf);
-    printf("len = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+    printf("strlen = %d\n", jm_strlen(fmtbuf));
     printf("\n");
 
     fmtbuf[0] = '\0';
@@ -43,7 +43,7 @@ void String_Snprintf_Test()
            "    \"%%04d, %%0.3f, %%5d, %%08d, %%-20.8s, 0x%%08X,\n"
            "     %%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\");\n\n");
     printf("buf = %s\n\n", fmtbuf);
-    printf("len = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+    printf("strlen = %d\n", jm_strlen(fmtbuf));
     printf("\n");
 
     fmtbuf[0] = '\0';
@@ -56,7 +56,7 @@ void String_Snprintf_Test()
            "    \"%%04d, %%0.3f, %%5d, %%08d, %%-020.8s, 0x%%08X,\n"
            "     %%06.3d, %%05.3d, %%05.3d, %%-06.3d, %%-05.3d, %%-05.3d, 05d\");\n\n");
     printf("buf = %s\n\n", fmtbuf);
-    printf("len = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf));
+    printf("strlen = %d\n", jm_strlen(fmtbuf));
     printf("\n");
 
     printf("\n");
@@ -117,8 +117,8 @@ void Sprintf_Preformance_Test_Integer()
 #else
         printf(">>> %-18s <<<\n\n", "jm_sprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -143,8 +143,8 @@ void Sprintf_Preformance_Test_Integer()
 #else
         printf(">>> %-18s <<<\n\n", "sprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -169,8 +169,8 @@ void Sprintf_Preformance_Test_Integer()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_sprintf()");
         printf("result =\n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
-        printf("time = %0.3f ms, jmc_sprintf() preformance is sprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
+        printf("elapsed time = %0.3f ms\n\njmc_sprintf() preformance is sprintf(): %0.3f x times.\n", time, timeReference / time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -232,8 +232,8 @@ void Snprintf_Preformance_Test_Integer1()
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -270,8 +270,8 @@ void Snprintf_Preformance_Test_Integer1()
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
         printf("result = \n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -300,11 +300,11 @@ void Snprintf_Preformance_Test_Integer1()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
-        printf("time = %0.3f ms, jmc_snprintf() preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is _snprintf_s(): %0.3f x times.\n", time, timeReference / time);
   #else
-        printf("time = %0.3f ms, jmc_snprintf() preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is snprintf(): %0.3f x times.\n", time, timeReference / time);
   #endif // _MSC_VER
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
@@ -367,8 +367,8 @@ void Snprintf_Preformance_Test_Integer2()
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -405,8 +405,8 @@ void Snprintf_Preformance_Test_Integer2()
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
         printf("result = \n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif
     }
@@ -435,11 +435,11 @@ void Snprintf_Preformance_Test_Integer2()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
-        printf("time = %0.3f ms, jmc_snprintf() preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is _snprintf_s(): %0.3f x times.\n", time, timeReference / time);
   #else
-        printf("time = %0.3f ms, jmc_snprintf() preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is snprintf(): %0.3f x times.\n", time, timeReference / time);
   #endif // _MSC_VER
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
@@ -506,8 +506,8 @@ void Snprintf_Preformance_Test_Integer3()
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -546,8 +546,8 @@ void Snprintf_Preformance_Test_Integer3()
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
         printf("result = \n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -578,11 +578,11 @@ void Snprintf_Preformance_Test_Integer3()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
-        printf("time = %0.3f ms, jmc_snprintf() preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is _snprintf_s(): %0.3f x times.\n", time, timeReference / time);
   #else
-        printf("time = %0.3f ms, jmc_snprintf() preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is snprintf(): %0.3f x times.\n", time, timeReference / time);
   #endif // _MSC_VER
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
@@ -647,8 +647,8 @@ void Snprintf_Preformance_Test_Double1()
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -685,8 +685,8 @@ void Snprintf_Preformance_Test_Double1()
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
         printf("result = \n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -715,11 +715,11 @@ void Snprintf_Preformance_Test_Double1()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
-        printf("time = %0.3f ms, jmc_snprintf() preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is _snprintf_s(): %0.3f x times.\n", time, timeReference / time);
   #else
-        printf("time = %0.3f ms, jmc_snprintf() preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is snprintf(): %0.3f x times.\n", time, timeReference / time);
   #endif // _MSC_VER
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
@@ -784,8 +784,8 @@ void Snprintf_Preformance_Test_Double2()
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -822,8 +822,8 @@ void Snprintf_Preformance_Test_Double2()
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
         printf("result = \n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -852,11 +852,11 @@ void Snprintf_Preformance_Test_Double2()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
-        printf("time = %0.3f ms, jmc_snprintf() preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is _snprintf_s(): %0.3f x times.\n", time, timeReference / time);
   #else
-        printf("time = %0.3f ms, jmc_snprintf() preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is snprintf(): %0.3f x times.\n", time, timeReference / time);
   #endif // _MSC_VER
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
@@ -921,8 +921,8 @@ void Snprintf_Preformance_Test_Double3()
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -959,8 +959,8 @@ void Snprintf_Preformance_Test_Double3()
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
         printf("result = \n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -989,11 +989,11 @@ void Snprintf_Preformance_Test_Double3()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
-        printf("time = %0.3f ms, jmc_snprintf() preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is _snprintf_s(): %0.3f x times.\n", time, timeReference / time);
   #else
-        printf("time = %0.3f ms, jmc_snprintf() preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is snprintf(): %0.3f x times.\n", time, timeReference / time);
   #endif // _MSC_VER
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
@@ -1058,8 +1058,8 @@ void Snprintf_Preformance_Test_Double4()
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -1096,8 +1096,8 @@ void Snprintf_Preformance_Test_Double4()
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
         printf("result = \n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -1126,11 +1126,11 @@ void Snprintf_Preformance_Test_Double4()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
-        printf("time = %0.3f ms, jmc_snprintf() preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is _snprintf_s(): %0.3f x times.\n", time, timeReference / time);
   #else
-        printf("time = %0.3f ms, jmc_snprintf() preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is snprintf(): %0.3f x times.\n", time, timeReference / time);
   #endif // _MSC_VER
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
@@ -1195,8 +1195,8 @@ void Snprintf_Preformance_Test_String1()
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -1233,8 +1233,8 @@ void Snprintf_Preformance_Test_String1()
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
         printf("result = \n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -1263,11 +1263,11 @@ void Snprintf_Preformance_Test_String1()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
-        printf("time = %0.3f ms, jmc_snprintf() preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is _snprintf_s(): %0.3f x times.\n", time, timeReference / time);
   #else
-        printf("time = %0.3f ms, jmc_snprintf() preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is snprintf(): %0.3f x times.\n", time, timeReference / time);
   #endif // _MSC_VER
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
@@ -1332,8 +1332,8 @@ void Snprintf_Preformance_Test_String2()
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -1370,8 +1370,8 @@ void Snprintf_Preformance_Test_String2()
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
         printf("result = \n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -1400,11 +1400,11 @@ void Snprintf_Preformance_Test_String2()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
-        printf("time = %0.3f ms, jmc_snprintf() preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is _snprintf_s(): %0.3f x times.\n", time, timeReference / time);
   #else
-        printf("time = %0.3f ms, jmc_snprintf() preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is snprintf(): %0.3f x times.\n", time, timeReference / time);
   #endif // _MSC_VER
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
@@ -1469,8 +1469,8 @@ void Snprintf_Preformance_Test_String3()
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -1507,8 +1507,8 @@ void Snprintf_Preformance_Test_String3()
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
         printf("result = \n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -1537,11 +1537,11 @@ void Snprintf_Preformance_Test_String3()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
-        printf("time = %0.3f ms, jmc_snprintf() preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is _snprintf_s(): %0.3f x times.\n", time, timeReference / time);
   #else
-        printf("time = %0.3f ms, jmc_snprintf() preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is snprintf(): %0.3f x times.\n", time, timeReference / time);
   #endif // _MSC_VER
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
@@ -1610,8 +1610,8 @@ void Snprintf_Preformance_Test_String4()
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -1650,8 +1650,8 @@ void Snprintf_Preformance_Test_String4()
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
         printf("result = \n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -1682,11 +1682,11 @@ void Snprintf_Preformance_Test_String4()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
-        printf("time = %0.3f ms, jmc_snprintf() preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is _snprintf_s(): %0.3f x times.\n", time, timeReference / time);
   #else
-        printf("time = %0.3f ms, jmc_snprintf() preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is snprintf(): %0.3f x times.\n", time, timeReference / time);
   #endif // _MSC_VER
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
@@ -1755,8 +1755,8 @@ void Snprintf_Preformance_Test_String5()
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
         printf("result =\n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -1795,8 +1795,8 @@ void Snprintf_Preformance_Test_String5()
         printf(">>> %-18s <<<\n\n", "snprintf()");
   #endif // _MSC_VER
         printf("result = \n%s\n\n", fmtbuf1);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf1));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf1));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
     }
@@ -1827,11 +1827,11 @@ void Snprintf_Preformance_Test_String5()
 #else
         printf(">>> %-18s <<<\n\n", "jmc_snprintf()");
         printf("result = \n%s\n\n", fmtbuf2);
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(fmtbuf2));
+        printf("strlen       = %d bytes\n", jm_strlen(fmtbuf2));
   #ifdef _MSC_VER
-        printf("time = %0.3f ms, jmc_snprintf() preformance is _snprintf_s(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is _snprintf_s(): %0.3f x times.\n", time, timeReference / time);
   #else
-        printf("time = %0.3f ms, jmc_snprintf() preformance is snprintf(): %0.3f X (times)\n", time, timeReference / time);
+        printf("elapsed time = %0.3f ms\n\njmc_snprintf() preformance is snprintf(): %0.3f x times.\n", time, timeReference / time);
   #endif // _MSC_VER
         printf("\n");
 #endif // VSNPRINTF_DISPLAY_TEST_RESULT
@@ -1899,8 +1899,8 @@ void OStringStream_Performance_Test()
         printf("==============================================================================\n\n");
 
         printf("result = \n%s\n\n", out_str.c_str());
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(out_str.c_str()));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(out_str.c_str()));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
     }
 #endif
@@ -1955,8 +1955,8 @@ void OStringStream_Performance_Test()
         printf("==============================================================================\n\n");
 
         printf("result = \n%s\n\n", ostr.str().c_str());
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(ostr.str().c_str()));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(ostr.str().c_str()));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
     }
 #endif
@@ -2006,8 +2006,8 @@ void OStringStream_Performance_Test()
         printf("==============================================================================\n\n");
 
         printf("result = \n%s\n\n", ostr.str().c_str());
-        printf("len  = %d, strlen() = %d\n", fmtlen, jm_strlen(ostr.str().c_str()));
-        printf("time = %0.3f ms\n", time);
+        printf("strlen       = %d bytes\n", jm_strlen(ostr.str().c_str()));
+        printf("elapsed time = %0.3f ms\n", time);
         printf("\n");
     }
 #endif

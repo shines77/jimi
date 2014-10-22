@@ -8,7 +8,7 @@
 
 #if (defined(JIMI_IS_MSVC) || defined(JIMI_IS_ICC)) \
     && (defined(JIMI_JMF_USE_ASM) && (JIMI_JMF_USE_ASM != 0)) \
-    && (!defined(JIMIC_MSC_CLANG) || (JIMIC_MSC_CLANG == 0))
+    && (!defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0))
 
 /* Local STACK = 4 bytes */
 #define STACK           4
