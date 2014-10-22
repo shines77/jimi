@@ -44,6 +44,4 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
 }
 #endif
 
-#include <jimic/string/jmc_strings.inl.h>
-
 #endif  /* !_JIMIC_STRING_DTOS_H_ */

@@ -301,7 +301,7 @@ vslprintf_continue:
                 switch (c) {
 #if 1
                 case '\0':
-                    // 这里为什么不直接跳 vslprintf_exit 呢, 从逻辑上是应该跳 vslprintf_exit 的.
+                    // 这里为什么不直接跳 vslprintf_exit ?, 从逻辑上是应该跳 vslprintf_exit 的.
                     // 但是不知道为什么, 跳 vslprintf_try_next 执行的时候反而还要快一些,
                     // 可能 vslprintf_try_next 在代码缓存里是比较"热"的, 分支预测也是"热"的.
                     // 所以, 即使多执行了一些语句, 还是要稍微快一些......

@@ -120,7 +120,7 @@ jmc_dadjust_to_exp64(double * JMC_RESTRICT pval, int exponent)
         exp10 = (int)((unsigned int)exp10 >> 23);
 
         base_index = (exponent >> 6);
-        // if exponent >= 0 and exponent < 64, needn't to adj
+        // if exponent >= 0 and exponent < 64, needn't to adjust
         if (base_index > 0) {
             jimic_assert(base_index > 0 && base_index < 20);
             pow10 = d_pow10_base_64[base_index - 1];
