@@ -13,6 +13,12 @@
 union jmc_ieee754_float
 {
     float f;
+    unsigned int u32;
+
+    /* Define the IEEE 754 float exponent mask position in the dwords. */
+    struct {
+         unsigned int dword;    // exponent at here
+    } exponent;
 
     /* This is the IEEE 754 single-precision format. */
     struct {
@@ -64,6 +70,42 @@ typedef union jmc_ieee754_float jmc_ieee754_float;
 union jmc_ieee754_double
 {
     double d;
+    uint64_t u64;
+
+    struct {
+#if JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN
+        /* Little endian. */
+        unsigned int low;
+        unsigned int high;
+#else
+        /* Big endian. */
+        unsigned int high;
+        unsigned int low;
+#endif
+    } u32;
+
+    /* Define the IEEE 754 double exponent mask position in the dwords. */
+    struct {
+#if JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN
+        /* Little endian. */
+  #if JIMIC_FLOAT_DWORD_ORDER == JIMIC_LITTLE_ENDIAN
+        unsigned int reserve;
+        unsigned int dword;     // exponent at here
+  #else
+        unsigned int dword;
+        unsigned int reserve;
+  #endif
+#else
+        /* Big endian. */
+  #if JIMIC_FLOAT_DWORD_ORDER == JIMIC_LITTLE_ENDIAN
+        unsigned int reserve;
+        unsigned int dword;
+  #else
+        unsigned int dword;
+        unsigned int reserve;
+  #endif
+#endif
+    } exponent;
 
     /* This is the IEEE 754 double-precision format. */
     struct {
@@ -160,10 +202,28 @@ typedef union jmc_ieee754_double jmc_ieee754_double;
 extern "C" {
 #endif
 
-//
+static const jmc_ieee754_float s_f64_exponent_mask = {
+    .ieee.mantissa = 0,
+    .ieee.exponent = JMC_IEEE754_FLOAT_EXPONENT_MASK,
+    .ieee.negative = 0
+};
+//static const unsigned int s_float_exponent_mask = s_f64_exponent_mask.ieee.exponent;
+//static const unsigned int s_float_exponent_mask = (0xFFFFFFFFUL & s_f64_exponent_mask.ieee.exponent);
+
+static const jmc_ieee754_double s_d64_exponent_mask = {
+    .ieee.mantissa0 = 0,
+    .ieee.mantissa1 = 0,
+    .ieee.exponent = JMC_IEEE754_DOUBLE_EXPONENT_MASK,
+    .ieee.negative = 0
+};
+//static const unsigned int s_double_exponent_mask = s_d64_exponent_mask.ieee.exponent;
+//static const unsigned int s_double_exponent_mask = (0xFFFFFFFFFFFFFFFFULL & s_d64_exponent_mask.ieee.exponent);
 
 #ifdef __cplusplus
 }
 #endif
+
+#define JMC_IEEE754_FLOAT_EXPONENT_MASK32   (s_f64_exponent_mask.exponent.dword)
+#define JMC_IEEE754_DOUBLE_EXPONENT_MASK32  (s_d64_exponent_mask.exponent.dword)
 
 #endif  /* !_JIMIC_LIBC_IEEE754_H_ */

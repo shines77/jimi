@@ -67,7 +67,7 @@ jmc_log10(double val)
     int exp10_remain;
 
     f64 = (fuint64_t *)&val;
-    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    // exponent = (exponent_mask32 >> (52 - 32)) - 1023;
     exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
         - JM_DOUBLE_EXPONENT_BIAS_32;
 
@@ -98,7 +98,7 @@ jmc_log10_fast1(double val)
     int exp10_remain;
 
     f64 = (fuint64_t *)&val;
-    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    // exponent = (exponent_mask32 >> (52 - 32)) - 1023;
     exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
         - JM_DOUBLE_EXPONENT_BIAS_32;
 
@@ -135,7 +135,7 @@ jmc_log10_fast2(double val)
     unsigned int exp10;
 
     f64 = (fuint64_t *)&val;
-    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    // exponent = (exponent_mask32 >> (52 - 32)) - 1023;
     exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
         - JM_DOUBLE_EXPONENT_BIAS_32;
 
@@ -168,7 +168,7 @@ jmc_log10_fast2a(double val)
     int exp10_remain;
 
     f64 = (fuint64_t *)&val;
-    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    // exponent = (exponent_mask32 >> (52 - 32)) - 1023;
     exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
         - JM_DOUBLE_EXPONENT_BIAS_32;
 
@@ -207,7 +207,7 @@ jmc_log10_fast3(double val)
     fuint64_t exp10_64;
 
     f64 = (fuint64_t *)&val;
-    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    // exponent = (exponent_mask32 >> (52 - 32)) - 1023;
     exponent = ((f64->high & JM_DOUBLE_EXPONENT_MASK32) >> JM_DOUBLE_EXPONENT_SHIFT32)
         - JM_DOUBLE_EXPONENT_BIAS_32;
 

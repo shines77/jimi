@@ -57,7 +57,7 @@ jmc_log10_fast(double val)
     int exp10;
 
     d64 = (jmc_ieee754_double *)&val;
-    // exponent = (exponent_mask32 >> (52 - 30)) - 1023;
+    // exponent = (exponent_mask32 >> (52 - 32)) - 1023;
     exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
 
     // exponent is positive (exponent >= 0 && exponent <= 1024)
@@ -107,14 +107,15 @@ jmc_dadjust_to_exp64(double * JMC_RESTRICT pval, int exponent)
     double pow10;
 
     jimic_assert(pval != NULL);
-    jimic_assert(exponent >= JMC_IEEE754_DOUBLE_EXPONENT_MIN && exponent <= JMC_IEEE754_DOUBLE_EXPONENT_MAX);
+    jimic_assert(exponent >= JMC_IEEE754_DOUBLE_EXPONENT_MIN
+                 && exponent <= JMC_IEEE754_DOUBLE_EXPONENT_MAX);
 
     // zoom coeff must satisfy: zoom < 4,194,304 ( 2^32 / 1024), zoom = 2,525,222
 
-    //if (exponent >= 0 && exponent <= JMC_IEEE754_DOUBLE_EXPONENT_MIN) {
+    //if (exponent >= 0 && exponent <= JMC_IEEE754_DOUBLE_EXPONENT_MAX) {
     if (exponent >= 0) {
         // if exponent is positive
-        // exp10 = exponent * 2525222UL;
+        // exp10 = exponent * 2525222;
         exp10 = (unsigned int)exponent * 2525222UL;
         // exp10 = exp10 / 131072 / 64, exp10 = exp10 >> (17 + 6), 131072 = 2^17;
         exp10 = (int)((unsigned int)exp10 >> 23);
@@ -135,7 +136,7 @@ jmc_dadjust_to_exp64(double * JMC_RESTRICT pval, int exponent)
     }
     else {
         // if exponent is negative
-        // exp10 = -exponent * 2525222UL;
+        // exp10 = -exponent * 2525222;
         exponent = -exponent;
         exp10 = (unsigned int)exponent * 2525222UL;
         // exp10 = exp10 / 131072 / 64, exp10 = exp10 >> (17 + 6), 131072 = 2^17;
@@ -362,13 +363,14 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
     uint32_t scale32;
     uint64_t scale, frac;
     fuint64_t *f64;
-    register fuint64_t *u64;
-    jmc_ieee754_double *d64;
+    register jmc_ieee754_double *u64;
+    register jmc_ieee754_double *d64;
     unsigned int n;
     unsigned int exponent;
     int num_width;
     int exp10;
     int frac_prec;
+    int tail_zeros;
 
     static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_dtos_ex() maybe have some error!");
 
@@ -379,20 +381,28 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
     }
 
     d64 = (jmc_ieee754_double *)&val;
-    exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
 
     f64 = (fuint64_t *)&val;
     // is NaN or INF ? (exponent is maxium ?)
-    if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
-        // adjust double value to range (1 ~ 2^64) * 10^N
-        exp10 = jmc_dadjust_to_exp64(&val, exponent);
+    //if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
+    if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) != JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
+        // get the exponent value
+        exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
+        // if exponent belong range [0, 64), needn't to adjust
+        if (exponent < 0 || exponent >= 64) {
+            // adjust double value to range like (1 ~ 2^64) * 10^N
+            exp10 = jmc_dadjust_to_exp64(&val, exponent);
+        }
+        else {
+            exp10 = 0;
+        }
 
         i64 = (int64_t)val;
-        u64 = (fuint64_t *)&i64;
+        u64 = (jmc_ieee754_double *)&i64;
         // calc the digitals of the double integer part
         //if (i64 <= (uint64_t)JIMIC_UINT_MAX64) {
-        if (u64->high == 0) {
-            val32 = (uint32_t)u64->low;
+        if (u64->u32.high == 0) {
+            val32 = (uint32_t)(u64->u32.low);
             digital = 0;
             do {
                 digital++;
@@ -514,6 +524,7 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
         // for integer part of double
         if (((flag & FMT_ALIGN_LEFT) != 0) || (num_width < 0))
             num_width = 0;
+
         len = jmc_i64toa_radix10_ex(buf, -1, i64, flag, fill, num_width, num_width);
         filed_width -= len;
         buf += len;
@@ -535,20 +546,20 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
 #else
             filed_width--;
             if (precision >= filed_width) {
-                int tail_zero = precision - frac_prec;
-                if (tail_zero <= 0) {
+                tail_zeros = precision - frac_prec;
+                if (tail_zeros <= 0) {
                     len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
                                                  '0', precision, filed_width) + 1;
                 }
                 else {
                     len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
-                                                 '0', frac_prec, precision) + tail_zero + 1;
+                                                 '0', frac_prec, precision) + tail_zeros + 1;
                     buf += frac_prec;
                     // fill tail zeros
                     do {
                         *buf++ = '0';
-                        tail_zero--;
-                    } while (tail_zero > 0);
+                        tail_zeros--;
+                    } while (tail_zeros > 0);
                     *buf = '\0';
                 }
             }
