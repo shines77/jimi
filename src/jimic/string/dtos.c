@@ -86,7 +86,8 @@ jmc_dget_exponent(double * JMC_RESTRICT pval)
     int exponent;
     jimic_assert(pval != NULL);
     d64 = (jmc_ieee754_double *)pval;
-    exponent = d64->ieee.exponent;
+    exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
+    jimic_assert(exponent >= JMC_IEEE754_DOUBLE_EXPONENT_MIN && exponent <= JMC_IEEE754_DOUBLE_EXPONENT_MAX);
     return exponent;
 }
 
@@ -191,7 +192,7 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int filed_width, int precision)
     }
 
     d64 = (jmc_ieee754_double *)&val;
-    exponent = d64->ieee.exponent;
+    exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
     exp10 = jmc_dadjust_to_exp64(&val, exponent);
 
     if (precision < 0) {
@@ -378,7 +379,7 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
     }
 
     d64 = (jmc_ieee754_double *)&val;
-    exponent = d64->ieee.exponent;
+    exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
 
     f64 = (fuint64_t *)&val;
     // is NaN or INF ? (exponent is maxium ?)
