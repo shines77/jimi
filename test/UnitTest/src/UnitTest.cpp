@@ -2861,10 +2861,10 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 0
+#if 1
     ftol_test_main();
     dtol_test_main();
-    if (true && 1) {
+    if (true && 0) {
         sLog.log_end();
         jimi::Console.ReadKey();
         return 0;

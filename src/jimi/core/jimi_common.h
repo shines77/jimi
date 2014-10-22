@@ -154,7 +154,7 @@
 
 #define JIMI_INLINE              inline
 #define JIMI_FORCEINLINE         inline
-#define JIMI_RESTRICT            restrict
+#define JIMI_RESTRICT            __restrict
 #define JIMI_HAS_INLINE          1
 
 #else
@@ -188,7 +188,7 @@
 
 #define JMC_INLINE              inline
 #define JMC_FORCEINLINE         inline
-#define JMC_RESTRICT            restrict
+#define JMC_RESTRICT            __restrict
 #define JMC_HAS_INLINE          1
 
 #else
