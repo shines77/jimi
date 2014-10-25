@@ -171,33 +171,37 @@ typedef struct fvariant_t {
 } fvariant_t;
 
 #if 1
+
 JMC_INLINE_NONSTD(int)
 jmc_utoa_r10(char *buf, unsigned int val)
 {
-    unsigned int digval, digital;
-    const char *end;
+    unsigned int digit_val, num_digits;
+    unsigned int digits_cnt;
+    //const char * end;
     char *cur;
     char digits[16];    // 实际最多只会用到10个bytes
 
+    const char * const end = digits + jm_countof(digits);
+
     jimic_assert(buf != NULL);
 
-    end = digits + jm_countof(digits);
+    //end = (const char * const)(digits + jm_countof(digits));
     cur = (char *)end;
     do {
         cur--;
-        digval = val % 10;
+        digit_val = val % 10;
         val /= 10;
 
-        *cur = (char)(digval + '0');
+        *cur = (char)(digit_val + '0');
     } while (val != 0);
 
-    digital = (unsigned int)(end - cur);
+    num_digits = (unsigned int)(end - cur);
 
 #if 1
-    digval = digital;
-    while (digval > 0) {
+    digits_cnt = num_digits;
+    while (digits_cnt > 0) {
         *buf++ = *cur++;
-        digval--;
+        digits_cnt--;
     }
 #elif 0
     do {
@@ -209,28 +213,31 @@ jmc_utoa_r10(char *buf, unsigned int val)
 #endif
     *buf = '\0';
 
-    return digital;
+    return num_digits;
 }
+
 #elif 0
+
 JMC_INLINE_NONSTD(int)
 jmc_utoa_r10(char *buf, unsigned int val)
 {
-    unsigned int digval, digital;
-    char *end, *cur;
+    unsigned int digit_val, num_digits;
+    const char *end;
+    char *cur;
     char digits[16];    // 实际最多只会用到10个bytes
 
     jimic_assert(buf != NULL);
 
     end = digits + jm_countof(digits) - 1;
-    cur = end;
+    cur = (char *)end;
     do {
-        digval = val % 10;
+        digit_val = val % 10;
         val /= 10;
 
-        *cur-- = (char)(digval + '0');
+        *cur-- = (char)(digit_val + '0');
     } while (val != 0);
 
-    digital = end - cur;
+    num_digits = (unsigned int)(end - cur);
 
 #if 0
     do {
@@ -244,13 +251,15 @@ jmc_utoa_r10(char *buf, unsigned int val)
 #endif
     *buf = '\0';
 
-    return digital;
+    return num_digits;
 }
+
 #else
+
 JMC_INLINE_NONSTD(int)
 jmc_utoa_r10(char *buf, unsigned int val)
 {
-    unsigned int digval, digital;
+    unsigned int digit_val, num_digits;
     char *cur;
     char digits[16];    // 实际最多只会用到10个bytes
 
@@ -258,13 +267,13 @@ jmc_utoa_r10(char *buf, unsigned int val)
 
     cur = digits;
     do {
-        digval = val % 10;
+        digit_val = val % 10;
         val /= 10;
 
-        *cur++ = (char)digval + '0';
+        *cur++ = (char)digit_val + '0';
     } while (val != 0);
 
-    digital = cur - digits;
+    num_digits = (unsigned int)(cur - digits);
 
 #if 0
     do {
@@ -278,8 +287,9 @@ jmc_utoa_r10(char *buf, unsigned int val)
 #endif
     *buf = '\0';
 
-    return digital;
+    return num_digits;
 }
+
 #endif
 
 JMC_INLINE_NONSTD(int)
@@ -327,19 +337,19 @@ jmc_itoa_r10(char *buf, int val)
 JMC_INLINE_NONSTD(int)
 jmc_ultoa_r10(char *buf, unsigned long val)
 {
-    unsigned long digval, digital;
+    unsigned long digit_val, num_digits;
     char *cur;
     char digits[16];    // 实际最多只会用到10个bytes
 
     cur = digits;
     do {
-        digval = val % 10;
+        digit_val = val % 10;
         val /= 10;
 
-        *cur++ = (char)digval + '0';
+        *cur++ = (char)digit_val + '0';
     } while (val != 0);
 
-    digital = (unsigned long)(cur - digits);
+    num_digits = (unsigned long)(cur - digits);
 
 #if 0
     do {
@@ -353,7 +363,7 @@ jmc_ultoa_r10(char *buf, unsigned long val)
 #endif
     *buf = '\0';
 
-    return digital;
+    return num_digits;
 }
 
 JMC_INLINE_NONSTD(int)
@@ -382,7 +392,7 @@ jmc_ltoa_r10(char *buf, long val)
 JMC_INLINE_NONSTD(int)
 jmc_u64toa_r10(char *buf, uint64_t val)
 {
-    unsigned int digval, digital;
+    unsigned int digit_val, num_digits;
     uint32_t val32;
     char *cur;
     fuint64_t *u64;
@@ -398,22 +408,22 @@ jmc_u64toa_r10(char *buf, uint64_t val)
         val32 = (uint32_t)u64->low;
 #endif
         do {
-            digval = val32 % 10;
+            digit_val = val32 % 10;
             val32 /= 10;
 
-            *cur++ = (char)(digval + '0');
+            *cur++ = (char)(digit_val + '0');
         } while (val32 != 0);
     }
     else {
         do {
-            digval = val % 10;
+            digit_val = val % 10;
             val /= 10;
 
-            *cur++ = (char)(digval + '0');
+            *cur++ = (char)(digit_val + '0');
         } while (val != 0);
     }
 
-    digital = (unsigned int)(cur - digits);
+    num_digits = (unsigned int)(cur - digits);
 
 #if 0
     do {
@@ -427,7 +437,7 @@ jmc_u64toa_r10(char *buf, uint64_t val)
 #endif
     *buf = '\0';
 
-    return digital;
+    return num_digits;
 }
 
 JMC_INLINE_NONSTD(int)
@@ -457,7 +467,7 @@ JMC_INLINE_NONSTD(int)
 jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
                     unsigned int fill, unsigned int filed_width, int length)
 {
-    unsigned int digval, digital;
+    unsigned int digit_val, num_digits;
     char *end, *cur;
     int sign_char;
     int fill_cnt;
@@ -470,23 +480,23 @@ jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
     end = digits + jm_countof(digits) - 1;
     cur = end;
     do {
-        digval = val % 10;
+        digit_val = val % 10;
         val /= 10;
 
-        *cur-- = (char)(digval + '0');
+        *cur-- = (char)(digit_val + '0');
     } while (val != 0);
 
-    digital = (unsigned int)(end - cur);
+    num_digits = (unsigned int)(end - cur);
 
     if ((flag & (FMT_SIGN_MASK | FMT_SPACE_FLAG | FMT_PLUS_FLAG)) == 0) {
         sign_char = '\0';
-        fill_cnt = filed_width - digital;
+        fill_cnt = filed_width - num_digits;
     }
     else {
         if ((flag & FMT_SPACE_FLAG) == 0) {
             // '+' is 0x2B, '-' is 0x2D
             sign_char = '+' + (flag & FMT_SIGN_MASK);
-            fill_cnt = filed_width - digital - 1;
+            fill_cnt = filed_width - num_digits - 1;
         }
         else {
             // ' ' is 0x20, '-' is 0x2D
@@ -498,7 +508,7 @@ jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
             else
                 sign_char = '-';
 #endif
-            fill_cnt = filed_width - digital - 1;
+            fill_cnt = filed_width - num_digits - 1;
         }
     }
 
@@ -519,9 +529,9 @@ jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
         *buf = '\0';
 
         if (sign_char == '\0')
-            return digital;
+            return num_digits;
         else
-            return digital + 1;
+            return num_digits + 1;
     }
     else {
         // when legnth <= 0 || legnth >= witdh, align to right or left is same
@@ -554,7 +564,7 @@ jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
                 // align to right, when (length < filed_width)
                 jimic_assert(length < (int)filed_width);
 
-                padding = length - digital;
+                padding = length - num_digits;
                 if (padding > 0) {
                     // fill right padding space
                     while (fill_cnt > padding) {
@@ -593,7 +603,7 @@ jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
                     *buf++ = (char)sign_char;
 
                 // fill normal
-                padding = length - digital;
+                padding = length - num_digits;
                 if (padding > 0) {
                     fill_cnt -= padding;
                     while (padding > 0) {
@@ -721,7 +731,7 @@ JMC_INLINE_NONSTD(int)
 jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
                       unsigned int fill, unsigned int filed_width, int length)
 {
-    unsigned int digval, digital;
+    unsigned int digit_val, num_digits;
     uint32_t val32;
     char *end, *cur;
     int sign_char;
@@ -749,32 +759,32 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
         val32 = (uint32_t)u64->low;
 #endif
         do {
-            digval = val32 % 10;
+            digit_val = val32 % 10;
             val32 /= 10;
 
-            *cur-- = (char)(digval + '0');
+            *cur-- = (char)(digit_val + '0');
         } while (val32 != 0);
     }
     else {
         do {
-            digval = val % 10;
+            digit_val = val % 10;
             val /= 10;
 
-            *cur-- = (char)(digval + '0');
+            *cur-- = (char)(digit_val + '0');
         } while (val != 0);
     }
 
-    digital = (unsigned int)(end - cur);
+    num_digits = (unsigned int)(end - cur);
 
     if ((flag & (FMT_SIGN_MASK | FMT_SPACE_FLAG | FMT_PLUS_FLAG)) == 0) {
         sign_char = '\0';
-        fill_cnt = filed_width - digital;
+        fill_cnt = filed_width - num_digits;
     }
     else {
         if ((flag & FMT_SPACE_FLAG) == 0) {
             // '+' is 0x2B, '-' is 0x2D
             sign_char = '+' + (flag & FMT_SIGN_MASK);
-            fill_cnt = filed_width - digital - 1;
+            fill_cnt = filed_width - num_digits - 1;
         }
         else {
             // ' ' is 0x20, '-' is 0x2D
@@ -786,7 +796,7 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
             else
                 sign_char = '-';
 #endif
-            fill_cnt = filed_width - digital - 1;
+            fill_cnt = filed_width - num_digits - 1;
         }
     }
 
@@ -807,9 +817,9 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
         *buf = '\0';
 
         if (sign_char == '\0')
-            return digital;
+            return num_digits;
         else
-            return digital + 1;
+            return num_digits + 1;
     }
     else {
         // when legnth <= 0 || legnth >= witdh, align to right or left is same
@@ -842,7 +852,7 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
                 // align to right, when (length < filed_width)
                 jimic_assert(length < (int)filed_width);
 
-                padding = length - digital;
+                padding = length - num_digits;
                 if (padding > 0) {
                     // fill right padding space
                     while (fill_cnt > padding) {
@@ -881,7 +891,7 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
                     *buf++ = (char)sign_char;
 
                 // fill normal
-                padding = length - digital;
+                padding = length - num_digits;
                 if (padding > 0) {
                     fill_cnt -= padding;
                     while (padding > 0) {
@@ -943,7 +953,7 @@ JMC_INLINE_NONSTD(int)
 jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign,
                                     unsigned int filed_width)
 {
-    unsigned int digval, digital;
+    unsigned int digit_val, num_digits;
     uint32_t val32;
     char *cur;
     int padding;
@@ -961,26 +971,26 @@ jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign,
         val32 = (uint32_t)u64->low;
 #endif
         do {
-            digval = val32 % 10;
+            digit_val = val32 % 10;
             val32 /= 10;
 
-            *cur++ = (char)(digval + '0');
+            *cur++ = (char)(digit_val + '0');
         } while (val32 != 0);
     }
     else {
         do {
-            digval = val % 10;
+            digit_val = val % 10;
             val /= 10;
 
-            *cur++ = (char)(digval + '0');
+            *cur++ = (char)(digit_val + '0');
         } while (val != 0);
     }
 
 #if 1
-    digital = (unsigned int)(cur - digits) + sign;
-    padding = filed_width - digital;
+    num_digits = (unsigned int)(cur - digits) + sign;
+    padding = filed_width - num_digits;
     if (padding < 0) {
-        filed_width = digital;
+        filed_width = num_digits;
     }
     else {
         // align to right, fill ' ' into right padding space
@@ -991,16 +1001,16 @@ jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign,
         }
     }
 #else
-    digital = cur - digits;
+    num_digits = cur - digits;
     if (sign == 0) {
-        padding = filed_width - digital;
+        padding = filed_width - num_digits;
         if (padding < 0)
-            filed_width = digital;
+            filed_width = num_digits;
     }
     else {
-        padding = filed_width - digital - 1;
+        padding = filed_width - num_digits - 1;
         if (padding < 0)
-            filed_width = digital + 1;
+            filed_width = num_digits + 1;
     }
 
     // align to right
@@ -1031,7 +1041,7 @@ jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign,
 
 JMC_INLINE_NONSTD(int)
 jmc_i64toa_r10_integer(char *buf, int64_t val,
-                                    unsigned int filed_width)
+                       unsigned int filed_width)
 {
 #if 0
     if (val >= 0)
@@ -1054,7 +1064,7 @@ jmc_i64toa_r10_integer(char *buf, int64_t val,
 JMC_INLINE_NONSTD(int)
 jmc_u64toa_r10_frac(char *buf, uint64_t val, unsigned int precision)
 {
-    unsigned int digval, digital;
+    unsigned int digit_val, num_digits;
     uint32_t val32;
     char *cur;
     int padding;
@@ -1072,22 +1082,22 @@ jmc_u64toa_r10_frac(char *buf, uint64_t val, unsigned int precision)
         val32 = (uint32_t)u64->low;
 #endif
         do {
-            digval = val32 % 10;
+            digit_val = val32 % 10;
             val32 /= 10;
 
-            *cur++ = (char)(digval + '0');
+            *cur++ = (char)(digit_val + '0');
         } while (val32 != 0);
     }
     else {
         do {
-            digval = val % 10;
+            digit_val = val % 10;
             val /= 10;
 
-            *cur++ = (char)(digval + '0');
+            *cur++ = (char)(digit_val + '0');
         } while (val != 0);
     }
 
-    digital = (unsigned int)(cur - digits);
+    num_digits = (unsigned int)(cur - digits);
 
 #if 0
     do {
@@ -1100,10 +1110,10 @@ jmc_u64toa_r10_frac(char *buf, uint64_t val, unsigned int precision)
         *buf++ = *cur--;
 #endif
 
-    padding = precision - digital;
+    padding = precision - num_digits;
     if (padding <= 0) {
         *buf = '\0';
-        return digital;
+        return num_digits;
     }
     else {
         // fractional part's tail is like as "0000000...."

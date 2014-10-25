@@ -355,7 +355,7 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
     int64_t i64;
     uint64_t val64;
     uint32_t val32;
-    unsigned int digital;
+    unsigned int num_digits;
     uint32_t scale32;
     uint64_t scale, frac;
     fuint64_t *f64;
@@ -393,13 +393,13 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
 
         i64 = (int64_t)val;
         u64 = (jmc_ieee754_double *)&i64;
-        // calc the digitals of the double integer part
+        // calc the digitss of the double integer part
         //if (i64 <= (uint64_t)JIMIC_UINT_MAX64) {
         if (u64->u32.high == 0) {
             val32 = (uint32_t)(u64->u32.low);
-            digital = 0;
+            num_digits = 0;
             do {
-                digital++;
+                num_digits++;
                 val32 /= 10;
             } while (val32 != 0);
         }
@@ -408,9 +408,9 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
                 val64 = i64;
             else
                 val64 = -i64;
-            digital = 0;
+            num_digits = 0;
             do {
-                digital++;
+                num_digits++;
                 val64 /= 10;
             } while (val64 != 0);
         }
@@ -444,10 +444,10 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
 #endif
 
         if (i64 != 0) {
-            if ((precision + digital) <= FMT_MAX_DOUBLE_PRECISION)
+            if ((precision + num_digits) <= FMT_MAX_DOUBLE_PRECISION)
                 frac_prec = precision;
             else
-                frac_prec = FMT_MAX_DOUBLE_PRECISION - digital;
+                frac_prec = FMT_MAX_DOUBLE_PRECISION - num_digits;
         }
         else {
             if (precision <= FMT_MAX_DOUBLE_PRECISION)

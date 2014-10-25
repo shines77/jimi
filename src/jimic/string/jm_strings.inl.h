@@ -8,7 +8,6 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_platform_def.h>
 #include <jimic/core/jimic_def.h>
 
 #ifndef _JIMIC_STRING_JM_STRINGS_H_

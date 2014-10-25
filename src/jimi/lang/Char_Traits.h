@@ -694,18 +694,18 @@ template<typename char_type>
 JIMI_INLINE
 int char_traits<char_type>::utoa(char_type *buf, unsigned int val, const int radix)
 {
-    unsigned int digval, digital;
+    unsigned int digit_val, num_digits;
     char_type *cur;
     char digits[16];    // 实际最多只会用到10个bytes
     cur = digits;
     do {
-        digval = val % radix;
+        digit_val = val % radix;
         val /= radix;
 
-        *cur++ = static_cast<char_type>(digval + '0');
+        *cur++ = static_cast<char_type>(digit_val + '0');
     } while (val != 0);
 
-    digital = cur - digits;
+    num_digits = cur - digits;
 
 #if 1
     do {
@@ -719,7 +719,7 @@ int char_traits<char_type>::utoa(char_type *buf, unsigned int val, const int rad
 #endif
     *buf = '\0';
 
-    return digital;
+    return num_digits;
 }
 
 template<typename char_type>
@@ -737,19 +737,19 @@ template<typename char_type>
 JIMI_INLINE
 int char_traits<char_type>::utoa_radix10(char_type *buf, unsigned int val)
 {
-    unsigned int digval, digital;
+    unsigned int digit_val, num_digits;
     char_type *cur;
     char digits[16];    // 实际最多只会用到10个bytes
 
     cur = digits;
     do {
-        digval = val % 10;
+        digit_val = val % 10;
         val /= 10;
 
-        *cur++ = static_cast<char_type>(digval + '0');
+        *cur++ = static_cast<char_type>(digit_val + '0');
     } while (val != 0);
 
-    digital = cur - digits;
+    num_digits = cur - digits;
 
 #if 0
     do {
@@ -773,7 +773,7 @@ int char_traits<char_type>::utoa_radix10(char_type *buf, unsigned int val)
 #endif
     *buf = '\0';
 
-    return digital;
+    return num_digits;
 }
 
 template<typename char_type>
@@ -791,18 +791,18 @@ template<typename char_type>
 JIMI_INLINE
 int char_traits<char_type>::utoa_radix10_fast(char_type *buf, unsigned int val, const int last)
 {
-    unsigned int digval, digital;
+    unsigned int digit_val, num_digits;
     char_type *cur, *end;
     end = buf + last;
     cur = end;
     do {
-        digval = val % 10;
+        digit_val = val % 10;
         val /= 10;
 
-        *cur-- = static_cast<char_type>(digval + '0');
+        *cur-- = static_cast<char_type>(digit_val + '0');
     } while (val != 0);
 
-    digital = end - cur;
+    num_digits = end - cur;
 
 #if 1
     do {
@@ -815,7 +815,7 @@ int char_traits<char_type>::utoa_radix10_fast(char_type *buf, unsigned int val, 
         *buf++ = *cur++;
 #endif
     *buf = '\0';
-    return digital;
+    return num_digits;
 }
 
 template<typename char_type>
@@ -833,19 +833,19 @@ template<typename char_type>
 JIMI_INLINE
 int char_traits<char_type>::ultoa_radix10(char_type *buf, unsigned long val)
 {
-    unsigned long digval, digital;
+    unsigned long digit_val, num_digits;
     char_type *cur;
     char digits[16];    // 实际最多只会用到10个bytes
 
     cur = digits;
     do {
-        digval = val % 10;
+        digit_val = val % 10;
         val /= 10;
 
-        *cur++ = static_cast<char_type>(digval + '0');
+        *cur++ = static_cast<char_type>(digit_val + '0');
     } while (val != 0);
 
-    digital = cur - digits;
+    num_digits = cur - digits;
 
 #if 0
     do {
@@ -862,7 +862,7 @@ int char_traits<char_type>::ultoa_radix10(char_type *buf, unsigned long val)
 #endif
     *buf = '\0';
 
-    return digital;
+    return num_digits;
 }
 
 template<typename char_type>
@@ -880,19 +880,19 @@ template<typename char_type>
 JIMI_INLINE
 int char_traits<char_type>::u64toa_radix10(char_type *buf, uint64_t val)
 {
-    unsigned int digval, digital;
+    unsigned int digit_val, num_digits;
     char_type *cur;
     char digits[32];    // 实际最多只会用到20个bytes
 
     cur = digits;
     do {
-        digval = val % 10;
+        digit_val = val % 10;
         val /= 10;
 
-        *cur++ = static_cast<char_type>(digval + '0');
+        *cur++ = static_cast<char_type>(digit_val + '0');
     } while (val != 0);
 
-    digital = cur - digits;
+    num_digits = cur - digits;
 
 #if 0
     do {
@@ -909,7 +909,7 @@ int char_traits<char_type>::u64toa_radix10(char_type *buf, uint64_t val)
 #endif
     *buf = '\0';
 
-    return digital;
+    return num_digits;
 }
 
 template<typename char_type>

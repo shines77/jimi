@@ -6,8 +6,6 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_platform_def.h>
-
 #include <jimic/core/jimic_def.h>
 #include <string.h>
 
