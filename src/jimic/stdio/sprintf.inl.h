@@ -366,14 +366,14 @@ vslprintf_out_int:
 #if 1
                     //if (width == 0 && flag == FMT_DEFAULT_FLAG) {
                     if ((width | flag) == (0 | FMT_DEFAULT_FLAG)) {
-                        len = jmc_itoa_radix10(buf, i32);
+                        len = jmc_itoa_r10(buf, i32);
                         buf += len;
                         cur++;
                         goto vslprintf_try_next;
                     }
                     else {
                         flag |= align;
-                        len = jmc_itoa_radix10_ex(buf, -1, i32, flag, fill, width, precision);
+                        len = jmc_itoa_r10_ex(buf, -1, i32, flag, fill, width, precision);
                         buf += len;
                         cur++;
                         goto vslprintf_try_next;
@@ -382,20 +382,20 @@ vslprintf_out_int:
                     flag |= align;
                     //if (width == 0 && flag == FMT_DEFAULT_FLAG && fill == FMT_ALIGN_DEFAULT) {
                     if ((width | flag) == (0 | FMT_DEFAULT_FLAG | FMT_ALIGN_DEFAULT)) {
-                        len = jmc_itoa_radix10(buf, i32);
+                        len = jmc_itoa_r10(buf, i32);
                         buf += len;
                         cur++;
                         goto vslprintf_try_next;
                     }
                     else {
-                        len = jmc_itoa_radix10_ex(buf, -1, i32, flag, fill, width, precision);
+                        len = jmc_itoa_r10_ex(buf, -1, i32, flag, fill, width, precision);
                         buf += len;
                         cur++;
                         goto vslprintf_try_next;
                     }
 #else
                     flag |= align;
-                    len = jmc_itoa_radix10_ex(buf, -1, i32, flag, fill, width, precision);
+                    len = jmc_itoa_r10_ex(buf, -1, i32, flag, fill, width, precision);
                     buf += len;
                     cur++;
                     goto vslprintf_try_next;
@@ -510,7 +510,7 @@ vslprintf_out_string:
 #endif
                     }
                     else {
-                        // string is null
+                        // it is a null string
                         len = sizeof(FMT_NULL_STRING) - 1;
                         if ((buf + JIMIC_MAX(len, width)) >= end)
                             goto vslprintf_exit;
@@ -572,7 +572,7 @@ vslprintf_out_string:
                     if ((buf + 10) >= end)
                         goto vslprintf_exit;
                     u32 = va_arg(args, unsigned int);
-                    len = jmc_utoa_radix10(buf, u32);
+                    len = jmc_utoa_r10(buf, u32);
                     buf += len;
                     cur++;
                     goto vslprintf_try_next;
@@ -653,7 +653,7 @@ vslprintf_out_string:
                     if ((buf + 10) >= end)
                         goto vslprintf_exit;
                     ul32 = va_arg(args, unsigned long);
-                    len = jmc_ultoa_radix10(buf, ul32);
+                    len = jmc_ultoa_r10(buf, ul32);
                     buf += len;
                     cur++;
                     goto vslprintf_try_next;
@@ -663,7 +663,7 @@ vslprintf_out_string:
                     if ((buf + 20) >= end)
                         goto vslprintf_exit;
                     u64 = va_arg(args, uint64_t);
-                    len = jmc_u64toa_radix10(buf, u64);
+                    len = jmc_u64toa_r10(buf, u64);
                     buf += len;
                     cur++;
                     goto vslprintf_try_next;
@@ -674,7 +674,7 @@ vslprintf_out_string:
                     if ((buf + 21) >= end)
                         goto vslprintf_exit;
                     i64 = va_arg(args, int64_t);
-                    len = jmc_i64toa_radix10(buf, i64);
+                    len = jmc_i64toa_r10(buf, i64);
                     buf += len;
                     cur++;
                     goto vslprintf_try_next;
@@ -684,7 +684,7 @@ vslprintf_out_string:
                     if ((buf + 11) >= end)
                         goto vslprintf_exit;
                     l32 = va_arg(args, long);
-                    len = jmc_ltoa_radix10(buf, l32);
+                    len = jmc_ltoa_r10(buf, l32);
                     buf += len;
                     cur++;
                     goto vslprintf_try_next;
@@ -704,7 +704,7 @@ vslprintf_out_string:
                     if ((buf + 20) >= end)
                         goto vslprintf_exit;
                     u64 = va_arg(args, uint64_t);
-                    len = jmc_u64toa_radix10(buf, u64);
+                    len = jmc_u64toa_r10(buf, u64);
                     buf += len;
                     cur++;
                     goto vslprintf_try_next;

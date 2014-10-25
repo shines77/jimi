@@ -92,14 +92,14 @@ jmc_dget_exponent(double * JMC_RESTRICT pval)
 }
 
 JMC_DECLARE_NONSTD(int)
-jmc_fadjust_to_exp32(float * JMC_RESTRICT pval, int exponent)
+jmc_fadjust_to_bin32(float * JMC_RESTRICT pval, int exponent)
 {
     // TODO:
     return 0;
 }
 
 JMC_DECLARE_NONSTD(int)
-jmc_dadjust_to_exp64(double * JMC_RESTRICT pval, int exponent)
+jmc_dadjust_to_bin64(double * JMC_RESTRICT pval, int exponent)
 {
     int exp10;
     int base_index;
@@ -194,7 +194,7 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int filed_width, int precision)
 
     d64 = (jmc_ieee754_double *)&val;
     exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
-    exp10 = jmc_dadjust_to_exp64(&val, exponent);
+    exp10 = jmc_dadjust_to_bin64(&val, exponent);
 
     if (precision < 0) {
         jimic_assert(precision < 0);
@@ -271,15 +271,15 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int filed_width, int precision)
 #else
         if (num_width <= 1) {
 #endif
-            len = jmc_i64toa_radix10(buf, i64);
+            len = jmc_i64toa_r10(buf, i64);
             buf += len;
         }
         else {
 #if 1
             // for integer part of double
-            len = jmc_i64toa_radix10_for_integer_part(buf, i64, num_width);
+            len = jmc_i64toa_r10_integer(buf, i64, num_width);
 #else
-            len = jmc_i64toa_radix10_ex(buf, -1, i64, FMT_ALIGN_RIGHT, ' ', num_width, num_width);
+            len = jmc_i64toa_r10_ex(buf, -1, i64, FMT_ALIGN_RIGHT, ' ', num_width, num_width);
 #endif
             buf += len;
         }
@@ -289,9 +289,9 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int filed_width, int precision)
             *buf++ = '.';
 #if 1
             // for fractional part of double
-            len += jmc_u64toa_radix10_for_frac_part(buf, frac, precision) + 1;
+            len += jmc_u64toa_r10_frac(buf, frac, precision) + 1;
 #else
-            len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT, '0', precision, 0) + 1;
+            len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT, '0', precision, 0) + 1;
 #endif
         }
 
@@ -347,11 +347,7 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int filed_width, int precision)
     }
 }
 
-#if defined(JMC_DTOS_INLINE_DECLARE) && (JMC_DTOS_INLINE_DECLARE != 0)
-JMC_INLINE_NONSTD(int)
-#else
 JMC_DECLARE_NONSTD(int)
-#endif
 jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag,
             unsigned int fill, int filed_width, int precision)
 {
@@ -366,7 +362,7 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
     register jmc_ieee754_double *u64;
     register jmc_ieee754_double *d64;
     unsigned int n;
-    unsigned int exponent;
+    int exponent;
     int num_width;
     int exp10;
     int frac_prec;
@@ -387,14 +383,12 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
     //if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
     if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) != JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
         // get the exponent value
-        exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
+        exponent = (int)(d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS);
         // if exponent belong range [0, 64), needn't to adjust
-        if (exponent < 0 || exponent >= 64) {
+        exp10 = 0;
+        if (exponent >= 0 && exponent < 64) {
             // adjust double value to range like (1 ~ 2^64) * 10^N
-            exp10 = jmc_dadjust_to_exp64(&val, exponent);
-        }
-        else {
-            exp10 = 0;
+            exp10 = jmc_dadjust_to_bin64(&val, exponent);
         }
 
         i64 = (int64_t)val;
@@ -525,7 +519,7 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
         if (((flag & FMT_ALIGN_LEFT) != 0) || (num_width < 0))
             num_width = 0;
 
-        len = jmc_i64toa_radix10_ex(buf, -1, i64, flag, fill, num_width, num_width);
+        len = jmc_i64toa_r10_ex(buf, -1, i64, flag, fill, num_width, num_width);
         filed_width -= len;
         buf += len;
 
@@ -541,18 +535,18 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
                 precision = filed_width;
                 filed_width = num_width;
             }
-            len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+            len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
                                          '0', precision, filed_width - 1) + 1;
 #else
             filed_width--;
             if (precision >= filed_width) {
                 tail_zeros = precision - frac_prec;
                 if (tail_zeros <= 0) {
-                    len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                    len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
                                                  '0', precision, filed_width) + 1;
                 }
                 else {
-                    len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                    len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
                                                  '0', frac_prec, precision) + tail_zeros + 1;
                     buf += frac_prec;
                     // fill tail zeros
@@ -564,7 +558,7 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
                 }
             }
             else {
-                len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
                                              '0', filed_width, precision) + 1;
             }
 #endif

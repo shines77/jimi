@@ -351,7 +351,7 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
             }
 
             // for integer part of double
-            len = jmc_i64toa_radix10_ex(buf, -1, i64, flag, fill, 0, 0);
+            len = jmc_i64toa_r10_ex(buf, -1, i64, flag, fill, 0, 0);
             filed_width -= len;
             buf += len;
 
@@ -361,11 +361,11 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
 
                 // for fractional part of double
                 if (precision >= filed_width - 1) {
-                    len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                    len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
                                                  '0', precision, filed_width - 1) + 1;
                 }
                 else {
-                    len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                    len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
                                                  '0', filed_width - 1, precision) + 1;
                 }
             }
@@ -509,7 +509,7 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
             // for integer part of double
             if (num_width < 0)
                 num_width = 0;
-            len = jmc_i64toa_radix10_ex(buf, -1, i64, flag, fill, num_width, num_width);
+            len = jmc_i64toa_r10_ex(buf, -1, i64, flag, fill, num_width, num_width);
             filed_width -= len;
             buf += len;
 
@@ -519,11 +519,11 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
 
                 // for fractional part of double
                 if (precision >= filed_width - 1) {
-                    len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                    len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
                                                  '0', precision, filed_width - 1) + 1;
                 }
                 else {
-                    len += jmc_u64toa_radix10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                    len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
                                                  '0', filed_width - 1, precision) + 1;
                 }
             }

@@ -20,7 +20,7 @@ jmc_dget_exponent(double * JMC_RESTRICT pval);
 
 // jmc_ftos()
 JMC_DECLARE_NONSTD(int)
-jmc_fadjust_to_exp32(float * JMC_RESTRICT pval, int exponent);
+jmc_fadjust_to_bin32(float * JMC_RESTRICT pval, int exponent);
 
 JMC_DECLARE_NONSTD(int)
 jmc_ftos(char * JMC_RESTRICT buf, float val, int filed_width, int precision);
@@ -31,7 +31,7 @@ jmc_ftos_ex(char * JMC_RESTRICT buf, size_t count, float val, unsigned int flag,
 
 // for jmc_dtos()
 JMC_DECLARE_NONSTD(int)
-jmc_dadjust_to_exp64(double * JMC_RESTRICT pval, int exponent);
+jmc_dadjust_to_bin64(double * JMC_RESTRICT pval, int exponent);
 
 JMC_DECLARE_NONSTD(int)
 jmc_dtos(char * JMC_RESTRICT buf, double val, int filed_width, int precision);

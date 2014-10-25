@@ -172,7 +172,7 @@ typedef struct fvariant_t {
 
 #if 1
 JMC_INLINE_NONSTD(int)
-jmc_utoa_radix10(char *buf, unsigned int val)
+jmc_utoa_r10(char *buf, unsigned int val)
 {
     unsigned int digval, digital;
     const char *end;
@@ -213,7 +213,7 @@ jmc_utoa_radix10(char *buf, unsigned int val)
 }
 #elif 0
 JMC_INLINE_NONSTD(int)
-jmc_utoa_radix10(char *buf, unsigned int val)
+jmc_utoa_r10(char *buf, unsigned int val)
 {
     unsigned int digval, digital;
     char *end, *cur;
@@ -248,7 +248,7 @@ jmc_utoa_radix10(char *buf, unsigned int val)
 }
 #else
 JMC_INLINE_NONSTD(int)
-jmc_utoa_radix10(char *buf, unsigned int val)
+jmc_utoa_r10(char *buf, unsigned int val)
 {
     unsigned int digval, digital;
     char *cur;
@@ -283,7 +283,7 @@ jmc_utoa_radix10(char *buf, unsigned int val)
 #endif
 
 JMC_INLINE_NONSTD(int)
-jmc_itoa_radix10(char *buf, int val)
+jmc_itoa_r10(char *buf, int val)
 {
 #if 0
     int sign;
@@ -295,24 +295,24 @@ jmc_itoa_radix10(char *buf, int val)
     else {
         sign = 0;
     }
-    return jmc_utoa_radix10(buf, (unsigned int)val) + sign;
+    return jmc_utoa_r10(buf, (unsigned int)val) + sign;
 #elif 1
     if (val >= 0) {
-        return jmc_utoa_radix10(buf, (unsigned int)val);
+        return jmc_utoa_r10(buf, (unsigned int)val);
     }
     else {
         *buf++ = '-';
         val = -val;
-        return jmc_utoa_radix10(buf, (unsigned int)val) + 1;
+        return jmc_utoa_r10(buf, (unsigned int)val) + 1;
     }
 #elif 0
     if (val < 0) {
         *buf++ = '-';
         val = -val;
-        return jmc_utoa_radix10(buf, (unsigned int)val) + 1;
+        return jmc_utoa_r10(buf, (unsigned int)val) + 1;
     }
     else
-        return jmc_utoa_radix10(buf, (unsigned int)val);
+        return jmc_utoa_r10(buf, (unsigned int)val);
 #else
     register int sign;
     sign = (val < 0);
@@ -320,12 +320,12 @@ jmc_itoa_radix10(char *buf, int val)
         *buf++ = '-';
         val = -val;
     }
-    return jmc_utoa_radix10(buf, (unsigned int)val) + sign;
+    return jmc_utoa_r10(buf, (unsigned int)val) + sign;
 #endif
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_ultoa_radix10(char *buf, unsigned long val)
+jmc_ultoa_r10(char *buf, unsigned long val)
 {
     unsigned long digval, digital;
     char *cur;
@@ -357,16 +357,16 @@ jmc_ultoa_radix10(char *buf, unsigned long val)
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_ltoa_radix10(char *buf, long val)
+jmc_ltoa_r10(char *buf, long val)
 {
 #if 1
     if (val >= 0) {
-        return jmc_ultoa_radix10(buf, val);
+        return jmc_ultoa_r10(buf, val);
     }
     else {
         *buf++ = '-';
         val = -val;
-        return jmc_ultoa_radix10(buf, val) + 1;
+        return jmc_ultoa_r10(buf, val) + 1;
     }        
 #else
     int sign;
@@ -375,12 +375,12 @@ jmc_ltoa_radix10(char *buf, long val)
         *buf++ = '-';
         val = -val;
     }
-    return jmc_ultoa_radix10(buf, val) + sign;
+    return jmc_ultoa_r10(buf, val) + sign;
 #endif
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_u64toa_radix10(char *buf, uint64_t val)
+jmc_u64toa_r10(char *buf, uint64_t val)
 {
     unsigned int digval, digital;
     uint32_t val32;
@@ -431,16 +431,16 @@ jmc_u64toa_radix10(char *buf, uint64_t val)
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_i64toa_radix10(char *buf, int64_t val)
+jmc_i64toa_r10(char *buf, int64_t val)
 {
 #if 1
     if (val >= 0) {
-        return jmc_u64toa_radix10(buf, val);
+        return jmc_u64toa_r10(buf, val);
     }
     else {
         *buf++ = '-';
         val = -val;
-        return jmc_u64toa_radix10(buf, val) + 1;
+        return jmc_u64toa_r10(buf, val) + 1;
     }        
 #else
     int sign;
@@ -449,12 +449,12 @@ jmc_i64toa_radix10(char *buf, int64_t val)
         *buf++ = '-';
         val = -val;
     }
-    return jmc_u64toa_radix10(buf, val) + sign;
+    return jmc_u64toa_r10(buf, val) + sign;
 #endif
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_utoa_radix10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
+jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
                     unsigned int fill, unsigned int filed_width, int length)
 {
     unsigned int digval, digital;
@@ -618,7 +618,7 @@ jmc_utoa_radix10_ex(char *buf, size_t count, unsigned int val, unsigned int flag
                     fill_cnt--;
                 }
 
-                goto utoa_radix10_ex_exit;
+                goto utoa_r10_ex_exit;
             }
         }
     }
@@ -634,14 +634,14 @@ jmc_utoa_radix10_ex(char *buf, size_t count, unsigned int val, unsigned int flag
         *buf++ = *cur++;
 #endif
 
-utoa_radix10_ex_exit:
+utoa_r10_ex_exit:
     *buf = '\0';
 
     return filed_width;
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_itoa_radix10_ex(char *buf, size_t count, int val, unsigned int flag,
+jmc_itoa_r10_ex(char *buf, size_t count, int val, unsigned int flag,
                     unsigned int fill, unsigned int filed_width, int length)
 {
 #if 1
@@ -650,17 +650,17 @@ jmc_itoa_radix10_ex(char *buf, size_t count, int val, unsigned int flag,
         val = -val;
     }
 
-    return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length);
+    return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length);
 #elif 0
     if ((flag & FMT_SPACE_FLAG) == 0) {
         if (val >= 0) {
-            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length);
+            return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length);
         }
         else {
             *buf++ = '-';
             val = -val;
             flag |= FMT_SIGN_MASK;
-            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
+            return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
         }
     }
     else {
@@ -672,17 +672,17 @@ jmc_itoa_radix10_ex(char *buf, size_t count, int val, unsigned int flag,
             val = -val;
         }
         flag |= FMT_SIGN_MASK;
-        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
+        return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
     }
 #elif 0
     if ((flag & FMT_SPACE_FLAG) == 0) {
         if (val < 0) {
             *buf++ = '-';
             val = -val;
-            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
+            return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
         }
         else
-            return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length);
+            return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length);
     }
     else {
         if (val >= 0) {
@@ -692,7 +692,7 @@ jmc_itoa_radix10_ex(char *buf, size_t count, int val, unsigned int flag,
             *buf++ = '-';
             val = -val;
         }
-        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
+        return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
     }
 #else
     int sign;
@@ -702,7 +702,7 @@ jmc_itoa_radix10_ex(char *buf, size_t count, int val, unsigned int flag,
             *buf++ = '-';
             val = -val;
         }
-        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length) + sign;
+        return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length) + sign;
     }
     else {
         if (val < 0) {
@@ -712,13 +712,13 @@ jmc_itoa_radix10_ex(char *buf, size_t count, int val, unsigned int flag,
         else {
             *buf++ = '+';
         }
-        return jmc_utoa_radix10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
+        return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
     }
 #endif
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_u64toa_radix10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
+jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
                       unsigned int fill, unsigned int filed_width, int length)
 {
     unsigned int digval, digital;
@@ -730,7 +730,7 @@ jmc_u64toa_radix10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
     fuint64_t *u64;
     char digits[32];    // 实际最多只会用到20个bytes
 
-    static_assert(sizeof(fuint64_t) == sizeof(uint64_t), "jmc_u64toa_radix10_ex() maybe have some error!");
+    static_assert(sizeof(fuint64_t) == sizeof(uint64_t), "jmc_u64toa_r10_ex() maybe have some error!");
 
     if (sizeof(fuint64_t) != sizeof(uint64_t)) {
         // maybe have some error!
@@ -906,7 +906,7 @@ jmc_u64toa_radix10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
                     fill_cnt--;
                 }
 
-                goto u64toa_radix10_ex_exit;
+                goto u64toa_r10_ex_exit;
             }
         }
     }
@@ -922,25 +922,25 @@ jmc_u64toa_radix10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
         *buf++ = *cur++;
 #endif
 
-u64toa_radix10_ex_exit:
+u64toa_r10_ex_exit:
     *buf = '\0';
 
     return filed_width;
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_i64toa_radix10_ex(char *buf, size_t count, int64_t val, unsigned int flag,
+jmc_i64toa_r10_ex(char *buf, size_t count, int64_t val, unsigned int flag,
                       unsigned int fill, unsigned int filed_width, int length)
 {
     if (val < 0) {
         flag |= FMT_SIGN_MASK;
         val = -val;
     }
-    return jmc_u64toa_radix10_ex(buf, count, val, flag, fill, filed_width, length);
+    return jmc_u64toa_r10_ex(buf, count, val, flag, fill, filed_width, length);
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_u64toa_radix10_for_integer_part(char *buf, uint64_t val, int sign,
+jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign,
                                     unsigned int filed_width)
 {
     unsigned int digval, digital;
@@ -1030,14 +1030,14 @@ jmc_u64toa_radix10_for_integer_part(char *buf, uint64_t val, int sign,
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_i64toa_radix10_for_integer_part(char *buf, int64_t val,
+jmc_i64toa_r10_integer(char *buf, int64_t val,
                                     unsigned int filed_width)
 {
 #if 0
     if (val >= 0)
-        return jmc_u64toa_radix10_for_integer_part(buf,  val, 0, filed_width);
+        return jmc_u64toa_r10_integer(buf,  val, 0, filed_width);
     else
-        return jmc_u64toa_radix10_for_integer_part(buf, -val, 1, filed_width);   
+        return jmc_u64toa_r10_integer(buf, -val, 1, filed_width);   
 #else
     int sign;
     if (val >= 0) {
@@ -1047,12 +1047,12 @@ jmc_i64toa_radix10_for_integer_part(char *buf, int64_t val,
         sign = 1;
         val = -val;
     }
-    return jmc_u64toa_radix10_for_integer_part(buf, val, sign, filed_width);
+    return jmc_u64toa_r10_integer(buf, val, sign, filed_width);
 #endif
 }
 
 JMC_INLINE_NONSTD(int)
-jmc_u64toa_radix10_for_frac_part(char *buf, uint64_t val, unsigned int precision)
+jmc_u64toa_r10_frac(char *buf, uint64_t val, unsigned int precision)
 {
     unsigned int digval, digital;
     uint32_t val32;
