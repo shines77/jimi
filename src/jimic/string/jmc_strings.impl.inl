@@ -264,7 +264,7 @@ jmc_log10_fast_64(double val)
 
 JMC_DECLARE_NONSTD(int)
 jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
-             unsigned int fill, int filed_width, int precision)
+             unsigned int fill, int field_width, int precision)
 {
     int len;
     int64_t i64;
@@ -352,7 +352,7 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
 
             // for integer part of double
             len = jmc_i64toa_r10_ex(buf, -1, i64, flag, fill, 0, 0);
-            filed_width -= len;
+            field_width -= len;
             buf += len;
 
             if (precision > 0) {
@@ -360,13 +360,13 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
                 *buf++ = '.';
 
                 // for fractional part of double
-                if (precision >= filed_width - 1) {
+                if (precision >= field_width - 1) {
                     len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
-                                                 '0', precision, filed_width - 1) + 1;
+                                                 '0', precision, field_width - 1) + 1;
                 }
                 else {
                     len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
-                                                 '0', filed_width - 1, precision) + 1;
+                                                 '0', field_width - 1, precision) + 1;
                 }
             }
             return len;
@@ -374,17 +374,17 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
         else if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
                  || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)) {
             // is NaN, not a number
-            len = JIMIC_MAX(filed_width, 3);
-            filed_width -= 3;
+            len = JIMIC_MAX(field_width, 3);
+            field_width -= 3;
             // align to left
             *buf        = 'N';
             *(buf + 1)  = 'a';
             *(buf + 2)  = 'N';
             *(buf + 3)  = ' ';
             buf += 3;
-            while (filed_width > 0) {
+            while (field_width > 0) {
                 *buf++ = ' ';
-                filed_width--;
+                field_width--;
             }
             *buf = '\0';
             return len;
@@ -393,24 +393,24 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
             // is +INF or -INF
             if ((f64->high & JM_DOUBLE_SIGN_BIT32) == 0) {
                 if ((flag & FMT_PLUS_FLAG) == 0) {
-                    len = JIMIC_MAX(filed_width, 3);
-                    filed_width -= 3;
+                    len = JIMIC_MAX(field_width, 3);
+                    field_width -= 3;
                     // align to left
                     *buf        = 'I';
                     *(buf + 1)  = 'n';
                     *(buf + 2)  = 'f';
                     *(buf + 3)  = ' ';
                     buf += 3;
-                    while (filed_width > 0) {
+                    while (field_width > 0) {
                         *buf++ = ' ';
-                        filed_width--;
+                        field_width--;
                     }
                     *buf = '\0';
                     return len;
                 }
                 else {
-                    len = JIMIC_MAX(filed_width, 4);
-                    filed_width -= 4;
+                    len = JIMIC_MAX(field_width, 4);
+                    field_width -= 4;
                     // align to left
                     // '+', 0x2B
                     *buf        = '+';
@@ -418,9 +418,9 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
                     *(buf + 2)  = 'n';
                     *(buf + 3)  = 'f';
                     buf += 4;
-                    while (filed_width > 0) {
+                    while (field_width > 0) {
                         *buf++ = ' ';
-                        filed_width--;
+                        field_width--;
                     }
                     *buf = '\0';
                     return len;
@@ -428,8 +428,8 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
 
             }
             else {
-                len = JIMIC_MAX(filed_width, 4);
-                filed_width -= 4;
+                len = JIMIC_MAX(field_width, 4);
+                field_width -= 4;
                 // align to left
                 // '-', 0x2D
                 *buf        = '-';
@@ -437,9 +437,9 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
                 *(buf + 2)  = 'n';
                 *(buf + 3)  = 'f';
                 buf += 4;
-                while (filed_width > 0) {
+                while (field_width > 0) {
                     *buf++ = ' ';
-                    filed_width--;
+                    field_width--;
                 }
                 *buf = '\0';
                 return len;
@@ -473,17 +473,17 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
                     scale *= 10;
             }
 #endif
-            num_width = filed_width - precision - 1;
+            num_width = field_width - precision - 1;
         }
         else if (precision < 0) {
             jimic_assert(precision < 0);
             precision = FMT_DEFAULT_DOUBLE_PRECISION;
             scale = 1000000;
-            num_width = filed_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
+            num_width = field_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
         }
         else {
             scale = 1;
-            num_width = filed_width;
+            num_width = field_width;
         }
 
         f64 = (fuint64_t *)&val;
@@ -510,7 +510,7 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
             if (num_width < 0)
                 num_width = 0;
             len = jmc_i64toa_r10_ex(buf, -1, i64, flag, fill, num_width, num_width);
-            filed_width -= len;
+            field_width -= len;
             buf += len;
 
             if (precision > 0) {
@@ -518,13 +518,13 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
                 *buf++ = '.';
 
                 // for fractional part of double
-                if (precision >= filed_width - 1) {
+                if (precision >= field_width - 1) {
                     len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
-                                                 '0', precision, filed_width - 1) + 1;
+                                                 '0', precision, field_width - 1) + 1;
                 }
                 else {
                     len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
-                                                 '0', filed_width - 1, precision) + 1;
+                                                 '0', field_width - 1, precision) + 1;
                 }
             }
             return len;
@@ -532,12 +532,12 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
         else if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
                  || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)) {
             // is NaN, not a number
-            len = JIMIC_MAX(filed_width, 3);
-            filed_width -= 3;
+            len = JIMIC_MAX(field_width, 3);
+            field_width -= 3;
             // align to right
-            while (filed_width > 0) {
+            while (field_width > 0) {
                 *buf++ = ' ';
-                filed_width--;
+                field_width--;
             }
             *buf        = 'N';
             *(buf + 1)  = 'a';
@@ -549,12 +549,12 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
             // is +INF or -INF
             if ((f64->high & JM_DOUBLE_SIGN_BIT32) == 0) {
                 if ((flag & FMT_PLUS_FLAG) == 0) {
-                    len = JIMIC_MAX(filed_width, 3);
-                    filed_width -= 3;
+                    len = JIMIC_MAX(field_width, 3);
+                    field_width -= 3;
                     // align to right
-                    while (filed_width > 0) {
+                    while (field_width > 0) {
                         *buf++ = ' ';
-                        filed_width--;
+                        field_width--;
                     }
                     *buf        = 'I';
                     *(buf + 1)  = 'n';
@@ -563,8 +563,8 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
                     return len;
                 }
                 else {
-                    len = JIMIC_MAX(filed_width, 4);
-                    filed_width -= 4;
+                    len = JIMIC_MAX(field_width, 4);
+                    field_width -= 4;
                     // align to left
                     // '+', 0x2B
                     *buf        = '+';
@@ -572,9 +572,9 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
                     *(buf + 2)  = 'n';
                     *(buf + 3)  = 'f';
                     buf += 4;
-                    while (filed_width > 0) {
+                    while (field_width > 0) {
                         *buf++ = ' ';
-                        filed_width--;
+                        field_width--;
                     }
                     *buf = '\0';
                     return len;
@@ -582,12 +582,12 @@ jmc_dtos_ex2(char *buf, size_t count, double val, unsigned int flag,
 
             }
             else {
-                len = JIMIC_MAX(filed_width, 4);
-                filed_width -= 4;
+                len = JIMIC_MAX(field_width, 4);
+                field_width -= 4;
                 // align to right
-                while (filed_width > 0) {
+                while (field_width > 0) {
                     *buf++ = ' ';
-                    filed_width--;
+                    field_width--;
                 }
                 // '-', 0x2D
                 *buf        = '-';

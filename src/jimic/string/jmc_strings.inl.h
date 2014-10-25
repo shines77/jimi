@@ -465,7 +465,7 @@ jmc_i64toa_r10(char *buf, int64_t val)
 
 JMC_INLINE_NONSTD(int)
 jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
-                    unsigned int fill, unsigned int filed_width, int length)
+                    unsigned int fill, unsigned int field_width, int length)
 {
     unsigned int digit_val, num_digits;
     char *end, *cur;
@@ -490,13 +490,13 @@ jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
 
     if ((flag & (FMT_SIGN_MASK | FMT_SPACE_FLAG | FMT_PLUS_FLAG)) == 0) {
         sign_char = '\0';
-        fill_cnt = filed_width - num_digits;
+        fill_cnt = field_width - num_digits;
     }
     else {
         if ((flag & FMT_SPACE_FLAG) == 0) {
             // '+' is 0x2B, '-' is 0x2D
             sign_char = '+' + (flag & FMT_SIGN_MASK);
-            fill_cnt = filed_width - num_digits - 1;
+            fill_cnt = field_width - num_digits - 1;
         }
         else {
             // ' ' is 0x20, '-' is 0x2D
@@ -508,7 +508,7 @@ jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
             else
                 sign_char = '-';
 #endif
-            fill_cnt = filed_width - num_digits - 1;
+            fill_cnt = field_width - num_digits - 1;
         }
     }
 
@@ -535,7 +535,7 @@ jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
     }
     else {
         // when legnth <= 0 || legnth >= witdh, align to right or left is same
-        if (length <= 0 || length >= (int)filed_width) {
+        if (length <= 0 || length >= (int)field_width) {
             if (fill == FMT_FILL_SPACE) {
                 // fill normal
                 while (fill_cnt > 0) {
@@ -561,8 +561,8 @@ jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
         }
         else {
             if ((flag & FMT_ALIGN_LEFT) == 0) {
-                // align to right, when (length < filed_width)
-                jimic_assert(length < (int)filed_width);
+                // align to right, when (length < field_width)
+                jimic_assert(length < (int)field_width);
 
                 padding = length - num_digits;
                 if (padding > 0) {
@@ -595,8 +595,8 @@ jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
                 }
             }
             else {
-                // align to left, when (length < filed_width)
-                jimic_assert(length < (int)filed_width);
+                // align to left, when (length < field_width)
+                jimic_assert(length < (int)field_width);
 
                 // add sign
                 if (sign_char != '\0')
@@ -647,12 +647,12 @@ jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
 utoa_r10_ex_exit:
     *buf = '\0';
 
-    return filed_width;
+    return field_width;
 }
 
 JMC_INLINE_NONSTD(int)
 jmc_itoa_r10_ex(char *buf, size_t count, int val, unsigned int flag,
-                    unsigned int fill, unsigned int filed_width, int length)
+                    unsigned int fill, unsigned int field_width, int length)
 {
 #if 1
     if (val < 0) {
@@ -660,17 +660,17 @@ jmc_itoa_r10_ex(char *buf, size_t count, int val, unsigned int flag,
         val = -val;
     }
 
-    return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length);
+    return jmc_utoa_r10_ex(buf, count, val, flag, fill, field_width, length);
 #elif 0
     if ((flag & FMT_SPACE_FLAG) == 0) {
         if (val >= 0) {
-            return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length);
+            return jmc_utoa_r10_ex(buf, count, val, flag, fill, field_width, length);
         }
         else {
             *buf++ = '-';
             val = -val;
             flag |= FMT_SIGN_MASK;
-            return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
+            return jmc_utoa_r10_ex(buf, count, val, flag, fill, field_width, length) + 1;
         }
     }
     else {
@@ -682,17 +682,17 @@ jmc_itoa_r10_ex(char *buf, size_t count, int val, unsigned int flag,
             val = -val;
         }
         flag |= FMT_SIGN_MASK;
-        return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
+        return jmc_utoa_r10_ex(buf, count, val, flag, fill, field_width, length) + 1;
     }
 #elif 0
     if ((flag & FMT_SPACE_FLAG) == 0) {
         if (val < 0) {
             *buf++ = '-';
             val = -val;
-            return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
+            return jmc_utoa_r10_ex(buf, count, val, flag, fill, field_width, length) + 1;
         }
         else
-            return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length);
+            return jmc_utoa_r10_ex(buf, count, val, flag, fill, field_width, length);
     }
     else {
         if (val >= 0) {
@@ -702,7 +702,7 @@ jmc_itoa_r10_ex(char *buf, size_t count, int val, unsigned int flag,
             *buf++ = '-';
             val = -val;
         }
-        return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
+        return jmc_utoa_r10_ex(buf, count, val, flag, fill, field_width, length) + 1;
     }
 #else
     int sign;
@@ -712,7 +712,7 @@ jmc_itoa_r10_ex(char *buf, size_t count, int val, unsigned int flag,
             *buf++ = '-';
             val = -val;
         }
-        return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length) + sign;
+        return jmc_utoa_r10_ex(buf, count, val, flag, fill, field_width, length) + sign;
     }
     else {
         if (val < 0) {
@@ -722,14 +722,14 @@ jmc_itoa_r10_ex(char *buf, size_t count, int val, unsigned int flag,
         else {
             *buf++ = '+';
         }
-        return jmc_utoa_r10_ex(buf, count, val, flag, fill, filed_width, length) + 1;
+        return jmc_utoa_r10_ex(buf, count, val, flag, fill, field_width, length) + 1;
     }
 #endif
 }
 
 JMC_INLINE_NONSTD(int)
 jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
-                      unsigned int fill, unsigned int filed_width, int length)
+                      unsigned int fill, unsigned int field_width, int length)
 {
     unsigned int digit_val, num_digits;
     uint32_t val32;
@@ -778,13 +778,13 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
 
     if ((flag & (FMT_SIGN_MASK | FMT_SPACE_FLAG | FMT_PLUS_FLAG)) == 0) {
         sign_char = '\0';
-        fill_cnt = filed_width - num_digits;
+        fill_cnt = field_width - num_digits;
     }
     else {
         if ((flag & FMT_SPACE_FLAG) == 0) {
             // '+' is 0x2B, '-' is 0x2D
             sign_char = '+' + (flag & FMT_SIGN_MASK);
-            fill_cnt = filed_width - num_digits - 1;
+            fill_cnt = field_width - num_digits - 1;
         }
         else {
             // ' ' is 0x20, '-' is 0x2D
@@ -796,7 +796,7 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
             else
                 sign_char = '-';
 #endif
-            fill_cnt = filed_width - num_digits - 1;
+            fill_cnt = field_width - num_digits - 1;
         }
     }
 
@@ -823,7 +823,7 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
     }
     else {
         // when legnth <= 0 || legnth >= witdh, align to right or left is same
-        if (length <= 0 || length >= (int)filed_width) {
+        if (length <= 0 || length >= (int)field_width) {
             if (fill == FMT_FILL_SPACE) {
                 // fill normal
                 while (fill_cnt > 0) {
@@ -849,8 +849,8 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
         }
         else {
             if ((flag & FMT_ALIGN_LEFT) == 0) {
-                // align to right, when (length < filed_width)
-                jimic_assert(length < (int)filed_width);
+                // align to right, when (length < field_width)
+                jimic_assert(length < (int)field_width);
 
                 padding = length - num_digits;
                 if (padding > 0) {
@@ -883,8 +883,8 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
                 }
             }
             else {
-                // align to left, when (length < filed_width)
-                jimic_assert(length < (int)filed_width);
+                // align to left, when (length < field_width)
+                jimic_assert(length < (int)field_width);
 
                 // add sign
                 if (sign_char != '\0')
@@ -935,23 +935,23 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
 u64toa_r10_ex_exit:
     *buf = '\0';
 
-    return filed_width;
+    return field_width;
 }
 
 JMC_INLINE_NONSTD(int)
 jmc_i64toa_r10_ex(char *buf, size_t count, int64_t val, unsigned int flag,
-                      unsigned int fill, unsigned int filed_width, int length)
+                      unsigned int fill, unsigned int field_width, int length)
 {
     if (val < 0) {
         flag |= FMT_SIGN_MASK;
         val = -val;
     }
-    return jmc_u64toa_r10_ex(buf, count, val, flag, fill, filed_width, length);
+    return jmc_u64toa_r10_ex(buf, count, val, flag, fill, field_width, length);
 }
 
 JMC_INLINE_NONSTD(int)
 jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign,
-                                    unsigned int filed_width)
+                                    unsigned int field_width)
 {
     unsigned int digit_val, num_digits;
     uint32_t val32;
@@ -988,9 +988,9 @@ jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign,
 
 #if 1
     num_digits = (unsigned int)(cur - digits) + sign;
-    padding = filed_width - num_digits;
+    padding = field_width - num_digits;
     if (padding < 0) {
-        filed_width = num_digits;
+        field_width = num_digits;
     }
     else {
         // align to right, fill ' ' into right padding space
@@ -1003,14 +1003,14 @@ jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign,
 #else
     num_digits = cur - digits;
     if (sign == 0) {
-        padding = filed_width - num_digits;
+        padding = field_width - num_digits;
         if (padding < 0)
-            filed_width = num_digits;
+            field_width = num_digits;
     }
     else {
-        padding = filed_width - num_digits - 1;
+        padding = field_width - num_digits - 1;
         if (padding < 0)
-            filed_width = num_digits + 1;
+            field_width = num_digits + 1;
     }
 
     // align to right
@@ -1036,18 +1036,18 @@ jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign,
 #endif
 
     *buf = '\0';
-    return filed_width;
+    return field_width;
 }
 
 JMC_INLINE_NONSTD(int)
 jmc_i64toa_r10_integer(char *buf, int64_t val,
-                       unsigned int filed_width)
+                       unsigned int field_width)
 {
 #if 0
     if (val >= 0)
-        return jmc_u64toa_r10_integer(buf,  val, 0, filed_width);
+        return jmc_u64toa_r10_integer(buf,  val, 0, field_width);
     else
-        return jmc_u64toa_r10_integer(buf, -val, 1, filed_width);   
+        return jmc_u64toa_r10_integer(buf, -val, 1, field_width);   
 #else
     int sign;
     if (val >= 0) {
@@ -1057,7 +1057,7 @@ jmc_i64toa_r10_integer(char *buf, int64_t val,
         sign = 1;
         val = -val;
     }
-    return jmc_u64toa_r10_integer(buf, val, sign, filed_width);
+    return jmc_u64toa_r10_integer(buf, val, sign, field_width);
 #endif
 }
 
