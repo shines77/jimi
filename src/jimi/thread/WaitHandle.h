@@ -7,7 +7,7 @@
 #endif
 
 #include <jimi/core/jimi_def.h>
-#include <jimi/thread/thread_def.h>
+#include <jimi/thread/ThreadDef.h>
 #include <jimi/log/log.h>
 
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
@@ -29,7 +29,7 @@ template <class T>
 class WaitHandle
 {
 public:
-    typedef jm_handle handle_t;
+    typedef jm_handle_t handle_t;
 
 public:
     WaitHandle();
@@ -81,38 +81,44 @@ WaitHandle<T>::WaitHandle()
 template <class T>
 WaitHandle<T>::~WaitHandle()
 {
-    sLog.info("WaitHandle<T>::~WaitHandle() Enter.");
+    jmLog.info("-------------------------------------");
+    jmLog.info("WaitHandle<T>::~WaitHandle() Enter.");
     //T *pThis = static_cast<T *>(this);
     //pThis->Close();
     Close();
-    sLog.info("WaitHandle<T>::~WaitHandle() Over.");
+    jmLog.info("WaitHandle<T>::~WaitHandle() Over.");
+    jmLog.info("-------------------------------------");
 }
 
 template <class T>
 void WaitHandle<T>::Close()
 {
-    sLog.info("WaitHandle<T>::Close() Enter.");
+    jmLog.info("WaitHandle<T>::Close() Enter.");
     if (IsValid()) {
         ::CloseHandle(m_hHandle);
         m_hHandle = NULL;
     }
-    sLog.info("WaitHandle<T>::Close() Over.");
+    jmLog.info("WaitHandle<T>::Close() Over.");
 }
 
+/* static */
 template <class T>
 bool WaitHandle<T>::WaitOne(uint32_t uMillisecTimeout /* = Timeout::kInfinite */,
                             bool exitContext /* = false */)
 {
-    return (::WaitForSingleObjectEx(m_hHandle, uMillisecTimeout, exitContext) == WaitFor::kSignalled);
+    return (::WaitForSingleObjectEx(m_hHandle, uMillisecTimeout, exitContext)
+                                        == WaitFor::kSignalled);
 }
 
+/* static */
 template <class T>
 uint32_t WaitHandle<T>::WaitOneEx(uint32_t uMillisecTimeout /* = Timeout::kInfinite */,
-                               bool exitContext /* = false */)
+                                  bool exitContext /* = false */)
 {
     return ::WaitForSingleObjectEx(m_hHandle, uMillisecTimeout, exitContext);
 }
 
+/* static */
 template <class T>
 bool WaitHandle<T>::IsAnySignalled(uint32_t uWaitState, int count)
 {
@@ -120,6 +126,7 @@ bool WaitHandle<T>::IsAnySignalled(uint32_t uWaitState, int count)
     return (nWaitObjectIndex >= 0 && nWaitObjectIndex < count);
 }
 
+/* static */
 template <class T>
 bool WaitHandle<T>::IsAnyAbandoned(uint32_t uWaitState, int count)
 {
@@ -127,15 +134,18 @@ bool WaitHandle<T>::IsAnyAbandoned(uint32_t uWaitState, int count)
     return (nAbandonIndex >= 0 && nAbandonIndex < count);
 }
 
+/* static */
 template <class T>
 bool WaitHandle<T>::WaitAny(const handle_t *pHandles, int count,
                             uint32_t uMillisecTimeout /*= Timeout::kInfinite*/,
                             bool exitContext /*= false*/)
 {
-    int32_t nWaitObjectIndex = ::WaitForMultipleObjectsEx(count, pHandles, FALSE, uMillisecTimeout, exitContext) - WaitFor::kSignalled;
+    int32_t nWaitObjectIndex = ::WaitForMultipleObjectsEx(count, pHandles, FALSE,
+                                    uMillisecTimeout, exitContext) - WaitFor::kSignalled;
     return (nWaitObjectIndex >= 0 && nWaitObjectIndex < count);
 }
 
+/* static */
 template <class T>
 uint32_t WaitHandle<T>::WaitAnyEx(const handle_t *pHandles, int count,
                                   uint32_t uMillisecTimeout /*= Timeout::kInfinite*/,
@@ -144,14 +154,17 @@ uint32_t WaitHandle<T>::WaitAnyEx(const handle_t *pHandles, int count,
     return ::WaitForMultipleObjectsEx(count, pHandles, FALSE, uMillisecTimeout, exitContext);
 }
 
+/* static */
 template <class T>
 bool WaitHandle<T>::WaitAll(const handle_t *pHandles, int count,
                             uint32_t uMillisecTimeout /*= Timeout::kInfinite*/,
                             bool exitContext /*= false*/)
 {
-    return (::WaitForMultipleObjectsEx(count, pHandles, TRUE, uMillisecTimeout, exitContext) == WaitFor::kSignalled);
+    return (::WaitForMultipleObjectsEx(count, pHandles, TRUE, uMillisecTimeout, exitContext)
+                                        == WaitFor::kSignalled);
 }
 
+/* static */
 template <class T>
 uint32_t WaitHandle<T>::WaitAllEx(const handle_t *pHandles, int count,
                                   uint32_t uMillisecTimeout /*= Timeout::kInfinite*/,
@@ -160,14 +173,17 @@ uint32_t WaitHandle<T>::WaitAllEx(const handle_t *pHandles, int count,
     return ::WaitForMultipleObjectsEx(count, pHandles, TRUE, uMillisecTimeout, exitContext);
 }
 
+/* static */
 template <class T>
 bool WaitHandle<T>::SignalAndWait(const handle_t toSignal, const handle_t toWaitOn,
                                   uint32_t uMillisecTimeout /* = Timeout::kInfinite */,
                                   bool exitContext /* = false */)
 {
-    return (::SignalObjectAndWait(toSignal, toWaitOn, uMillisecTimeout, exitContext) == WaitFor::kSignalled);
+    return (::SignalObjectAndWait(toSignal, toWaitOn, uMillisecTimeout, exitContext)
+                                    == WaitFor::kSignalled);
 }
 
+/* static */
 template <class T>
 uint32_t WaitHandle<T>::SignalAndWaitEx(const handle_t toSignal, const handle_t toWaitOn,
                                         uint32_t uMillisecTimeout /* = Timeout::kInfinite */,

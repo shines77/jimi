@@ -267,7 +267,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\thread\Atomic.h" />
     <ClInclude Include="..\..\..\..\src\jimi\thread\Event.h" />
     <ClInclude Include="..\..\..\..\src\jimi\thread\Thread.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\thread\thread_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\thread\ThreadDef.h" />
     <ClInclude Include="..\..\..\..\src\jimi\thread\WaitHandle.h" />
     <ClInclude Include="..\..\..\..\src\jimi\util\cmd_line.h" />
   </ItemGroup>

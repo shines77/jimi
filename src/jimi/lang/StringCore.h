@@ -493,7 +493,7 @@ STRING_CORE::string_core(const string_core &rhs)
         }
         else {
 #ifdef _DEBUG
-            sLog.error("string_core(const string_core &src): data = %s, type = 0x%04X, size = %d.",
+            jmLog.error("string_core(const string_core &src): data = %s, type = 0x%04X, size = %d.",
                 &_small.buf[0], _small.info.type, _small.info.size);
 #endif
         }
@@ -537,7 +537,7 @@ STRING_CORE::string_core(const string_core &rhs)
     }
     /* unknown type */
     else {
-        sLog.error("string_core(const string_core &src): type = 0x%04X, data = %08X, size() = %d.", getType(), _ml.core.data, _ml.core.size);
+        jmLog.error("string_core(const string_core &src): type = 0x%04X, data = %08X, size() = %d.", getType(), _ml.core.data, _ml.core.size);
     }
 }
 
@@ -1425,7 +1425,7 @@ int STRING_CORE::compare(const STRING_CORE &rhs) const
             else {
 #ifndef _DEBUG
                 // Unknown string type
-                sLog.error("string_core::compare(const string_core &rhs) - Error: Unknown string type.");
+                jmLog.error("string_core::compare(const string_core &rhs) - Error: Unknown string type.");
 #endif
             }
         }
@@ -1436,7 +1436,7 @@ int STRING_CORE::compare(const STRING_CORE &rhs) const
     else {
 #ifndef _DEBUG
         // Is not same size
-        sLog.info("string_core::compare(const string_core &rhs), size() = %d, rhs.size() = %d", size(), rhs.size());
+        jmLog.info("string_core::compare(const string_core &rhs), size() = %d, rhs.size() = %d", size(), rhs.size());
 #endif
     }
     return equal;
@@ -1461,7 +1461,7 @@ int STRING_CORE::compare(const char_type *rhs) const
     else {
 #ifdef _DEBUG
         // Unknown string type
-        sLog.error("STRING_CORE::compare(const char_type *rhs) - Error: Unknown string type.");
+        jmLog.error("STRING_CORE::compare(const char_type *rhs) - Error: Unknown string type.");
 #endif
     }
     return equal;

@@ -7,7 +7,7 @@
 #endif
 
 #include <jimi/core/jimi_def.h>
-#include <jimi/thread/thread_def.h>
+#include <jimi/thread/ThreadDef.h>
 #include <jimi/thread/WaitHandle.h>
 #include <jimi/log/log.h>
 #include <jimic/string/jm_strings.h>
@@ -78,19 +78,21 @@ EventWaitHandle::EventWaitHandle(bool bInitialState, bool bManualReset,
                                  bool *bCreatedNew /* = NULL */,
                                  LPSECURITY_ATTRIBUTES lpEventAttributes /* = NULL */)
 {
-    Create(bInitialState, bManualReset, lpEventName, bCreatedNew, lpEventAttributes);
+    this->Create(bInitialState, bManualReset, lpEventName, bCreatedNew, lpEventAttributes);
 }
 
 EventWaitHandle::~EventWaitHandle()
 {
-    sLog.info("EventWaitHandle::~EventWaitHandle() Enter.");
-    Close();
-    sLog.info("EventWaitHandle::~EventWaitHandle() Over.");
+    jmLog.info("-----------------------------------------------");
+    jmLog.info("EventWaitHandle::~EventWaitHandle() Enter.");
+    this->Close();
+    jmLog.info("EventWaitHandle::~EventWaitHandle() Over.");
+    jmLog.info("-----------------------------------------------");
 }
 
 void EventWaitHandle::Close()
 {
-    sLog.info("EventWaitHandle::Close() Enter.");
+    jmLog.info("EventWaitHandle::Close() Enter.");
     if (m_pEventName) {
         delete m_pEventName;
         m_pEventName = NULL;
@@ -99,7 +101,7 @@ void EventWaitHandle::Close()
         ::CloseHandle(m_hHandle);
         m_hHandle = NULL;
     }
-    sLog.info("EventWaitHandle::Close() Over.");
+    jmLog.info("EventWaitHandle::Close() Over.");
 }
 
 EventWaitHandle::handle_t
@@ -195,7 +197,7 @@ class ManualResetEvent : public EventWaitHandle
 public:
     ManualResetEvent(bool bInitialState, const char *lpEventName = NULL)
         : EventWaitHandle(bInitialState, EventResetMode::kManualReset, lpEventName) { };
-    ~ManualResetEvent() { sLog.info("ManualResetEvent::~ManualResetEvent()."); };
+    ~ManualResetEvent() { jmLog.info("ManualResetEvent::~ManualResetEvent()."); };
 };
 
 /**************************************************************************
@@ -207,7 +209,7 @@ class AutoResetEvent : public EventWaitHandle
 public:
     AutoResetEvent(bool bInitialState, const char *lpEventName = NULL)
         : EventWaitHandle(bInitialState, EventResetMode::kAutoReset, lpEventName) { };
-    ~AutoResetEvent() { sLog.info("AutoResetEvent::~AutoResetEvent()."); };
+    ~AutoResetEvent() { jmLog.info("AutoResetEvent::~AutoResetEvent()."); };
 };
 
 NS_JIMI_SYSTEM_END

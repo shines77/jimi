@@ -435,7 +435,7 @@ WinServiceBase<T>::~WinServiceBase(void)
 template <class T>
 void WinServiceBase<T>::Destroy()
 {
-    sLog.info("WinServiceBase<T>::Destroy(), error = %d.", GetLastError());
+    jmLog.info("WinServiceBase<T>::Destroy(), error = %d.", GetLastError());
     T *pT = static_cast<T *>(this);
     pT->OnDestroy();
 }
@@ -443,14 +443,14 @@ void WinServiceBase<T>::Destroy()
 template <class T>
 void WinServiceBase<T>::OnDestroy()
 {
-    sLog.info("WinServiceBase<T>::OnDestroy(), error = %d.", GetLastError());
+    jmLog.info("WinServiceBase<T>::OnDestroy(), error = %d.", GetLastError());
 }
 
 template <class T>
 void WinServiceBase<T>::InitComponent()
 {
     // Initialize the operating properties for the service.
-    sLog.info("WinServiceBase<T>::InitComponent().");
+    jmLog.info("WinServiceBase<T>::InitComponent().");
 }
 
 template <class T>
@@ -500,14 +500,14 @@ bool WinServiceBase<T>::InstallService()
     szPath[0] = _T('\0');
 #if 1
     if (!::GetModuleFileName(NULL, szPath, nLen)) {
-        sLog.error("Cannot install service (%d).", GetLastError());
-        sLog.error("SERVICE: Can't get service binary filename.");
+        jmLog.error("Cannot install service (%d).", GetLastError());
+        jmLog.error("SERVICE: Can't get service binary filename.");
         return false;
     }
 #else
     if (!GetModuleFileName(NULL, szPath + 1, nLen - _ATL_QUOTES_SPACE)) {
-        sLog.error("Cannot install service (%d).", GetLastError());
-        sLog.error("SERVICE: Can't get service binary filename.");
+        jmLog.error("Cannot install service (%d).", GetLastError());
+        jmLog.error("SERVICE: Can't get service binary filename.");
         return false;
     }
 
@@ -528,10 +528,10 @@ bool WinServiceBase<T>::InstallService()
 
     if (NULL == schSCManager) {
         int nLastError = GetLastError();
-        sLog.error("OpenSCManager failed (%d).", nLastError);
-        sLog.error("SERVICE: No access to service control manager.");
+        jmLog.error("OpenSCManager failed (%d).", nLastError);
+        jmLog.error("SERVICE: No access to service control manager.");
         if (nLastError == 5) {
-            sLog.error("please, try run with admin rights.");
+            jmLog.error("please, try run with admin rights.");
         }
         return false;
     }
@@ -555,20 +555,20 @@ bool WinServiceBase<T>::InstallService()
         NULL);                          // no password
 
     if (schService == NULL) {
-        sLog.error("CreateService failed (%d).", GetLastError());
-        sLog.error("SERVICE: Can't register service for: %s.", szPath);
+        jmLog.error("CreateService failed (%d).", GetLastError());
+        jmLog.error("SERVICE: Can't register service for: %s.", szPath);
         ::CloseServiceHandle(schSCManager);
         return false;
     }
     else {
-        sLog.info("Service installed successfully.");
+        jmLog.info("Service installed successfully.");
     }
 
     // Change the service config
     CSD_T ChangeService_Config2;
     HMODULE advapi32 = ::GetModuleHandle("ADVAPI32.DLL");
     if (!advapi32) {
-        sLog.error("SERVICE: Can't access ADVAPI32.DLL .");
+        jmLog.error("SERVICE: Can't access ADVAPI32.DLL .");
         ::CloseServiceHandle(schService);
         ::CloseServiceHandle(schSCManager);
         return false;
@@ -576,7 +576,7 @@ bool WinServiceBase<T>::InstallService()
 
     ChangeService_Config2 = (CSD_T)::GetProcAddress(advapi32, "ChangeServiceConfig2A");
     if (!ChangeService_Config2) {
-        sLog.error("SERVICE: Can't access ChangeServiceConfig2A from ADVAPI32.DLL .");
+        jmLog.error("SERVICE: Can't access ChangeServiceConfig2A from ADVAPI32.DLL .");
         ::CloseServiceHandle(schService);
         ::CloseServiceHandle(schSCManager);
         return false;
@@ -617,7 +617,7 @@ bool WinServiceBase<T>::UninstallService()
         SC_MANAGER_ALL_ACCESS);  // full access rights
 
     if (!schSCManager) {
-        sLog.error("SERVICE: No access to service control manager.");
+        jmLog.error("SERVICE: No access to service control manager.");
         return false;
     }
 
@@ -633,7 +633,7 @@ bool WinServiceBase<T>::UninstallService()
 
     if (!schService) {
         ::CloseServiceHandle(schSCManager);
-        sLog.error("SERVICE: Service not found: %s", m_ServiceName);
+        jmLog.error("SERVICE: Service not found: %s", m_ServiceName);
         return false;
     }
 
@@ -660,9 +660,9 @@ bool WinServiceBase<T>::UninstallService()
     }
 
     if (::DeleteService(schService))
-        sLog.info("Service uninstalled successfully.");
+        jmLog.info("Service uninstalled successfully.");
     else
-        sLog.info("Service uninstalled failed.");
+        jmLog.info("Service uninstalled failed.");
 
     ::CloseServiceHandle(schService);
     ::CloseServiceHandle(schSCManager);
@@ -684,7 +684,7 @@ void WinServiceBase<T>::ServiceReportEvent(LPTSTR szFunction, int nEventId)
         szServiceName = pInstance->GetServiceName();
     }
     else {
-        sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+        jmLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         //throw ERROR_SERVICE_INSTANCE_NOT_INITED;
         szServiceName = _T("Unknown WinServiceBase<T>");
     }
@@ -765,7 +765,7 @@ BOOL WinServiceBase<T>::UpdateServiceStatus(DWORD dwCurrentState, DWORD dwWin32E
                                             DWORD dwWaitHint)
 {
     BOOL bResult = FALSE;
-    sLog.info("invoke WinServiceBase<T>::UpdateServiceStatus() enter.");
+    jmLog.info("invoke WinServiceBase<T>::UpdateServiceStatus() enter.");
 
     this->m_nServiceStatus = dwCurrentState;
 
@@ -779,93 +779,93 @@ BOOL WinServiceBase<T>::UpdateServiceStatus(DWORD dwCurrentState, DWORD dwWin32E
         this->m_ServiceStatus.dwServiceSpecificExitCode = dwServiceSpecificExitCode;
         this->m_ServiceStatus.dwControlsAccepted |= SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_PAUSE_CONTINUE | SERVICE_ACCEPT_SHUTDOWN;
 
-        sLog.info("UpdateServiceStatus(): dwCurrentState = %s (%d)", s_szServiceStatusString[dwCurrentState], dwCurrentState);
+        jmLog.info("UpdateServiceStatus(): dwCurrentState = %s (%d)", s_szServiceStatusString[dwCurrentState], dwCurrentState);
 
         // Report the status of the service to the SCM.
         bResult = ::SetServiceStatus(this->m_ServiceStatusHandle, &this->m_ServiceStatus);
     }
     else {
-        sLog.info("UpdateServiceStatus(): dwCurrentState = Unknown Status (%d)", dwCurrentState);
+        jmLog.info("UpdateServiceStatus(): dwCurrentState = Unknown Status (%d)", dwCurrentState);
     }
 
-    sLog.info("invoke WinServiceBase<T>::UpdateServiceStatus() over.");
+    jmLog.info("invoke WinServiceBase<T>::UpdateServiceStatus() over.");
     return bResult;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnServiceInit()
 {
-    sLog.info("invoke WinServiceBase<T>::OnServiceInit().");
+    jmLog.info("invoke WinServiceBase<T>::OnServiceInit().");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnServiceCleanup()
 {
-    sLog.info("invoke WinServiceBase<T>::OnServiceCleanup().");
+    jmLog.info("invoke WinServiceBase<T>::OnServiceCleanup().");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnStart(int argc, TCHAR *argv[])
 {
-    sLog.info("invoke WinServiceBase<T>::OnStart().");
+    jmLog.info("invoke WinServiceBase<T>::OnStart().");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnStop()
 {
-    sLog.info("invoke WinServiceBase<T>::OnStop().");
+    jmLog.info("invoke WinServiceBase<T>::OnStop().");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnPause()
 {
-    sLog.info("invoke WinServiceBase<T>::OnPause().");
+    jmLog.info("invoke WinServiceBase<T>::OnPause().");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnContinue()
 {
-    sLog.info("invoke WinServiceBase<T>::OnContinue().");
+    jmLog.info("invoke WinServiceBase<T>::OnContinue().");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnInterrogate()
 {
-    sLog.info("invoke WinServiceBase<T>::OnInterrogate().");
+    jmLog.info("invoke WinServiceBase<T>::OnInterrogate().");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnShutdown()
 {
-    sLog.info("invoke WinServiceBase<T>::OnShutdown().");
+    jmLog.info("invoke WinServiceBase<T>::OnShutdown().");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnParamChange(DWORD dwParamChangeReason)
 {
-    sLog.info("invoke WinServiceBase<T>::OnParamChange().");
+    jmLog.info("invoke WinServiceBase<T>::OnParamChange().");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnDeviceEvent(DWORD dwDeviceEvent)
 {
-    sLog.info("invoke WinServiceBase<T>::OnDeviceEvent().");
+    jmLog.info("invoke WinServiceBase<T>::OnDeviceEvent().");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnSessionChange(SessionChangeDescription *changeDescription)
 {
-    sLog.info("invoke WinServiceBase<T>::OnSessionChange() Enter.");
+    jmLog.info("invoke WinServiceBase<T>::OnSessionChange() Enter.");
 
     switch (changeDescription->dwReason) {
         case Session_Change_Reason.kConsoleConnect:
@@ -902,42 +902,42 @@ bool WinServiceBase<T>::OnSessionChange(SessionChangeDescription *changeDescript
             break;
     }
 
-    sLog.info("invoke WinServiceBase<T>::OnSessionChange() Over.");
+    jmLog.info("invoke WinServiceBase<T>::OnSessionChange() Over.");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnPowerEvent(PowerBroadcastStatus *powerStatus)
 {
-    sLog.info("invoke WinServiceBase<T>::OnPowerEvent().");
+    jmLog.info("invoke WinServiceBase<T>::OnPowerEvent().");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnPreShutdown()
 {
-    sLog.info("invoke WinServiceBase<T>::OnPreShutdown().");
+    jmLog.info("invoke WinServiceBase<T>::OnPreShutdown().");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnCustomCommand(DWORD dwControlCode)
 {
-    sLog.info("invoke WinServiceBase<T>::OnCustomCommand(), dwControlCode = %d.", dwControlCode);
+    jmLog.info("invoke WinServiceBase<T>::OnCustomCommand(), dwControlCode = %d.", dwControlCode);
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::OnUnknownCommand(DWORD dwControlCode)
 {
-    sLog.info("invoke WinServiceBase<T>::OnUnknownCommand(), dwControlCode = %d.", dwControlCode);
+    jmLog.info("invoke WinServiceBase<T>::OnUnknownCommand(), dwControlCode = %d.", dwControlCode);
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnServiceInit()
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnServiceInit().");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnServiceInit().");
     T *pT = static_cast<T *>(this);
     return pT->OnServiceInit();
 }
@@ -945,7 +945,7 @@ bool WinServiceBase<T>::FireEvent_OnServiceInit()
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnServiceCleanup()
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnServiceCleanup().");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnServiceCleanup().");
     T *pT = static_cast<T *>(this);
     return pT->OnServiceCleanup();
 }
@@ -953,7 +953,7 @@ bool WinServiceBase<T>::FireEvent_OnServiceCleanup()
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnStart(int argc, TCHAR *argv[])
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnStart().");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnStart().");
     T *pT = static_cast<T *>(this);
     return pT->OnStart(argc, argv);
 }
@@ -961,7 +961,7 @@ bool WinServiceBase<T>::FireEvent_OnStart(int argc, TCHAR *argv[])
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnStop()
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnStop() Enter.");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnStop() Enter.");
 
     // Signal that service try stop
     UpdateServiceStatus(SERVICE_STOP_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
@@ -972,14 +972,14 @@ bool WinServiceBase<T>::FireEvent_OnStop()
         UpdateServiceStatus(SERVICE_STOPPED, NO_ERROR, 0);
     }
 
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnStop() Over.");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnStop() Over.");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnPause()
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnPause() Enter.");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnPause() Enter.");
 
     // Signal that service try pause
     UpdateServiceStatus(SERVICE_PAUSE_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
@@ -990,14 +990,14 @@ bool WinServiceBase<T>::FireEvent_OnPause()
         UpdateServiceStatus(SERVICE_PAUSED, NO_ERROR, 0);
     }
 
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnPause() Over.");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnPause() Over.");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnContinue()
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnContinue() Enter.");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnContinue() Enter.");
 
     // Signal that service try continue
     UpdateServiceStatus(SERVICE_CONTINUE_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT);
@@ -1008,28 +1008,28 @@ bool WinServiceBase<T>::FireEvent_OnContinue()
         UpdateServiceStatus(SERVICE_RUNNING, NO_ERROR, 0);
     }
 
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnContinue() Over.");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnContinue() Over.");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnInterrogate()
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnInterrogate() Enter.");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnInterrogate() Enter.");
 
     T *pT = static_cast<T *>(this);
     if (pT->OnInterrogate()) {
         // ServiceInterrogate
     }
 
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnInterrogate() Over.");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnInterrogate() Over.");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnShutdown()
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnShutdown() Enter.");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnShutdown() Enter.");
 
     // Signal that service try stop (shutdown)
     UpdateServiceStatus(SVC_STATUS_STOP_PENDING, NO_ERROR, SERVICE_DEFAULT_WAIT_HINT * 2);
@@ -1040,14 +1040,14 @@ bool WinServiceBase<T>::FireEvent_OnShutdown()
         UpdateServiceStatus(SERVICE_STOPPED, NO_ERROR, 0);
     }
 
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnShutdown() Over.");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnShutdown() Over.");
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnParamChange(DWORD dwEventType, LPVOID lpEventData)
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnParamChange().");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnParamChange().");
     DWORD dwParamChangeReason = 0;
 
     T *pT = static_cast<T *>(this);
@@ -1057,7 +1057,7 @@ bool WinServiceBase<T>::FireEvent_OnParamChange(DWORD dwEventType, LPVOID lpEven
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnDeviceEvent(DWORD dwEventType, LPVOID lpEventData)
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnDeviceEvent().");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnDeviceEvent().");
     DWORD dwDeviceEvent = 0;
 
     T *pT = static_cast<T *>(this);
@@ -1074,13 +1074,13 @@ template <class T>
 bool WinServiceBase<T>::FireEvent_OnSessionChange(DWORD dwEventType, LPVOID lpEventData)
 {
     bool bSuccess = false;
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnSessionChange() Enter.");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnSessionChange() Enter.");
 
     // Service Session Change
     SessionChangeDescription changeDescription;
     ::ZeroMemory((void *)&changeDescription, sizeof(changeDescription));
 
-    sLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() dwEventType = %d", dwEventType);
+    jmLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() dwEventType = %d", dwEventType);
 
     DWORD dwSessionId;
     int nConnectState = 0;
@@ -1094,7 +1094,7 @@ bool WinServiceBase<T>::FireEvent_OnSessionChange(DWORD dwEventType, LPVOID lpEv
             // WTSActive
             nConnectState = WTSActive;
             nConnectState = *(reinterpret_cast<int*>(pBuffer));
-            sLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() nConnectState = %d", nConnectState);
+            jmLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() nConnectState = %d", nConnectState);
             changeDescription.dwReason    = dwEventType;
             changeDescription.dwSessionId = dwSessionId;
             changeDescription.lpEventData = lpEventData;
@@ -1104,7 +1104,7 @@ bool WinServiceBase<T>::FireEvent_OnSessionChange(DWORD dwEventType, LPVOID lpEv
             // this is not exceptional situation, the session may be closed at the moment, 
             // or close operation is pending on the session
             bSuccess = false;
-            sLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() - WTSQuerySessionInformation() error = %d", ::GetLastError());
+            jmLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() - WTSQuerySessionInformation() error = %d", ::GetLastError());
         }
 
         if (pBuffer != NULL) {
@@ -1126,14 +1126,14 @@ bool WinServiceBase<T>::FireEvent_OnSessionChange(DWORD dwEventType, LPVOID lpEv
             else if ((dwEventsFlag & WTS_EVENT_STATECHANGE) == WTS_EVENT_STATECHANGE) {
                 dwReason = kSessionRemoteControl;
             }
-            sLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() dwReason = %d", dwReason);
+            jmLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() dwReason = %d", dwReason);
             changeDescription.dwReason = dwReason;
             bSuccess = true;
         }
         else {
             if (::GetLastError() == ERROR_OPERATION_ABORTED)
                 bSuccess = false;
-            sLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() - WTSWaitSystemEvent() error = %d", ::GetLastError());
+            jmLog.info("WinServiceBase<T>::FireEvent_OnSessionChange() - WTSWaitSystemEvent() error = %d", ::GetLastError());
         }
     }
     changeDescription.dwReason = dwEventType;
@@ -1145,15 +1145,15 @@ bool WinServiceBase<T>::FireEvent_OnSessionChange(DWORD dwEventType, LPVOID lpEv
         }
     }
 
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnSessionChange() Over.");
-    sLog.flush();
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnSessionChange() Over.");
+    jmLog.flush();
     return true;
 }
 
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnPowerEvent(DWORD dwEventType, LPVOID lpEventData)
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnPowerEvent().");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnPowerEvent().");
     PowerBroadcastStatus powerStatus = { 0 };
 
     T *pT = static_cast<T *>(this);
@@ -1163,7 +1163,7 @@ bool WinServiceBase<T>::FireEvent_OnPowerEvent(DWORD dwEventType, LPVOID lpEvent
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnPreShutdown(DWORD dwEventType, LPVOID lpEventData)
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnPreShutdown().");
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnPreShutdown().");
     T *pT = static_cast<T *>(this);
     return pT->OnPreShutdown();
 }
@@ -1171,7 +1171,7 @@ bool WinServiceBase<T>::FireEvent_OnPreShutdown(DWORD dwEventType, LPVOID lpEven
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnCustomCommand(DWORD dwControlCode)
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnCustomCommand(), dwControlCode = %d.", dwControlCode);
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnCustomCommand(), dwControlCode = %d.", dwControlCode);
     T *pT = static_cast<T *>(this);
     return pT->OnCustomCommand(dwControlCode);
 }
@@ -1179,7 +1179,7 @@ bool WinServiceBase<T>::FireEvent_OnCustomCommand(DWORD dwControlCode)
 template <class T>
 bool WinServiceBase<T>::FireEvent_OnUnknownCommand(DWORD dwControlCode)
 {
-    sLog.info("invoke WinServiceBase<T>::FireEvent_OnUnknownCommand(), dwControlCode = %d.", dwControlCode);
+    jmLog.info("invoke WinServiceBase<T>::FireEvent_OnUnknownCommand(), dwControlCode = %d.", dwControlCode);
     T *pT = static_cast<T *>(this);
     return pT->OnUnknownCommand(dwControlCode);
 }
@@ -1211,7 +1211,7 @@ void WinServiceBase<T>::ServiceControlHandler(DWORD dwControlCode)
 #if 1
     WinServiceBase<T> *pInstance = s_pServiceInstance;
     if (pInstance == NULL) {
-        sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+        jmLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
@@ -1276,7 +1276,7 @@ void WinServiceBase<T>::ServiceControlHandler(DWORD dwControlCode)
 #else
     T *pInstanceImpl = static_cast<T *>(s_pServiceInstance);
     if (pInstanceImpl == NULL) {
-        sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+        jmLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
@@ -1345,7 +1345,7 @@ DWORD WinServiceBase<T>::ServiceControlHandlerEx(DWORD dwControlCode, DWORD dwEv
 {
     WinServiceBase<T> *pInstance = s_pServiceInstance;
     if (pInstance == NULL) {
-        sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+        jmLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
@@ -1411,7 +1411,7 @@ DWORD WinServiceBase<T>::ServiceControlHandlerEx(DWORD dwControlCode, DWORD dwEv
 template <class T>
 void WinServiceBase<T>::WorkerThreadProc(void *pvData)
 {
-    sLog.info("WinServiceBase<T>::WorkerThreadProc() Enter.");
+    jmLog.info("WinServiceBase<T>::WorkerThreadProc() Enter.");
 
     Thread::THREAD_PARAMS *pParams = (Thread::THREAD_PARAMS *)pvData;
     Thread *pThread = NULL;
@@ -1425,7 +1425,7 @@ void WinServiceBase<T>::WorkerThreadProc(void *pvData)
 
     WinServiceBase<T>::ServiceWorkerLoop(pExecInfo->argc, pExecInfo->argv);
 
-    sLog.info("WinServiceBase<T>::WorkerThreadProc() Over.");
+    jmLog.info("WinServiceBase<T>::WorkerThreadProc() Over.");
 }
 
 template <class T>
@@ -1436,11 +1436,11 @@ bool WinServiceBase<T>::ServiceWorkerMethod(void *pvData)
     unsigned int nSleepTime = GetSleepTime();
     unsigned int nPauseSleepTime = GetPauseSleepTime();
 
-    sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod() Enter.");
+    jmLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod() Enter.");
     while (IsRunning()) {
         if (!IsPausing()) {
             if (s_nOnServiceLoopCnt < 10) {
-                sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod(), cnt = %d", s_nOnServiceLoopCnt);
+                jmLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod(), cnt = %d", s_nOnServiceLoopCnt);
                 s_nOnServiceLoopCnt++;
             }
             s_nServiceLoopPauseCnt = 0;
@@ -1448,14 +1448,14 @@ bool WinServiceBase<T>::ServiceWorkerMethod(void *pvData)
         }
         else {
             if (s_nServiceLoopPauseCnt < 10) {
-                sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod(): Pause, cnt = %d, time = %d",
+                jmLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod(): Pause, cnt = %d, time = %d",
                     s_nServiceLoopPauseCnt, GetTickCount());
                 s_nServiceLoopPauseCnt++;
             }
             ::Sleep(nPauseSleepTime);
         }
     }
-    sLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod() Over.");
+    jmLog.info("invoke WinServiceBase<T>::ServiceWorkerMethod() Over.");
     return true;
 }
 
@@ -1464,20 +1464,20 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
 {
     T *pInstanceImpl = static_cast<T *>(s_pServiceInstance);
     if (pInstanceImpl == NULL) {
-        sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+        jmLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
     WinServiceBase<T> *pInstance = s_pServiceInstance;
     if (pInstance == NULL) {
-        sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+        jmLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
     static int s_nServiceLoopCnt = 0;
     static int s_nServiceLoopPauseCnt = 0;
 
-    sLog.info("WinServiceBase<T>::ServiceWorkerLoop() Enter.");
+    jmLog.info("WinServiceBase<T>::ServiceWorkerLoop() Enter.");
 
     // The worker loop of a service
     while (pInstance->IsRunning()) {
@@ -1489,7 +1489,7 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
                 break;
             }
             if (s_nServiceLoopCnt < 10) {
-                sLog.info("WinServiceBase<T>::ServiceWorkerLoop(): time = %d", GetTickCount());
+                jmLog.info("WinServiceBase<T>::ServiceWorkerLoop(): time = %d", GetTickCount());
                 s_nServiceLoopCnt++;
             }
             s_nServiceLoopPauseCnt = 0;
@@ -1497,7 +1497,7 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
         }
         else {
             if (s_nServiceLoopPauseCnt < 10) {
-                sLog.info("WinServiceBase<T>::ServiceWorkerLoop(): Pause, cnt = %d, time = %d",
+                jmLog.info("WinServiceBase<T>::ServiceWorkerLoop(): Pause, cnt = %d, time = %d",
                     s_nServiceLoopPauseCnt, GetTickCount());
                 s_nServiceLoopPauseCnt++;
             }
@@ -1505,7 +1505,7 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
         }
     }
 
-    sLog.info("WinServiceBase<T>::ServiceWorkerLoop() Over.");
+    jmLog.info("WinServiceBase<T>::ServiceWorkerLoop() Over.");
 }
 
 template <class T>
@@ -1513,13 +1513,13 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
 {
     T *pInstanceImpl = static_cast<T *>(s_pServiceInstance);
     if (pInstanceImpl == NULL) {
-        sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+        jmLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
     WinServiceBase<T> *pInstance = s_pServiceInstance;
     if (pInstance == NULL) {
-        sLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
+        jmLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
@@ -1546,7 +1546,7 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
 
         if (::GetModuleFileName(NULL, szPath, nBufLen) <= 0) {
             // can't get the app's exe name
-            sLog.error("WinServiceBase<T>::ServiceMain: GetModuleFileName() call failed.");
+            jmLog.error("WinServiceBase<T>::ServiceMain: GetModuleFileName() call failed.");
             return;
         }
 
@@ -1568,7 +1568,7 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
 
         // Initialize Service
         if (!pInstanceImpl->OnServiceInit()) {
-            sLog.error("WinServiceBase<T>::ServiceMain: Initialization failed.");
+            jmLog.error("WinServiceBase<T>::ServiceMain: Initialization failed.");
             pInstance->m_ServiceStatus.dwCurrentState       = SERVICE_STOPPED;
             pInstance->m_ServiceStatus.dwWin32ExitCode      = ERROR_SERVICE_SPECIFIC_ERROR;
             pInstance->m_ServiceStatus.dwServiceSpecificExitCode = ERR_SVC_INIT_SERVICE_FAILED;
@@ -1586,7 +1586,7 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
 
         // Start Service
         if (pInstanceImpl && (!pInstanceImpl->OnStart(argc, argv))) {
-            sLog.error("WinServiceBase<T>::ServiceMain: OnStart() failed.");
+            jmLog.error("WinServiceBase<T>::ServiceMain: OnStart() failed.");
             pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_STOPPED;
             pInstance->m_ServiceStatus.dwWin32ExitCode           = ERROR_SERVICE_SPECIFIC_ERROR;
             pInstance->m_ServiceStatus.dwServiceSpecificExitCode = ERR_SVC_START_SERVICE_FAILED;
@@ -1637,7 +1637,7 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
 
         // Do Cleanup Callback
         if (pInstanceImpl && (!pInstanceImpl->OnServiceCleanup())) {
-            sLog.error("WinServiceBase<T>::ServiceMain: OnServiceCleanup() failed.");
+            jmLog.error("WinServiceBase<T>::ServiceMain: OnServiceCleanup() failed.");
             if (pInstance != NULL) {
                 pInstance->m_ServiceStatus.dwCurrentState            = SERVICE_STOPPED;
                 pInstance->m_ServiceStatus.dwWin32ExitCode           = ERROR_SERVICE_SPECIFIC_ERROR;
@@ -1657,7 +1657,7 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
     }
     else {
         // Registering service failed
-        sLog.error("Registering Control Handler failed (ErrCode = %d).", GetLastError());
+        jmLog.error("Registering Control Handler failed (ErrCode = %d).", GetLastError());
     }
 }
 
@@ -1670,7 +1670,7 @@ int WinServiceBase<T>::RunService()
 template <class T>
 int WinServiceBase<T>::RunService(WinServiceBase<T> *pServiceInstance)
 {
-    sLog.info("WinServiceBase<T>::RunService() Enter.");
+    jmLog.info("WinServiceBase<T>::RunService() Enter.");
 
     T *pInstance = static_cast<T *>(pServiceInstance);
 
@@ -1679,7 +1679,7 @@ int WinServiceBase<T>::RunService(WinServiceBase<T> *pServiceInstance)
     if (pInstance == NULL)
         pInstance = static_cast<T *>(s_pServiceInstance);
     if (pInstance == NULL) {
-        sLog.error("%s%s", "WinServiceBase<T>::RunService(): ", ERROR_SERVICE_INSTANCE_NOT_INITED);
+        jmLog.error("%s%s", "WinServiceBase<T>::RunService(): ", ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
@@ -1693,12 +1693,12 @@ int WinServiceBase<T>::RunService(WinServiceBase<T> *pServiceInstance)
     // This call returns when the service has stopped.
     // The process should simply terminate when the call returns.
     if (!::StartServiceCtrlDispatcher(serviceTable)) {
-        sLog.error("StartService Failed. Error [%u].", ::GetLastError());
+        jmLog.error("StartService Failed. Error [%u].", ::GetLastError());
         WinServiceBase<T>::ServiceReportEvent(_T("WinServiceBase<T>::RunService(): StartServiceCtrlDispatcher() error."), ::GetLastError());
         return 0;
     }
 
-    sLog.info("WinServiceBase<T>::RunService() Over.");
+    jmLog.info("WinServiceBase<T>::RunService() Over.");
     return 1;
 }
 
@@ -1711,7 +1711,7 @@ int WinServiceBase<T>::RunServiceEx(SERVICE_TABLE_ENTRY serviceTable[])
 template <class T>
 int WinServiceBase<T>::RunServiceEx(WinServiceBase<T> *pServiceInstance, SERVICE_TABLE_ENTRY serviceTable[])
 {
-    sLog.info("WinServiceBase<T>::RunServiceEx() Enter.");
+    jmLog.info("WinServiceBase<T>::RunServiceEx() Enter.");
     T *pInstance = static_cast<T *>(pServiceInstance);
 
     // If command-line parameter is "install", install the service.
@@ -1719,7 +1719,7 @@ int WinServiceBase<T>::RunServiceEx(WinServiceBase<T> *pServiceInstance, SERVICE
     if (pInstance == NULL)
         pInstance = static_cast<T *>(s_pServiceInstance);
     if (pInstance == NULL) {
-        sLog.error("%s%s", "WinServiceBase<T>::RunServiceEx(): ", ERROR_SERVICE_INSTANCE_NOT_INITED);
+        jmLog.error("%s%s", "WinServiceBase<T>::RunServiceEx(): ", ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
@@ -1735,12 +1735,12 @@ int WinServiceBase<T>::RunServiceEx(WinServiceBase<T> *pServiceInstance, SERVICE
     // This call returns when the service has stopped.
     // The process should simply terminate when the call returns.
     if (!::StartServiceCtrlDispatcher(serviceTable)) {
-        sLog.error("StartService Failed. Error [%u].", ::GetLastError());
+        jmLog.error("StartService Failed. Error [%u].", ::GetLastError());
         WinServiceBase<T>::ServiceReportEvent(_T("WinServiceBase<T>::RunServiceEx(): StartServiceCtrlDispatcher() error."), ::GetLastError());
         return 0;
     }
 
-    sLog.info("WinServiceBase<T>::RunServiceEx() Over.");
+    jmLog.info("WinServiceBase<T>::RunServiceEx() Over.");
     return 1;
 }
 

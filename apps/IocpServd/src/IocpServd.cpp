@@ -64,14 +64,14 @@ NS_IOCPSERVD_BEGIN
 
 int IocpServd_main(int argc, char *argv[])
 {
-    sLog.log_begin();
+    jmLog.log_begin();
 
     bool isService = true;
     jimi::util::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
         std::string strCmdLine = cmdLine.getCmdLine();
-        sLog.info(strCmdLine.c_str());
+        jmLog.info(strCmdLine.c_str());
     }
 
     IocpServdService *service = new IocpServdService();
@@ -82,7 +82,7 @@ int IocpServd_main(int argc, char *argv[])
         service->SetServiceDisplayName(g_ServiceDisplayName);
         service->SetServiceDescription(g_ServiceDescription);
 
-        sLog.info("cmdLine.parse(argc, argv): argc_cnt = %d", cnt);
+        jmLog.info("cmdLine.parse(argc, argv): argc_cnt = %d", cnt);
 
         if (cmdLine.hasArgument("-run") || cmdLine.hasArgument("/run")
             || cmdLine.hasArgument("-r") || cmdLine.hasArgument("/r")) {
@@ -177,7 +177,7 @@ int IocpServd_main(int argc, char *argv[])
     if (!isService)
         ::system("pause");
 
-    sLog.log_end();
+    jmLog.log_end();
     return 0;
 }
 

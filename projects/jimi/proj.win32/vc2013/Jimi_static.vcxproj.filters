@@ -176,9 +176,6 @@
     <ClInclude Include="..\..\..\..\src\jimi\thread\Thread.h">
       <Filter>src\jimi\thread</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\thread\thread_def.h">
-      <Filter>src\jimi\thread</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\thread\WaitHandle.h">
       <Filter>src\jimi\thread</Filter>
     </ClInclude>
@@ -376,6 +373,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\dtos.h">
       <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\thread\ThreadDef.h">
+      <Filter>src\jimi\thread</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

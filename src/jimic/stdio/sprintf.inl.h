@@ -152,7 +152,7 @@ jmc_vslprintf(char * JMC_RESTRICT buf, size_t count_max, size_t count,
     register uint32_t       hex32;
 
     jimic_assert(buf != NULL);
-    jimic_assert(fmt != NULL);
+    jimic_assert(format != NULL);
     jimic_assert(count != 0);
 
     cur = (char *)format;

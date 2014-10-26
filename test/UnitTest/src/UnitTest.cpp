@@ -2726,13 +2726,13 @@ int UnitTest_Main(int argc, char *argv[])
     // 设置CRTDBG的环境(Debug模式下, 检查内存越界和内存泄漏问题)
     jimi_set_crtdbg_env(1, 1);
 
-    sLog.log_begin();
+    jmLog.log_begin();
 
     jimi::util::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
         std::string strCmdLine = cmdLine.getCmdLine();
-        sLog.info(strCmdLine.c_str());
+        jmLog.info(strCmdLine.c_str());
     }
 
 #if 0
@@ -2905,7 +2905,7 @@ int UnitTest_Main(int argc, char *argv[])
     printf("\n");
     
     if (true && 0) {
-        sLog.log_end();
+        jmLog.log_end();
         jimi::Console.ReadKey();
         return 0;
     }
@@ -2948,7 +2948,7 @@ int UnitTest_Main(int argc, char *argv[])
     //OStringStream_Performance_Test();
 
     if (true && 0) {
-        sLog.log_end();
+        jmLog.log_end();
         jimi::Console.ReadKey();
         return 0;
     }
@@ -3054,7 +3054,7 @@ int UnitTest_Main(int argc, char *argv[])
     lock.try_acquire(read_mutex, 4000);
     lock.release();
 
-    sLog.log_end();
+    jmLog.log_end();
 
     jimi::Console.ReadKey();
     return 0;

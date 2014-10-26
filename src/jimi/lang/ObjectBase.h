@@ -57,7 +57,7 @@ ObjectBase::~ObjectBase()
 
 void ObjectBase::Finalize()
 {
-    sLog.info("ObjectBase::Finalize(), error = %d.", ::GetLastError());
+    jmLog.info("ObjectBase::Finalize(), error = %d.", ::GetLastError());
 }
 
 bool ObjectBase::Equals(ObjectBase *object)
@@ -72,7 +72,7 @@ bool ObjectBase::EqualsRef(const ObjectBase &object)
 
 void ObjectBase::Close()
 {
-    sLog.info("ObjectBase::Close(), this = 0x%08X, error = %d.", (void *)this, ::GetLastError());
+    jmLog.info("ObjectBase::Close(), this = 0x%08X, error = %d.", (void *)this, ::GetLastError());
 }
 
 ObjectBase ObjectBase::Clone()

@@ -60,8 +60,8 @@ using namespace std;
 #define _JIMI_LOG                       NS_JIMI_LOG(utils.log.print)
 #endif
 
-#ifndef sLog
-#define sLog                            NS_JIMI_LOG(utils.log)
+#ifndef jmLog
+#define jmLog                           NS_JIMI_LOG(utils.log)
 #endif
 
 #ifndef DebugLog

@@ -25,10 +25,10 @@ public:
     ~SampleThread(void) { };
 
     static void JIMI_WINAPI ThreadProc(void *lpParam) {
-        sLog.info("invoke SampleThread::ThreadProc() Start.");
-        sLog.info("invoke SampleThread::ThreadProc() Thread::Sleep(5000);");
+        jmLog.info("invoke SampleThread::ThreadProc() Start.");
+        jmLog.info("invoke SampleThread::ThreadProc() Thread::Sleep(5000);");
         Thread::Sleep(5000);
-        sLog.info("invoke SampleThread::ThreadProc() End.");
+        jmLog.info("invoke SampleThread::ThreadProc() End.");
     }
 };
 
@@ -40,9 +40,9 @@ public:
 
     static void DoWork(void *lpParam) {
         while (!_shouldStop) {
-            sLog.info("worker thread: working...");
+            jmLog.info("worker thread: working...");
         }
-        sLog.info("worker thread: terminating gracefully.");
+        jmLog.info("worker thread: terminating gracefully.");
     }
 
     void RequestStop() {
@@ -67,7 +67,7 @@ public:
 
         // Start the worker thread.
         workerThread->Start();
-        sLog.info("main thread: Starting worker thread...");
+        jmLog.info("main thread: Starting worker thread...");
 
         // Loop until worker thread activates.
         while (!workerThread->IsAlive());
@@ -82,7 +82,7 @@ public:
         // Use the Join method to block the current thread 
         // until the object's thread terminates.
         workerThread->Join();
-        sLog.info("main thread: Worker thread has terminated.");
+        jmLog.info("main thread: Worker thread has terminated.");
 
         if (workerThread)
             delete workerThread;

@@ -19,27 +19,21 @@ NS_JIMI_SYSTEM_BEGIN
 
 #define HANDLE_IS_VALID(X)      ((X) != NULL && (X) != INVALID_HANDLE_VALUE)
 
-typedef enum WAIT_FOR_OBJECT
-{
-    WAIT_FOR_IGNORE     = IGNORE,
-    WAIT_FOR_INFINITE   = INFINITE,
-} WAIT_FOR_OBJECT;
+typedef HANDLE jm_handle_t;
 
-typedef HANDLE jm_handle;
-
-struct Timeout
+typedef struct Timeout
 {
     static const uint32_t kInfinite = INFINITE;
     static const uint32_t kIgnore   = IGNORE;
-};
+} Timeout;
 
-struct ErrorCode
+typedef struct ErrorCode
 {
     static const uint32_t kErrorSuccess = ERROR_SUCCESS;
     static const uint32_t kNoError      = NO_ERROR;
-};
+} ErrorCode;
 
-struct WaitFor
+typedef struct WaitFor
 {
     static const uint32_t kSignalled    = WAIT_OBJECT_0;
     static const uint32_t kTimeout      = WAIT_TIMEOUT;
@@ -48,21 +42,21 @@ struct WaitFor
     static const uint32_t kWaitObject_0 = WAIT_OBJECT_0;
     static const uint32_t kAbandoned_0  = WAIT_ABANDONED_0;
     static const uint32_t kFailed       = WAIT_FAILED;
-};
+} WaitFor;
 
-struct SignalState
+typedef struct SignalState
 {
     static const uint32_t kUndefined    = (uint32_t)-1;
     static const uint32_t kSignalled    = TRUE;
     static const uint32_t kNoSignalled  = FALSE;
-};
+} SignalState;
 
-struct EventResetMode
+typedef struct EventResetMode
 {
     static const uint32_t kUndefined    = (uint32_t)-1;
     static const uint32_t kAutoReset    = FALSE;
     static const uint32_t kManualReset  = TRUE;
-};
+} EventResetMode;
 
 NS_JIMI_SYSTEM_END
 

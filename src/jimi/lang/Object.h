@@ -76,7 +76,7 @@ Object::~Object()
 
 void Object::Finalize() throw (Exception)
 {
-    sLog.info("Object::Finalize(), error = %d.", ::GetLastError());
+    jmLog.info("Object::Finalize(), error = %d.", ::GetLastError());
 }
 
 inline bool Object::Equals(Object *object)
@@ -92,7 +92,7 @@ inline bool Object::EqualsRef(const Object &object)
 
 void Object::Close() throw (IOException)
 {
-    sLog.info("Object::Close(), this = 0x%08X, error = %d.", (void *)this, ::GetLastError());
+    jmLog.info("Object::Close(), this = 0x%08X, error = %d.", (void *)this, ::GetLastError());
 }
 
 inline Object Object::Clone() throw (CloneNotSupportedException)
