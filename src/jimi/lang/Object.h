@@ -41,12 +41,12 @@ public:
     bool Equals(Object *object);
     bool EqualsRef(const Object &object);
 
-    void Notify() throw (IllegalMonitorStateException) { };
-    void NotifyAll() throw (IllegalMonitorStateException) { };
+    void Notify() throw (IllegalMonitorStateException) { /* TODO: */ };
+    void NotifyAll() throw (IllegalMonitorStateException) { /* TODO: */ };
 
-    void Wait() throw (InterruptedException) { };
-    void Wait(uint32_t timeout) throw (InterruptedException) { };
-    void Wait(uint32_t timeout, int32_t nanos) throw (InterruptedException) { };
+    void Wait() throw (InterruptedException) { /* TODO: */ };
+    void Wait(uint32_t timeout) throw (InterruptedException) { /* TODO: */ };
+    void Wait(uint32_t timeout, int32_t nanos) throw (InterruptedException) { /* TODO: */ };
 
     void Close() throw (IOException);
     Object Clone() throw (CloneNotSupportedException);
@@ -74,7 +74,7 @@ Object::~Object()
     Finalize();
 }
 
-void Object::Finalize() throw (Exception)
+inline void Object::Finalize() throw (Exception)
 {
     jmLog.info("Object::Finalize(), error = %d.", ::GetLastError());
 }
@@ -90,7 +90,7 @@ inline bool Object::EqualsRef(const Object &object)
 }
 
 
-void Object::Close() throw (IOException)
+inline void Object::Close() throw (IOException)
 {
     jmLog.info("Object::Close(), this = 0x%08X, error = %d.", (void *)this, ::GetLastError());
 }
@@ -102,7 +102,7 @@ inline Object Object::Clone() throw (CloneNotSupportedException)
 
 inline String Object::ToString()
 {
-    return String(Name);
+    return Name;
 }
 
 NS_JIMI_END

@@ -7,6 +7,7 @@
 #endif
 
 #include <jimi/core/jimi_def.h>
+#include <jimi/internal/NonCopyable.h>
 #include <jimi/log/log.h>
 
 NS_JIMI_BEGIN
@@ -14,7 +15,7 @@ NS_JIMI_BEGIN
 NS_JIMI_SYSTEM_BEGIN
 
 template<class T>
-class JIMI_API scoped_lock : public internal::no_copy
+class JIMI_API scoped_lock : public jimi::internal::NonCopyable
 {
 public:
     //! Construct lock that has not acquired a mutex. 

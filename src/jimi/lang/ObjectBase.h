@@ -22,12 +22,12 @@ public:
     bool Equals(ObjectBase *object);
     bool EqualsRef(const ObjectBase &object);
 
-    void Notify() { };
-    void NotifyAll() { };
+    void Notify()       { /* TODO: */ };
+    void NotifyAll()    { /* TODO: */ };
 
     void Wait() { };
-    void Wait(uint32_t timeout) { };
-    void Wait(uint32_t timeout, int32_t nanos) { };
+    void Wait(uint32_t timeout) { /* TODO: */ };
+    void Wait(uint32_t timeout, int32_t nanos) { /* TODO: */ };
 
     void Close();
     ObjectBase Clone();
@@ -55,34 +55,34 @@ ObjectBase::~ObjectBase()
     Finalize();
 }
 
-void ObjectBase::Finalize()
+inline void ObjectBase::Finalize()
 {
     jmLog.info("ObjectBase::Finalize(), error = %d.", ::GetLastError());
 }
 
-bool ObjectBase::Equals(ObjectBase *object)
+inline bool ObjectBase::Equals(ObjectBase *object)
 {
     return (this == object);
 }
 
-bool ObjectBase::EqualsRef(const ObjectBase &object)
+inline bool ObjectBase::EqualsRef(const ObjectBase &object)
 {
     return (this == &object);
 }
 
-void ObjectBase::Close()
+inline void ObjectBase::Close()
 {
     jmLog.info("ObjectBase::Close(), this = 0x%08X, error = %d.", (void *)this, ::GetLastError());
 }
 
-ObjectBase ObjectBase::Clone()
+inline ObjectBase ObjectBase::Clone()
 {
     return *this;
 }
 
-String ObjectBase::ToString()
+inline String ObjectBase::ToString()
 {
-    return String(Name);
+    return Name;
 }
 
 NS_JIMI_END
