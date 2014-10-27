@@ -15,7 +15,7 @@
 
 #include <jimi/core/jimi_def.h>
 
-using namespace std;
+//using namespace std;
 
 ////////////////////////////////////////////////////////////////
 
@@ -49,7 +49,7 @@ typedef enum Param_Type
 // Case insensitive string comparison in C++
 // From: http://stackoverflow.com/questions/11635/case-insensitive-string-comparison-in-c
 //
-struct ci_char_traits : public char_traits<char> {
+struct ci_char_traits : public std::char_traits<char> {
 
     static bool eq(char c1, char c2) { return ::toupper(c1) == ::toupper(c2); }
     static bool ne(char c1, char c2) { return ::toupper(c1) != ::toupper(c2); }

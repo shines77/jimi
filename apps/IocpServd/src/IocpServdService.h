@@ -12,13 +12,9 @@
 
 #include "IocpServd.h"
 
-USING_NS_JIMI;
-USING_NS_JIMI_LOG;
-USING_NS_JIMI_SYSTEM;
-
 NS_IOCPSERVD_BEGIN
 
-class IocpServdService : public system::WinServiceBase<IocpServdService>
+class IocpServdService : public jimi::system::WinServiceBase<IocpServdService>
 {
 public:
     IocpServdService(void);
@@ -85,12 +81,12 @@ public:
         return true;
     }
 
-    bool OnSessionChange(SessionChangeDescription *changeDescription) {
+    bool OnSessionChange(jimi::system::SessionChangeDescription *changeDescription) {
         jmLog.info("invoke IocpServdService::OnSessionChange().");
         return true;
     }
 
-    bool OnPowerEvent(PowerBroadcastStatus *powerStatus) {
+    bool OnPowerEvent(jimi::system::PowerBroadcastStatus *powerStatus) {
         jmLog.info("invoke IocpServdService::OnPowerEvent().");
         return true;
     }
@@ -161,12 +157,12 @@ public:
         return true;
     }
 
-    virtual bool OnSessionChange() {
+    virtual bool OnSessionChange(jimi::system::SessionChangeDescription *changeDescription) {
         jmLog.info("invoke IocpServdService::OnSessionChange().");
         return true;
     }
 
-    virtual bool OnPowerEvent() {
+    virtual bool OnPowerEvent(jimi::system::PowerBroadcastStatus *powerStatus) {
         jmLog.info("invoke IocpServdService::OnPowerEvent().");
         return true;
     }

@@ -13,8 +13,11 @@
 
 #include <string>
 #include <locale>
+#include <xlocale>
 
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
 #include <tuple>
+#endif
 #include <type_traits>
 
 NS_JIMI_BEGIN
@@ -36,7 +39,7 @@ namespace detail {
 }  /* namespace of detail */
 
 template <typename char_type = char>
-class format_setting : public jimi::NonAssignable
+class format_setting : public internal::NonAssignable
 {
 public:
     /* 对齐方式, 相当于printf()里 "%+05d" 中的 "+", "-" 前缀 */
@@ -184,7 +187,7 @@ public:
 };
 
 template <typename char_type = char>
-class format_detail : public jimi::NonAssignable
+class format_detail : public internal::NonAssignable
 {
 public:
     format_detail() {}
@@ -454,20 +457,22 @@ public:
 #define DEFAULT_FLOAT_PRECISION     6
 #endif
 
-template <typename StringType = jimi::string, int Precision = DEFAULT_FLOAT_PRECISION>
-class formatter : public jimi::NonAssignable
+template <typename StringType = string, int Precision = DEFAULT_FLOAT_PRECISION>
+class formatter : public internal::NonAssignable
 {
 public:
-//  typedef typename StringType::char_type          char_type;
-    typedef typename StringType::value_type         value_type;
-    typedef typename StringType::size_type          size_type;
-    typedef typename std::basic_string<value_type>  StdStringType;
+//  typedef typename StringType::char_type              char_type;
+    typedef typename StringType::value_type             value_type;
+    typedef typename StringType::size_type              size_type;
+    typedef typename std::basic_string<value_type>      StdStringType;
 
 public:
     formatter() {}
     ~formatter() {}
 
 public:
+
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
     // format_to() ...
     template <typename ... Args>
     size_type format_to(StringType & result, const value_type * fmt, Args const ... args);
@@ -486,9 +491,6 @@ public:
     size_type format_fast_to(StringType & result, const value_type * fmt, Args const ... args);
 
     template <typename ... Args>
-    size_type format_fast_to_new(StringType & result, const value_type * fmt, Args const ... args);
-
-    template <typename ... Args>
     size_type format_fast_to(StringType & result, const StringType & fmt, Args const ... args);
 
     template <typename ... Args>
@@ -497,12 +499,16 @@ public:
     template <typename ... Args>
     StringType format_fast(const StringType & fmt, Args const ... args);
 
-    // format_fast_to2() ...
+    // format_fast_to_new() ...
     template <typename ... Args>
-    size_type format_fast_to2(StringType & result, const value_type * fmt, Args const ... args);
+    size_type format_fast_to_new(StringType & result, const value_type * fmt, Args const ... args);
+
+    // format_fast2_to() ...
+    template <typename ... Args>
+    size_type format_fast2_to(StringType & result, const value_type * fmt, Args const ... args);
 
     template <typename ... Args>
-    size_type format_fast_to2(StringType & result, const StringType & fmt, Args const ... args);
+    size_type format_fast2_to(StringType & result, const StringType & fmt, Args const ... args);
 
     template <typename ... Args>
     StringType format_fast2(const value_type * fmt, Args const ... args);
@@ -515,9 +521,6 @@ public:
     size_type csharp_format_to(StringType & result, const value_type * fmt, Args const ... args);
 
     template <typename ... Args>
-    size_type csharp_format_to_new(StringType & result, const value_type * fmt, Args const ... args);
-
-    template <typename ... Args>
     size_type csharp_format_to(StringType & result, const StringType & fmt, Args const ... args);
 
     template <typename ... Args>
@@ -526,12 +529,16 @@ public:
     template <typename ... Args>
     StringType csharp_format(const StringType & fmt, Args const ... args);
 
-    // csharp_format_old_to() ...
+    // csharp_format_to_new() ...
     template <typename ... Args>
-    size_type csharp_format_old_to(StringType & result, const value_type * fmt, Args const ... args);
+    size_type csharp_format_to_new(StringType & result, const value_type * fmt, Args const ... args);
+
+    // csharp_format_to_old() ...
+    template <typename ... Args>
+    size_type csharp_format_to_old(StringType & result, const value_type * fmt, Args const ... args);
 
     template <typename ... Args>
-    size_type csharp_format_old_to(StringType & result, const StringType & fmt, Args const ... args);
+    size_type csharp_format_to_old(StringType & result, const StringType & fmt, Args const ... args);
 
     template <typename ... Args>
     StringType csharp_format_old(const value_type * fmt, Args const ... args);
@@ -555,7 +562,99 @@ public:
     template <typename ... Args>
     StringType append_l(std::locale loc, Args const ... args);
 
+#else
+    // format_to() ...
+    size_type vformat_to(StringType & result, const value_type * fmt, va_list arglist);
+
+    size_type format_to(StringType & result, const value_type * fmt, ...);
+
+    size_type format_to(StringType & result, const StringType & fmt, ...);
+
+    StringType format(const value_type * fmt, ...);
+
+    StringType format(const StringType & fmt, ...);
+
+    // format_fast_to() ...
+    size_type vformat_fast_to(StringType & result, const value_type * fmt, va_list arglist);
+
+    size_type format_fast_to(StringType & result, const value_type * fmt, ...);
+
+    size_type format_fast_to(StringType & result, const StringType & fmt, ...);
+
+    StringType format_fast(const value_type * fmt, ...);
+
+    StringType format_fast(const StringType & fmt, ...);
+
+    // format_fast_to_new() ...
+    size_type vformat_fast_to_new(StringType & result, const value_type * fmt, va_list arglist);
+
+    size_type format_fast_to_new(StringType & result, const value_type * fmt, ...);
+
+    size_type format_fast_to_new(StringType & result, const StringType & fmt, ...);
+
+    // format_fast2_to() ...
+    size_type vformat_fast2_to(StringType & result, const value_type * fmt, va_list arglist);
+
+    size_type format_fast2_to(StringType & result, const value_type * fmt, ...);
+
+    size_type format_fast2_to(StringType & result, const StringType & fmt, ...);
+
+    StringType format_fast2(const value_type * fmt, ...);
+
+    StringType format_fast2(const StringType & fmt, ...);
+
+    // csharp_format_to() ...
+    size_type csharp_vformat_to(StringType & result, const value_type * fmt, va_list arglist);
+
+    size_type csharp_format_to(StringType & result, const value_type * fmt, ...);
+
+    size_type csharp_format_to(StringType & result, const StringType & fmt, ...);
+
+    StringType csharp_format(const value_type * fmt, ...);
+
+    StringType csharp_format(const StringType & fmt, ...);
+
+    // csharp_format_to_new() ...
+    size_type csharp_vformat_to_new(StringType & result, const value_type * fmt, va_list arglist);
+
+    size_type csharp_format_to_new(StringType & result, const value_type * fmt, ...);   
+
+    size_type csharp_format_to_new(StringType & result, const StringType & fmt, ...);
+
+    // csharp_format_to_old() ...
+    size_type csharp_vformat_to_old(StringType & result, const value_type * fmt, va_list arglist);
+
+    size_type csharp_format_to_old(StringType & result, const value_type * fmt, ...);
+
+    size_type csharp_format_to_old(StringType & result, const StringType & fmt, ...);
+
+    StringType csharp_format_old(const value_type * fmt, ...);
+
+    StringType csharp_format_old(const StringType & fmt, ...);
+
+    // append() ...
+    typename StdStringType::size_type vappend_to(StdStringType & result,
+                                                 const value_type * fmt, va_list arglist);
+
+    typename StdStringType::size_type append_to(StdStringType & result, ...);
+
+    size_type vappend_to(StringType & result, const value_type * fmt, va_list arglist);
+
+    size_type append_to(StringType & result, ...);
+
+    size_type append_to(value_type *buffer, size_t countOfElements, ...);
+
+#if 0
+    StringType append(...);
+#endif
+
+    StringType append_l(std::locale loc, ...);
+
+#endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
+
 protected:
+
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
     // for format_to() ...
     template<typename T, typename ... Args>
     static void format_to_next_arg(StringType * arg_list, const T & value);
@@ -572,13 +671,13 @@ protected:
     static void csharp_format_to_next_arg(StringType * arg_list, const T & value,
                                           Args const ... args);
 
-    // for format_fast_to2() ...
+    // for format_fast2_to() ...
     template<typename T, typename ... Args>
-    static void format_fast_to2_next(StringType & result, value_type* & fmt,
+    static void format_fast2_to_next(StringType & result, value_type* & fmt,
         size_t index, size_t max_args, const T & value);
 
     template<typename T, typename ... Args>
-    static void format_fast_to2_next(StringType & result, value_type* & fmt,
+    static void format_fast2_to_next(StringType & result, value_type* & fmt,
         size_t index, size_t max_args, const T & value, Args const ... args);
 
     // for append_to() ...
@@ -587,7 +686,355 @@ protected:
 
     template<typename T, typename ... Args>
     static void append_to_next(StringType & result, const T & value, Args const ... args);
+
+#endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 };
+
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
+
+////////////////////////////////////////////////////////////////////////////////
+// format_fast_to()
+////////////////////////////////////////////////////////////////////////////////
+
+namespace detail {
+
+    template<size_t i = 0, typename Tuple, typename StringType>
+    typename std::enable_if< (i >= std::tuple_size<Tuple>::value) >::type
+    JIMI_INLINE appendArgByIndex(size_t, const Tuple &, StringType &)
+    {
+        throw std::invalid_argument("arg index out of range");
+    }
+
+    template<size_t i = 0, typename Tuple, typename StringType>
+    typename std::enable_if< (i < std::tuple_size<Tuple>::value) >::type
+    JIMI_INLINE appendArgByIndex(size_t index, const Tuple & tp, StringType & result)
+    {
+#if 0
+        if (i == index)
+            result.append(std::get<i>(tp));
+        else
+            appendArgByIndex<i + 1>(index, tp, result);
+#else
+        if (i != index)
+            appendArgByIndex<i + 1>(index, tp, result);
+        else
+            result.append(std::get<i>(tp));
+#endif
+    }
+
+}  /* namespace of detail */
+
+template <typename StringType, int Precision>
+template <typename ... Args>
+JIMI_INLINE
+typename StringType::size_type
+formatter<StringType, Precision>::format_fast_to(StringType & result,
+                                                 const value_type * fmt,
+                                                 Args const ... args)
+{
+    value_type *cur;
+    size_t      index;
+    value_type  c;
+
+    jimi_assert(fmt != NULL);
+#if 1
+    if (fmt == NULL)
+        return 0;
+#endif
+
+    result.clear();
+
+    const size_t max_args = sizeof...(args);
+    auto tp = std::tuple<Args...>(args...);
+    //const size_t max_args = std::tuple_size<decltype(tp)>::value;
+
+    index = 0;
+    cur = const_cast<value_type *>(fmt);
+    
+    while ((c = *cur++) != '\0') {
+        if (c == '?') {
+            c = *cur++;
+            if (c != '?') {
+                if (index < max_args) {
+                    detail::appendArgByIndex<0>(index, tp, result);
+                    if (c != '\0')
+                        result.append(c);
+                    else
+                        break;
+                    index++;
+                }
+                else {
+                    if (c != '\0')
+                        result.append(c);
+                    else
+                        break;
+                    while ((c = *fmt++) != '\0') {
+                        result.append(c);
+                    }
+                    break;
+                }
+            }
+            else {
+                result.append(c);
+            }
+        }
+        else {
+            result.append(c);
+        }
+    }
+
+    return result.size();
+}
+
+template <typename StringType, int Precision>
+template <typename ... Args>
+JIMI_INLINE
+typename StringType::size_type
+formatter<StringType, Precision>::format_fast_to_new(StringType & result,
+                                                     const value_type * fmt,
+                                                     Args const ... args)
+{
+    value_type *cur;
+    size_t      index;
+    value_type  c;
+
+    jimi_assert(fmt != NULL);
+#if 1
+    if (fmt == NULL)
+        return 0;
+#endif
+
+    result.clear();
+
+    const size_t max_args = sizeof...(args);
+
+    index = 0;
+    cur = const_cast<value_type *>(fmt);
+    
+    while ((c = *cur++) != '\0') {
+        if (c == '?') {
+            c = *cur++;
+            if (c != '?') {
+                if (index < max_args) {
+                    //detail::appendArgByIndex2(result, index, args...);
+                    detail::appendArgByIndex2_tpl<0>(result, index, args...);
+                    if (c != '\0')
+                        result.append(c);
+                    else
+                        break;
+                    index++;
+                }
+                else {
+                    if (c != '\0')
+                        result.append(c);
+                    else
+                        break;
+                    while ((c = *fmt++) != '\0') {
+                        result.append(c);
+                    }
+                    break;
+                }
+            }
+            else {
+                result.append(c);
+            }
+        }
+        else {
+            result.append(c);
+        }
+    }
+
+    return result.size();
+}
+
+template <typename StringType, int Precision>
+template <typename ... Args>
+JIMI_INLINE
+typename StringType::size_type
+formatter<StringType, Precision>::format_fast_to(StringType & result,
+                                                 const StringType & fmt,
+                                                 Args const ... args)
+{
+    return format_fast_to(result, fmt.c_str(), args...);
+}
+
+template <typename StringType, int Precision>
+template <typename ... Args>
+JIMI_INLINE
+StringType
+formatter<StringType, Precision>::format_fast(const value_type * fmt, Args const ... args)
+{
+    StringType result;
+    format_fast_to(result, fmt, args...);
+    return result;
+}
+
+template <typename StringType, int Precision>
+template <typename ... Args>
+JIMI_INLINE
+StringType
+formatter<StringType, Precision>::format_fast(const StringType & fmt, Args const ... args)
+{
+    return format_fast(fmt.c_str(), args...);
+
+    #include <chrono>
+    using std::chrono::high_resolution_clock;
+    high_resolution_clock::now();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// format_fast2_to()
+////////////////////////////////////////////////////////////////////////////////
+
+template <typename StringType, int Precision>
+template <typename T, typename ... Args>
+JIMI_INLINE
+void formatter<StringType, Precision>::format_fast2_to_next(StringType & result,
+                                                            value_type* & fmt,
+                                                            size_t index, size_t max_args,
+                                                            const T & value)
+{
+    value_type c;
+    while ((c = *fmt++) != '\0') {
+        if (c == '?') {
+            c = *fmt++;
+            if (c != '?') {
+                if (index < max_args) {
+                    result.append(value);
+                    if (c != '\0')
+                        result.append(c);
+                    else
+                        break;
+                    while ((c = *fmt++) != '\0') {
+                        result.append(c);
+                    }
+                    break;
+                }
+                else {
+                    if (c != '\0')
+                        result.append(c);
+                    else
+                        break;
+                    while ((c = *fmt++) != '\0') {
+                        result.append(c);
+                    }
+                    break;
+                }
+            }
+            else {
+                result.append(c);
+            }
+        }
+        else {
+            result.append(c);
+        }
+    }
+}
+
+template <typename StringType, int Precision>
+template <typename T, typename ... Args>
+JIMI_INLINE
+void formatter<StringType, Precision>::format_fast2_to_next(StringType & result,
+                                                            value_type* & fmt,
+                                                            size_t index, size_t max_args,
+                                                            const T & value, Args const ... args)
+{
+    value_type c;
+    while ((c = *fmt++) != '\0') {
+        if (c == '?') {
+            c = *fmt++;
+            if (c != '?') {
+                if (index < max_args) {
+                    result.append(value);
+                    if (c != '\0')
+                        result.append(c);
+                    else
+                        break;
+                    index++;
+                    format_fast2_to_next(result, fmt, index, max_args, args...);
+                    while ((c = *fmt++) != '\0') {
+                        result.append(c);
+                    }
+                    break;
+                }
+                else {
+                    if (c != '\0')
+                        result.append(c);
+                    else
+                        break;
+                    while ((c = *fmt++) != '\0') {
+                        result.append(c);
+                    }
+                    break;
+                }
+            }
+            else {
+                result.append(c);
+            }
+        }
+        else {
+            result.append(c);
+        }
+    }
+}
+
+template <typename StringType, int Precision>
+template <typename ... Args>
+JIMI_INLINE
+typename StringType::size_type
+formatter<StringType, Precision>::format_fast2_to(StringType & result,
+                                                  const value_type * fmt,
+                                                  Args const ... args)
+{
+    value_type *cur;
+
+    jimi_assert(fmt != NULL);
+#if 1
+    if (fmt == NULL)
+        return 0;
+#endif
+
+    result.clear();
+
+    const size_t max_args = sizeof...(args);
+    cur = const_cast<value_type *>(fmt);
+    format_fast2_to_next(result, cur, 0, max_args, args...);
+
+    return result.size();
+}
+
+template <typename StringType, int Precision>
+template <typename ... Args>
+JIMI_INLINE
+typename StringType::size_type
+formatter<StringType, Precision>::format_fast2_to(StringType & result,
+                                                  const StringType & fmt,
+                                                  Args const ... args)
+{
+    return format_fast2_to(result, fmt.c_str(), args...);
+}
+
+template <typename StringType, int Precision>
+template <typename ... Args>
+JIMI_INLINE
+StringType
+formatter<StringType, Precision>::format_fast2(const value_type * fmt,
+                                               Args const ... args)
+{
+    StringType result;
+    format_fast2_to(result, fmt, args...);
+    return result;
+}
+
+template <typename StringType, int Precision>
+template <typename ... Args>
+JIMI_INLINE
+StringType
+formatter<StringType, Precision>::format_fast2(const StringType & fmt,
+                                               Args const ... args)
+{
+    return format_fast2(fmt.c_str(), args...);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // csharp_format_to()
@@ -925,7 +1372,7 @@ StringType
 formatter<StringType, Precision>::csharp_format(const value_type * fmt,
                                                 Args const ... args)
 {
-    jimi::string result;
+    StringType result;
     csharp_format_to(result, fmt, args...);
     return result;
 }
@@ -941,10 +1388,10 @@ formatter<StringType, Precision>::csharp_format(const StringType & fmt,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// csharp_format_old_to()
+// csharp_format_to_old()
 ////////////////////////////////////////////////////////////////////////////////
 
-/* csharp_format_old_to() 是否使用栈上分配 arg_list 内存? */
+/* csharp_format_to_old() 是否使用栈上分配 arg_list 内存? */
 #undef  FORMAT_TO_USE_ALLOCA_ONSTACK
 #define FORMAT_TO_USE_ALLOCA_ONSTACK       0
 
@@ -952,7 +1399,7 @@ template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 typename StringType::size_type
-formatter<StringType, Precision>::csharp_format_old_to(
+formatter<StringType, Precision>::csharp_format_to_old(
                                     StringType & result, const value_type * fmt,
                                     Args const ... args)
 {
@@ -1030,7 +1477,7 @@ template <typename StringType, int Precision>
 template <typename ... Args>
 JIMI_INLINE
 typename StringType::size_type
-formatter<StringType, Precision>::csharp_format_old_to(StringType & result,
+formatter<StringType, Precision>::csharp_format_to_old(StringType & result,
                                                        const StringType & fmt,
                                                        Args const ... args)
 {
@@ -1045,7 +1492,7 @@ formatter<StringType, Precision>::csharp_format_old(const value_type * fmt,
                                                     Args const ... args)
 {
     jimi::string result;
-    csharp_format_old_to(result, fmt, args...);
+    csharp_format_to_old(result, fmt, args...);
     return result;
 }
 
@@ -1057,350 +1504,6 @@ formatter<StringType, Precision>::csharp_format_old(const StringType & fmt,
                                                     Args const ... args)
 {
     return csharp_format_old(fmt.c_str(), args...);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// format_fast_to()
-////////////////////////////////////////////////////////////////////////////////
-
-namespace detail {
-
-    template<size_t i = 0, typename Tuple, typename StringType>
-    typename std::enable_if< (i >= std::tuple_size<Tuple>::value) >::type
-    JIMI_INLINE appendArgByIndex(size_t, const Tuple &, StringType &)
-    {
-        throw std::invalid_argument("arg index out of range");
-    }
-
-    template<size_t i = 0, typename Tuple, typename StringType>
-    typename std::enable_if< (i < std::tuple_size<Tuple>::value) >::type
-    JIMI_INLINE appendArgByIndex(size_t index, const Tuple & tp, StringType & result)
-    {
-#if 0
-        if (i == index)
-            result.append(std::get<i>(tp));
-        else
-            appendArgByIndex<i + 1>(index, tp, result);
-#else
-        if (i != index)
-            appendArgByIndex<i + 1>(index, tp, result);
-        else
-            result.append(std::get<i>(tp));
-#endif
-    }
-
-}  /* namespace of detail */
-
-template <typename StringType, int Precision>
-template <typename ... Args>
-JIMI_INLINE
-typename StringType::size_type
-formatter<StringType, Precision>::format_fast_to(StringType & result,
-                                                 const value_type * fmt,
-                                                 Args const ... args)
-{
-    value_type *cur;
-    size_t      index;
-    value_type  c;
-
-    jimi_assert(fmt != NULL);
-#if 1
-    if (fmt == NULL)
-        return 0;
-#endif
-
-    result.clear();
-
-    const size_t max_args = sizeof...(args);
-    auto tp = std::tuple<Args...>(args...);
-    //const size_t max_args = std::tuple_size<decltype(tp)>::value;
-
-    index = 0;
-    cur = const_cast<value_type *>(fmt);
-    
-    while ((c = *cur++) != '\0') {
-        if (c == '?') {
-            c = *cur++;
-            if (c != '?') {
-                if (index < max_args) {
-                    detail::appendArgByIndex<0>(index, tp, result);
-                    if (c != '\0')
-                        result.append(c);
-                    else
-                        break;
-                    index++;
-                }
-                else {
-                    if (c != '\0')
-                        result.append(c);
-                    else
-                        break;
-                    while ((c = *fmt++) != '\0') {
-                        result.append(c);
-                    }
-                    break;
-                }
-            }
-            else {
-                result.append(c);
-            }
-        }
-        else {
-            result.append(c);
-        }
-    }
-
-    return result.size();
-}
-
-template <typename StringType, int Precision>
-template <typename ... Args>
-JIMI_INLINE
-typename StringType::size_type
-formatter<StringType, Precision>::format_fast_to_new(StringType & result,
-                                                     const value_type * fmt,
-                                                     Args const ... args)
-{
-    value_type *cur;
-    size_t      index;
-    value_type  c;
-
-    jimi_assert(fmt != NULL);
-#if 1
-    if (fmt == NULL)
-        return 0;
-#endif
-
-    result.clear();
-
-    const size_t max_args = sizeof...(args);
-
-    index = 0;
-    cur = const_cast<value_type *>(fmt);
-    
-    while ((c = *cur++) != '\0') {
-        if (c == '?') {
-            c = *cur++;
-            if (c != '?') {
-                if (index < max_args) {
-                    //detail::appendArgByIndex2(result, index, args...);
-                    detail::appendArgByIndex2_tpl<0>(result, index, args...);
-                    if (c != '\0')
-                        result.append(c);
-                    else
-                        break;
-                    index++;
-                }
-                else {
-                    if (c != '\0')
-                        result.append(c);
-                    else
-                        break;
-                    while ((c = *fmt++) != '\0') {
-                        result.append(c);
-                    }
-                    break;
-                }
-            }
-            else {
-                result.append(c);
-            }
-        }
-        else {
-            result.append(c);
-        }
-    }
-
-    return result.size();
-}
-
-template <typename StringType, int Precision>
-template <typename ... Args>
-JIMI_INLINE
-typename StringType::size_type
-formatter<StringType, Precision>::format_fast_to(StringType & result,
-                                                 const StringType & fmt,
-                                                 Args const ... args)
-{
-    return format_fast_to(result, fmt.c_str(), args...);
-}
-
-template <typename StringType, int Precision>
-template <typename ... Args>
-JIMI_INLINE
-StringType
-formatter<StringType, Precision>::format_fast(const value_type * fmt, Args const ... args)
-{
-    StringType result;
-    format_fast_to(result, fmt, args...);
-    return result;
-}
-
-template <typename StringType, int Precision>
-template <typename ... Args>
-JIMI_INLINE
-StringType
-formatter<StringType, Precision>::format_fast(const StringType & fmt, Args const ... args)
-{
-    return format_fast(fmt.c_str(), args...);
-
-    #include <chrono>
-    using std::chrono::high_resolution_clock;
-    high_resolution_clock::now();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// format_fast_to2()
-////////////////////////////////////////////////////////////////////////////////
-
-template <typename StringType, int Precision>
-template <typename T, typename ... Args>
-JIMI_INLINE
-void formatter<StringType, Precision>::format_fast_to2_next(StringType & result,
-                                                            value_type* & fmt,
-                                                            size_t index, size_t max_args,
-                                                            const T & value)
-{
-    value_type c;
-    while ((c = *fmt++) != '\0') {
-        if (c == '?') {
-            c = *fmt++;
-            if (c != '?') {
-                if (index < max_args) {
-                    result.append(value);
-                    if (c != '\0')
-                        result.append(c);
-                    else
-                        break;
-                    while ((c = *fmt++) != '\0') {
-                        result.append(c);
-                    }
-                    break;
-                }
-                else {
-                    if (c != '\0')
-                        result.append(c);
-                    else
-                        break;
-                    while ((c = *fmt++) != '\0') {
-                        result.append(c);
-                    }
-                    break;
-                }
-            }
-            else {
-                result.append(c);
-            }
-        }
-        else {
-            result.append(c);
-        }
-    }
-}
-
-template <typename StringType, int Precision>
-template <typename T, typename ... Args>
-JIMI_INLINE
-void formatter<StringType, Precision>::format_fast_to2_next(StringType & result,
-                                                            value_type* & fmt,
-                                                            size_t index, size_t max_args,
-                                                            const T & value, Args const ... args)
-{
-    value_type c;
-    while ((c = *fmt++) != '\0') {
-        if (c == '?') {
-            c = *fmt++;
-            if (c != '?') {
-                if (index < max_args) {
-                    result.append(value);
-                    if (c != '\0')
-                        result.append(c);
-                    else
-                        break;
-                    index++;
-                    format_fast_to2_next(result, fmt, index, max_args, args...);
-                    while ((c = *fmt++) != '\0') {
-                        result.append(c);
-                    }
-                    break;
-                }
-                else {
-                    if (c != '\0')
-                        result.append(c);
-                    else
-                        break;
-                    while ((c = *fmt++) != '\0') {
-                        result.append(c);
-                    }
-                    break;
-                }
-            }
-            else {
-                result.append(c);
-            }
-        }
-        else {
-            result.append(c);
-        }
-    }
-}
-
-template <typename StringType, int Precision>
-template <typename ... Args>
-JIMI_INLINE
-typename StringType::size_type
-formatter<StringType, Precision>::format_fast_to2(StringType & result,
-                                                  const value_type * fmt,
-                                                  Args const ... args)
-{
-    value_type *cur;
-
-    jimi_assert(fmt != NULL);
-#if 1
-    if (fmt == NULL)
-        return 0;
-#endif
-
-    result.clear();
-
-    const size_t max_args = sizeof...(args);
-    cur = const_cast<value_type *>(fmt);
-    format_fast_to2_next(result, cur, 0, max_args, args...);
-
-    return result.size();
-}
-
-template <typename StringType, int Precision>
-template <typename ... Args>
-JIMI_INLINE
-typename StringType::size_type
-formatter<StringType, Precision>::format_fast_to2(StringType & result,
-                                                  const StringType & fmt,
-                                                  Args const ... args)
-{
-    return format_fast_to2(result, fmt.c_str(), args...);
-}
-
-template <typename StringType, int Precision>
-template <typename ... Args>
-JIMI_INLINE
-StringType
-formatter<StringType, Precision>::format_fast2(const value_type * fmt,
-                                               Args const ... args)
-{
-    StringType result;
-    format_fast_to2(result, fmt, args...);
-    return result;
-}
-
-template <typename StringType, int Precision>
-template <typename ... Args>
-JIMI_INLINE
-StringType
-formatter<StringType, Precision>::format_fast2(const StringType & fmt,
-                                               Args const ... args)
-{
-    return format_fast2(fmt.c_str(), args...);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1439,7 +1542,7 @@ JIMI_FORCEINLINE
 typename formatter<StringType, Precision>::StdStringType::size_type
 formatter<StringType, Precision>::append_to(StdStringType & result, Args const ... args)
 {
-    StringType result_tmp;
+    jimi::String result_tmp;
     append_to_next(result_tmp, args...);
     result.assign(result_tmp.c_str(), result_tmp.size());
     return result.size();
@@ -1487,6 +1590,484 @@ formatter<StringType, Precision>::append_l(std::locale loc, Args const ... args)
     StringType result;
     return result;
 }
+
+#endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
+
+#if !defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) || (JIMI_HAS_CXX11_VARIADIC_TEMPLATES == 0)
+
+// format_to() ...
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+JIMI_INLINE
+formatter<StringType, Precision>::vformat_to(StringType & result, const value_type * fmt, va_list arglist)
+{
+    StringType::size_type size;
+    size = 0;
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+JIMI_INLINE
+formatter<StringType, Precision>::format_to(StringType & result, const value_type * fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_to(result, fmt, arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+JIMI_INLINE
+formatter<StringType, Precision>::format_to(StringType & result, const StringType & fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_to(result, fmt.c_str(), arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+StringType
+JIMI_INLINE
+formatter<StringType, Precision>::format(const value_type * fmt, ...)
+{
+    StringType result;
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_to(result, fmt, arglist);
+    va_end(arglist);
+    return result;
+}
+
+template <typename StringType, int Precision>
+StringType
+JIMI_INLINE
+formatter<StringType, Precision>::format(const StringType & fmt, ...)
+{
+    StringType result;
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_to(result, fmt.c_str(), arglist);
+    va_end(arglist);
+    return result;
+}
+
+// format_fast_to() ...
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+JIMI_INLINE
+formatter<StringType, Precision>::vformat_fast_to(StringType & result, const value_type * fmt, va_list arglist)
+{
+    StringType::size_type size;
+    size = 0;
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+JIMI_INLINE
+formatter<StringType, Precision>::format_fast_to(StringType & result, const value_type * fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_fast_to(result, fmt, arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+JIMI_INLINE
+formatter<StringType, Precision>::format_fast_to(StringType & result, const StringType & fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_fast_to(result, fmt.c_str(), arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+StringType
+formatter<StringType, Precision>::format_fast(const value_type * fmt, ...)
+{
+    StringType result;
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_fast_to(result, fmt, arglist);
+    va_end(arglist);
+    return result;
+}
+
+template <typename StringType, int Precision>
+StringType
+formatter<StringType, Precision>::format_fast(const StringType & fmt, ...)
+{
+    StringType result;
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_fast_to(result, fmt.c_str(), arglist);
+    va_end(arglist);
+    return result;
+}
+
+// format_fast_to_new() ...
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+JIMI_INLINE
+formatter<StringType, Precision>::vformat_fast_to_new(StringType & result, const value_type * fmt, va_list arglist)
+{
+    StringType::size_type size;
+    size = 0;
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+JIMI_INLINE
+formatter<StringType, Precision>::format_fast_to_new(StringType & result, const value_type * fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_fast_to_new(result, fmt, arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+JIMI_INLINE
+formatter<StringType, Precision>::format_fast_to_new(StringType & result, const StringType & fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_fast_to_new(result, fmt.c_str(), arglist);
+    va_end(arglist);
+    return size;
+}
+
+// format_fast2_to() ...
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::vformat_fast2_to(StringType & result, const value_type * fmt, va_list arglist)
+{
+    StringType::size_type size;
+    size = 0;
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::format_fast2_to(StringType & result, const value_type * fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_fast2_to(result, fmt, arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type 
+formatter<StringType, Precision>::format_fast2_to(StringType & result, const StringType & fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_fast2_to(result, fmt.c_str(), arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+StringType
+formatter<StringType, Precision>::format_fast2(const value_type * fmt, ...)
+{
+    StringType result;
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_fast2_to(result, fmt, arglist);
+    va_end(arglist);
+    return result;
+}
+
+template <typename StringType, int Precision>
+StringType
+formatter<StringType, Precision>::format_fast2(const StringType & fmt, ...)
+{
+    StringType result;
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = vformat_fast2_to(result, fmt.c_str(), arglist);
+    va_end(arglist);
+    return result;
+}
+
+// csharp_format_to() ...
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::csharp_vformat_to(StringType & result, const value_type * fmt, va_list arglist)
+{
+    StringType::size_type size;
+    size = 0;
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::csharp_format_to(StringType & result, const value_type * fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = csharp_vformat_to(result, fmt, arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::csharp_format_to(StringType & result, const StringType & fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = csharp_vformat_to(result, fmt.c_str(), arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+StringType
+formatter<StringType, Precision>::csharp_format(const value_type * fmt, ...)
+{
+    StringType result;
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = csharp_vformat_to(result, fmt, arglist);
+    va_end(arglist);
+    return result;
+}
+
+template <typename StringType, int Precision>
+StringType
+formatter<StringType, Precision>::csharp_format(const StringType & fmt, ...)
+{
+    StringType result;
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = csharp_vformat_to(result, fmt.c_str(), arglist);
+    va_end(arglist);
+    return result;
+}
+
+// csharp_format_to_new() ...
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::csharp_vformat_to_new(StringType & result, const value_type * fmt, va_list arglist)
+{
+    StringType::size_type size;
+    size = 0;
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::csharp_format_to_new(StringType & result, const value_type * fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = csharp_vformat_to_new(result, fmt, arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::csharp_format_to_new(StringType & result, const StringType & fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = csharp_vformat_to_new(result, fmt.c_str(), arglist);
+    va_end(arglist);
+    return size;
+}
+
+// csharp_format_to_old() ...
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::csharp_vformat_to_old(StringType & result, const value_type * fmt, va_list arglist)
+{
+    StringType::size_type size;
+    size = 0;
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::csharp_format_to_old(StringType & result, const value_type * fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = csharp_vformat_to_old(result, fmt, arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::csharp_format_to_old(StringType & result, const StringType & fmt, ...)
+{
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = csharp_vformat_to_old(result, fmt.c_str(), arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+StringType
+formatter<StringType, Precision>::csharp_format_old(const value_type * fmt, ...)
+{
+    StringType result;
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = csharp_vformat_to_old(result, fmt, arglist);
+    va_end(arglist);
+    return result;
+}
+
+template <typename StringType, int Precision>
+StringType
+formatter<StringType, Precision>::csharp_format_old(const StringType & fmt, ...)
+{
+    StringType result;
+    StringType::size_type size;
+    va_list arglist;
+    va_start(arglist, fmt);
+    size = csharp_vformat_to_old(result, fmt.c_str(), arglist);
+    va_end(arglist);
+    return result;
+}
+
+// append() ...
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::vappend_to(StringType & result, const value_type * fmt, va_list arglist)
+{
+    StringType::size_type size;
+    size = 0;
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename formatter<StringType, Precision>::StdStringType::size_type
+formatter<StringType, Precision>::vappend_to(StdStringType & result, const value_type * fmt, va_list arglist)
+{
+    StdStringType::size_type size;
+    size = 0;
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename formatter<StringType, Precision>::StdStringType::size_type
+formatter<StringType, Precision>::append_to(StdStringType & result, ...)
+{
+    jimi::string result_tmp;
+    value_type *fmt = NULL;
+    va_list arglist;
+    va_start(arglist, result);
+    size = vappend_to(result_tmp, fmt, arglist);
+    va_end(arglist);
+    result.assign(result_tmp.c_str(), result_tmp.size());
+    return result.size();
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::append_to(StringType & result, ...)
+{
+    StringType::size_type size;
+    value_type *fmt = NULL;
+    va_list arglist;
+    va_start(arglist, result);
+    size = vappend_to(result, fmt, arglist);
+    va_end(arglist);
+    return size;
+}
+
+template <typename StringType, int Precision>
+typename StringType::size_type
+formatter<StringType, Precision>::append_to(value_type *buffer, size_t countOfElements, ...)
+{
+    // TODO: 未实现
+    return 0;
+}
+
+#if 0
+
+template <typename StringType, int Precision>
+StringType
+formatter<StringType, Precision>::append(...)
+{
+#if 0
+    StringType result;
+    StringType::size_type size;
+    value_type *fmt = NULL;
+    va_list arglist;
+    va_start(arglist, result);
+    size = vappend_to(result, fmt, arglist);
+    va_end(arglist);
+    return result;
+#else
+    StringType result;
+    return result;
+#endif
+}
+
+#endif
+
+template <typename StringType, int Precision>
+StringType
+formatter<StringType, Precision>::append_l(std::locale loc, ...)
+{
+    StringType result;
+    return result;
+}
+
+#endif  /* !JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 
 NS_JIMI_END
 

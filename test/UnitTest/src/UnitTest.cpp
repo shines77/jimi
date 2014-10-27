@@ -8,43 +8,8 @@
 #endif
 
 #include "UnitTest.h"
-#include "UnitTests/String_StrLen_Test.h"
-#include "UnitTests/String_StrLwr_Test.h"
-#include "UnitTests/snprintf_test.h"
-#include "UnitTests/ftol_test.h"
 
-#include "SampleThread.h"
-#include "FastMemcpy.h"
-#include "cpp11_format.h"
-
-#include <jimi/core/jimi_def.h>
-#include <jimi/util/cmd_line.h>
-#include <jimi/thread/thread.h>
-#include <jimi/system/mutex.h>
-#include <jimi/system/scoped_lock.h>
-
-#include <jimi/thread/Event.h>
-#include <jimi/lang/Object.h>
-#include <jimi/lang/String.h>
-#include <jimi/lang/Formatter.h>
-
-#include <jimi/lang/SmallString.h>
-
-#include <jimi/log/Logger.h>
-#include <jimi/system/stop_watch.h>
-#include <jimi/system/Program.h>
-#include <jimi/system/Console.h>
-
-#include <jimic/platform/win/fast_memcpy.h>
-#include <jimic/string/jmf_strings.h>
-#include <jimic/string/iconv_win.h>
-#include <jimic/system/console.h>
-#include <jimic/stdio/sprintf.h>
-#include <jimic/stdio/csharp_sprintf.h>
-#include <jimic/string/dtos.h>
-
-#include <math.h>
-
+#include <stdio.h>
 #include <stdlib.h>
 #ifdef _MSC_VER
 #include <conio.h>
@@ -55,16 +20,17 @@
 #include <intrin.h>
 #endif
 
-#include <math.h>
-#include <float.h>
-
 // crtdbg_env.h must be behind the stdlib.h
 // crtdbg_env.h 必须放在 stdlib.h 之后
 #include <jimic/system/crtdbg_env.h>
 
+#include <math.h>       /* for _isnanf(), sqrt() */
+#include <float.h>
+
 #include <cstdlib>
 #include <cstdio>
 #include <string>
+///*
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -72,16 +38,63 @@
 #include <locale>
 #include <algorithm>
 #include <functional>
-#include <cctype>
+//*/
 
-#include <type_traits>
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
+#include <cctype>
+#endif
+
+//#include <type_traits>
 #include <array>        // for std::array
+
+#include <jimi/core/jimi_def.h>
+
+#include <jimic/system/console.h>
+#include <jimic/stdio/sprintf.h>
+#include <jimic/stdio/csharp_sprintf.h>
+#include <jimic/string/dtos.h>
+#include <jimic/string/jmf_strings.h>
+#include <jimic/string/iconv_win.h>
+#if JIMI_IS_WINDOWS
+#include <jimic/platform/win/fast_memcpy.h>
+#else
+#include <jimic/platform/linux/fast_memcpy.h>
+#endif
+
+#include <jimi/util/cmd_line.h>
+#include <jimi/thread/Thread.h>
+#include <jimi/system/mutex.h>
+#include <jimi/system/scoped_lock.h>
+
+#include <jimi/system/stop_watch.h>
+#include <jimi/thread/Event.h>
+#include <jimi/lang/Object.h>
+#include <jimi/lang/String.h>
+#include <jimi/lang/Formatter.h>
+
+#include <jimi/lang/SmallString.h>
+
+#include <jimi/log/Logger.h>
+#include <jimi/system/Program.h>
+#include <jimi/system/Console.h>
 
 #if defined(JIMI_HAS_BOOST_LOCALE) && (JIMI_HAS_BOOST_LOCALE != 0)
 #include <boost/locale.hpp>
 #include <boost/locale/encoding.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #endif
+
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
+#include "cpp11_format.h"
+#endif
+
+//#include "SampleThread.h"
+
+#include "UnitTests/ftol_test.h"
+#include "UnitTests/snprintf_test.h"
+#include "UnitTests/String_StrLen_Test.h"
+#include "UnitTests/String_StrLwr_Test.h"
+#include "FastMemcpy.h"
 
 #if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
 
@@ -126,12 +139,6 @@ void * A_memcpy (void * dest, const void * src, size_t count)
 #if defined(JIMI_HAS_BOOST_LOCALE) && (JIMI_HAS_BOOST_LOCALE != 0)
 #pragma comment(lib, "libboost_locale-vc120-mt-gd-1_55.lib")
 #endif
-
-//USING_NS_JIMI;
-//USING_NS_JIMI_LOG;
-//USING_NS_JIMI_SYSTEM;
-
-using namespace std;
 
 USING_NS_UNITEST;
 
@@ -202,6 +209,7 @@ void set_thread_affinity(uint32_t dwCPUMask)
 
 void String_Copy_On_Write_Test()
 {
+#if 0
     std::string str1 = "hello world";
     std::string str2 = str1;
 
@@ -217,10 +225,12 @@ void String_Copy_On_Write_Test()
     printf ("\tstr2's address: %x\n", str2.c_str() );
 
     printf("\n");
+#endif
 }
 
 void String_Performance_Test()
 {
+    jimi::stop_watch sw;
 #ifndef _DEBUG
     const int LOOP_TIMES = 1000000;
 #else
@@ -232,7 +242,6 @@ void String_Performance_Test()
     double time1, time2, time3, time4;
     double time5, time6, time7, time8;
     int i, j = 0, loop_times = 0;
-    jimi::stop_watch sw;
 
     printf("==============================================================================\n\n");
     printf("  String_Performance_Test()\n\n");
@@ -263,9 +272,9 @@ void String_Performance_Test()
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        //jimi::string str = "abcdefghijk";
-        //jimi::string str("abcdefghijk", sizeof("abcdefghijk") - 1);
-        jimi::string str("abcdefghijk");
+        //jimi::String str = "abcdefghijk";
+        //jimi::String str("abcdefghijk", sizeof("abcdefghijk") - 1);
+        jimi::String str("abcdefghijk");
     }
     sw.stop();
     time3 = sw.getMillisec();
@@ -306,9 +315,9 @@ void String_Performance_Test()
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        //jimi::string str = "abcdefghijklmnopqrstuvwxyz";
-        //jimi::string str("abcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyz") - 1);
-        jimi::string str("abcdefghijklmnopqrstuvwxyz");
+        //jimi::String str = "abcdefghijklmnopqrstuvwxyz";
+        //jimi::String str("abcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyz") - 1);
+        jimi::String str("abcdefghijklmnopqrstuvwxyz");
     }
     sw.stop();
     time7 = sw.getMillisec();
@@ -327,12 +336,12 @@ void String_Performance_Test()
     printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefghijk\";",   time1);
     printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefghijk\";",   time2);
     printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefghijk\";",   time4);
-    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"abcdefghijk\";",   time3);
+    printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"abcdefghijk\";",   time3);
     printf("\n");
     printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefg...xyz\";", time5);
     printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefg...xyz\";", time6);
     printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefg...xyz\";", time8);
-    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"abcdefg...xyz\";", time7);
+    printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"abcdefg...xyz\";", time7);
 
     printf("\n");
 }
@@ -381,9 +390,9 @@ void String_Performance_Test2()
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        //jimi::string str = "a";
-        //jimi::string str("a", sizeof("abcdefghijk") - 1);
-        jimi::string str('a');
+        //jimi::String str = "a";
+        //jimi::String str("a", sizeof("abcdefghijk") - 1);
+        jimi::String str('a');
     }
     sw.stop();
     time3 = sw.getMillisec();
@@ -416,9 +425,9 @@ void String_Performance_Test2()
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        //jimi::string str = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
-        //jimi::string str("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz") - 1);
-        jimi::string str("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+        //jimi::String str = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+        //jimi::String str("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz", sizeof("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz") - 1);
+        jimi::String str("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
     }
     sw.stop();
     time7 = sw.getMillisec();
@@ -437,12 +446,12 @@ void String_Performance_Test2()
     printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"a\";",   time1);
     printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"a\";",   time2);
     printf("%-30s time = %0.5f ms.\n", "std::string  str = \"a\";",   time4);
-    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"a\";",   time3);
+    printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"a\";",   time3);
     printf("\n");
     printf("%-30s time = %0.5f ms.\n", "strcpy()     str = \"abcdefg...xyz\";", time5);
     printf("%-30s time = %0.5f ms.\n", "strcpy_s()   str = \"abcdefg...xyz\";", time6);
     printf("%-30s time = %0.5f ms.\n", "std::string  str = \"abcdefg...xyz\";", time8);
-    printf("%-30s time = %0.5f ms.\n", "jimi::string str = \"abcdefg...xyz\";", time7);
+    printf("%-30s time = %0.5f ms.\n", "jimi::String str = \"abcdefg...xyz\";", time7);
 
     printf("\n");
 }
@@ -497,8 +506,8 @@ void String_Base_Test()
     printf("==============================================================================\n\n");
 
 #if 1
-    jimi::string str1 = "abcdefg";
-    jimi::string str2 = "hijklmnop";
+    jimi::String str1 = "abcdefg";
+    jimi::String str2 = "hijklmnop";
     printf("str1.c_str() = %s\n", str1.c_str());
     printf("str2.c_str() = %s\n\n", str2.c_str());
     printf("? (str1 == str2) = %d\n", (str1 == str2));
@@ -527,24 +536,24 @@ void String_Base_Test()
     printf("str2.c_str() = %s\n", str2.c_str());
     printf("\n");
 
-    jimi::string str3('a');
+    jimi::String str3('a');
     printf("str3.c_str() = %s\n", str3.c_str());
     printf("\n");
 
-    jimi::string str4;
+    jimi::String str4;
     str4 = jabberwocky;
     printf("str4.c_str() = \n%s\n\n", str4.c_str());
     printf("str4.size()  = %d bytes\n", str4.size());
     printf("\n");
 
-    jimi::string str5;
+    jimi::String str5;
     //str5.append_format_c("%d %x %f %u %c %b", 9999, 8888, 10.9999, 10000000, 33, true);
     str5.append_format_c("%d %s %d %s", 111, "222erer", 33333, "ffffff44");
     printf("str5.c_str() = \n%s\n\n", str5.c_str());
     printf("str5.size()  = %d bytes\n", str5.size());
     printf("\n");
 
-    jimi::string str6;
+    jimi::String str6;
     //str6.format_c("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
     str6.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
     printf("str6.c_str() = \n%s\n\n", str6.c_str());
@@ -596,7 +605,7 @@ void String_Base_Test()
 
     {
         int delta;
-        jimi::string strTest((size_t)999999999);
+        jimi::String strTest((size_t)999999999);
 #if 1
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -613,7 +622,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2((size_t)128);
+        jimi::String strTest2((size_t)128);
         //strTest2.format("{0}, {1}, {2}, {{3}, {3}", 111, "222erer", 33333, "ffffff44");
         strTest2.format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
@@ -632,7 +641,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2((size_t)128);
+        jimi::String strTest2((size_t)128);
         strTest2.format_c("{0}, {1}, {2}, {{3}, {3}", "%d %s %d %s", 111, "222erer", 33333, "ffffff44");
         delta = strTest2.size();
 #else
@@ -650,7 +659,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2((size_t)128);
+        jimi::String strTest2((size_t)128);
         strTest2.append_format_c("%d, %s, %d, {3}, %s", 111, "222erer", 33333, "ffffff44");
         delta = strTest2.size();
 #endif
@@ -666,7 +675,7 @@ void String_Base_Test()
 
     {
         int delta;
-        jimi::string strTest((size_t)999999999);
+        jimi::String strTest((size_t)999999999);
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.append_format((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
@@ -681,7 +690,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2((size_t)128);
+        jimi::String strTest2((size_t)128);
         strTest2.append_format((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
         delta = strTest2.size();
 
@@ -696,7 +705,7 @@ void String_Base_Test()
 
     {
         int delta;
-        jimi::string strTest((size_t)999999999);
+        jimi::String strTest((size_t)999999999);
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             strTest.append_format((unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
@@ -711,7 +720,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2((size_t)128);
+        jimi::String strTest2((size_t)128);
         strTest2.append_format((unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
         delta = strTest2.size();
 
@@ -726,11 +735,11 @@ void String_Base_Test()
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
-#if 1
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
     {
         int delta;
-        //jimi::string strTest((size_t)1024);
-        jimi::string strTest;
+        //jimi::String strTest((size_t)1024);
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -746,7 +755,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         strTest2 = formator.append((unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
         delta = strTest2.size();
 
@@ -757,15 +766,15 @@ void String_Base_Test()
         printf("\n");
         printf("d\n");
     }
-#endif
+#endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
 #if 1
     {
         int delta;
-        //jimi::string strTest((size_t)1024);
-        jimi::string strTest;
+        //jimi::String strTest((size_t)1024);
+        jimi::String strTest;
         jimi::formatter<> formator;
         auto fmt_detail  = jimi::format_detail<>().setFloat(jimi::detail::AlignRight, jimi::detail::FillNone, 3, 3)
                                         .setDoublePrecision(6).setDouble(0, 0, 3, 0);
@@ -793,7 +802,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         delta = formator.append_to(strTest2, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
         delta = strTest2.size();
 
@@ -808,8 +817,8 @@ void String_Base_Test()
 #if 1
     {
         int delta;
-        //jimi::string strTest((size_t)1024);
-        jimi::string strTest;
+        //jimi::String strTest((size_t)1024);
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -826,7 +835,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         //strTest2 = formator.csharp_format_old("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
         strTest2 = formator.csharp_format_old("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
@@ -842,27 +851,27 @@ void String_Base_Test()
 #if 1
     {
         int delta;
-        //jimi::string strTest((size_t)1024);
-        jimi::string strTest;
+        //jimi::String strTest((size_t)1024);
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            //delta = formator.csharp_format_old_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-            delta = formator.csharp_format_old_to(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+            //delta = formator.csharp_format_to_old(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            delta = formator.csharp_format_to_old(strTest, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
         printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        n = formator.csharp_format_old_to(str, \"{0}, {1}, {2}, {{3}, {3}\",\n"
+        printf("        n = formator.csharp_format_to_old(str, \"{0}, {1}, {2}, {{3}, {3}\",\n"
                "                                          111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
-        //delta = formator.csharp_format_old_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-        delta = formator.csharp_format_old_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        jimi::String strTest2;
+        //delta = formator.csharp_format_to_old(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        delta = formator.csharp_format_to_old(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
@@ -876,7 +885,7 @@ void String_Base_Test()
 #if 1
     {
         int delta;
-        jimi::string strTest;
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -893,7 +902,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         //strTest2 = formator.csharp_format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
         strTest2 = formator.csharp_format("{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
@@ -909,7 +918,7 @@ void String_Base_Test()
 #if 1
     {
         int delta;
-        jimi::string strTest;
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -926,7 +935,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         //delta = formator.csharp_format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
         delta = formator.csharp_format_to(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
@@ -942,7 +951,7 @@ void String_Base_Test()
 #if 1
     {
         int delta;
-        jimi::string strTest;
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -959,7 +968,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         //delta = formator.csharp_format_to_new(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
         delta = formator.csharp_format_to_new(strTest2, "{0}, {1}, {2}, {{3}, {3}", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
@@ -975,7 +984,7 @@ void String_Base_Test()
 #if 1
     {
         int delta;
-        jimi::string strTest;
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -992,7 +1001,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         delta = formator.format_fast_to(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
         //delta = formator.format_fast_to(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
@@ -1008,7 +1017,7 @@ void String_Base_Test()
 #if 1
     {
         int delta;
-        jimi::string strTest;
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -1025,7 +1034,7 @@ void String_Base_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         delta = formator.format_fast_to_new(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
         //delta = formator.format_fast_to_new(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
@@ -1041,27 +1050,27 @@ void String_Base_Test()
 #if 1
     {
         int delta;
-        //jimi::string strTest((size_t)1024);
-        jimi::string strTest;
+        //jimi::String strTest((size_t)1024);
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
-            delta = formator.format_fast_to2(strTest, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-            //delta = formator.format_fast_to2(strTest, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+            delta = formator.format_fast2_to(strTest, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+            //delta = formator.format_fast2_to(strTest, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         }
         sw.stop();
         time = sw.getMillisec();
 
         printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        n = formator.format_fast_to2(str, \"?, ?, ?, ??3}, ?\",\n"
+        printf("        n = formator.format_fast2_to(str, \"?, ?, ?, ??3}, ?\",\n"
                "                                     111, \"222erer\", 33333, \"ffffff44\");\n");
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
-        delta = formator.format_fast_to2(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
-        //delta = formator.format_fast_to2(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
+        jimi::String strTest2;
+        delta = formator.format_fast2_to(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)111, "222erer", (unsigned long)33333, "ffffff44");
+        //delta = formator.format_fast2_to(strTest2, "?, ?, ?, ??3}, ?", (unsigned int)num1, buf1, (unsigned long)num2, buf2);
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
@@ -1167,7 +1176,7 @@ void String_Format_Test()
 #if 1
     {
         int delta;
-        jimi::string strTest;
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -1194,7 +1203,7 @@ void String_Format_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         strTest2 = formator.csharp_format("{99} {98} {97} {96} {95}",
                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1219,7 +1228,7 @@ void String_Format_Test()
 #if 1
     {
         int delta;
-        jimi::string strTest;
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -1249,7 +1258,7 @@ void String_Format_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         delta = formator.csharp_format_to(strTest2,
                                           //"{1} {1} {1} {1} {1}",
                                           "{99} {98} {97} {96} {95}",
@@ -1276,7 +1285,7 @@ void String_Format_Test()
 #if 1
     {
         int delta;
-        jimi::string strTest;
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -1306,7 +1315,7 @@ void String_Format_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         delta = formator.csharp_format_to_new(strTest2,
                                               //"{1} {1} {1} {1} {1}",
                                               "{99} {98} {97} {96} {95}",
@@ -1336,7 +1345,7 @@ void String_Format_Test()
         int k, l, m, n, o, p, q, r, s, t;
         int u, v, w, x, y, z;
         int delta;
-        jimi::string strTest;
+        jimi::String strTest;
         jimi::formatter<> formator;
         // 从 k 到 z 是故意不初始化的, 看编译器会优化成什么样子
         a = b = c = d = e = 1;
@@ -1373,7 +1382,7 @@ void String_Format_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         delta = formator.csharp_format_to_new(strTest2,
                                               //"{1} {1} {1} {1} {1}",
                                               "{99} {98} {97} {96} {95}",
@@ -1401,12 +1410,12 @@ void String_Format_Test()
 #if 1
     {
         int delta;
-        jimi::string strTest;
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             //strTest.clear();
-            delta = formator.csharp_format_old_to(strTest,
+            delta = formator.csharp_format_to_old(strTest,
                                                   //"{1} {1} {1} {1} {1}",
                                                   "{99} {98} {97} {96} {95}",
                                                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1425,14 +1434,14 @@ void String_Format_Test()
 
         printf("==============================================================================\n\n");
         printf("    for (i = 0; i < %d; ++i) {\n", loop_times);
-        printf("        n = formator.csharp_format_old_to(str, \"{99} {98} {97} {96} {95}\",\n"
+        printf("        n = formator.csharp_format_to_old(str, \"{99} {98} {97} {96} {95}\",\n"
                "                                          111, \", \", \"222erer\", \", \",\n"
                "                                          33333, \", \", \"{3}, \", \"ffffff44\");\n");
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
-        delta = formator.csharp_format_old_to(strTest2,
+        jimi::String strTest2;
+        delta = formator.csharp_format_to_old(strTest2,
                                               //"{1} {1} {1} {1} {1}",
                                               "{99} {98} {97} {96} {95}",
                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1458,7 +1467,7 @@ void String_Format_Test()
 #if 1
     {
         int delta;
-        jimi::string strTest;
+        jimi::String strTest;
         jimi::formatter<> formator;
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
@@ -1488,7 +1497,7 @@ void String_Format_Test()
         printf("    }\n\n");
         printf("==============================================================================\n\n");
 
-        jimi::string strTest2;
+        jimi::String strTest2;
         delta = formator.format_fast_to_new(strTest2,
                                             //"{1} {1} {1} {1} {1}",
                                             "? ? ? ? ?",
@@ -2202,6 +2211,8 @@ bool win_iconv_test()
 
 void Emplace_Test()
 {
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
+
     std::map<std::string, std::string> m;
  
     // uses pair's move constructor (overload 8)
@@ -2211,6 +2222,7 @@ void Emplace_Test()
     m.emplace(std::make_pair("b", "abcd"));
  
     // uses pair's template constructor (overload 3)
+    //m.emplace(std::pair<std::string, std::string>("d", "ddd"));
     m.emplace("d", "ddd");
  
     // uses pair's piecewise constructor (overload 6)
@@ -2221,8 +2233,9 @@ void Emplace_Test()
     for (const auto &p : m) {
         std::cout << p.first << " => " << p.second << '\n';
     }
-
     std::cout << std::endl;
+
+#endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 }
 
 void malloc_addr_test()
@@ -2266,7 +2279,7 @@ void IEEE754_Double_Test()
     printf("The addition result without the libary: %8.8f\n", c32);
     printf("\n");
 
-    Console.ReadKey(true, false);
+    jimi::Console.ReadKey(true, false);
 }
 
 class resA
@@ -2613,6 +2626,8 @@ void Double_And_Float_Test()
 
     printf("--------------------------------------------\n\n");
 
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
+
     #define NAN_DOUBLE          ((double)(INFINITY * 0.0F))
     #define DOUBLE_INFINITY     ((double)(_HUGE_ENUF * _HUGE_ENUF))
 
@@ -2666,6 +2681,8 @@ void Double_And_Float_Test()
     printf("printf(1.23456789E+200)  = %f\n", 1.234567890123456789E+200);
     printf("\n");
 
+#endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
+
     double d = 1.2345678901234567890123456789E+200;
     double dd = d;
     uint64_t u64 = (uint64_t)d;
@@ -2707,6 +2724,8 @@ void Double_And_Float_Test()
     printf("%s", buf);
     printf("\n");
 
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
+
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(INFINITY)         = %f\n", INFINITY);
     printf("%s", buf);
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(-INFINITY)        = %f\n", -INFINITY);
@@ -2716,10 +2735,15 @@ void Double_And_Float_Test()
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(-DOUBLE_INFINITY) = %f\n", -DOUBLE_INFINITY);
     printf("%s", buf);
     printf("\n");
+
+#endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 }
 
 int UnitTest_Main(int argc, char *argv[])
 {
+    //using namespace ::jimi;
+    //using namespace jimi::system;
+
     // 设置进程和线程的亲缘性
     set_thread_affinity(0);
 
@@ -2736,19 +2760,19 @@ int UnitTest_Main(int argc, char *argv[])
     }
 
     // Test System.out.info()
-    System.out.info("System.out.info() test.");
+    jimi::System.out.info("System.out.info() test.");
 
     // Test System.out.print()
-    System.out.print("System.out.print() test.\n");
+    jimi::System.out.print("System.out.print() test.\n");
 
     // Test System.out.println()
-    System.out.println("System.out.println() test.");
+    jimi::System.out.println("System.out.println() test.");
 
 #if 0
     if (true) {
         auto_rvalue_test();
-        sLog.log_end();
-        Console.ReadKey();
+        jmLog.log_end();
+        jimi::Console.ReadKey();
         return 0;
     }
 #endif
@@ -2756,8 +2780,8 @@ int UnitTest_Main(int argc, char *argv[])
 #if 0
     if (true) {
         template_inherit_test();
-        sLog.log_end();
-        Console.ReadKey();
+        jmLog.log_end();
+        jimi::Console.ReadKey();
         return 0;
     }
 #endif
@@ -2768,7 +2792,7 @@ int UnitTest_Main(int argc, char *argv[])
 #if 0
     malloc_addr_test();
 
-    Console.ReadKey();
+    jimi::Console.ReadKey();
     return 0;
 #endif
 
@@ -2814,8 +2838,8 @@ int UnitTest_Main(int argc, char *argv[])
     printf("\n");
 
     if (true && 1) {
-        Console.ReadKey();
-        sLog.log_end();
+        jmLog.log_end();
+        jimi::Console.ReadKey();
         return 0;
     }
 #endif
@@ -2823,8 +2847,8 @@ int UnitTest_Main(int argc, char *argv[])
 #if 0
     bool result = win_iconv_test();
     if (result && 0) {
-        Console.ReadKey();
-        sLog.log_end();
+        jmLog.log_end();
+        jimi::Console.ReadKey();
         return 0;
     }
 #endif
@@ -2847,25 +2871,25 @@ int UnitTest_Main(int argc, char *argv[])
     OStringStream_Test();
 
     if (true && 1) {
-        sLog.log_end();
+        jmLog.log_end();
         jimi::Console.ReadKey();
         return 0;
     }
 #endif
 
-#if 0
+#if 1
     String_Base_Test();
     if (true && 0) {
-        sLog.log_end();
+        jmLog.log_end();
         jimi::Console.ReadKey();
         return 0;
     }
 #endif
 
-#if 0
+#if 1
     String_Format_Test();
     if (true && 0) {
-        sLog.log_end();
+        jmLog.log_end();
         jimi::Console.ReadKey();
         return 0;
     }
@@ -2963,7 +2987,7 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 1
+#if 0
     String_Performance_Test();
     String_Performance_Test2();
 
@@ -3058,7 +3082,7 @@ int UnitTest_Main(int argc, char *argv[])
     //jimi::system::mutex read_mutex;
     //jimi::system::scoped_lock<system::mutex> lock(read_mutex);
     jimi::system::mutex read_mutex;
-    jimi::system::scoped_lock<mutex> lock(read_mutex);
+    jimi::system::scoped_lock<jimi::system::mutex> lock(read_mutex);
     lock.acquire(read_mutex);
     lock.try_acquire(read_mutex, 4000);
     lock.release();
@@ -3077,7 +3101,11 @@ class MyProgram : public jimi::Program
 {
 public:
     void Main(int argc, char *argv[]) {
+#if defined(UNITEST_USE_NAMESPACE) && (UNITEST_USE_NAMESPACE != 0)
+        UnitTest::UnitTest_Main(argc, argv);
+#else
         UnitTest_Main(argc, argv);
+#endif
     }
 
     void Main(int argc, wchar_t *argv[]) {
@@ -3104,7 +3132,11 @@ int main(int argc, char *argv[])
 #else
     //jimi::Program program(&UnitTest_Main, 0);
     jimi::Program program;
+#if defined(UNITEST_USE_NAMESPACE) && (UNITEST_USE_NAMESPACE != 0)
+    program.SetMain(&UnitTest::UnitTest_Main);
+#else
     program.SetMain(&UnitTest_Main);
+#endif
     program.SetReturnValue(1);
 #endif
     int nResult = program.Run(argc, argv);

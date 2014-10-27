@@ -87,38 +87,84 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\asmlib\asmlib.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_asm.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_assert.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_compiler_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_config.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_export.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_platform_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\win32\jimic_config.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\core\win32\jimic_targetver.h" />
     <ClInclude Include="..\..\..\..\src\jimic\core\win32\vs_stdint.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\jimi_all.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\jimic_all.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\libc\endian.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\libc\ieee754.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\csharp_sprintf.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\csharp_sprintf.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\dtos.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\system\console.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\system\crtdbg_env.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\system\get_char.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\system\sys_timer.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\system\vs_vld.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_common.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_compiler_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_def.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_export.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_machine.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_platform_def.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\win32\jimi_config.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_compiler_config.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_platform_config.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\platform\jimi_targetver.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\win32\jimi_targetver.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\core\win32\vs_stdint.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\internal\Copyable.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\internal\NonAssignable.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\internal\NonCopyable.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\internal\pointer_cast.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\aligned_space.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Allocator.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\AutoCloseable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Char_Traits.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Cloneable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\CloneNotSupportedException.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Exception.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\Formatter.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Object.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\ObjectBase.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\RefCounted.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\SmallString.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\String.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\String.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\StringCore.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\StringDetail.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\StringUtils.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Throwable.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\thread\Atomic.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\thread\Event.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\system\Console.h" />
     <ClInclude Include="..\..\..\..\src\jimi\system\mutex.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\system\Program.h" />
     <ClInclude Include="..\..\..\..\src\jimi\system\scoped_lock.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\thread\Thread.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\thread\thread_def.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\thread\WaitHandle.h" />
     <ClInclude Include="..\..\..\..\src\jimi\system\stop_watch.h" />
     <ClInclude Include="..\..\..\..\src\jimi\system\WinService.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\thread\Atomic.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\thread\Event.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\thread\Thread.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\thread\ThreadDef.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\thread\WaitHandle.h" />
     <ClInclude Include="..\..\..\..\src\jimi\util\cmd_line.h" />
     <ClInclude Include="..\..\..\..\src\jimi\machine\windows_api.h" />
     <ClInclude Include="..\..\..\..\src\jimi\log\log.h" />
@@ -129,35 +175,34 @@
     <ClInclude Include="..\..\..\..\src\jimi\io\Closeable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\io\IOException.h" />
     <ClInclude Include="..\..\..\..\src\jimi\io\Serializable.h" />
-    <ClCompile Include="..\..\..\..\src\jimic\string\jm_strings.h">
-      <FileType>CppCode</FileType>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\string\jm_strings.inl.h">
-      <FileType>CppCode</FileType>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-    </ClCompile>
-    <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.inl.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.inl.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\jimic_all.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_asm.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_def.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_export.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\core\win32\jimic_config.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\platform\jimic_targetver.h" />
+    <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.c" />
     <ClInclude Include="..\..\..\..\src\jimic\platform\linux\fast_memcpy.h" />
     <ClInclude Include="..\..\..\..\src\jimic\platform\win\fast_memcpy.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\dtos.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\console.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\get_char.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\sys_timer.c" />
+    <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\system\scoped_lock.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimi\thread\Thread.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\util\cmd_line.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\log\Logger.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\fs\FileSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\src\jimic\string\jmc_strings.impl.inl" />
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

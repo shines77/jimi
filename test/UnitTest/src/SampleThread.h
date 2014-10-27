@@ -8,17 +8,13 @@
 
 #include <jimi/core/jimi_def.h>
 #include <jimi/log/log.h>
-#include <jimi/thread/thread.h>
+#include <jimi/thread/Thread.h>
 
 #include "UnitTest.h"
 
-USING_NS_JIMI;
-USING_NS_JIMI_LOG;
-USING_NS_JIMI_SYSTEM;
-
 NS_UNITEST_BEGIN
 
-class SampleThread : public ThreadBase<SampleThread>
+class SampleThread : public jimi::system::ThreadBase<SampleThread>
 {
 public:
     SampleThread(void)  { };
@@ -27,7 +23,8 @@ public:
     static void JIMI_WINAPI ThreadProc(void *lpParam) {
         jmLog.info("invoke SampleThread::ThreadProc() Start.");
         jmLog.info("invoke SampleThread::ThreadProc() Thread::Sleep(5000);");
-        Thread::Sleep(5000);
+        //using namespace jimi::system;
+        jimi::system::Thread::Sleep(5000);
         jmLog.info("invoke SampleThread::ThreadProc() End.");
     }
 };
@@ -54,8 +51,11 @@ public:
 
 volatile bool Worker::_shouldStop = false;
 
-class WorkerThread : public ThreadBase<WorkerThread>
+class WorkerThread : public jimi::system::ThreadBase<WorkerThread>
 {
+public:
+    //typedef jimi::system::ThreadBase<WorkerThread>::thread_proc_t thread_proc_t;
+
 public:
     WorkerThread(void) { };
     WorkerThread(thread_proc_t thread_proc) { pThreadProc = thread_proc; }
@@ -74,7 +74,8 @@ public:
 
         // Put the main thread to sleep for 1 millisecond to
         // allow the worker thread to do some work:
-        Thread::Sleep(10);
+        //using namespace jimi::system;
+        jimi::system::Thread::Sleep(10);
 
         // Request that the worker thread stop itself:
         workerObject->RequestStop();

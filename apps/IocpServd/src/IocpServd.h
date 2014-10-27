@@ -8,7 +8,9 @@
 
 #include <jimi/core/jimi_def.h>
 
-#if 1
+#define IOCPSERVD_USE_NAMESPACE     0
+
+#if defined(IOCPSERVD_USE_NAMESPACE) && (IOCPSERVD_USE_NAMESPACE != 0)
 
 #define NS_IOCPSERVD_BEGIN  namespace IocpServd {
 #define NS_IOCPSERVD_END    }

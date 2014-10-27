@@ -6,6 +6,12 @@
 #pragma once
 #endif
 
+/* The compiler is clang-cl.exe for Visual Studio 20xx ? */
+#ifndef JIMI_MSVC_CLANG
+#define JIMI_MSVC_CLANG                     0
+#endif
+
+/* Use Visual Leaker Dector for Visual Studio ? */
 #ifndef JIMI_USE_VLD
 #define JIMI_USE_VLD                        0
 #endif
@@ -42,10 +48,16 @@
 
 #define JIMI_CONSTEXPR
 
+/* 介绍C++11标准的变长参数模板       */
+/*   Reference: http://www.cnblogs.com/zenny-chen/archive/2013/02/03/2890917.html */
+
+/* 编译器是否支持C++11的变长参数模板 */
+#define JIMI_HAS_CXX11_VARIADIC_TEMPLATES   1
+
 #define JIMI_HAS_DEFAULTED_FUNCTIONS        0
 #define JIMI_HAS_DELETED_FUNCTIONS          0
 
-#define JIMI_HAS_CPP11_MOVE_FUNCTIONS       1
+#define JIMI_HAS_CXX11_MOVE_FUNCTIONS       1
 
 #define JIMI_HAS_BOOST                      0
 #define JIMI_HAS_BOOST_LOCALE               0

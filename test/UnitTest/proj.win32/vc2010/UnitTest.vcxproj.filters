@@ -9,8 +9,26 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="src\UnitTests">
+      <UniqueIdentifier>{49b354e2-3c41-40d7-8bb1-373d47285a01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\encoding">
+      <UniqueIdentifier>{a9dbb22a-5ef9-4fe7-8a5e-335f19d759a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\UnitTests\ftol_test.cpp">
+      <Filter>src\UnitTests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UnitTests\snprintf_test.cpp">
+      <Filter>src\UnitTests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UnitTests\String_StrLen_Test.cpp">
+      <Filter>src\UnitTests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UnitTests\String_StrLwr_Test.cpp">
+      <Filter>src\UnitTests</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\FastMemcpy.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -19,6 +37,21 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\UnitTests\ftol_test.h">
+      <Filter>src\UnitTests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\UnitTests\snprintf_test.h">
+      <Filter>src\UnitTests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\UnitTests\String_StrLen_Test.h">
+      <Filter>src\UnitTests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\UnitTests\String_StrLwr_Test.h">
+      <Filter>src\UnitTests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\cpp11_format.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\FastMemcpy.h">
       <Filter>src</Filter>
     </ClInclude>

@@ -1,5 +1,5 @@
 
-#include <jimi/core/jimi_platform_def.h>
+#include <jimi/system/WinService.h>
 
 #if JIMI_IS_WINDOWS
 
@@ -17,17 +17,10 @@
 #pragma warning(default : 4996)
 #include <string.h>
 
-#include <jimi/system/WinService.h>
 #include <jimi/log/log.h>
 
 //#pragma comment(lib, "Advapi32.lib")
 //#pragma comment(lib, "Wtsapi32.lib")
-
-using namespace std;
-
-USING_NS_JIMI;
-USING_NS_JIMI_LOG;
-USING_NS_JIMI_SYSTEM;
 
 #ifndef _ATL_QUOTES_SPACE
 #define _ATL_QUOTES_SPACE   2
@@ -54,6 +47,8 @@ template <class T>
 WinServiceBase<T> *WinServiceBase<T>::s_pServiceInstance = NULL;
 //*/
 
+/*
+
 NS_JIMI_BEGIN
 
 NS_JIMI_SYSTEM_BEGIN
@@ -63,5 +58,7 @@ NS_JIMI_SYSTEM_BEGIN
 NS_JIMI_SYSTEM_END
 
 NS_JIMI_END
+
+//*/
 
 #endif  /* JIMI_IS_WINDOWS */

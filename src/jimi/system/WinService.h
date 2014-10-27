@@ -30,11 +30,6 @@
 #pragma comment(lib, "Advapi32.lib")
 #pragma comment(lib, "Wtsapi32.lib")
 
-using namespace std;
-
-USING_NS_JIMI;
-USING_NS_JIMI_LOG;
-
 #if !defined(WINADVAPI)
 #if !defined(_ADVAPI32_)
     #define WINADVAPI   DECLSPEC_IMPORT

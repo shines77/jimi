@@ -88,7 +88,7 @@ public:
         // null. In this case, however, one Char is already part of the
         // struct.
         refcounted *result = static_cast<refcounted *>(
-            ::smartRealloc((void *)refobj,
+            ::jimi::smartRealloc((void *)refobj,
                 sizeof(refcounted) + currentSize * sizeof(char_type),
                 sizeof(refcounted) + currentCapacity * sizeof(char_type),
                 sizeof(refcounted) + newCapacity * sizeof(char_type)));

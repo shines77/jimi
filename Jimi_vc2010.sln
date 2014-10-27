@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "apps", "apps", "{C158E1EA-DFE6-4327-8AEA-CC021B7430DB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8ADA9B77-A289-4A6C-8D85-1AA676693770}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8ADA9B77-A289-4A6C-8D85-1AA676693770}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jimi_static", "projects\jimi\proj.win32\vc2010\Jimi_static.vcxproj", "{6CC87659-079A-4DF7-852E-8AF52192504D}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IocpServd", "apps\IocpServd\proj.win32\vc2010\IocpServd.vcxproj", "{32E6D992-7397-400C-A12F-61EC3018B9FF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "test\UnitTest\proj.win32\vc2010\UnitTest.vcxproj", "{916F8AC2-693C-4F26-8FE4-3BF9C5E10772}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{FE4F04C2-261F-40A1-8259-ABD901D840C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,12 +1,8 @@
 
 #include "FastMemcpy.h"
 
-#include "UnitTest.h"
-
 #include <jimi/core/jimi_def.h>
 #include <jimi/log/log.h>
-
-USING_NS_JIMI;
 
 // 一个QWORD几个字节
 #define SIZE_OF_QWORD       8

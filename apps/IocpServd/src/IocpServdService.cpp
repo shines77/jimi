@@ -7,7 +7,7 @@ USING_NS_IOCPSERVD;
 
 NS_IOCPSERVD_BEGIN
 
-IocpServdService::IocpServdService(void) : system::WinServiceBase<IocpServdService>()
+IocpServdService::IocpServdService(void) : jimi::system::WinServiceBase<IocpServdService>()
 {
 
 }

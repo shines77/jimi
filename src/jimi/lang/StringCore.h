@@ -263,7 +263,7 @@ public:
     // stole from rhs, and clear rhs
     void stole(string_core &rhs);
 
-#if defined(JIMI_HAS_CPP11_MOVE_FUNCTIONS) && (JIMI_HAS_CPP11_MOVE_FUNCTIONS != 0)
+#if defined(JIMI_HAS_CXX11_MOVE_FUNCTIONS) && (JIMI_HAS_CXX11_MOVE_FUNCTIONS != 0)
     string_core(string_core && goner) {
         //if (goner.getType() == kIsSmall) {
         if (goner.is_small()) {

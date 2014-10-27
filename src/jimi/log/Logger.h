@@ -12,6 +12,7 @@
 #include <stdarg.h>
 #include <vector>
 #include <list>
+#include <iosfwd>
 
 #if JIMI_IS_WINDOWS
 
@@ -26,7 +27,7 @@
 
 #endif
 
-using namespace std;
+//using namespace std;
 
 #if defined(_MSC_VER)
     #pragma warning (push)
@@ -333,6 +334,10 @@ private:
     LogConfig m_config;
 };
 
+NS_JIMI_LOG_END
+
+#define JIMI_USE_STATIC_GLOBAL_OBJECT   0
+
 class JIMI_API Utils
 {
 public:
@@ -340,10 +345,8 @@ public:
     ~Utils() {};
 
 public:
-    Logger log;
+    log::Logger log;
 };
-
-#define JIMI_USE_STATIC_GLOBAL_OBJECT   0
 
 #if defined(JIMI_USE_STATIC_GLOBAL_OBJECT) && (JIMI_USE_STATIC_GLOBAL_OBJECT != 0)
 static class Utils      Utils;
@@ -358,7 +361,7 @@ public:
     ~System() {};
 
 public:
-    Logger &out;
+    log::Logger &out;
 };
 
 #if defined(JIMI_USE_STATIC_GLOBAL_OBJECT) && (JIMI_USE_STATIC_GLOBAL_OBJECT != 0)
@@ -366,8 +369,6 @@ static class System     System;
 #else
 extern class System     System;
 #endif
-
-NS_JIMI_LOG_END
 
 NS_JIMI_END
 

@@ -59,9 +59,9 @@ void JIMIC_EXPORTED_FUNC jimic_assertion_failure(const char * filename, int line
     //! Report a runtime warning.
     void JIMI_EXPORTED_FUNC jimic_runtime_warning(const char * format, ...)
     {
+        va_list args;
         char str[1024];
         memset(str, 0, 1024);
-        va_list args;
         va_start(args, format);
         jm_vsnprintf(str, 1024, 1024 - 1, format, args);
         va_end(args);

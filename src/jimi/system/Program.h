@@ -15,7 +15,7 @@
 
 NS_JIMI_BEGIN
 
-class Program : public jimi::NonCopyable
+class Program : public internal::NonCopyable
 {
 public:
     typedef std::vector<std::string>  StringArray;

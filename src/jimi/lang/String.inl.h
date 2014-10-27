@@ -11,12 +11,14 @@
 
 #include <string>
 
-using namespace std;
+/*
 
 NS_JIMI_BEGIN
 
 //
 
 NS_JIMI_END
+
+//*/
 
 #endif  /* _JIMI_LANG_STRING_INL_H_ */

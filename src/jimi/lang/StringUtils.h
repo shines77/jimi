@@ -11,7 +11,7 @@
 
 #include <string>
 
-using namespace std;
+//using namespace std;
 
 NS_JIMI_BEGIN
 

@@ -28,8 +28,6 @@ NS_JIMI_BEGIN
 
 NS_JIMI_SYSTEM_BEGIN
 
-#define TERMINATE_WAIT_TIME             5000
-
 enum ThreadStatusShift
 {
     // Thread extra status
@@ -38,7 +36,7 @@ enum ThreadStatusShift
 
     // Thread status
     kAliveStatusShift           = 23,
-    kRunningStatusShift         = 22,
+    kRunningStatusShift         = 22
 };
 
 enum ThreadStatusMask
@@ -56,7 +54,7 @@ enum ThreadStatusMask
     kThreadExtraStatusMask      =  ((1UL << kBackgroundStatusShift) | (1UL << kJoinStatusShift)),
     kThreadStatusMask           =  ~kThreadExtraStatusMask,
 
-    kThreadStatusValueMask      =  0x0000FFFFUL,
+    kThreadStatusValueMask      =  0x0000FFFFUL
 };
 
 #define THREAD_STATUS_MASK              (ThreadStatusMask::kThreadStatusMask)
@@ -66,10 +64,10 @@ enum ThreadStatusMask
 #define THREAD_IS_ALIVE(status)         (((status) & kAliveStatusMask) != 0)
 #define THREAD_IS_RUNNING(status)       (((status) & kRunningStatusMask) != 0)
 
-#define GET_THREAD_STATUS(status)       ((status) & ThreadStatusMask::kThreadStatusMask)
-#define GET_THREAD_EXTRA_STATUS(status) ((status) & ThreadStatusMask::kThreadExtraStatusMask)
+#define GET_THREAD_STATUS(status)       ((status) & kThreadStatusMask)
+#define GET_THREAD_EXTRA_STATUS(status) ((status) & kThreadExtraStatusMask)
 
-#define GET_THREAD_STATUS_VALUE(status) ((status) & ThreadStatusMask::kThreadStatusValueMask)
+#define GET_THREAD_STATUS_VALUE(status) ((status) & kThreadStatusValueMask)
 
 #define THREAD_IS_ALIVE_OR_RUNNING(status) \
     (((status) & kAliveAndRunningStatusMask) != 0)
@@ -88,7 +86,7 @@ enum ThreadStatusMask
 enum ThreadDef
 {
     /* Abort()或Terminate()终止线程时的等待时间. 默认值: 5000毫秒. */
-    kTerminateWaitTime  = 5000,
+    kTerminateWaitTime  = 5000
 };
 
 enum ThreadStatusDef
@@ -115,10 +113,10 @@ enum ThreadStatusDef
     kThreadStatus_ResumePending,
     kThreadStatus_ThreadProcOver,
 
-    kThreadStatusLast,
+    kThreadStatusLast
 };
 
-static char * s_szThreadStatusString[] = {
+static const char * s_szThreadStatusString[] = {
     "Unknown",
     "UnStarted",
     "Stopped",
@@ -177,7 +175,7 @@ public:
     static const uint32_t kCreateSuspended  = CREATE_SUSPENDED;
 } ThreadInitFlag;
 
-typedef void (*thread_proc_t)(void *lpParam);
+//typedef void (*thread_proc_t)(void *lpParam);
 
 #if JIMI_IS_WINDOWS
 
@@ -193,6 +191,7 @@ public:
     typedef uint32_t    thread_status_t;
     typedef unsigned    thread_id_t;
     typedef uint32_t    affinity_t;
+    typedef void (*thread_proc_t)(void *lpParam);
 
     // 工作者线程的线程参数
     typedef struct Thread_Params
@@ -284,13 +283,13 @@ public:
         nExtraStatus &= GET_THREAD_EXTRA_STATUS(~nRemoveExtraStatus);
     }
 
-    char * GetThreadStateString() {
+    const char * GetThreadStateString() {
         int index = GET_THREAD_STATUS_VALUE(nStatus);
         index = JIMI_MIN(index, kThreadStatusLast - 1);
         return s_szThreadStatusString[index];
     }
 
-    char * GetThreadStateString(thread_status_t nSpecStatus) {
+    const char * GetThreadStateString(thread_status_t nSpecStatus) {
         int index = GET_THREAD_STATUS_VALUE(nSpecStatus);
         index = JIMI_MIN(index, kThreadStatusLast - 1);
         return s_szThreadStatusString[index];

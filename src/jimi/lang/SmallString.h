@@ -113,10 +113,22 @@ SmallString<_CharT, _Capacity, _Alignment, _Traits>::SmallString(const value_typ
 
 template <class _CharT, size_t _Capacity, size_t _Alignment, class _Traits>
 SmallString<_CharT, _Capacity, _Alignment, _Traits>::SmallString(const value_type *src)
-: SmallString(src, traits_type::length(src))
-//: SmallString(src, ::jm_strlen(src))
+//: SmallString(src, (size_type)traits_type::length(src))
+//: SmallString(src, (size_type)::jm_strlen(src))
+//: SmallString(src, (size_type)jm_countof(src))
 //: SmallString(src)
 {
+    size_type size = traits_type::length(src);
+    if (size < _capacity) {
+        memcpy(_data, src, size * sizeof(value_type));
+        _data[size] = (value_type)'\0';
+        _size = size;
+    }
+    else {
+        memcpy(_data, src, (_capacity - 1) * sizeof(value_type));
+        _data[_capacity - 1] = (value_type)'\0';
+        _size = _capacity - 1;
+    }
 }
 
 template <class _CharT, size_t _Capacity, size_t _Alignment, class _Traits>

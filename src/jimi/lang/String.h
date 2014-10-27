@@ -7,13 +7,13 @@
 #endif
 
 #include <jimi/core/jimi_def.h>
-#include <jimi/log/log.h>
 #include <jimi/lang/Allocator.h>
 #include <jimi/lang/Char_Traits.h>
 #include <jimi/lang/RefCounted.h>
 #include <jimi/lang/StringCore.h>
 #include <jimi/lang/StringDetail.h>
 #include <jimic/string/jm_strings.h>
+#include <jimi/log/log.h>
 
 #include <vadefs.h>
 #include <string>
@@ -97,7 +97,7 @@ public:
     basic_string(const value_type *begin, const value_type *end);
     basic_string(const std::string &src);
 
-#if defined(JIMI_HAS_CPP11_MOVE_FUNCTIONS) && (JIMI_HAS_CPP11_MOVE_FUNCTIONS != 0)
+#if defined(JIMI_HAS_CXX11_MOVE_FUNCTIONS) && (JIMI_HAS_CXX11_MOVE_FUNCTIONS != 0)
     // Move constructor
     basic_string(basic_string && goner)
         : _store(std::move(goner._store)) {
@@ -105,7 +105,7 @@ public:
     }
 
     // Move assignment
-    basic_string & operator =(basic_string && goner) {
+    basic_string & operator = (basic_string && goner) {
         if (JIMI_UNLIKELY(&goner == this)) {
             // Compatibility with std::basic_string<>,
             // C++11 21.4.2 [string.cons] / 23 requires self-move-assignment support.
@@ -161,18 +161,26 @@ public:
     basic_string &append_format_c(const value_type *fmt, ...);
     basic_string &format_c(const value_type *fmt, const value_type *args, ...);
 
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
     template<typename ...Args>
     basic_string &format(const value_type *fmt, Args const ... args);
 
     template<typename ...Args>
     basic_string &append_format(Args const & ... args);
+#else
+    basic_string &format(const value_type *fmt, ...) { return *this; }
+
+    basic_string &append_format(...) { return *this; }
+#endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 
 private:
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
     template<typename T, typename ...Args>
     void append_format_next(const T & value);
 
     template<typename T, typename ...Args>
     void append_format_next(const T & value, Args const ... args);
+#endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 
 public:
     void push_back(const value_type c);         // primitive
@@ -854,6 +862,8 @@ int BASIC_STRING::compare(const value_type *rhs) const
     return _store.compare(rhs);
 }
 
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
+
 #if 1
 
 template <typename StringType, typename T, typename ... Args>
@@ -906,9 +916,13 @@ inline void format_next_args(const StringType * arg_list, size_t & index, const 
 
 #endif
 
+#endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
+
 /* format() 是否使用栈上分配 arg_list 内存? */
 #undef  FORMAT_USE_ALLOCA_ONSTACK
 #define FORMAT_USE_ALLOCA_ONSTACK       0
+
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
 
 template <BASIC_STRING_CLASSES>
 template <typename ...Args>
@@ -1053,6 +1067,8 @@ BASIC_STRING &BASIC_STRING::append_format(Args const & ... args)
 #endif
     return *this;
 }
+
+#endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 
 #define USE_STRING_ARRAY            0
 #define USE_PLACEMENT_NEW           1
@@ -1932,11 +1948,11 @@ bool operator == (const _CharT *lhs, const BASIC_STRING &rhs)
 #undef BASIC_STRING_CLASSES
 #undef BASIC_STRING
 
-typedef basic_string<char> string;
-typedef basic_string<wchar_t> wstring;
+typedef basic_string<char>      string;
+typedef basic_string<wchar_t>   wstring;
 
-typedef basic_string<char> String;
-typedef basic_string<wchar_t> WString;
+typedef basic_string<char>      String;
+typedef basic_string<wchar_t>   WString;
 
 NS_JIMI_END
 

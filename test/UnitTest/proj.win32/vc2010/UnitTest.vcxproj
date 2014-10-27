@@ -99,12 +99,21 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\FastMemcpy.cpp" />
     <ClCompile Include="..\..\src\UnitTest.cpp" />
+    <ClCompile Include="..\..\src\UnitTests\ftol_test.cpp" />
+    <ClCompile Include="..\..\src\UnitTests\snprintf_test.cpp" />
+    <ClCompile Include="..\..\src\UnitTests\String_StrLen_Test.cpp" />
+    <ClCompile Include="..\..\src\UnitTests\String_StrLwr_Test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\cpp11_format.h" />
     <ClInclude Include="..\..\src\FastMemcpy.h" />
     <ClInclude Include="..\..\src\SampleThread.h" />
     <ClInclude Include="..\..\src\targetver.h" />
     <ClInclude Include="..\..\src\UnitTest.h" />
+    <ClInclude Include="..\..\src\UnitTests\ftol_test.h" />
+    <ClInclude Include="..\..\src\UnitTests\snprintf_test.h" />
+    <ClInclude Include="..\..\src\UnitTests\String_StrLen_Test.h" />
+    <ClInclude Include="..\..\src\UnitTests\String_StrLwr_Test.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />

@@ -219,7 +219,7 @@ typedef struct JIMI_MACRO_T
 //#include <iostream>
 //#include <string>
 
-using namespace std;
+//using namespace std;
 
 #if defined(_MSC_VER) && _MSC_VER >= 1400
 #ifndef _CRT_SECURE_NO_DEPRECATE

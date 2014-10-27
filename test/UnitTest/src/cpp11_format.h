@@ -6,6 +6,8 @@
 #pragma once
 #endif
 
+#if defined(JIMI_HAS_CXX11_VARIADIC_TEMPLATES) && (JIMI_HAS_CXX11_VARIADIC_TEMPLATES != 0)
+
 #include <tuple>
 #include <type_traits>
 #include <string>
@@ -14,7 +16,7 @@
 
 #include <jimic/string/jm_strings.h>
 
-using namespace std;
+//using namespace std;
 
 namespace qicosmos {
 
@@ -118,7 +120,7 @@ namespace detail {
 template<typename... Args>
 inline std::string format(const std::string & src, Args... args)
 {
-    return format((char*) src.c_str(), args...);
+    return format((char *) src.c_str(), args...);
 }
 
 template<typename... Args>
@@ -161,5 +163,7 @@ inline std::string format(char* src, Args... args)
 }
 
 }  /* namespace of qicosmos */
+
+#endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 
 #endif  /* !_JIMI_QICOSMOS_FORMATTER_H_ */
