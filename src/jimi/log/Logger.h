@@ -41,12 +41,12 @@ using namespace std;
 ////////////////////////////////////////////////////////////////
 
 #if defined(JIMI_LOG_ENABLE) && (JIMI_LOG_ENABLE != 0)
-#define JIMI_LOG(x)                     ((void)NS_JIMI_LOG(utils.log.print(x)))
-#define JIMI_LOG0(x)                    ((void)NS_JIMI_LOG(utils.log.print(x)))
-#define JIMI_LOG1(x,a)                  ((void)NS_JIMI_LOG(utils.log.print(x,(a))))
-#define JIMI_LOG2(x,a,b)                ((void)NS_JIMI_LOG(utils.log.print(x,(a),(b))))
-#define JIMI_LOG3(x,a,b,c)              ((void)NS_JIMI_LOG(utils.log.print(x,(a),(b),(c))))
-#define JIMI_LOG4(x,a,b,c,d)            ((void)NS_JIMI_LOG(utils.log.print(x,(a),(b),(c),(d))))
+#define JIMI_LOG(x)                     ((void)NS_JIMI_LOG(Utils.log.print(x)))
+#define JIMI_LOG0(x)                    ((void)NS_JIMI_LOG(Utils.log.print(x)))
+#define JIMI_LOG1(x,a)                  ((void)NS_JIMI_LOG(Utils.log.print(x,(a))))
+#define JIMI_LOG2(x,a,b)                ((void)NS_JIMI_LOG(Utils.log.print(x,(a),(b))))
+#define JIMI_LOG3(x,a,b,c)              ((void)NS_JIMI_LOG(Utils.log.print(x,(a),(b),(c))))
+#define JIMI_LOG4(x,a,b,c,d)            ((void)NS_JIMI_LOG(Utils.log.print(x,(a),(b),(c),(d))))
 #else
 #define JIMI_LOG(x)                     ((void)(0))
 #define JIMI_LOG0(x)                    ((void)(0))
@@ -57,15 +57,15 @@ using namespace std;
 #endif /* JIMI_LOG_ENABLE */
 
 #ifndef _JIMI_LOG
-#define _JIMI_LOG                       NS_JIMI_LOG(utils.log.print)
+#define _JIMI_LOG                       NS_JIMI_LOG(Utils.log.print)
 #endif
 
 #ifndef jmLog
-#define jmLog                           NS_JIMI_LOG(utils.log)
+#define jmLog                           NS_JIMI_LOG(Utils.log)
 #endif
 
 #ifndef DebugLog
-#define DebugLog                        NS_JIMI_LOG(utils.log)
+#define DebugLog                        NS_JIMI_LOG(Utils.log)
 #endif
 
 ////////////////////////////////////////////////////////////////
@@ -79,12 +79,12 @@ using namespace std;
 #define JIMI_LOG_TRACE2(x,a,b)          ((void)std::printf(x,a,b))
 #define JIMI_LOG_TRACE3(x,a,b,c)        ((void)std::printf(x,a,b,c))
 //*/
-#define JIMI_LOG_TRACE(x)               ((void)NS_JIMI_LOG(utils.log.trace(x)))
-#define JIMI_LOG_TRACE0(x)              ((void)NS_JIMI_LOG(utils.log.trace(x)))
-#define JIMI_LOG_TRACE1(x,a)            ((void)NS_JIMI_LOG(utils.log.trace(x,(a))))
-#define JIMI_LOG_TRACE2(x,a,b)          ((void)NS_JIMI_LOG(utils.log.trace(x,(a),(b)))
-#define JIMI_LOG_TRACE3(x,a,b,c)        ((void)NS_JIMI_LOG(utils.log.trace(x,(a),(b),(c))))
-#define JIMI_LOG_TRACE4(x,a,b,c,d)      ((void)NS_JIMI_LOG(utils.log.trace(x,(a),(b),(c),(d))))
+#define JIMI_LOG_TRACE(x)               ((void)NS_JIMI_LOG(Utils.log.trace(x)))
+#define JIMI_LOG_TRACE0(x)              ((void)NS_JIMI_LOG(Utils.log.trace(x)))
+#define JIMI_LOG_TRACE1(x,a)            ((void)NS_JIMI_LOG(Utils.log.trace(x,(a))))
+#define JIMI_LOG_TRACE2(x,a,b)          ((void)NS_JIMI_LOG(Utils.log.trace(x,(a),(b)))
+#define JIMI_LOG_TRACE3(x,a,b,c)        ((void)NS_JIMI_LOG(Utils.log.trace(x,(a),(b),(c))))
+#define JIMI_LOG_TRACE4(x,a,b,c,d)      ((void)NS_JIMI_LOG(Utils.log.trace(x,(a),(b),(c),(d))))
 #else
 #define JIMI_LOG_TRACE(x)               ((void)(0))
 #define JIMI_LOG_TRACE0(x)              ((void)(0))
@@ -95,11 +95,11 @@ using namespace std;
 #endif /* JIMI_LOG_TRACE_ENABLE */
 
 #ifndef _JIMI_LOG
-#define _JIMI_LOG_TRACE                 NS_JIMI_LOG(utils.log.trace)
+#define _JIMI_LOG_TRACE                 NS_JIMI_LOG(Utils.log.trace)
 #endif
 
 #ifndef TraceLog
-#define TraceLog                        NS_JIMI_LOG(utils.log)
+#define TraceLog                        NS_JIMI_LOG(Utils.log)
 #endif
 
 ////////////////////////////////////////////////////////////////
@@ -129,7 +129,12 @@ using namespace std;
 
 #define MAX_LOG_PATH                MAX_PATH        // 260
 #define MAX_LOG_TITLE               128
+
+#if JIMI_IS_WINDOWS || JIMI_IS_MINGW
 #define STRING_CRLF                 "\r\n"
+#else
+#define STRING_CRLF                 "\n"
+#endif
 
 #define DEFAULT_LOG_TITLE           "Noname Log"
 #define DEFAULT_LOG_TITLE_GLOBAL    "Global Log"
@@ -328,28 +333,39 @@ private:
     LogConfig m_config;
 };
 
-class JIMI_API _Utils
+class JIMI_API Utils
 {
 public:
-    _Utils() : log(DEFAULT_LOG_FILENAME_GLOBAL, DEFAULT_LOG_TITLE_GLOBAL) {};
-    ~_Utils() {};
+    Utils() : log(DEFAULT_LOG_FILENAME_GLOBAL, DEFAULT_LOG_TITLE_GLOBAL) {};
+    ~Utils() {};
 
 public:
     Logger log;
 };
 
-extern _Utils   utils;
+#define JIMI_USE_STATIC_GLOBAL_OBJECT   0
 
-class JIMI_API _System
+#if defined(JIMI_USE_STATIC_GLOBAL_OBJECT) && (JIMI_USE_STATIC_GLOBAL_OBJECT != 0)
+static class Utils      Utils;
+#else
+extern class Utils      Utils;
+#endif
+
+class JIMI_API System
 {
 public:
-    _System() : out(utils.log) {};
-    ~_System() {};
+    System() : out(Utils.log) {};
+    ~System() {};
 
+public:
     Logger &out;
 };
 
-extern _System  System;
+#if defined(JIMI_USE_STATIC_GLOBAL_OBJECT) && (JIMI_USE_STATIC_GLOBAL_OBJECT != 0)
+static class System     System;
+#else
+extern class System     System;
+#endif
 
 NS_JIMI_LOG_END
 

@@ -25,6 +25,9 @@ typedef struct Timeout
 {
     static const uint32_t kInfinite = INFINITE;
     static const uint32_t kIgnore   = IGNORE;
+
+    /* Thread::Abort()或Thread::Terminate()终止线程时的等待时间. 默认值: 5000毫秒. */
+    static const uint32_t kTerminateWaitTime = 5000;
 } Timeout;
 
 typedef struct ErrorCode

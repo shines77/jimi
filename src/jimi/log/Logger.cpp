@@ -52,8 +52,10 @@ NS_JIMI_BEGIN
 
 NS_JIMI_LOG_BEGIN
 
-_Utils  utils;
-_System System;
+#if !defined(JIMI_USE_STATIC_GLOBAL_OBJECT) || (JIMI_USE_STATIC_GLOBAL_OBJECT == 0)
+class Utils  Utils;
+class System System;
+#endif
 
 Logger *Logger::s_Log = NULL;
 

@@ -23,16 +23,16 @@
 #include "SampleThread.h"
 
 #include <string>
-using namespace std;
+//using namespace std;
 
 #if JIMI_IS_WINDOWS
 
-#include <jimi/system/WinService.h>
 #include "IocpServdService.h"
+#include <jimi/system/WinService.h>
 
 TCHAR g_ServiceName[]        = _T("IocpServd");
-TCHAR g_ServiceDisplayName[] = _T("Iocp Server Daemon Service");
-TCHAR g_ServiceDescription[] = _T("Windows IOCP Server Daemon");
+TCHAR g_ServiceDisplayName[] = _T("Windows Iocp Server Daemon Service");
+TCHAR g_ServiceDescription[] = _T("Windows Iocp Server Daemon");
 /*
  * -2 - unknown status
  * -1 - not in service mode
@@ -111,7 +111,7 @@ int IocpServd_main(int argc, char *argv[])
 
     printf("\n");
 
-#if 0
+#if 1
     SampleThread *thread = new SampleThread();
     thread->Start();
     thread->Join();

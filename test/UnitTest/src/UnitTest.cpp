@@ -2735,6 +2735,15 @@ int UnitTest_Main(int argc, char *argv[])
         jmLog.info(strCmdLine.c_str());
     }
 
+    // Test System.out.info()
+    System.out.info("System.out.info() test.");
+
+    // Test System.out.print()
+    System.out.print("System.out.print() test.\n");
+
+    // Test System.out.println()
+    System.out.println("System.out.println() test.");
+
 #if 0
     if (true) {
         auto_rvalue_test();

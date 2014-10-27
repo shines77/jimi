@@ -10,7 +10,6 @@
 
 #include <iostream>
 #include <string>
-using namespace std;
 
 #include <jimi/core/jimi_def.h>
 
@@ -35,7 +34,7 @@ using namespace std;
 
 #define USING_NS_JIMI_LOG_SUB(NS)       using namespace jimi::log::##NS##;
 
-#define JIMI_LOG_MIN(a, b)          ((a) < (b) ? (a) : (b))
-#define JIMI_LOG_MAX(a, b)          ((a) > (b) ? (a) : (b))
+#define JIMI_LOG_MIN(a, b)              ((a) < (b) ? (a) : (b))
+#define JIMI_LOG_MAX(a, b)              ((a) > (b) ? (a) : (b))
 
 #endif  /* _JIMI_LOG_DEF_H_ */

@@ -22,8 +22,8 @@
 #include <strsafe.h>
 #include <string.h>
 
+#include <jimi/thread/Thread.h>
 #include <jimi/log/log.h>
-#include <jimi/thread/thread.h>
 
 #include <jimic/string/jm_strings.h>
 
@@ -62,7 +62,7 @@ typedef WINADVAPI BOOL (WINAPI *CSD_T)(SC_HANDLE, DWORD, LPCVOID);
 //
 // Service State -- for CurrentState
 //
-typedef enum eServiceStatus {
+enum eServiceStatus {
     SVC_STATUS_NOTINSERVICE     = -1,
     SVC_STATUS_UNKNOWN          = 0,
 
@@ -77,7 +77,7 @@ typedef enum eServiceStatus {
     SVC_STATUS_PAUSED           = SERVICE_PAUSED,
 
     SVC_STATUS_LAST
-} eServiceStatus;
+};
 
 static char * s_szServiceStatusString[] = {
     "SERVICE_UNKNOWN",
@@ -94,14 +94,14 @@ static char * s_szServiceStatusString[] = {
     "SERVICE_LAST0"
 };
 
-typedef enum eServiceErrorId {
-    ERR_SVC_UNKNOWN = 0,
-    ERR_SVC_INIT_SERVICE_FAILED = 101,
-    ERR_SVC_START_SERVICE_FAILED = 102,
-    ERR_SVC_STOP_SERVICE_FAILED = 103,
-    ERR_SVC_CLEANUP_SERVICE_FAILED = 109,
+enum eServiceErrorId {
+    ERR_SVC_UNKNOWN                 = 0,
+    ERR_SVC_INIT_SERVICE_FAILED     = 101,
+    ERR_SVC_START_SERVICE_FAILED    = 102,
+    ERR_SVC_STOP_SERVICE_FAILED     = 103,
+    ERR_SVC_CLEANUP_SERVICE_FAILED  = 109,
     ERR_SVC_MAXID
-} eServiceErrorId;
+};
 
 //
 // Summary:
@@ -679,7 +679,7 @@ void WinServiceBase<T>::ServiceReportEvent(LPTSTR szFunction, int nEventId)
     TCHAR buffer[128];
     LPTSTR szServiceName = NULL;
 
-    WinServiceBase<T> *pInstance = s_pServiceInstance;
+    WinServiceBase<T> *pInstance = static_cast<WinServiceBase<T> *>(s_pServiceInstance);
     if (pInstance != NULL) {
         szServiceName = pInstance->GetServiceName();
     }
@@ -1209,7 +1209,7 @@ template <class T>
 void WinServiceBase<T>::ServiceControlHandler(DWORD dwControlCode)
 {
 #if 1
-    WinServiceBase<T> *pInstance = s_pServiceInstance;
+    WinServiceBase<T> *pInstance = static_cast<WinServiceBase<T> *>(s_pServiceInstance);
     if (pInstance == NULL) {
         jmLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
@@ -1343,7 +1343,7 @@ template <class T>
 DWORD WinServiceBase<T>::ServiceControlHandlerEx(DWORD dwControlCode, DWORD dwEventType,
                                                 LPVOID lpEventData, LPVOID lpContext)
 {
-    WinServiceBase<T> *pInstance = s_pServiceInstance;
+    WinServiceBase<T> *pInstance = static_cast<WinServiceBase<T> *>(s_pServiceInstance);
     if (pInstance == NULL) {
         jmLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
@@ -1409,26 +1409,6 @@ DWORD WinServiceBase<T>::ServiceControlHandlerEx(DWORD dwControlCode, DWORD dwEv
 }
 
 template <class T>
-void WinServiceBase<T>::WorkerThreadProc(void *pvData)
-{
-    jmLog.info("WinServiceBase<T>::WorkerThreadProc() Enter.");
-
-    Thread::THREAD_PARAMS *pParams = (Thread::THREAD_PARAMS *)pvData;
-    Thread *pThread = NULL;
-    ExecInfo_t *pExecInfo = NULL;
-    if (pParams != NULL) {
-        pThread = (Thread *)pParams->pThread;
-        pExecInfo = (ExecInfo_t *)pParams->pObject;
-    }
-    if (pExecInfo == NULL)
-        return;
-
-    WinServiceBase<T>::ServiceWorkerLoop(pExecInfo->argc, pExecInfo->argv);
-
-    jmLog.info("WinServiceBase<T>::WorkerThreadProc() Over.");
-}
-
-template <class T>
 bool WinServiceBase<T>::ServiceWorkerMethod(void *pvData)
 {
     static int s_nOnServiceLoopCnt = 0;
@@ -1460,6 +1440,7 @@ bool WinServiceBase<T>::ServiceWorkerMethod(void *pvData)
 }
 
 template <class T>
+/* static */
 void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
 {
     T *pInstanceImpl = static_cast<T *>(s_pServiceInstance);
@@ -1468,7 +1449,7 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
-    WinServiceBase<T> *pInstance = s_pServiceInstance;
+    WinServiceBase<T> *pInstance = static_cast<WinServiceBase<T> *>(s_pServiceInstance);
     if (pInstance == NULL) {
         jmLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
@@ -1509,6 +1490,28 @@ void WINAPI WinServiceBase<T>::ServiceWorkerLoop(int argc, TCHAR *argv[])
 }
 
 template <class T>
+/* static */
+void WinServiceBase<T>::WorkerThreadProc(void *pvData)
+{
+    jmLog.info("WinServiceBase<T>::WorkerThreadProc() Enter.");
+
+    Thread::THREAD_PARAMS *pParams = (Thread::THREAD_PARAMS *)pvData;
+    Thread *pThread = NULL;
+    ExecInfo_t *pExecInfo = NULL;
+    if (pParams != NULL) {
+        pThread = (Thread *)pParams->pThread;
+        pExecInfo = (ExecInfo_t *)pParams->pObject;
+    }
+    if (pExecInfo == NULL)
+        return;
+
+    WinServiceBase<T>::ServiceWorkerLoop(pExecInfo->argc, pExecInfo->argv);
+
+    jmLog.info("WinServiceBase<T>::WorkerThreadProc() Over.");
+}
+
+template <class T>
+/* static */
 void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
 {
     T *pInstanceImpl = static_cast<T *>(s_pServiceInstance);
@@ -1517,7 +1520,7 @@ void WINAPI WinServiceBase<T>::ServiceMain(int argc, TCHAR *argv[])
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
-    WinServiceBase<T> *pInstance = s_pServiceInstance;
+    WinServiceBase<T> *pInstance = static_cast<WinServiceBase<T> *>(s_pServiceInstance);
     if (pInstance == NULL) {
         jmLog.error(ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
@@ -1668,25 +1671,26 @@ int WinServiceBase<T>::RunService()
 }
 
 template <class T>
+/* static */
 int WinServiceBase<T>::RunService(WinServiceBase<T> *pServiceInstance)
 {
     jmLog.info("WinServiceBase<T>::RunService() Enter.");
 
-    T *pInstance = static_cast<T *>(pServiceInstance);
+    T *pInstanceImpl = static_cast<T *>(pServiceInstance);
 
     // If command-line parameter is "install", install the service.
     // Otherwise, the service is probably being started by the SCM.
-    if (pInstance == NULL)
-        pInstance = static_cast<T *>(s_pServiceInstance);
-    if (pInstance == NULL) {
+    if (pInstanceImpl == NULL)
+        pInstanceImpl = static_cast<T *>(s_pServiceInstance);
+    if (pInstanceImpl == NULL) {
         jmLog.error("%s%s", "WinServiceBase<T>::RunService(): ", ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
-    // TO_DO: Add any additional services for the process to this table.
+    // TODO: Add any additional services for the process to this table.
     // 一个Service进程可以有多个线程，这是每个线程的入口表
     SERVICE_TABLE_ENTRY serviceTable[] = {
-        { pInstance->GetServiceName(), (LPSERVICE_MAIN_FUNCTION)&(WinServiceBase<T>::ServiceMain) },
+        { pInstanceImpl->GetServiceName(), (LPSERVICE_MAIN_FUNCTION)&(WinServiceBase<T>::ServiceMain) },
         { NULL, NULL }
     };
 
@@ -1709,25 +1713,26 @@ int WinServiceBase<T>::RunServiceEx(SERVICE_TABLE_ENTRY serviceTable[])
 }
 
 template <class T>
+/* static */
 int WinServiceBase<T>::RunServiceEx(WinServiceBase<T> *pServiceInstance, SERVICE_TABLE_ENTRY serviceTable[])
 {
     jmLog.info("WinServiceBase<T>::RunServiceEx() Enter.");
-    T *pInstance = static_cast<T *>(pServiceInstance);
+    T *pInstanceImpl = static_cast<T *>(pServiceInstance);
 
     // If command-line parameter is "install", install the service.
     // Otherwise, the service is probably being started by the SCM.
-    if (pInstance == NULL)
-        pInstance = static_cast<T *>(s_pServiceInstance);
-    if (pInstance == NULL) {
+    if (pInstanceImpl == NULL)
+        pInstanceImpl = static_cast<T *>(s_pServiceInstance);
+    if (pInstanceImpl == NULL) {
         jmLog.error("%s%s", "WinServiceBase<T>::RunServiceEx(): ", ERROR_SERVICE_INSTANCE_NOT_INITED);
         throw ERROR_SERVICE_INSTANCE_NOT_INITED;
     }
 
-    // TO_DO: Add any additional services for the process to this table.
+    // TODO: Add any additional services for the process to this table.
     // 一个Service进程可以有多个线程，这是每个线程的入口表
     /*
     SERVICE_TABLE_ENTRY serviceTable[] = {
-        { pServiceInstance->GetServiceName(), (LPSERVICE_MAIN_FUNCTION)&(WinServiceBase<T>::ServiceMain) },
+        { pInstanceImpl->GetServiceName(), (LPSERVICE_MAIN_FUNCTION)&(WinServiceBase<T>::ServiceMain) },
         { NULL, NULL }
     };
     //*/

@@ -25,10 +25,12 @@ public:
     ~SampleThread(void) { };
 
     static void JIMI_WINAPI ThreadProc(void *lpParam) {
+        jmLog.info("----------------------------------------------------------");
         jmLog.info("invoke SampleThread::ThreadProc() Start.");
         jmLog.info("invoke SampleThread::ThreadProc() Thread::Sleep(5000);");
         Thread::Sleep(5000);
         jmLog.info("invoke SampleThread::ThreadProc() End.");
+        jmLog.info("----------------------------------------------------------");
     }
 };
 
@@ -39,10 +41,14 @@ public:
     ~Worker() { };
 
     static void DoWork(void *lpParam) {
+        jmLog.info("-------------------------------------------");
+        jmLog.info("invoke Worker::DoWork() Start.");
         while (!_shouldStop) {
             jmLog.info("worker thread: working...");
         }
         jmLog.info("worker thread: terminating gracefully.");
+        jmLog.info("invoke Worker::DoWork() End.");
+        jmLog.info("-------------------------------------------");
     }
 
     void RequestStop() {
