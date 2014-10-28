@@ -71,6 +71,13 @@ public:
         return keyCode;
     }
 
+    static int ReadKey_NextLine(bool displayTips = true, bool echoInput = false) {
+        int keyCode;
+        keyCode = ReadKey(displayTips, echoInput);
+        printf("\n");
+        return keyCode;
+    }
+
     static int Read() {
         int keyCode = 0;
         return keyCode;

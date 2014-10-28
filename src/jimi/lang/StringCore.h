@@ -160,13 +160,13 @@ public:
         kMaxMediumSizeBytes / sizeof(char_type);
 
     /* small_t.info.size 相对于 medium_large_t.core.type 的偏移值(单位为字节) */
-    static const size_type kSmallSizeOffset = (size_type)jmc_abs_marco((intptr_t)(
+    static const size_type kSmallSizeOffset = (size_type)jmc_abs_ex((intptr_t)(
                                     (unsigned char *)&(((small_t *)0)->info.size)
-                                  - (unsigned char *)&(((medium_large_t *)0)->core.type)));
+                                  - (unsigned char *)&(((medium_large_t *)0)->core.type)), size_type);
      /* small_t.info.type 相对于 medium_large_t.core.type 的偏移值(单位为字节) */
-    static const size_type kSmallTypeOffset = (size_type)jmc_abs_marco((intptr_t)(
+    static const size_type kSmallTypeOffset = (size_type)jmc_abs_ex((intptr_t)(
                                     (unsigned char *)&(((small_t *)0)->info.type)
-                                  - (unsigned char *)&(((medium_large_t *)0)->core.type)));
+                                  - (unsigned char *)&(((medium_large_t *)0)->core.type)), size_type);
 
     /* small_t.info.size 相对于 medium_large_t.core.type 的偏移值(单位为bit) */
     static const size_type kSmallSizeOffsetBits = kSmallSizeOffset * sizeof(unsigned char) * 8;

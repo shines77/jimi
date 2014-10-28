@@ -503,7 +503,7 @@ void String_StrLwr_Test(int nTestLen)
     }
     //printf("\n");
 
-    printf("str               size = %d bytes\n\n", nTestLen);
+    printf("string            size = %d bytes\n\n", nTestLen);
 
     if (loop_times > 100) {
         printf("strlwr(str)       time = %-7.3f ms\n", time1);

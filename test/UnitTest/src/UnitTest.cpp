@@ -2792,7 +2792,7 @@ int UnitTest_Main(int argc, char *argv[])
 #if 0
     malloc_addr_test();
 
-    jimi::Console.ReadKey();
+    jimi::Console.ReadKey_NextLine();
     return 0;
 #endif
 
@@ -2913,7 +2913,7 @@ int UnitTest_Main(int argc, char *argv[])
     Log10_Test2(1E+100);
     Double_And_Float_Test();
 
-    jimi::Console.ReadKey();
+    jimi::Console.ReadKey_NextLine();
 #endif
 
 #if 1
@@ -2942,11 +2942,15 @@ int UnitTest_Main(int argc, char *argv[])
         jimi::Console.ReadKey();
         return 0;
     }
+
+    jimi::Console.ReadKey_NextLine();
 #endif
 
 #if 1
   #if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
     String_Snprintf_Test();
+
+    jimi::Console.ReadKey_NextLine();
   #endif
 
   #if 1
@@ -2956,7 +2960,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Integer2();
     Snprintf_Preformance_Test_Integer3();
 
-    jimi::Console.ReadKey();
+    jimi::Console.ReadKey_NextLine();
   #endif
 
   #if 1
@@ -2965,7 +2969,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Double3();
     Snprintf_Preformance_Test_Double4();
 
-    jimi::Console.ReadKey();
+    jimi::Console.ReadKey_NextLine();
   #endif
 
   #if 1
@@ -2975,7 +2979,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_String4();
     Snprintf_Preformance_Test_String5();
 
-    jimi::Console.ReadKey();
+    jimi::Console.ReadKey_NextLine();
   #endif
 
     //OStringStream_Performance_Test();
@@ -2987,16 +2991,16 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 0
+#if 1
     String_Performance_Test();
     String_Performance_Test2();
 
-    jimi::Console.ReadKey();
+    jimi::Console.ReadKey_NextLine();
 #endif
 
 #if 1
     String_StrLen_Test();
-    jimi::Console.ReadKey();
+    jimi::Console.ReadKey_NextLine();
 #endif
 
     Jimi_StrLwr_Verify();
@@ -3014,7 +3018,7 @@ int UnitTest_Main(int argc, char *argv[])
     String_StrLwr_Test(256);
     String_StrLwr_Test(1024);
 
-    jimi::Console.ReadKey();
+    jimi::Console.ReadKey_NextLine();
 #endif
 
 #if 0

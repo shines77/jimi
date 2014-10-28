@@ -56,16 +56,16 @@ union jmc_ieee754_float
 typedef union jmc_ieee754_float jmc_ieee754_float;
 
 /* Added to exponent. */
-#define JMC_IEEE754_FLOAT_EXPONENT_BIAS     (0x007FUL)
+#define JMC_IEEE754_FLOAT_EXPONENT_BIAS     (0x007FL)
 
 /* The exponent mask is used to detect whether the float is a NaN or Inf? */
 #define JMC_IEEE754_FLOAT_EXPONENT_MASK     (0x00FFUL)
 
 /* The minimum value of the exponent about IEEE754 double. */
-#define JMC_IEEE754_FLOAT_EXPONENT_MIN      (0 - JMC_IEEE754_FLOAT_EXPONENT_BIAS)
+#define JMC_IEEE754_FLOAT_EXPONENT_MIN      ((int)(0 - JMC_IEEE754_FLOAT_EXPONENT_BIAS))
 
 /* The maximum value of the exponent about IEEE754 float. */
-#define JMC_IEEE754_FLOAT_EXPONENT_MAX      (JMC_IEEE754_FLOAT_EXPONENT_MASK - JMC_IEEE754_FLOAT_EXPONENT_BIAS)
+#define JMC_IEEE754_FLOAT_EXPONENT_MAX      ((int)(JMC_IEEE754_FLOAT_EXPONENT_MASK - JMC_IEEE754_FLOAT_EXPONENT_BIAS))
 
 union jmc_ieee754_double
 {
@@ -187,16 +187,16 @@ union jmc_ieee754_double
 typedef union jmc_ieee754_double jmc_ieee754_double;
 
 /* Added to exponent. */
-#define JMC_IEEE754_DOUBLE_EXPONENT_BIAS    (0x03FFUL)
+#define JMC_IEEE754_DOUBLE_EXPONENT_BIAS    (0x03FFL)
 
 /* The exponent mask is used to detect whether the double is a NaN or Inf? */
 #define JMC_IEEE754_DOUBLE_EXPONENT_MASK    (0x07FFUL)
 
 /* The minimum value of the exponent about IEEE754 double. */
-#define JMC_IEEE754_DOUBLE_EXPONENT_MIN     (0 - JMC_IEEE754_DOUBLE_EXPONENT_BIAS)
+#define JMC_IEEE754_DOUBLE_EXPONENT_MIN     ((int)(0 - JMC_IEEE754_DOUBLE_EXPONENT_BIAS))
 
 /* The maximum value of the exponent about IEEE754 double. */
-#define JMC_IEEE754_DOUBLE_EXPONENT_MAX     (JMC_IEEE754_DOUBLE_EXPONENT_MASK - JMC_IEEE754_DOUBLE_EXPONENT_BIAS)
+#define JMC_IEEE754_DOUBLE_EXPONENT_MAX     ((int)(JMC_IEEE754_DOUBLE_EXPONENT_MASK - JMC_IEEE754_DOUBLE_EXPONENT_BIAS))
 
 #ifdef __cplusplus
 extern "C" {
@@ -225,8 +225,8 @@ static const jmc_ieee754_float s_f64_exponent_mask = {
 static const jmc_ieee754_double s_d64_exponent_mask = {
     .ieee.mantissa0 = 0,
     .ieee.mantissa1 = 0,
-    .ieee.exponent = JMC_IEEE754_DOUBLE_EXPONENT_MASK,
-    .ieee.negative = 0
+    .ieee.exponent  = JMC_IEEE754_DOUBLE_EXPONENT_MASK,
+    .ieee.negative  = 0
 };
 #else
 static const jmc_ieee754_double s_d64_exponent_mask = {
