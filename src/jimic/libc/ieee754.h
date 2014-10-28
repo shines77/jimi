@@ -209,22 +209,12 @@ static const jmc_ieee754_float s_f64_exponent_mask = {
     .ieee.negative = 0
 };
 #else
-/*
 static const jmc_ieee754_float s_f64_exponent_mask = {
-    0UL,
-    //JMC_IEEE754_FLOAT_EXPONENT_MASK,
-    //0UL
-};
-//*/
-
-static const jmc_ieee754_float s_f64_exponent_mask = {
-    //mantissa: 0,
-    //exponent: JMC_IEEE754_FLOAT_EXPONENT_MASK,
-    //negative: 0
+    // .ieee
     {
-        0UL,
-        JMC_IEEE754_FLOAT_EXPONENT_MASK,
-        0UL
+        0UL,                                // .mantissa
+        JMC_IEEE754_FLOAT_EXPONENT_MASK,    // .exponent
+        0UL                                 // .negative
     }
 };
 #endif
@@ -240,23 +230,12 @@ static const jmc_ieee754_double s_d64_exponent_mask = {
 };
 #else
 static const jmc_ieee754_double s_d64_exponent_mask = {
-    //.mantissa0 = 0,
-    //.mantissa1 = 0,
-    //.exponent = JMC_IEEE754_DOUBLE_EXPONENT_MASK,
-    //.negative = 0
-    /*
+    // .ieee
     {
-        .mantissa0 = 0,
-        .mantissa1 = 0,
-        .exponent = JMC_IEEE754_DOUBLE_EXPONENT_MASK,
-        .negative = 0
-    }
-    //*/
-    {
-        0,
-        0,
-        JMC_IEEE754_DOUBLE_EXPONENT_MASK,
-        0
+        0,                                  // .mantissa0
+        0,                                  // .mantissa1
+        JMC_IEEE754_DOUBLE_EXPONENT_MASK,   // .exponent
+        0                                   // .negative
     }
 };
 #endif
@@ -270,7 +249,6 @@ static const jmc_ieee754_double s_d64_exponent_mask = {
 #if 1
 #define JMC_IEEE754_FLOAT_EXPONENT_MASK32   (s_f64_exponent_mask.exponent.dword)
 #define JMC_IEEE754_DOUBLE_EXPONENT_MASK32  (s_d64_exponent_mask.exponent.dword)
-//#define JMC_IEEE754_DOUBLE_EXPONENT_MASK32  (((jmc_ieee754_double::dexponent_t)(s_d64_exponent_mask).exponent.dword)
 #else
 #define JMC_IEEE754_FLOAT_EXPONENT_MASK32   (((jmc_ieee754_float::fexponent_t) (s_f64_exponent_mask).exponent.dword)
 #define JMC_IEEE754_DOUBLE_EXPONENT_MASK32  (((jmc_ieee754_double::dexponent_t)(s_d64_exponent_mask).exponent.dword)

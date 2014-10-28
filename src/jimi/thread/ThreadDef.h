@@ -65,6 +65,18 @@ NS_JIMI_SYSTEM_END
 
 NS_JIMI_END
 
+#else
+
+NS_JIMI_BEGIN
+
+NS_JIMI_SYSTEM_BEGIN
+
+typedef void * jm_handle_t;
+
+NS_JIMI_SYSTEM_END
+
+NS_JIMI_END
+
 #endif  /* JIMI_IS_WINDOWS */
 
 #endif  /* _JIMI_THREAD_DEF_H_ */

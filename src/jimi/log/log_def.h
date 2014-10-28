@@ -28,7 +28,7 @@
 #define NS_JIMI_LOG_END                 }
 
 #define NS_JIMI_LOG_NAME                jimi::log
-#define NS_JIMI_LOG(XX)                 jimi::##XX
+#define NS_JIMI_LOG(NS)                 jimi::NS
 
 #define USING_NS_JIMI_LOG               using namespace jimi::log;
 

@@ -182,7 +182,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\dtos.c" />
-    <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.c" />

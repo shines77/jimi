@@ -734,7 +734,16 @@ private:
  * the Thread base class
  */
 template <class T>
-class ThreadBase {
+class ThreadBase
+{
+public:
+    typedef jm_handle_t thread_handle_t;
+    typedef jm_handle_t handle_t;
+    typedef uint32_t    thread_status_t;
+    typedef unsigned    thread_id_t;
+    typedef uint32_t    affinity_t;
+    typedef void (*thread_proc_t)(void *lpParam);
+
 public:
     ThreadBase(void);
     ThreadBase(thread_proc_t thread_proc) { pThreadProc = thread_proc; }

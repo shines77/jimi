@@ -6,7 +6,7 @@
 # pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
+#include <jimic/core/jimic_def.h>
 
 #if defined(_WIN32) || defined(_WIN64)
 
@@ -154,6 +154,10 @@ typedef void * iconv_t;
 
 #define INVALID_ICONV_CP        ((iconv_t)(-1))
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* define the codepages in windows */
 enum iconv_codepages_e {
     ICONV_CP_FIRST = 0,
@@ -190,11 +194,7 @@ struct iconv_codepage_s {
     size_t          conv_sizes;
 };
 
-typedef iconv_codepage_s * iconv_codepage_t;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+typedef struct iconv_codepage_s * iconv_codepage_t;
 
 /* Allocates descriptor for code conversion from encoding 'fromcode' to
    encoding 'tocode'. */

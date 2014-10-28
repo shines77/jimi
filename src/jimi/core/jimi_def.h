@@ -138,7 +138,9 @@
 #define JIMI_WINAPI
 #endif  /* JIMI_IS_MSVC */
 
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 
 #define JIMI_MIN(a, b)          ((a) < (b) ? (a) : (b))
 #define JIMI_MAX(a, b)          ((a) > (b) ? (a) : (b))

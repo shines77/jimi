@@ -409,9 +409,6 @@
     <ClCompile Include="..\..\..\..\src\jimic\string\dtos.c">
       <Filter>src\jimic\string</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.cpp">
-      <Filter>src\jimic\string</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.c">
       <Filter>src\jimic\string</Filter>
     </ClCompile>
@@ -441,6 +438,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c">
       <Filter>src\jimic\libc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.c">
+      <Filter>src\jimic\string</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

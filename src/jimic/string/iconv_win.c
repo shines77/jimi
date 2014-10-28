@@ -1,8 +1,8 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 
-//#include <jimic/string/iconv_win.h>
 #include "iconv_win.h"
+//#include <jimic/string/iconv_win.h>
 
 #if defined(_WIN32) || defined(_WIN64)
 #define _CRT_SECURE_NO_WARNINGS
@@ -114,12 +114,16 @@ struct iconv_windows_encoding {
     unsigned    was_tested;
 };
 
-bool operator < (iconv_windows_encoding const &l, iconv_windows_encoding const &r)
-{
-    return strcmp(l.name, r.name) < 0;
-}
+typedef struct iconv_windows_encoding iconv_windows_encoding_t;
 
-iconv_windows_encoding all_windows_encodings[] = {
+#ifdef __cplusplus
+int operator < (iconv_windows_encoding_t const &l, iconv_windows_encoding_t const &r)
+{
+    return ::strcmp(l.name, r.name) < 0;
+}
+#endif  /* __cplusplus */
+
+iconv_windows_encoding_t all_windows_encodings[] = {
     { "big5",           950,  0 },
     { "cp1250",         1250, 0 },
     { "cp1251",         1251, 0 },
@@ -239,7 +243,7 @@ iconv_t iconv_open(const char *tocode, const char *fromcode)
         cp_to = ICONV_CP_ANSI;
     if (fromcode == NULL)
         cp_from = ICONV_CP_DEFAULT;
-    icp = (iconv_codepage_t)malloc(sizeof(iconv_codepage_s));
+    icp = (iconv_codepage_t)malloc(sizeof(icp));
     if (icp != NULL) {
         // get the codepage from the 'tocode' string
         if (tocode != NULL)
@@ -448,11 +452,14 @@ int iconv_ansi_to_unicode_auto(const char *ansi_str, int ansi_size, wchar_t **de
 ICONV_INLINE
 int iconv_unicode_to_ansi(const wchar_t *unicode_str, int unicode_size, char *dest_ansi, int dest_size)
 {
+    int ansi_size;
+    char *ansi_str;
+    int dest_max;
     if (unicode_str == NULL)
         return -1;
 
     // ansi_size includes the null character
-    int ansi_size = WideCharToMultiByte(CP_ACP, 0, unicode_str, unicode_size, NULL, 0, NULL, NULL);
+    ansi_size = WideCharToMultiByte(CP_ACP, 0, unicode_str, unicode_size, NULL, 0, NULL, NULL);
 
     // if dest_ansi is NULL, only return the result of dest_ansi sizes
     if (dest_ansi == NULL || dest_size < 0)
@@ -462,8 +469,7 @@ int iconv_unicode_to_ansi(const wchar_t *unicode_str, int unicode_size, char *de
     if (dest_size == 0)
         return -1;
 
-    char *ansi_str;
-    int dest_max = (dest_size - 1) + (unicode_size < 0);
+    dest_max = (dest_size - 1) + (unicode_size < 0);
     if (ansi_size <= dest_max) {
         // dest_size is enough to transfer
         ansi_size = WideCharToMultiByte(CP_ACP, 0, unicode_str, unicode_size, dest_ansi, ansi_size, NULL, NULL);
@@ -522,6 +528,8 @@ int iconv_unicode_to_ansi(const wchar_t *unicode_str, int unicode_size, char *de
 ICONV_INLINE
 int iconv_unicode_to_ansi_auto(const wchar_t *unicode_str, int unicode_size, char **dest_ansi)
 {
+    char *ansi_str;
+    int ansi_size;
 	if (dest_ansi == NULL)
 		return -1;
 
@@ -530,10 +538,9 @@ int iconv_unicode_to_ansi_auto(const wchar_t *unicode_str, int unicode_size, cha
 
 	*dest_ansi = NULL;
 
-	char *ansi_str;
     // ansi_size not includes the null character, if unicode_size not includes the null character,
     // if unicode_size < 0, the function processes the entire input string unicode_str, including the terminating null character.
-    int ansi_size = WideCharToMultiByte(CP_ACP, 0, unicode_str, unicode_size, NULL, 0, NULL, NULL);
+    ansi_size = WideCharToMultiByte(CP_ACP, 0, unicode_str, unicode_size, NULL, 0, NULL, NULL);
     if (ansi_size > 0 || (ansi_size == 0 && unicode_size == 0)) {
         //ansi_str = new char[ansi_size + 1];
         ansi_str = WIN_ICONV_MALLOC(ansi_size + 1, char);
@@ -566,11 +573,14 @@ int iconv_unicode_to_ansi_auto(const wchar_t *unicode_str, int unicode_size, cha
 ICONV_INLINE
 int iconv_utf8_to_unicode(const char *utf8_str, int utf8_size, wchar_t *dest_unicode, int dest_size)
 {
+    int unicode_size;
+    wchar_t *unicode_str;
+    int dest_max;
     if (utf8_str == NULL)
         return -1;
 
     // utf8_size includes the null character
-    int unicode_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_str, utf8_size, NULL, 0);
+    unicode_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_str, utf8_size, NULL, 0);
 
     // if dest_unicode is NULL, only return the result of dest_unicode sizes
     if (dest_unicode == NULL || dest_size < 0)
@@ -580,8 +590,7 @@ int iconv_utf8_to_unicode(const char *utf8_str, int utf8_size, wchar_t *dest_uni
     if (dest_size == 0)
         return -1;
 
-    wchar_t *unicode_str;
-    int dest_max = (dest_size - 1) + (utf8_size < 0);
+    dest_max = (dest_size - 1) + (utf8_size < 0);
     if (unicode_size <= dest_max) {
         // dest_size is enough to transfer
         unicode_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_str, utf8_size, dest_unicode, unicode_size);
@@ -640,6 +649,8 @@ int iconv_utf8_to_unicode(const char *utf8_str, int utf8_size, wchar_t *dest_uni
 ICONV_INLINE
 int iconv_utf8_to_unicode_auto(const char *utf8_str, int utf8_size, wchar_t **dest_unicode)
 {
+    wchar_t *unicode_str;
+    int unicode_size;
 	if (dest_unicode == NULL)
 		return -1;
 
@@ -648,10 +659,9 @@ int iconv_utf8_to_unicode_auto(const char *utf8_str, int utf8_size, wchar_t **de
 
 	*dest_unicode = NULL;
 
-	wchar_t *unicode_str;
     // unicode_size not includes the null character, if utf8_size not includes the null character,
     // if utf8_size < 0, the function processes the entire input string utf8_str, including the terminating null character.
-    int unicode_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_str, utf8_size, NULL, 0);
+    unicode_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_str, utf8_size, NULL, 0);
     if (unicode_size > 0 || (unicode_size == 0 && utf8_size == 0)) {
         //unicode_str = new wchar_t[unicode_size + 1];
         unicode_str = WIN_ICONV_MALLOC(unicode_size + 1, wchar_t);
@@ -684,11 +694,14 @@ int iconv_utf8_to_unicode_auto(const char *utf8_str, int utf8_size, wchar_t **de
 ICONV_INLINE
 int iconv_unicode_to_utf8(const wchar_t *unicode_str, int unicode_size, char *dest_utf8, int dest_size)
 {
+    char *utf8_str;
+    int utf8_size;
+    int dest_max;
     if (unicode_str == NULL)
         return -1;
 
     // utf8_size includes the null character
-    int utf8_size = WideCharToMultiByte(CP_UTF8, 0, unicode_str, unicode_size, NULL, 0, NULL, NULL);
+    utf8_size = WideCharToMultiByte(CP_UTF8, 0, unicode_str, unicode_size, NULL, 0, NULL, NULL);
 
     // if dest_utf8 is NULL, only return the result of dest_utf8 sizes
     if (dest_utf8 == NULL || dest_size < 0)
@@ -698,8 +711,7 @@ int iconv_unicode_to_utf8(const wchar_t *unicode_str, int unicode_size, char *de
     if (dest_size == 0)
         return -1;
 
-    char *utf8_str;
-    int dest_max = (dest_size - 1) + (unicode_size < 0);
+    dest_max = (dest_size - 1) + (unicode_size < 0);
     if (utf8_size <= dest_max) {
         // dest_size is enough to transfer
         utf8_size = WideCharToMultiByte(CP_UTF8, 0, unicode_str, unicode_size, dest_utf8, utf8_size, NULL, NULL);
@@ -758,6 +770,8 @@ int iconv_unicode_to_utf8(const wchar_t *unicode_str, int unicode_size, char *de
 ICONV_INLINE
 int iconv_unicode_to_utf8_auto(const wchar_t *unicode_str, int unicode_size, char **dest_utf8)
 {
+    char *utf8_str;
+    int utf8_size;
 	if (dest_utf8 == NULL)
 		return -1;
 
@@ -766,10 +780,9 @@ int iconv_unicode_to_utf8_auto(const wchar_t *unicode_str, int unicode_size, cha
 
 	*dest_utf8 = NULL;
 
-	char *utf8_str;
     // utf8_size not includes the null character, if unicode_size not includes the null character,
     // if unicode_size < 0, the function processes the entire input string unicode_str, including the terminating null character.
-    int utf8_size = WideCharToMultiByte(CP_UTF8, 0, unicode_str, unicode_size, NULL, 0, NULL, NULL);
+    utf8_size = WideCharToMultiByte(CP_UTF8, 0, unicode_str, unicode_size, NULL, 0, NULL, NULL);
     if (utf8_size > 0 || (utf8_size == 0 && unicode_size == 0)) {
         //utf8_str = new char[utf8_size + 1];
         utf8_str = WIN_ICONV_MALLOC(utf8_size + 1, char);
@@ -808,7 +821,10 @@ int iconv_ansi_to_utf8(const char *ansi_str, int ansi_size, char *dest_utf8, int
 ICONV_INLINE
 int iconv_ansi_to_utf8_auto(const char *ansi_str, int ansi_size, char **dest_utf8)
 {
+    wchar_t *unicode_str;
+    int unicode_size;
     int utf8_size = -1;
+
 	if (dest_utf8 == NULL)
 		return -1;
 
@@ -817,10 +833,9 @@ int iconv_ansi_to_utf8_auto(const char *ansi_str, int ansi_size, char **dest_utf
 
 	*dest_utf8 = NULL;
 
-	wchar_t *unicode_str;
     // unicode_size not includes the null character, if ansi_size not includes the null character,
     // if ansi_size < 0, the function processes the entire input string ansi_str, including the terminating null character.
-    int unicode_size = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, ansi_str, ansi_size, NULL, 0);
+    unicode_size = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, ansi_str, ansi_size, NULL, 0);
     if (unicode_size > 0 || (unicode_size == 0 && ansi_size == 0)) {
         //unicode_str = new wchar_t[unicode_size + 1];
         unicode_str = WIN_ICONV_MALLOC(unicode_size + 1, wchar_t);
@@ -862,6 +877,8 @@ int iconv_utf8_to_ansi(const char *utf8_str, int utf8_size, char *dest_ansi, int
 ICONV_INLINE
 int iconv_utf8_to_ansi_auto(const char *utf8_str, int utf8_size, char **dest_ansi)
 {
+    wchar_t *unicode_str;
+    int unicode_size;
     int ansi_size = -1;
 	if (dest_ansi == NULL)
 		return -1;
@@ -871,10 +888,9 @@ int iconv_utf8_to_ansi_auto(const char *utf8_str, int utf8_size, char **dest_ans
 
 	*dest_ansi = NULL;
 
-	wchar_t *unicode_str;
     // unicode_size not includes the null character, if utf8_size not includes the null character,
     // if utf8_size < 0, the function processes the entire input string utf8_str, including the terminating null character.
-    int unicode_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_str, utf8_size, NULL, 0);
+    unicode_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_str, utf8_size, NULL, 0);
     if (unicode_size > 0 || (unicode_size == 0 && utf8_size == 0)) {
         //unicode_str = new wchar_t[unicode_size + 1];
         unicode_str = WIN_ICONV_MALLOC(unicode_size + 1, wchar_t);
