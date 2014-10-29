@@ -86,7 +86,7 @@ enum ThreadStatusMask
 enum ThreadDef
 {
     /* Abort()或Terminate()终止线程时的等待时间. 默认值: 5000毫秒. */
-    kTerminateWaitTime  = 5000
+    kAbortWaitTime  = 5000
 };
 
 enum ThreadStatusDef
@@ -302,7 +302,7 @@ public:
 
     thread_status_t Start(void *pObject = NULL,
                           unsigned uInitFlag = ThreadInitFlag::kCreateDefault);
-    thread_status_t Stop(uint32_t uWaitTime = Timeout::kTerminateWaitTime,
+    thread_status_t Stop(uint32_t uWaitTime = Timeout::kAbortWaitTime,
                          uint32_t uExitCode = uint32_t(-1));
 
     thread_status_t Wait(handle_t hObject, uint32_t uWaitTime = Timeout::kInfinite);
@@ -311,12 +311,11 @@ public:
     thread_status_t Suspend();
     thread_status_t Resume();
 
-    thread_status_t Interrupt(uint32_t uWaitTime = Timeout::kTerminateWaitTime,
-                              uint32_t uExitCode = 0);
-
-    thread_status_t Abort(uint32_t uWaitTime = Timeout::kTerminateWaitTime,
+    thread_status_t Abort(uint32_t uWaitTime = Timeout::kAbortWaitTime,
                           uint32_t uExitCode = 0);
-    thread_status_t Terminate(uint32_t uWaitTime = Timeout::kTerminateWaitTime,
+    thread_status_t Interrupt(uint32_t uWaitTime = Timeout::kAbortWaitTime,
+                              uint32_t uExitCode = 0);
+    thread_status_t Terminate(uint32_t uWaitTime = Timeout::kAbortWaitTime,
                               uint32_t uExitCode = 0);
 
     int  GetThreadPriority() { return ::GetThreadPriority(hThread); }
@@ -517,7 +516,7 @@ unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
     if (pThread && pThread->IsValid()) {
         //pThread->SetThreadState(ThreadStatus::kThreadProcOver);
         pThread->SetThreadState(ThreadStatus::kStopped);
-        pThread->ThreadProcDone();
+        //pThread->ThreadProcDone();
     }
     return 0;
 }
@@ -560,7 +559,7 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Start(void *pObject /* = 
 }
 
 template <class T>
-typename ThreadBase<T>::thread_status_t ThreadBase<T>::Stop(uint32_t uWaitTime /* = Timeout::kTerminateWaitTime */,
+typename ThreadBase<T>::thread_status_t ThreadBase<T>::Stop(uint32_t uWaitTime /* = Timeout::kAbortWaitTime */,
                                                             uint32_t nExitCode /* = -1 */)
 {
     bool bThreadStartted = false;
@@ -700,7 +699,7 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Join(uint32_t uWaitTime /
 }
 
 template <class T>
-typename ThreadBase<T>::thread_status_t ThreadBase<T>::Abort(uint32_t uWaitTime /* = Timeout::kTerminateWaitTime */,
+typename ThreadBase<T>::thread_status_t ThreadBase<T>::Abort(uint32_t uWaitTime /* = Timeout::kAbortWaitTime */,
                                                              uint32_t uExitCode /* = 0 */)
 {
     DWORD dwResult;
@@ -748,14 +747,14 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Abort(uint32_t uWaitTime 
 }
 
 template <class T>
-typename ThreadBase<T>::thread_status_t ThreadBase<T>::Interrupt(uint32_t uWaitTime /* = Timeout::kTerminateWaitTime */,
+typename ThreadBase<T>::thread_status_t ThreadBase<T>::Interrupt(uint32_t uWaitTime /* = Timeout::kAbortWaitTime */,
                                                                  uint32_t uExitCode /* = 0 */)
 {
     return this->Abort(uWaitTime, uExitCode);
 }
 
 template <class T>
-typename ThreadBase<T>::thread_status_t ThreadBase<T>::Terminate(uint32_t uWaitTime /* = Timeout::kTerminateWaitTime */,
+typename ThreadBase<T>::thread_status_t ThreadBase<T>::Terminate(uint32_t uWaitTime /* = Timeout::kAbortWaitTime */,
                                                                  uint32_t uExitCode /* = 0 */)
 {
     return this->Abort(uWaitTime, uExitCode);
