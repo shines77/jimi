@@ -51,8 +51,8 @@ enum ThreadStatusMask
 
     kAliveAndRunningStatusMask  = kAliveStatusMask | kRunningStatusMask,
 
-    kThreadExtraStatusMask      =  ((1UL << kBackgroundStatusShift) | (1UL << kJoinStatusShift)),
-    kThreadStatusMask           =  ~kThreadExtraStatusMask,
+    kThreadExtraStatusMask      = ((1UL << kBackgroundStatusShift) | (1UL << kJoinStatusShift)),
+    kThreadStatusMask           = ~kThreadExtraStatusMask,
 
     kThreadStatusValueMask      =  0x0000FFFFUL
 };
@@ -135,7 +135,6 @@ static const char * s_szThreadStatusString[] = {
 
 typedef struct ThreadStatus
 {
-public:
     static const uint32_t kUnknown          = MAKE_THREAD_STATUS(0, 0, kThreadStatus_Unknown);
 
     // All Unrunning Status
@@ -159,7 +158,6 @@ public:
 
 typedef struct ThreadExtraStatus
 {
-public:
     static const uint32_t kUnknown          = MAKE_THREAD_EXTRA_STATUS(0, 0, 0, 0, kThreadStatus_Unknown);
 
     // wait, for and join
@@ -170,10 +168,14 @@ public:
 
 typedef struct ThreadInitFlag
 {
-public:
     static const uint32_t kCreateDefault    = 0;
     static const uint32_t kCreateSuspended  = CREATE_SUSPENDED;
 } ThreadInitFlag;
+
+typedef struct ThreadVerifySign
+{
+    static const uint32_t kVerifySign       = 'JIMI';
+} ThreadVerifySign;
 
 //typedef void (*thread_proc_t)(void *lpParam);
 
@@ -196,9 +198,10 @@ public:
     // 工作者线程的线程参数
     typedef struct Thread_Params
     {
-        ThreadBase *pThread;        // 传入的Thread指针
-        void       *pObject;        // 传入的对象指针
-        int         nThreadIdx;     // 线程Idx编号, 从0计起
+        ThreadBase      *pThread;       // 传入的Thread指针
+        void            *pObject;       // 传入的对象指针
+        unsigned int    uVerifySign;    // 验证标志值, 值为字符串"JIMI"
+        int             nThreadIdx;     // 线程Idx编号, 从0计起
     } THREAD_PARAMS, *PTHREAD_PARAMS;
 
     ThreadBase(void);
@@ -212,6 +215,8 @@ private:
 public:
     void Destroy();
     void OnDestroy();
+
+    void ThreadProcDone();
 
     thread_proc_t GetThreadProc() { return pThreadProc; }
     bool SetThreadProc(thread_proc_t thread_proc);
@@ -296,7 +301,7 @@ public:
     }
 
     thread_status_t Start(void *pObject = NULL,
-                          unsigned uInitflag = ThreadInitFlag::kCreateDefault);
+                          unsigned uInitFlag = ThreadInitFlag::kCreateDefault);
     thread_status_t Stop(uint32_t uWaitTime = Timeout::kTerminateWaitTime,
                          uint32_t uExitCode = uint32_t(-1));
 
@@ -372,6 +377,7 @@ void ThreadBase<T>::Destroy()
         hThread = NULL;
         nThreadId = 0;
         nStatus = ThreadStatus::kUnknown;
+        nExtraStatus = ThreadExtraStatus::kUnknown;
     }
 }
 
@@ -382,36 +388,54 @@ void ThreadBase<T>::OnDestroy()
 }
 
 template <class T>
-bool ThreadBase<T>::IsValid()
+void ThreadBase<T>::ThreadProcDone()
 {
-    return HANDLE_IS_VALID(hThread);
+    jmLog.info("ThreadBase<T>::ThreadProcDone(), error = %d.", ::GetLastError());
+    if (IsValid()) {
+        hThread = NULL;
+        nThreadId = 0;
+        nStatus = ThreadStatus::kUnknown;
+        nExtraStatus = ThreadExtraStatus::kUnknown;
+    }
 }
 
 template <class T>
+inline
+bool ThreadBase<T>::IsValid()
+{
+    return (hThread != NULL);
+}
+
+template <class T>
+inline
 bool ThreadBase<T>::IsAlive()
 {
     return IsValid() && THREAD_IS_ALIVE(nStatus);
 }
 
 template <class T>
+inline
 bool ThreadBase<T>::IsRunning()
 {
     return IsValid() && THREAD_IS_RUNNING(nStatus);
 }
 
 template <class T>
+inline
 bool ThreadBase<T>::IsAliveOrRunning()
 {
     return IsValid() && THREAD_IS_ALIVE_OR_RUNNING(nStatus);
 }
 
 template <class T>
+inline
 bool ThreadBase<T>::IsAliveAndRunning()
 {
     return IsValid() && THREAD_IS_ALIVE_AND_RUNNING(nStatus);
 }
 
 template <class T>
+inline
 bool ThreadBase<T>::IsSuspended()
 {
     return IsAliveAndRunning()
@@ -420,18 +444,21 @@ bool ThreadBase<T>::IsSuspended()
 }
 
 template <class T>
+inline
 bool ThreadBase<T>::IsBackground()
 {
     return THREAD_IS_BACKGROUND(nExtraStatus);
 }
 
 template <class T>
+inline
 bool ThreadBase<T>::IsJoining()
 {
     return THREAD_IS_JOINING(nExtraStatus);
 }
 
 template <class T>
+inline
 bool ThreadBase<T>::SetThreadProc(thread_proc_t thread_proc)
 {
     if ((!IsAlive()) && (!IsRunning())) {
@@ -441,6 +468,7 @@ bool ThreadBase<T>::SetThreadProc(thread_proc_t thread_proc)
     return false;
 }
 
+/* default thread_proc function */
 template <class T>
 void JIMI_WINAPI ThreadBase<T>::ThreadProc(void *lpParam)
 {
@@ -448,8 +476,8 @@ void JIMI_WINAPI ThreadBase<T>::ThreadProc(void *lpParam)
     jmLog.info("ThreadBase<T>::ThreadProc().");
 }
 
-/* static */
 template <class T>
+/* static */
 unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
 {
     jmLog.info("ThreadBase<T>::ThreadProcBase() Enter.");
@@ -457,7 +485,7 @@ unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
 
     THREAD_PARAMS *pParam = (THREAD_PARAMS *)lpParam;
     ThreadBase<T> *pThread = NULL;
-    void *pObject= NULL;
+    void *pObject = NULL;
     if (pParam) {
         pThread = pParam->pThread;
         pObject = pParam->pObject;
@@ -466,14 +494,21 @@ unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
             pThread->SetThreadState(ThreadStatus::kRunning);
 
         T *pThis = static_cast<T *>(pThread);
-        thread_proc_t pThreadProc = pThis->GetThreadProc();
-        if (pThreadProc != NULL)
-            pThreadProc(lpParam);
-        else
-            pThis->ThreadProc(lpParam);
+        if (pThis != NULL) {
+            thread_proc_t pThreadProc = pThis->GetThreadProc();
+            if (pThreadProc != NULL)
+                pThreadProc(lpParam);
+            else
+                pThis->ThreadProc(lpParam);
 
-        if (pParam)
-            delete pParam;
+            if (pParam) {
+                pParam->pThread = NULL;
+                pParam->pObject = NULL;
+                pParam->uVerifySign = 0;
+                pParam->nThreadIdx = -1;
+                delete pParam;
+            }
+        }
 
         //ThreadBase<T>::Sleep(3000);
     }
@@ -482,13 +517,14 @@ unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
     if (pThread && pThread->IsValid()) {
         //pThread->SetThreadState(ThreadStatus::kThreadProcOver);
         pThread->SetThreadState(ThreadStatus::kStopped);
+        pThread->ThreadProcDone();
     }
     return 0;
 }
 
 template <class T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Start(void *pObject /* = NULL */,
-                                                             unsigned uInitflag /* = ThreadInitFlag::kCreateDefault */)
+                                                             unsigned uInitFlag /* = ThreadInitFlag::kCreateDefault */)
 {
     jmLog.info("ThreadBase<T>::Start() Enter.");
 
@@ -497,11 +533,15 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Start(void *pObject /* = 
             THREAD_PARAMS *pParams = new THREAD_PARAMS;
             pParams->pThread = (ThreadBase<T> *)this;
             pParams->pObject = pObject;
+            pParams->uVerifySign = ThreadVerifySign::kVerifySign;
             pParams->nThreadIdx = 0;
             hThread = (thread_handle_t)::_beginthreadex(NULL, 0, &ThreadBase<T>::ThreadProcBase,
-                (void *)pParams, uInitflag, (unsigned *)&nThreadId);
-            if (HANDLE_IS_VALID(hThread)) {
-                if (uInitflag == ThreadInitFlag::kCreateSuspended)
+                (void *)pParams, uInitFlag, (unsigned *)&nThreadId);
+            // 统一把无效的句柄设置为NULL, 方便检测是否有效?(IsValid())
+            if (hThread == INVALID_HANDLE_VALUE)
+                hThread = NULL;
+            if (IsValid()) {
+                if (uInitFlag == ThreadInitFlag::kCreateSuspended)
                     this->SetThreadState(ThreadStatus::kSuspended);
                 else
                     this->SetThreadState(ThreadStatus::kStartPending);
@@ -566,7 +606,6 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Resume()
     return this->GetThreadState();
 }
 
-
 template <class T>
 int32_t ThreadBase<T>::SpinWait(int32_t iterations)
 {
@@ -582,19 +621,22 @@ template <class T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Wait(handle_t hObject,
                                                             uint32_t uWaitTime /* = Timeout::kInfinite */)
 {
+    DWORD dwResult;
     jmLog.info("ThreadBase<T>::Wait() Enter.");
-    static int counter = 0;
+
     if (HANDLE_IS_VALID(hObject)) {
-        if (::WaitForSingleObject(hObject, 10) != WAIT_OBJECT_0)
-            this->AddThreadExtraState(ThreadStatus::kWaitSleepJoin);
-        while (::WaitForSingleObject(hObject, uWaitTime) != WAIT_OBJECT_0) {
+        int failed_counter = 0;
+        this->AddThreadExtraState(ThreadStatus::kWaitSleepJoin);
+        while ((dwResult = ::WaitForSingleObject(hObject, uWaitTime)) != WAIT_OBJECT_0) {
+#ifndef NDEBUG
             ThreadBase<T>::Sleep(1);
-            counter++;
-            if (counter > 5)
+            failed_counter++;
+            if (failed_counter > 5)
                 break;
+#endif
         }
         this->RemoveThreadExtraState(ThreadStatus::kWaitSleepJoin);
-        if (::WaitForSingleObject(hObject, 10) == WAIT_OBJECT_0) {
+        if ((dwResult = ::WaitForSingleObject(hObject, 10)) == WAIT_OBJECT_0) {
             // wait for success
         }
         else {
@@ -609,40 +651,46 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Wait(handle_t hObject,
 template <class T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Join(uint32_t uWaitTime /* = Timeout::kInfinite */)
 {
-    jmLog.info("ThreadBase<T>::Join() Enter.");    
+    DWORD dwResult;
+    BOOL bResult;
+    jmLog.info("ThreadBase<T>::Join() Enter.");
+
     if (IsValid()) {
-        if (::WaitForSingleObject(hThread, 10) != WAIT_OBJECT_0)
-            this->AddThreadExtraState(ThreadExtraStatus::kWaitSleepJoin);
+        this->AddThreadExtraState(ThreadExtraStatus::kWaitSleepJoin);
         int failed_counter = 0;
-        while (::WaitForSingleObject(hThread, uWaitTime) != WAIT_OBJECT_0) {
+        while (IsValid() &&
+               ((dwResult = ::WaitForSingleObject(hThread, uWaitTime)) != WAIT_OBJECT_0)) {
+#ifndef NDEBUG
             ThreadBase<T>::Sleep(1);
-            if (uWaitTime != Timeout::kInfinite) {
-                failed_counter++;
-                if (failed_counter > 5)
-                    break;
-            }
+            failed_counter++;
+            if (failed_counter > 5)
+                break;
+#endif
         }
         this->RemoveThreadExtraState(ThreadExtraStatus::kWaitSleepJoin);
         if (IsValid()) {
             thread_status_t oldStatus = this->GetThreadState();
-            bool bStopped = false;
+            bool bIsStopped = false;
             if (IsAliveOrRunning())
                 this->SetThreadState(ThreadStatus::kStopPending);
-            if (::WaitForSingleObject(hThread, 10) == WAIT_OBJECT_0) {
-                if (IsValid()) {
-                    this->SetThreadState(ThreadStatus::kClosePending);
-                    if (::CloseHandle(hThread)) {
-                        this->SetThreadState(ThreadStatus::kStopped);
+            if (IsValid()) {
+                if ((dwResult = ::WaitForSingleObject(hThread, 10)) == WAIT_OBJECT_0) {
+                    if (IsValid()) {
+                        this->SetThreadState(ThreadStatus::kClosePending);
+                        if (bResult = ::CloseHandle(hThread)) {
+                            this->SetThreadState(ThreadStatus::kStopped);
 
-                        hThread = NULL;
-                        nThreadId = 0;
-                        nStatus = ThreadStatus::kUnStarted;
+                            hThread = NULL;
+                            nThreadId = 0;
+                            nStatus = ThreadStatus::kUnStarted;
+                            nExtraStatus = ThreadExtraStatus::kUnknown;
 
-                        bStopped = true;
+                            bIsStopped = true;
+                        }
                     }
                 }
             }
-            if (!bStopped)
+            if (!bIsStopped)
                 this->SetThreadState(oldStatus);
         }
     }
@@ -655,13 +703,16 @@ template <class T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Abort(uint32_t uWaitTime /* = Timeout::kTerminateWaitTime */,
                                                              uint32_t uExitCode /* = 0 */)
 {
+    DWORD dwResult;
+    BOOL bResult;
     jmLog.info("ThreadBase<T>::Abort() Enter.");
+
     if (IsValid()) {
         thread_status_t oldStatus = this->GetThreadState();
         if (IsAliveOrRunning()) {
             this->SetThreadState(ThreadStatus::kAbortPending);
-            if (::WaitForSingleObject(hThread, uWaitTime) != WAIT_OBJECT_0) {
-                if (::TerminateThread(hThread, uExitCode)) {
+            if ((dwResult = ::WaitForSingleObject(hThread, uWaitTime)) != WAIT_OBJECT_0) {
+                if (bResult = ::TerminateThread(hThread, uExitCode)) {
                     this->SetThreadState(ThreadStatus::kAborted);
                 }
                 else {
@@ -671,22 +722,26 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Abort(uint32_t uWaitTime 
                 }
             }
         }
+        bool bIsStopped = false;
         oldStatus = this->GetThreadState();
         this->SetThreadState(ThreadStatus::kStopPending);
         if (IsValid()) {
             this->SetThreadState(ThreadStatus::kClosePending);
-            if (::CloseHandle(hThread)) {
+            if (bResult = ::CloseHandle(hThread)) {
+                bIsStopped = true;
                 this->SetThreadState(ThreadStatus::kStopped);
             }
             else {
                 jmLog.info("ThreadBase<T>::Abort(): CloseHandle() failed. oldStatus = 0x%08X, nowStatus = 0x%08X.",
                            oldStatus, this->GetThreadState());
-                this->SetThreadState(oldStatus);
             }
         }
+        if (!bIsStopped)
+            this->SetThreadState(oldStatus);
         hThread = NULL;
         nThreadId = 0;
         nStatus = ThreadStatus::kUnStarted;
+        nExtraStatus = ThreadExtraStatus::kUnknown;
     }
     jmLog.info("ThreadBase<T>::Abort() Over.");
     return this->GetThreadState();
@@ -708,6 +763,7 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Terminate(uint32_t uWaitT
 
 /* static */
 template <class T>
+inline
 void ThreadBase<T>::Sleep(uint32_t uMilliSecs)
 {
     ::Sleep(uMilliSecs);

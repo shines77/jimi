@@ -62,14 +62,14 @@ public:
     ~SmallString();
 
 public:
-    const value_type * c_str() const  { return _data; }
-    const value_type * data() const   { return this->c_str(); }
+    const value_type * c_str() const  { return _data;           }
+    const value_type * data() const   { return this->c_str();   }
 
-    const size_type size() const      { return _size; }
-    const size_type length() const    { return this->size(); }
+    const size_type size() const      { return _size;           }
+    const size_type length() const    { return this->size();    }
 
-    const size_type alignment() const { return _alignment; }
-    const size_type capacity() const  { return _capacity; }
+    const size_type alignment() const { return _alignment;      }
+    const size_type capacity() const  { return _capacity;       }
 
 private:
 #if defined(JIMI_SIZE_T_SIZEOF) && (JIMI_SIZE_T_SIZEOF == 4)

@@ -724,9 +724,7 @@ int iconv_unicode_to_utf8(const wchar_t *unicode_str, int unicode_size, char *de
         }
     }
     else {
-
 #if defined(USE_FAST_TRANSFER_COPY) && (USE_FAST_TRANSFER_COPY != 0)
-
         // if dest_size is not large enough to transfer
         utf8_size = WideCharToMultiByte(CP_UTF8, 0, unicode_str, unicode_size, dest_utf8, dest_size - 1, NULL, NULL);
         if (utf8_size >= 0 && unicode_size != 0) {
@@ -759,9 +757,7 @@ int iconv_unicode_to_utf8(const wchar_t *unicode_str, int unicode_size, char *de
         else {
             utf8_size = -1;
         }
-
 #endif  /* defined(USE_FAST_TRANSFER_COPY) && (USE_FAST_TRANSFER_COPY != 0) */
-
     }
 
     return utf8_size;
