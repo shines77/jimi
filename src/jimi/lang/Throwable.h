@@ -11,6 +11,8 @@
 #include <jimi/lang/ObjectBase.h>
 #include <jimi/lang/String.h>
 
+#include <string>
+
 NS_JIMI_BEGIN
 
 class Object;
@@ -20,12 +22,14 @@ class Throwable : public ObjectBase, public Serializable
 public:
     Throwable();
     Throwable(const Throwable &cause);
-    Throwable(const String &message);
-    Throwable(const String &message, const Throwable &cause);
+    Throwable(const jimi::string &message);
+    Throwable(const jimi::string &message, const Throwable &cause);
+    Throwable(const std::string &message);
+    Throwable(const std::string &message, const Throwable &cause);
     ~Throwable();
 
 private:
-    String detailMessage;
+    jimi::string detailMessage;
     Throwable *cause;
 };
 
@@ -41,12 +45,23 @@ Throwable::Throwable(const Throwable &cause)
     this->cause = (Throwable *)&cause;
 }
 
-Throwable::Throwable(const String &message)
+Throwable::Throwable(const jimi::string &message)
 {
     detailMessage = message;
 }
 
-Throwable::Throwable(const String &message, const Throwable &cause)
+Throwable::Throwable(const jimi::string &message, const Throwable &cause)
+{
+    detailMessage = message;
+    this->cause = (Throwable *)&cause;
+}
+
+Throwable::Throwable(const std::string &message)
+{
+    detailMessage = message;
+}
+
+Throwable::Throwable(const std::string &message, const Throwable &cause)
 {
     detailMessage = message;
     this->cause = (Throwable *)&cause;

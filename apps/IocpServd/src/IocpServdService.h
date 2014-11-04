@@ -7,14 +7,14 @@
 #endif
 
 #include <jimi/core/jimi_def.h>
-#include <jimi/log/log.h>
 #include <jimi/system/WinService.h>
+#include <jimi/log/log.h>
 
 #include "IocpServd.h"
 
 NS_IOCPSERVD_BEGIN
 
-class IocpServdService : public jimi::system::WinServiceBase<IocpServdService>
+class IocpServdService : public jimi::WinServiceBase<IocpServdService>
 {
 public:
     IocpServdService(void);
@@ -81,12 +81,12 @@ public:
         return true;
     }
 
-    bool OnSessionChange(jimi::system::SessionChangeDescription *changeDescription) {
+    bool OnSessionChange(jimi::SessionChangeDescription *changeDescription) {
         jmLog.info("invoke IocpServdService::OnSessionChange().");
         return true;
     }
 
-    bool OnPowerEvent(jimi::system::PowerBroadcastStatus *powerStatus) {
+    bool OnPowerEvent(jimi::PowerBroadcastStatus *powerStatus) {
         jmLog.info("invoke IocpServdService::OnPowerEvent().");
         return true;
     }

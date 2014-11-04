@@ -50,8 +50,6 @@
 
 NS_JIMI_BEGIN
 
-NS_JIMI_SYSTEM_BEGIN
-
 typedef WINADVAPI BOOL (WINAPI *CSD_T)(SC_HANDLE, DWORD, LPCVOID);
 
 //
@@ -1746,8 +1744,6 @@ int WinServiceBase<T>::RunServiceEx(WinServiceBase<T> *pServiceInstance, SERVICE
 
 template <class T>
 WinServiceBase<T> *WinServiceBase<T>::s_pServiceInstance = NULL;
-
-NS_JIMI_SYSTEM_END
 
 NS_JIMI_END
 

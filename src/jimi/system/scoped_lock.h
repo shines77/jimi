@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_SCOPED_LOCK_H_
-#define _JIMI_SCOPED_LOCK_H_
+#ifndef _JIMI_MTL_SCOPED_LOCK_H_
+#define _JIMI_MTL_SCOPED_LOCK_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -12,7 +12,7 @@
 
 NS_JIMI_BEGIN
 
-NS_JIMI_SYSTEM_BEGIN
+NS_JIMI_MT_BEGIN
 
 template<class T>
 class JIMI_API scoped_lock : public jimi::internal::NonCopyable
@@ -132,8 +132,8 @@ public:
     T * _pmutex;
 };
 
-NS_JIMI_SYSTEM_END
+NS_JIMI_MT_END
 
 NS_JIMI_END
 
-#endif  /* _JIMI_SCOPED_LOCK_H_ */
+#endif  /* _JIMI_MTL_SCOPED_LOCK_H_ */

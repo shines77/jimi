@@ -140,7 +140,7 @@ void * A_memcpy (void * dest, const void * src, size_t count)
 #pragma comment(lib, "libboost_locale-vc120-mt-gd-1_55.lib")
 #endif
 
-USING_NS_UNITEST;
+USING_NS_UNITEST
 
 NS_UNITEST_BEGIN
 
@@ -3083,10 +3083,10 @@ int UnitTest_Main(int argc, char *argv[])
     printf("\n");
 #endif
 
-    //jimi::system::mutex read_mutex;
-    //jimi::system::scoped_lock<system::mutex> lock(read_mutex);
-    jimi::system::mutex read_mutex;
-    jimi::system::scoped_lock<jimi::system::mutex> lock(read_mutex);
+    //jimi::mt::mutex read_mutex;
+    //jimi::mt::scoped_lock<mt::mutex> lock(read_mutex);
+    jimi::mt::mutex read_mutex;
+    jimi::mt::scoped_lock<jimi::mt::mutex> lock(read_mutex);
     lock.acquire(read_mutex);
     lock.try_acquire(read_mutex, 4000);
     lock.release();

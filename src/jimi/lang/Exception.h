@@ -16,7 +16,8 @@ class Exception : public Throwable
 {
 public:
     Exception() : Throwable() {};
-    Exception(String s) : Throwable(s) {};
+    Exception(jimi::string s) : Throwable(s) {};
+    Exception(std::string s) : Throwable(s) {};
     ~Exception() {};
 };
 

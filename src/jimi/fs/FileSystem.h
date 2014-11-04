@@ -18,8 +18,6 @@
 
 NS_JIMI_BEGIN
 
-NS_JIMI_FS_BEGIN
-
 class FileSystem
 {
 public:
@@ -28,8 +26,6 @@ public:
 
     //
 };
-
-NS_JIMI_FS_END
 
 NS_JIMI_END
 

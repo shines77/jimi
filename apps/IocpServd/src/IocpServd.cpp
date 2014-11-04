@@ -7,6 +7,8 @@
 #endif
 
 #include "IocpServd.h"
+#include "SampleThread.h"
+#include "IocpServdService.h"
 
 #include <jimi/core/jimi_def.h>
 
@@ -21,15 +23,12 @@
 #include <jimi/lang/Object.h>
 #include <jimi/lang/String.h>
 
-#include "SampleThread.h"
-
 #include <string>
 //using namespace std;
 
 #if JIMI_IS_WINDOWS
 
-#include "IocpServdService.h"
-#include <jimi/system/WinService.h>
+//#include <jimi/system/WinService.h>
 
 TCHAR g_ServiceName[]        = _T("IocpServd");
 TCHAR g_ServiceDisplayName[] = _T("Windows Iocp Server Daemon Service");
@@ -41,7 +40,7 @@ TCHAR g_ServiceDescription[] = _T("Windows Iocp Server Daemon");
  *  1 - running
  *  2 - paused
  */
-int g_nServiceStatus = jimi::system::SVC_STATUS_UNKNOWN;
+int g_nServiceStatus = jimi::SVC_STATUS_UNKNOWN;
 
 SERVICE_TABLE_ENTRY g_ServiceTable[] = {
 #if defined(IOCPSERVD_USE_NAMESPACE) && (IOCPSERVD_USE_NAMESPACE != 0)
@@ -59,13 +58,13 @@ SERVICE_TABLE_ENTRY g_ServiceTable[] = {
 
 #endif  /* JIMI_IS_WINDOWS */
 
-USING_NS_IOCPSERVD;
+USING_NS_IOCPSERVD
 
 NS_IOCPSERVD_BEGIN
 
 int IocpServd_main(int argc, char *argv[])
 {
-    using namespace jimi::system;
+    using namespace jimi;
 
     jmLog.log_begin();
 
@@ -168,10 +167,10 @@ int IocpServd_main(int argc, char *argv[])
     printf("\n");
 
     ///*
-    //system::mutex read_mutex;
-    //system::scoped_lock<system::mutex> lock(read_mutex);
-    jimi::system::mutex read_mutex;
-    jimi::system::scoped_lock<mutex> lock(read_mutex);
+    //mt::mutex read_mutex;
+    //mt::scoped_lock<mt::mutex> lock(read_mutex);
+    mt::mutex read_mutex;
+    mt::scoped_lock<mt::mutex> lock(read_mutex);
     lock.acquire(read_mutex);
     lock.try_acquire(read_mutex, 4000);
     lock.release();

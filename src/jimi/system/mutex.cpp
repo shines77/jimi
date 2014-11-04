@@ -5,7 +5,7 @@
 
 NS_JIMI_BEGIN
 
-NS_JIMI_SYSTEM_BEGIN
+NS_JIMI_MT_BEGIN
 
 mutex::mutex() : m_bLocked(false)
 {

@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_SYSTEM_MUTEX_H_
-#define _JIMI_SYSTEM_MUTEX_H_
+#ifndef _JIMI_MTL_MUTEX_H_
+#define _JIMI_MTL_MUTEX_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -20,7 +20,7 @@
 
 NS_JIMI_BEGIN
 
-NS_JIMI_SYSTEM_BEGIN
+NS_JIMI_MT_BEGIN
 
 class JIMI_API mutex
 {
@@ -90,8 +90,8 @@ public:
 #endif /* JIMI_IS_WINDOWS */
 };
 
-NS_JIMI_SYSTEM_END
+NS_JIMI_MT_END
 
 NS_JIMI_END
 
-#endif  /* _JIMI_SYSTEM_MUTEX_H_ */
+#endif  /* _JIMI_MTL_MUTEX_H_ */

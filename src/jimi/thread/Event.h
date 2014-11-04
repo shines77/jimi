@@ -17,8 +17,6 @@
 
 NS_JIMI_BEGIN
 
-NS_JIMI_SYSTEM_BEGIN
-
 /**************************************************************************
  ** EventWaitHandle
  **************************************************************************/
@@ -217,8 +215,6 @@ public:
         : EventWaitHandle(bInitialState, EventResetMode::kAutoReset, lpEventName) { };
     ~AutoResetEvent() { jmLog.info("AutoResetEvent::~AutoResetEvent()."); };
 };
-
-NS_JIMI_SYSTEM_END
 
 NS_JIMI_END
 

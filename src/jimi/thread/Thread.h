@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_SYSTEM_THREAD_H_
-#define _JIMI_SYSTEM_THREAD_H_
+#ifndef _JIMI_THREAD_THREAD_H_
+#define _JIMI_THREAD_THREAD_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -25,8 +25,6 @@
 #endif  /* JIMI_IS_WINDOWS */
 
 NS_JIMI_BEGIN
-
-NS_JIMI_SYSTEM_BEGIN
 
 enum ThreadStatusShift
 {
@@ -840,8 +838,6 @@ private:
 
 #endif  /* JIMI_IS_WINDOWS */
 
-NS_JIMI_SYSTEM_END
-
 NS_JIMI_END
 
-#endif  /* _JIMI_SYSTEM_THREAD_H_ */
+#endif  /* _JIMI_THREAD_THREAD_H_ */

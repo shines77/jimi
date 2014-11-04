@@ -20,7 +20,7 @@
 
 NS_JIMI_BEGIN
 
-class Console : public internal::NonCopyable
+class Console : public jimi::internal::NonCopyable
 {
 public:
 #if defined(JIMI_HAS_DEFAULTED_FUNCTIONS) && (JIMI_HAS_DEFAULTED_FUNCTIONS != 0)

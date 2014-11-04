@@ -17,7 +17,7 @@ NS_JIMI_BEGIN
 
 namespace string_utils {
 
-    //
+//
 
 }  /* namespace of string_utils */
 

@@ -10,9 +10,10 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 
-#define WIN_ICONV_USE_NEW_DELETE        0
+/* win-iconv 内存分配是否使用new操作符(C++ only). */
+#define WIN_ICONV_MALLOC_USE_NEW        0
 
-#if defined(__cplusplus) && defined(WIN_ICONV_USE_NEW_DELETE) && (WIN_ICONV_USE_NEW_DELETE != 0)
+#if defined(__cplusplus) && (defined(WIN_ICONV_MALLOC_USE_NEW) && (WIN_ICONV_MALLOC_USE_NEW != 0))
 
 #define WIN_ICONV_MALLOC(size, type) \
     new type[(size)]
@@ -22,18 +23,6 @@
 
 #define WIN_ICONV_FREE(p)   \
     delete [] p
-#else
-
-#if defined(JIMI_MSVC_CLANG) && (JIMI_MSVC_CLANG != 0)
-
-#define WIN_ICONV_MALLOC(size, type) \
-    (type *)malloc((size_t)(size) * sizeof(type))
-
-#define WIN_ICONV_MALLOC_EX(size, type, alignment, offset) \
-    (type *)malloc((size_t)(size) * sizeof(type))
-
-#define WIN_ICONV_FREE(p)   \
-    free((void *)(p))
 
 #else
 
@@ -45,8 +34,6 @@
 
 #define WIN_ICONV_FREE(p)   \
     free((void *)(p))
-
-#endif
 
 #endif
 

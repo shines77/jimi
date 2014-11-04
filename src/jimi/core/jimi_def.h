@@ -82,6 +82,9 @@
 #define USING_NS_JIMI_FS        using namespace jimi::fs;
 #define USING_NS_JIMI_IO        using namespace jimi::io;
 
+#define USING_NS_JIMI_MT        using namespace jimi::mt;
+#define USING_NS_JIMI_STL       using namespace jimi::stl;
+
 #define USING_NS_JIMI_SUB(NS)   using namespace jimi::##NS##;
 
 // namespace jimi::internal
@@ -115,6 +118,14 @@
 // namespace jimi::io
 #define NS_JIMI_IO_BEGIN        namespace io {
 #define NS_JIMI_IO_END          }
+
+// namespace jimi::mt
+#define NS_JIMI_MT_BEGIN        namespace mt {
+#define NS_JIMI_MT_END          }
+
+// namespace jimi::stl
+#define NS_JIMI_STL_BEGIN       namespace stl {
+#define NS_JIMI_STL_END         }
 
 /**
  * for assert defines

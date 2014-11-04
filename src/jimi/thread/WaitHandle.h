@@ -15,8 +15,6 @@
 
 NS_JIMI_BEGIN
 
-NS_JIMI_SYSTEM_BEGIN
-
 //
 // Reference: http://blog.csdn.net/amdk_7/article/details/1334044
 //
@@ -202,8 +200,6 @@ uint32_t WaitHandle<T>::SignalAndWaitEx(const handle_t toSignal, const handle_t 
 {
     return ::SignalObjectAndWait(toSignal, toWaitOn, uMillisecTimeout, exitContext);
 }
-
-NS_JIMI_SYSTEM_END
 
 NS_JIMI_END
 
