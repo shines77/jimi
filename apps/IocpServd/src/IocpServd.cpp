@@ -69,7 +69,7 @@ int IocpServd_main(int argc, char *argv[])
     jmLog.log_begin();
 
     bool isService = true;
-    jimi::util::CommandLine cmdLine;
+    jimi::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
         std::string strCmdLine = cmdLine.getCmdLine();

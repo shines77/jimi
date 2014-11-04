@@ -6,14 +6,14 @@
 #pragma once
 #endif
 
+#include <jimi/core/jimi_def.h>
+
 #include <stdarg.h>
 #include <vector>
 #include <list>
 #include <map>
 #include <string>
 #include <algorithm>
-
-#include <jimi/core/jimi_def.h>
 
 //using namespace std;
 
@@ -34,8 +34,6 @@
 ////////////////////////////////////////////////////////////////
 
 NS_JIMI_BEGIN
-
-NS_JIMI_UTIL_BEGIN
 
 typedef enum Param_Type
 {
@@ -206,8 +204,6 @@ public:
 };
 
 typedef cmd_line CommandLine;
-
-NS_JIMI_UTIL_END
 
 NS_JIMI_END
 

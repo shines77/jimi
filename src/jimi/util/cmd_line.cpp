@@ -5,8 +5,6 @@
 
 NS_JIMI_BEGIN
 
-NS_JIMI_UTIL_BEGIN
-
 cmd_line *cmd_line::s_cmd_line = NULL;
 
 cmd_line::cmd_line()
@@ -220,7 +218,5 @@ int cmd_line::checkToken(int n, const char *arg, std::string &opt)
     }
     return (-1);
 }
-
-NS_JIMI_UTIL_END
 
 NS_JIMI_END

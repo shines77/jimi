@@ -2752,7 +2752,7 @@ int UnitTest_Main(int argc, char *argv[])
 
     jmLog.log_begin();
 
-    jimi::util::CommandLine cmdLine;
+    jimi::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
         std::string strCmdLine = cmdLine.getCmdLine();
