@@ -8,7 +8,18 @@
 #include <jimic/string/jm_strings.h>
 #include <jimic/string/jmf_strings.h>
 
-#include <jimi/lang/Char_Traits.h>
+#include <jimi/lang/CharTraits.h>
+
+#if _MSC_VER
+#if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
+#include <intrin.h>
+#include <xmmintrin.h>
+#include <emmintrin.h>
+#endif
+#else
+#include <xmmintrin.h>
+#include <emmintrin.h>
+#endif  /* _MSC_VER */
 
 #if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
 
@@ -186,7 +197,8 @@ inline int __cdecl __builtin_ctz(int bitmask)
 //
 size_t sse2_strlen(const char* s)
 {
-#if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
+#if (!defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0))
+    // && (defined(_MSC_VER) && (_MSC_VER >= 1600))
     __m128i zero = _mm_set1_epi8( 0 );
     __m128i *s_aligned = (__m128i*) (((long)s) & -0x10L);
     uint8_t misbits = ((long)s) & 0x0f;

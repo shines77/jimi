@@ -9,6 +9,10 @@
 
 #include "UnitTest.h"
 
+// crtdbg_env.h must be front the stdlib.h
+// crtdbg_env.h 必须放在 stdlib.h 声明之前
+#include <jimic/system/crtdbg_env.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef _MSC_VER
@@ -19,10 +23,6 @@
 #if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
 #include <intrin.h>
 #endif
-
-// crtdbg_env.h must be behind the stdlib.h
-// crtdbg_env.h 必须放在 stdlib.h 之后
-#include <jimic/system/crtdbg_env.h>
 
 #include <math.h>       /* for _isnanf(), sqrt() */
 #include <float.h>
@@ -35,7 +35,9 @@
 #include <sstream>
 #include <iomanip>
 #include <map>
+#if !defined(_MSC_VER) || (_MSC_VER < 1600)
 #include <locale>
+#endif
 #include <algorithm>
 #include <functional>
 //*/
@@ -50,9 +52,11 @@
 #include <jimi/core/jimi_def.h>
 
 #include <jimic/system/console.h>
+#include <jimic/string/dtos.h>
+#include <jimic/string/string.h>
 #include <jimic/stdio/sprintf.h>
 #include <jimic/stdio/csharp_sprintf.h>
-#include <jimic/string/dtos.h>
+
 #include <jimic/string/jmf_strings.h>
 #include <jimic/string/iconv_win.h>
 #if JIMI_IS_WINDOWS
@@ -776,9 +780,9 @@ void String_Base_Test()
         //jimi::String strTest((size_t)1024);
         jimi::String strTest;
         jimi::formatter<> formator;
-        auto fmt_detail  = jimi::format_detail<>().setFloat(jimi::detail::AlignRight, jimi::detail::FillNone, 3, 3)
+        jimi::format_detail<> &fmt_detail  = jimi::format_detail<>().setFloat(jimi::detail::AlignRight, jimi::detail::FillNone, 3, 3)
                                         .setDoublePrecision(6).setDouble(0, 0, 3, 0);
-        auto fmt_detail2 = jimi::format_detail<>().setFloat("%0.3f").setDouble("%0.5f").setInt32("%-08d")
+        jimi::format_detail<> &fmt_detail2 = jimi::format_detail<>().setFloat("%0.3f").setDouble("%0.5f").setInt32("%-08d")
                                          .setInt64("%+020d").setString("%-30s");
                                          
         fmt_detail.doubles.align = jimi::detail::AlignRight;
@@ -2341,6 +2345,8 @@ void template_inherit_test()
     //delete a;
 }
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
+
 class Widget
 {
 public:
@@ -2419,6 +2425,8 @@ void auto_rvalue_test()
 
     std::cout << "------------  end  -----------" << std::endl;
 }
+
+#endif  /* !defined(_MSC_VER) || (_MSC_VER >= 1600) */
 
 int ieee754_log10_crt_1(double val)
 {
@@ -2769,12 +2777,14 @@ int UnitTest_Main(int argc, char *argv[])
     jimi::System.out.println("System.out.println() test.");
 
 #if 0
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     if (true) {
         auto_rvalue_test();
         jmLog.log_end();
         jimi::Console.ReadKey();
         return 0;
     }
+#endif
 #endif
 
 #if 0

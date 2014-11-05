@@ -21,14 +21,16 @@ namespace string_detail {
  * adaptation outside).
  */
 template <class Pod>
-inline void pod_copy(Pod *dest, const Pod *src, size_t size) {
+inline
+void pod_copy(Pod *dest, const Pod *src, size_t size) {
     jimi_assert(size >= 0);
     jimi_assert(dest >= (src + size) || (dest + size) <= src);
     ::memcpy(dest, src, size * sizeof(Pod));
 }
 
 template <class Pod>
-inline void pod_copy2(Pod *dest, const Pod *src, const Pod *end) {
+inline
+void pod_copy2(Pod *dest, const Pod *src, const Pod *end) {
     jimi_assert(end >= src);
     jimi_assert(dest >= end || (dest + (end - src)) <= src);
     ::memcpy(dest, src, (end - src) * sizeof(Pod));
@@ -39,14 +41,16 @@ inline void pod_copy2(Pod *dest, const Pod *src, const Pod *end) {
  * some asserts
  */
 template <class Pod>
-inline void pod_move(Pod *dest, const Pod *src, size_t size) {
+inline
+void pod_move(Pod *dest, const Pod *src, size_t size) {
     jimi_assert(size >= 0);
     jimi_assert(dest >= (src + size) || (dest + size) <= src);
     ::memmove(dest, src, size * sizeof(Pod));
 }
 
 template <class Pod, class T>
-inline void pod_fill(Pod *dest, T c, size_t size) {
+inline
+void pod_fill(Pod *dest, T c, size_t size) {
     jimi_assert(dest && size > 0);
     if (sizeof(T) == 1) {   /* static for char */
         ::memset(dest, c, size);

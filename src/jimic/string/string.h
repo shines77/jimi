@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_STRING_JMC_STRINGS_H_
-#define _JIMIC_STRING_JMC_STRINGS_H_
+#ifndef _JIMIC_STRING_STRING_H_
+#define _JIMIC_STRING_STRING_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -28,59 +28,12 @@ jmc_log10_fast2(double val);
 JMC_DECLARE_NONSTD(int)
 jmc_log10_fast_64(double val);
 
-// itoa_radix10()
+// isnan(), is inf() for float
 JMC_INLINE_NONSTD(int)
-jmc_utoa_r10(char *buf, unsigned int val);
+jmc_isnan_f(float val);
 
 JMC_INLINE_NONSTD(int)
-jmc_itoa_r10(char *buf, int val);
-
-// ltoa_radix10()
-JMC_INLINE_NONSTD(int)
-jmc_ultoa_r10(char *buf, unsigned long val);
-
-JMC_INLINE_NONSTD(int)
-jmc_ltoa_r10(char *buf, long val);
-
-// i64toa_radix10()
-JMC_INLINE_NONSTD(int)
-jmc_u64toa_r10(char *buf, uint64_t val);
-
-JMC_INLINE_NONSTD(int)
-jmc_i64toa_r10(char *buf, int64_t val);
-
-// itoa_r10_ex()
-JMC_INLINE_NONSTD(int)
-jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
-                unsigned int fill, unsigned int width, int length);
-
-JMC_INLINE_NONSTD(int)
-jmc_itoa_r10_ex(char *buf, size_t count, int val, unsigned int flag,
-                unsigned int fill, unsigned int width, int length);
-
-JMC_INLINE_NONSTD(int)
-jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
-                  unsigned int fill, unsigned int field_width, int length);
-
-JMC_INLINE_NONSTD(int)
-jmc_i64toa_r10_ex(char *buf, size_t count, int64_t val, unsigned int flag,
-                  unsigned int fill, unsigned int field_width, int length);
-
-JMC_INLINE_NONSTD(int)
-jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign, unsigned int field_width);
-
-JMC_INLINE_NONSTD(int)
-jmc_i64toa_r10_integer(char *buf, int64_t val, unsigned int field_width);
-
-JMC_INLINE_NONSTD(int)
-jmc_u64toa_r10_frac(char *buf, uint64_t val, unsigned int precision);
-
-// is_nan(), is inf() for float
-JMC_INLINE_NONSTD(int)
-jmc_is_nan_f(float val);
-
-JMC_INLINE_NONSTD(int)
-jmc_is_inf_f(float val);
+jmc_isinf_f(float val);
 
 JMC_INLINE_NONSTD(int)
 jmc_is_nan_or_inf_f(float val);
@@ -90,10 +43,10 @@ jmc_ftest(float val);
 
 // is_nan(), is inf() for double
 JMC_INLINE_NONSTD(int)
-jmc_is_nan_d(double val);
+jmc_isnan_d(double val);
 
 JMC_INLINE_NONSTD(int)
-jmc_is_inf_d(double val);
+jmc_isinf_d(double val);
 
 JMC_INLINE_NONSTD(int)
 jmc_is_nan_or_inf_d(double val);
@@ -166,6 +119,6 @@ jmc_out_null_string_ex(char *dest, size_t countOfElements,
 }
 #endif
 
-#include <jimic/string/jmc_strings.inl.h>
+#include <jimic/string/string.inl.h>
 
-#endif  /* !_JIMIC_STRING_JMC_STRINGS_H_ */
+#endif  /* !_JIMIC_STRING_STRING_H_ */

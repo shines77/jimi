@@ -131,9 +131,6 @@
     <ClInclude Include="..\..\..\..\src\jimi\lang\AutoCloseable.h">
       <Filter>src\jimi\lang</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\lang\Char_Traits.h">
-      <Filter>src\jimi\lang</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\lang\Cloneable.h">
       <Filter>src\jimi\lang</Filter>
     </ClInclude>
@@ -317,12 +314,6 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.inl.h">
       <Filter>src\jimic\string</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.inl.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\system\sys_timer.h">
       <Filter>src\jimic\system</Filter>
     </ClInclude>
@@ -383,6 +374,21 @@
     <ClInclude Include="..\..\..\..\src\jimi\thread\ThreadDef.h">
       <Filter>src\jimi\thread</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\itoa.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\itoa.inl.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\string.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\string.inl.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\CharTraits.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">
@@ -408,9 +414,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimi\thread\Thread.cpp">
       <Filter>src\jimi\thread</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.c">
-      <Filter>src\jimic\string</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.c">
       <Filter>src\jimic\core</Filter>
@@ -448,12 +451,18 @@
     <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.c">
       <Filter>src\jimic\string</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\itoa.c">
+      <Filter>src\jimic\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\string.c">
+      <Filter>src\jimic\string</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\src\jimic\string\jmc_strings.impl.inl">
+    <None Include="..\..\..\..\src\jimic\string\string.impl.inl">
       <Filter>src\jimic\string</Filter>
     </None>
   </ItemGroup>

@@ -209,6 +209,42 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
+		<Filter
+			Name="UnitTests"
+			>
+			<File
+				RelativePath="..\..\src\UnitTests\ftol_test.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\UnitTests\ftol_test.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\UnitTests\snprintf_test.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\UnitTests\snprintf_test.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\UnitTests\String_StrLen_Test.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\UnitTests\String_StrLen_Test.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\UnitTests\String_StrLwr_Test.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\UnitTests\String_StrLwr_Test.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>

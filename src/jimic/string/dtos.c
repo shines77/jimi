@@ -1,14 +1,14 @@
 
 #include <jimic/string/dtos.h>
+#include <jimic/libc/ieee754.h>
+#include <jimic/string/itoa.h>
+#include <jimic/string/string.h>
+#include <jimic/util/utils.h>
 
 #include <stdarg.h>
 #include <math.h>       // for isnan(), isinf()
 #include <float.h>
 #include <limits.h>     // for define UINT_MAX
-
-#include <jimic/libc/ieee754.h>
-#include <jimic/string/jmc_strings.h>
-#include <jimic/util/utils.h>
 
 static const double d_pow10_remain_16[] = {
     1.0E+0, 1.0E+4, 1.0E+9, 1.0E+14

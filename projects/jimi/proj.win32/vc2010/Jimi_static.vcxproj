@@ -107,11 +107,13 @@
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\dtos.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\itoa.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\itoa.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\string.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\string.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.h" />
@@ -139,7 +141,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\lang\aligned_space.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Allocator.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\AutoCloseable.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\lang\Char_Traits.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\CharTraits.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Cloneable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\CloneNotSupportedException.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Exception.h" />
@@ -183,7 +185,8 @@
     <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\dtos.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.c" />
-    <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\itoa.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\string.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.c" />
@@ -202,7 +205,7 @@
     <ClCompile Include="..\..\..\..\src\jimi\fs\FileSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\src\jimic\string\jmc_strings.impl.inl" />
+    <None Include="..\..\..\..\src\jimic\string\string.impl.inl" />
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

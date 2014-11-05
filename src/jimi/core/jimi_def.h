@@ -149,6 +149,13 @@
 #define JIMI_WINAPI
 #endif  /* JIMI_IS_MSVC */
 
+/* for static_assert() under VisualStudio 2010 */
+#if defined(_MSC_VER) && (_MSC_VER < 1600)
+#ifndef static_assert
+#define static_assert(expr, msg)
+#endif
+#endif
+
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif

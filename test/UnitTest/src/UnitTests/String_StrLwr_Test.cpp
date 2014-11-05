@@ -427,7 +427,7 @@ void String_StrLwr_Test(int nTestLen)
     }
     //printf("\n");
 
-#if 1
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     using namespace std::placeholders;
     tolower_test6 = (char *)::_aligned_malloc(nBufLen * sizeof(char), alignment);
     if (tolower_test6) {
@@ -472,7 +472,7 @@ void String_StrLwr_Test(int nTestLen)
 #endif
     }
     //printf("\n");
-#endif
+#endif  /* !defined(_MSC_VER) || (_MSC_VER >= 1600) */
 
 #endif
 

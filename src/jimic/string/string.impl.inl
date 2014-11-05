@@ -1,17 +1,21 @@
 
-#ifndef _JIMIC_STRING_JMC_STRINGS_IMPL_INL_
-#define _JIMIC_STRING_JMC_STRINGS_IMPL_INL_
+#ifndef _JIMIC_STRING_STRING_IMPL_INL_
+#define _JIMIC_STRING_STRING_IMPL_INL_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
-#if defined(_MSC_VER) && !defined(_JIMIC_STRING_JMC_STRIGNS_INL_H_)
-    #error "jmc_strings.impl.inl only can include in jmc_strings.inl.h or jmc_strings.c!"
+#if defined(_MSC_VER) && !defined(_JIMIC_STRING_STRIGN_INL_H_)
+    #error "string.impl.inl only can include in string.inl.h or string.c!"
 #endif // _MSC_VER
 
-#ifndef _JIMIC_STRING_JMC_STRINGS_H_
-#include <jimic/string/jmc_strings.h>
+#ifndef _JIMIC_STRING_ITOA_H_
+#include <jimic/string/itoa.h>
+#endif
+
+#ifndef _JIMIC_STRING_STRING_H_
+#include <jimic/string/string.h>
 #endif
 
 #ifndef _JIMIC_STRING_JM_STRINGS_H_
@@ -1013,4 +1017,4 @@ jmc_out_null_string_ex(char *dest, size_t countOfElements, unsigned int flag,
     }
 }
 
-#endif  /* !_JIMIC_STRING_JMC_STRINGS_IMPL_INL_ */
+#endif  /* !_JIMIC_STRING_STRING_IMPL_INL_ */

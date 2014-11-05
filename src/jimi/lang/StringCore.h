@@ -9,7 +9,7 @@
 #include <jimi/core/jimi_def.h>
 #include <jimi/log/log.h>
 #include <jimi/thread/Atomic.h>
-#include <jimi/lang/Char_Traits.h>
+#include <jimi/lang/CharTraits.h>
 #include <jimi/lang/RefCounted.h>
 #include <jimi/lang/StringDetail.h>
 #include <jimic/string/jm_strings.h>

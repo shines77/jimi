@@ -87,9 +87,6 @@
     <Filter Include="src\jimi\stl">
       <UniqueIdentifier>{695787d3-468b-4a87-8f5c-5063771028a8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\jimi\mtl">
-      <UniqueIdentifier>{b6405a67-6e08-46b4-85c3-1e008c2a8c94}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\jimic\stdio">
       <UniqueIdentifier>{e77f93bb-481e-40d9-8d38-2a7c123eb864}</UniqueIdentifier>
     </Filter>
@@ -101,6 +98,9 @@
     </Filter>
     <Filter Include="src\jimic\system">
       <UniqueIdentifier>{4ae564ea-9b55-4e8d-9954-8ccb6c42ed49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\mt">
+      <UniqueIdentifier>{b6405a67-6e08-46b4-85c3-1e008c2a8c94}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -230,9 +230,6 @@
     <ClInclude Include="..\..\..\..\src\jimi\lang\AutoCloseable.h">
       <Filter>src\jimi\lang</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\lang\Char_Traits.h">
-      <Filter>src\jimi\lang</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\lang\Cloneable.h">
       <Filter>src\jimi\lang</Filter>
     </ClInclude>
@@ -308,27 +305,6 @@
     <ClInclude Include="..\..\..\..\src\jimic\core\win32\vs_stdint.h">
       <Filter>src\jimic\core\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\dtos.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.inl.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.inl.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h">
-      <Filter>src\jimic\string</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.h">
       <Filter>src\jimic\string\win32\intel</Filter>
     </ClInclude>
@@ -377,6 +353,36 @@
     <ClInclude Include="..\..\..\..\src\jimic\libc\ieee754.h">
       <Filter>src\jimic\libc</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\lang\CharTraits.h">
+      <Filter>src\jimi\lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\dtos.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\itoa.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\itoa.inl.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.inl.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\string.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\string.inl.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\util\cmd_line.cpp">
@@ -406,12 +412,6 @@
     <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.c">
       <Filter>src\jimic\core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\string\dtos.c">
-      <Filter>src\jimic\string</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.c">
-      <Filter>src\jimic\string</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.c">
       <Filter>src\jimic\string\win32\intel</Filter>
     </ClCompile>
@@ -439,13 +439,22 @@
     <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c">
       <Filter>src\jimic\libc</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\dtos.c">
+      <Filter>src\jimic\string</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.c">
+      <Filter>src\jimic\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\itoa.c">
+      <Filter>src\jimic\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\string.c">
       <Filter>src\jimic\string</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
-    <None Include="..\..\..\..\src\jimic\string\jmc_strings.impl.inl">
+    <None Include="..\..\..\..\src\jimic\string\string.impl.inl">
       <Filter>src\jimic\string</Filter>
     </None>
   </ItemGroup>

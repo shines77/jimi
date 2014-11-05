@@ -8,7 +8,7 @@
 
 #include <jimi/core/jimi_def.h>
 #include <jimi/lang/Allocator.h>
-#include <jimi/lang/Char_Traits.h>
+#include <jimi/lang/CharTraits.h>
 #include <jimi/lang/RefCounted.h>
 #include <jimi/lang/StringCore.h>
 #include <jimi/lang/StringDetail.h>

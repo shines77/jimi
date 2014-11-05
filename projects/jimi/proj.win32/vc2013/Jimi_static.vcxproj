@@ -176,8 +176,10 @@
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\dtos.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.inl.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\string\jmc_strings.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\itoa.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\itoa.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\string.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\string\string.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h" />
     <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.c" />
     <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c" />
@@ -204,7 +206,8 @@
     <ClInclude Include="..\..\..\..\src\jimic\system\vs_vld.h" />
     <ClInclude Include="..\..\..\..\src\jimic\util\utils.h" />
     <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.h" />
-    <ClCompile Include="..\..\..\..\src\jimic\string\jmc_strings.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\itoa.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\string\string.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.c" />
@@ -238,7 +241,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\lang\aligned_space.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Allocator.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\AutoCloseable.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\lang\Char_Traits.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\lang\CharTraits.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Cloneable.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\CloneNotSupportedException.h" />
     <ClInclude Include="..\..\..\..\src\jimi\lang\Exception.h" />
@@ -284,7 +287,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\src\jimic\string\jmc_strings.impl.inl" />
+    <None Include="..\..\..\..\src\jimic\string\string.impl.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

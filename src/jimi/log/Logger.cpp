@@ -219,7 +219,7 @@ int get_datetime_str(char *datetime, int bufsize, bool use_millisec = true)
     n = (int)strftime(datetime, bufsize, "%Y-%m-%d %H:%M:%S", loctime);
     if (use_millisec) {
         status = gettimeofday(&tv, NULL);
-        JIMI_ASSERT_EX(status == 0, "gettimeofday failed");
+        jimi_assert_ex(status == 0, "gettimeofday failed");
         n += (int)jm_snprintf(datetime + n, bufsize - n, bufsize - n - 1, ".%03d", tv.tv_usec / 1000);
     }
 #endif
@@ -316,7 +316,7 @@ bool LogConfig::init(const char *filename)
     JIMI_LOG_ASSERT_TRUE(_default == NULL);
 
     // Init Globals
-    memset((void *)&global, 0, sizeof(global));
+    ::memset((void *)&global, 0, sizeof(global));
 
     // "iocp_global.log"
     jm_strcpy(global.node.filename, jm_countof(global.node.filename), DEFAULT_LOG_FILENAME_GLOBAL);
@@ -326,15 +326,15 @@ bool LogConfig::init(const char *filename)
     jm_strcpy(global.node.format, jm_countof(global.node.format), DEFAULT_LOG_FORMAT);
 
     // tag_id
-    global.node.tag_id    = _default->tag_id;
+    global.node.tag_id      = _default->tag_id;
     memcpy(global.node.tag_name, _default->tag_name, sizeof(_default->tag_name));
 
-    global.node.enabled    = _default->enabled;
-    global.node.to_file    = _default->to_file;
-    global.node.to_screen  = _default->to_screen;
-    global.node.to_trace   = _default->to_trace;
-    global.node.to_remote  = _default->to_remote;
-    global.node.create_new = true;
+    global.node.enabled     = _default->enabled;
+    global.node.to_file     = _default->to_file;
+    global.node.to_screen   = _default->to_screen;
+    global.node.to_trace    = _default->to_trace;
+    global.node.to_remote   = _default->to_remote;
+    global.node.create_new  = true;
 
     global.node.max_log_file_size   = 0;
     global.node.log_flush_threshold = 0;
@@ -354,7 +354,7 @@ bool LogConfig::init(const char *filename)
     for (int i = 1; i < max_list_length; ++i) {
         LogConf_Node *node = new LogConf_Node();
         if (node != NULL) {
-            memset((void *)node, 0, sizeof(LogConf_Node));
+            ::memset((void *)node, 0, sizeof(*node));
             if (copy_from_global(global, node, i))
                 typeList.push_back(node);
         }
@@ -367,19 +367,19 @@ bool LogConfig::copy_from_global(LogConf_Global &_global, LogConf_Node *_node, i
     LogType_Node *_default = &default_LogTypeList[_index];
     JIMI_LOG_ASSERT_TRUE(_default == NULL);
     if (_node != NULL) {
-        _node->filename[0] = '\0';
-        _node->title[0]    = '\0';
+        _node->filename[0]  = '\0';
+        _node->title[0]     = '\0';
         memcpy(_node->format, _global.node.format, sizeof(_global.node.format));
-        _node->enabled    = _global.node.enabled   & _default->enabled;
-        _node->to_file    = _global.node.to_file   & _default->to_file;
-        _node->to_screen  = _global.node.to_screen & _default->to_screen;
-        _node->to_trace   = _global.node.to_trace  & _default->to_trace;
-        _node->to_remote  = _global.node.to_remote & _default->to_remote;
-        _node->create_new = _global.node.create_new;
-        _node->attrib     = _global.node.attrib;
+        _node->enabled      = _global.node.enabled   & _default->enabled;
+        _node->to_file      = _global.node.to_file   & _default->to_file;
+        _node->to_screen    = _global.node.to_screen & _default->to_screen;
+        _node->to_trace     = _global.node.to_trace  & _default->to_trace;
+        _node->to_remote    = _global.node.to_remote & _default->to_remote;
+        _node->create_new   = _global.node.create_new;
+        _node->attrib       = _global.node.attrib;
         _node->max_log_file_size   = _global.node.max_log_file_size;
         _node->log_flush_threshold = _global.node.log_flush_threshold;
-        _node->tag_id     = _default->tag_id;
+        _node->tag_id       = _default->tag_id;
         memcpy(_node->tag_name, _default->tag_name, sizeof(_default->tag_name));
         return true;
     }
@@ -410,12 +410,12 @@ Logger::Logger(const char *filename /*= NULL*/, const char *title /*= NULL*/, un
 //, m_title(NULL)
 //, m_format(NULL)
 {
-    //memset(m_format, 0, sizeof(m_format));
+    //::memset(m_format, 0, sizeof(m_format));
     jm_strcpy(m_format, jm_countof(m_format), DEFAULT_LOG_FORMAT);
 
     if (!this->open(filename, title)) {
-        memset(m_filename, 0, sizeof(m_filename));
-        memset(m_title, 0, sizeof(m_title));
+        ::memset(m_filename, 0, sizeof(m_filename));
+        ::memset(m_title, 0, sizeof(m_title));
         //jm_strcpy(m_title, jm_countof(m_title), DEFAULT_LOG_TITLE);
     }
 }

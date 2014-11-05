@@ -8,7 +8,7 @@
 
 #include <jimi/core/jimi_def.h>
 #include <jimi/lang/Allocator.h>
-#include <jimi/lang/Char_Traits.h>
+#include <jimi/lang/CharTraits.h>
 #include <jimic/string/jm_strings.h>
 #include <jimi/log/log.h>
 
@@ -71,6 +71,9 @@ public:
     const size_type alignment() const { return _alignment;      }
     const size_type capacity() const  { return _capacity;       }
 
+protected:
+    void init(const value_type *src, size_type size);
+
 private:
 #if defined(JIMI_SIZE_T_SIZEOF) && (JIMI_SIZE_T_SIZEOF == 4)
     /* for aligned to 8 bytes in x86 (32bit mode) */
@@ -112,13 +115,9 @@ SmallString<_CharT, _Capacity, _Alignment, _Traits>::SmallString(const value_typ
 }
 
 template <class _CharT, size_t _Capacity, size_t _Alignment, class _Traits>
-SmallString<_CharT, _Capacity, _Alignment, _Traits>::SmallString(const value_type *src)
-//: SmallString(src, (size_type)traits_type::length(src))
-//: SmallString(src, (size_type)::jm_strlen(src))
-//: SmallString(src, (size_type)jm_countof(src))
-//: SmallString(src)
+inline
+void SmallString<_CharT, _Capacity, _Alignment, _Traits>::init(const value_type *src, size_type size)
 {
-    size_type size = traits_type::length(src);
     if (size < _capacity) {
         memcpy(_data, src, size * sizeof(value_type));
         _data[size] = (value_type)'\0';
@@ -132,8 +131,16 @@ SmallString<_CharT, _Capacity, _Alignment, _Traits>::SmallString(const value_typ
 }
 
 template <class _CharT, size_t _Capacity, size_t _Alignment, class _Traits>
-SmallString<_CharT, _Capacity, _Alignment, _Traits>::SmallString(const value_type *src, size_type size)
+SmallString<_CharT, _Capacity, _Alignment, _Traits>::SmallString(const value_type *src)
+//: SmallString(src, (size_type)traits_type::length(src))
+//: SmallString(src, (size_type)::jm_strlen(src))
+//: SmallString(src, (size_type)jm_countof(src))
+//: SmallString(src)
 {
+    size_type size = traits_type::length(src);
+#if 1
+    init(src, size);
+#else
     if (size < _capacity) {
         memcpy(_data, src, size * sizeof(value_type));
         _data[size] = (value_type)'\0';
@@ -144,6 +151,26 @@ SmallString<_CharT, _Capacity, _Alignment, _Traits>::SmallString(const value_typ
         _data[_capacity - 1] = (value_type)'\0';
         _size = _capacity - 1;
     }
+#endif
+}
+
+template <class _CharT, size_t _Capacity, size_t _Alignment, class _Traits>
+SmallString<_CharT, _Capacity, _Alignment, _Traits>::SmallString(const value_type *src, size_type size)
+{
+#if 1
+    init(src, size);
+#else
+    if (size < _capacity) {
+        memcpy(_data, src, size * sizeof(value_type));
+        _data[size] = (value_type)'\0';
+        _size = size;
+    }
+    else {
+        memcpy(_data, src, (_capacity - 1) * sizeof(value_type));
+        _data[_capacity - 1] = (value_type)'\0';
+        _size = _capacity - 1;
+    }
+#endif
 }
 
 // Specialization for const value_type *, const value_type *

@@ -141,6 +141,17 @@
 
 #endif  /* defined(JIMI_IS_WINDOWS) || defined(JIMI_IS_DOXYGEN) */
 
+/* for static_assert() under VisualStudio 2010 */
+#if defined(_MSC_VER) && (_MSC_VER < 1600)
+#ifndef static_assert
+#define static_assert(expr, msg)
+#endif
+#endif
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #define JIMIC_MIN(a, b)         ((a) < (b) ? (a) : (b))
 #define JIMIC_MAX(a, b)         ((a) > (b) ? (a) : (b))
 

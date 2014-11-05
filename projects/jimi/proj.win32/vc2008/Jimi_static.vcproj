@@ -162,11 +162,23 @@
 					Name="core"
 					>
 					<File
-						RelativePath="..\..\..\..\src\jimi\jimi_all.h"
+						RelativePath="..\..\..\..\src\jimi\core\jimi_assert.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\core\jimi_assert.h"
 						>
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimi\core\jimi_common.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\core\jimi_compiler_def.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\core\jimi_config.h"
 						>
 					</File>
 					<File
@@ -177,11 +189,23 @@
 						RelativePath="..\..\..\..\src\jimi\core\jimi_export.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\core\jimi_machine.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\core\jimi_platform_def.h"
+						>
+					</File>
 					<Filter
 						Name="win32"
 						>
 						<File
 							RelativePath="..\..\..\..\src\jimi\core\win32\jimi_config.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\..\src\jimi\core\win32\jimi_targetver.h"
 							>
 						</File>
 						<File
@@ -193,22 +217,14 @@
 				<Filter
 					Name="platform"
 					>
-					<File
-						RelativePath="..\..\..\..\src\jimi\platform\jimi_compiler_config.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimi\platform\jimi_platform_config.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimi\platform\jimi_targetver.h"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="lang"
 					>
+					<File
+						RelativePath="..\..\..\..\src\jimi\lang\aligned_space.h"
+						>
+					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimi\lang\Allocator.h"
 						>
@@ -218,7 +234,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\lang\Char_Traits.h"
+						RelativePath="..\..\..\..\src\jimi\lang\CharTraits.h"
 						>
 					</File>
 					<File
@@ -234,6 +250,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\..\..\src\jimi\lang\Formatter.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimi\lang\Object.h"
 						>
 					</File>
@@ -246,6 +266,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\..\..\src\jimi\lang\SmallString.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimi\lang\String.h"
 						>
 					</File>
@@ -255,6 +279,10 @@
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimi\lang\StringCore.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\lang\StringDetail.h"
 						>
 					</File>
 					<File
@@ -294,11 +322,15 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\..\..\src\jimi\thread\Thread.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimi\thread\Thread.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\thread\thread_def.h"
+						RelativePath="..\..\..\..\src\jimi\thread\ThreadDef.h"
 						>
 					</File>
 					<File
@@ -313,6 +345,14 @@
 				<Filter
 					Name="system"
 					>
+					<File
+						RelativePath="..\..\..\..\src\jimi\system\Console.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\system\Program.h"
+						>
+					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimi\system\stop_watch.h"
 						>
@@ -329,6 +369,22 @@
 				<Filter
 					Name="internal"
 					>
+					<File
+						RelativePath="..\..\..\..\src\jimi\internal\Copyable.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\internal\NonAssignable.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\internal\NonCopyable.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\internal\pointer_cast.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="util"
@@ -406,6 +462,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="mt"
+					>
+				</Filter>
+				<Filter
+					Name="stl"
+					>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="jimic"
@@ -414,33 +478,59 @@
 					Name="string"
 					>
 					<File
-						RelativePath="..\..\..\..\src\jimic\string\jm_strings.h"
-						FileType="0"
+						RelativePath="..\..\..\..\src\jimic\string\dtos.c"
 						>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								CompileAs="1"
-							/>
-						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\dtos.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\iconv_win.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\iconv_win.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\itoa.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\itoa.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\itoa.inl.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\jm_strings.h"
+						>
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimic\string\jm_strings.inl.h"
-						FileType="0"
 						>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								CompileAs="1"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimic\string\jmf_strings.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\string.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\string.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\string.impl.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\string\string.inl.h"
 						>
 					</File>
 					<Filter
@@ -450,19 +540,35 @@
 							Name="intel"
 							>
 							<File
-								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.inl.h"
+								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.c"
 								>
 							</File>
 							<File
-								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.inl.h"
+								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.h"
 								>
 							</File>
 							<File
-								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.inl.h"
+								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.c"
 								>
 							</File>
 							<File
-								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.inl.h"
+								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen64.h"
+								>
+							</File>
+							<File
+								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.c"
+								>
+							</File>
+							<File
+								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr32.h"
+								>
+							</File>
+							<File
+								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.c"
+								>
+							</File>
+							<File
+								RelativePath="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.h"
 								>
 							</File>
 						</Filter>
@@ -472,11 +578,27 @@
 					Name="core"
 					>
 					<File
-						RelativePath="..\..\..\..\src\jimic\jimic_all.h"
+						RelativePath="..\..\..\..\src\jimic\core\jimic.h"
 						>
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimic\core\jimic_asm.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\core\jimic_assert.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\core\jimic_assert.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\core\jimic_compiler_def.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\core\jimic_config.h"
 						>
 					</File>
 					<File
@@ -487,11 +609,19 @@
 						RelativePath="..\..\..\..\src\jimic\core\jimic_export.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\core\jimic_platform_def.h"
+						>
+					</File>
 					<Filter
 						Name="win32"
 						>
 						<File
 							RelativePath="..\..\..\..\src\jimic\core\win32\jimic_config.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\..\src\jimic\core\win32\jimic_targetver.h"
 							>
 						</File>
 						<File
@@ -503,10 +633,6 @@
 				<Filter
 					Name="platform"
 					>
-					<File
-						RelativePath="..\..\..\..\src\jimic\platform\jimic_targetver.h"
-						>
-					</File>
 					<Filter
 						Name="linux"
 						>
@@ -523,6 +649,94 @@
 							>
 						</File>
 					</Filter>
+				</Filter>
+				<Filter
+					Name="libc"
+					>
+					<File
+						RelativePath="..\..\..\..\src\jimic\libc\endian.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\libc\endian.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\libc\ieee754.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="stdio"
+					>
+					<File
+						RelativePath="..\..\..\..\src\jimic\stdio\csharp_sprintf.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\stdio\csharp_sprintf.inl.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\stdio\sprintf.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\stdio\sprintf.inl.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="stdlib"
+					>
+				</Filter>
+				<Filter
+					Name="system"
+					>
+					<File
+						RelativePath="..\..\..\..\src\jimic\system\console.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\system\console.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\system\crtdbg_env.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\system\crtdbg_env.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\system\get_char.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\system\get_char.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\system\sys_timer.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\system\sys_timer.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\system\vs_vld.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="util"
+					>
+					<File
+						RelativePath="..\..\..\..\src\jimic\util\utils.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
