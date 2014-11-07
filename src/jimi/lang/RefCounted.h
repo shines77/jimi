@@ -19,7 +19,7 @@ void *smartRealloc(void *memory, size_t cur_size, size_t cur_capacity, size_t ne
 template <class _CharT,
           class _ValueT,
           class _Atomic = non_atomic<_ValueT> >
-class JIMI_API refcounted
+class JIMI_DLL refcounted
 {
 public:
     // Types

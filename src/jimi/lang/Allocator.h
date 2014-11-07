@@ -11,7 +11,7 @@
 NS_JIMI_BEGIN
 
 template <class _CharT>
-class JIMI_API allocator
+class JIMI_DLL allocator
 {
 public:
     typedef size_t          size_type;

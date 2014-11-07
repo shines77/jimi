@@ -22,7 +22,7 @@
 NS_JIMI_BEGIN
 
 template <typename _CharT>
-struct JIMI_API char_traits
+struct JIMI_DLL char_traits
 {
     typedef _CharT char_type;
 

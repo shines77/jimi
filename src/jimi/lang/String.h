@@ -42,7 +42,7 @@ NS_JIMI_BEGIN
 /// </comment>
 
 template <class _PtrT, class _T>
-class JIMI_API normal_iterator
+class JIMI_DLL normal_iterator
 {
 };
 
@@ -59,7 +59,7 @@ template <class _CharT   = char,
           class _Alloc   = allocator<_CharT>,
           class _Storage = string_core<_CharT> >
 
-class JIMI_API basic_string
+class JIMI_DLL basic_string
 {
 public:
     // Types

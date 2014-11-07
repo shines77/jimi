@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-void JIMIC_API jimi_cpu_warmup(int delayTime);
+void JIMIC_DLL jimi_cpu_warmup(int delayTime);
 
 #ifdef __cplusplus
 }

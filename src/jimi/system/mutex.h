@@ -22,7 +22,7 @@ NS_JIMI_BEGIN
 
 NS_JIMI_MT_BEGIN
 
-class JIMI_API mutex
+class JIMI_DLL mutex
 {
 public:
     mutex();

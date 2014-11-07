@@ -107,7 +107,7 @@ typedef enum StringTypeMaskX
     string_core<_CharT, _RefCount>
 
 template <class _CharT, class _RefCount = refcounted<_CharT, size_t> >
-class JIMI_API string_core
+class JIMI_DLL string_core
 {
 public:
     // Types

@@ -72,7 +72,7 @@ struct ci_char_traits : public std::char_traits<char> {
 
 typedef std::basic_string<char, ci_char_traits> ci_string;
 
-class JIMI_API cmd_param
+class JIMI_DLL cmd_param
 {
 public:
 	std::string                 name;
@@ -165,7 +165,7 @@ typedef std::pair<std::string, cmd_param *>  cmd_param_pair;
 typedef std::map<std::string, cmd_param *>   cmd_param_map;
 typedef std::pair<std::map<std::string, cmd_param *>::iterator, bool> cmd_param_pair_result;
 
-class JIMI_API cmd_line
+class JIMI_DLL cmd_line
 {
 public:
     cmd_line();

@@ -6,7 +6,7 @@
 
 /* 预热时间至少要大于500毫秒, 如果还不够, 可以自行增加最小预热时间 */
 
-void JIMIC_API jimi_cpu_warmup(int delayTime)
+void JIMIC_DLL jimi_cpu_warmup(int delayTime)
 {
 #if defined(NDEBUG) || !defined(_DEBUG)
     jmc_timestamp startTime, stopTime;

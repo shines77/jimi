@@ -185,14 +185,14 @@ typedef enum Log_Type
     LOG_LAST
 } Log_Type_t;
 
-typedef struct JIMI_API LogType_NodeInfo
+typedef struct JIMI_DLL LogType_NodeInfo
 {
     int     tag_id;
     int     tag_index;
     char    tag_name[32];
 } LogType_NodeInfo;
 
-typedef struct JIMI_API LogType_Node
+typedef struct JIMI_DLL LogType_Node
 {
     int     tag_id;
     char    tag_name[32];
@@ -203,7 +203,7 @@ typedef struct JIMI_API LogType_Node
     bool    to_remote;          // Whether or not to write logs to remote server or gdb
 } LogType_Node;
 
-typedef struct JIMI_API LogConf_Node
+typedef struct JIMI_DLL LogConf_Node
 {
     int             tag_id;
     char            tag_name[32];
@@ -221,7 +221,7 @@ typedef struct JIMI_API LogConf_Node
     int             log_flush_threshold;
 } LogConf_Node;
 
-typedef struct JIMI_API LogConf_Global
+typedef struct JIMI_DLL LogConf_Global
 {
     LogConf_Node    node;
     int             tag_mask;
@@ -233,7 +233,7 @@ typedef struct JIMI_API LogConf_Global
     unsigned short  remote_port;
 } LogConf_Global;
 
-class JIMI_API LogConfig
+class JIMI_DLL LogConfig
 {
 public:
     typedef std::vector<LogConf_Node *>     LogConf_NodeVec;
@@ -261,7 +261,7 @@ public:
     LogType_NodeInfo       *infoList;
 };
 
-class JIMI_API Logger
+class JIMI_DLL Logger
 {
 public:
     Logger(const char *filename = NULL, const char *title = NULL, unsigned int attrib = 0);
@@ -338,7 +338,7 @@ NS_JIMI_LOG_END
 
 #define JIMI_USE_STATIC_GLOBAL_OBJECT   0
 
-class JIMI_API Utils
+class JIMI_DLL Utils
 {
 public:
     Utils() : log(DEFAULT_LOG_FILENAME_GLOBAL, DEFAULT_LOG_TITLE_GLOBAL) {};
@@ -354,7 +354,7 @@ static class Utils      Utils;
 extern class Utils      Utils;
 #endif
 
-class JIMI_API System
+class JIMI_DLL System
 {
 public:
     System() : out(Utils.log) {};
@@ -372,8 +372,8 @@ extern class System     System;
 
 NS_JIMI_END
 
-JIMI_EXPIMP_TEMPLATE template class JIMI_API_TPL std::allocator<jimi::log::LogConf_Node *>;
-JIMI_EXPIMP_TEMPLATE template class JIMI_API_TPL std::vector<jimi::log::LogConf_Node *, std::allocator<jimi::log::LogConf_Node *> >;
+JIMI_EXPIMP_TEMPLATE template class JIMI_DLL_TPL std::allocator<jimi::log::LogConf_Node *>;
+JIMI_EXPIMP_TEMPLATE template class JIMI_DLL_TPL std::vector<jimi::log::LogConf_Node *, std::allocator<jimi::log::LogConf_Node *> >;
 
 #if defined(_MSC_VER)
     #pragma warning (pop)

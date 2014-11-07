@@ -21,7 +21,7 @@
 #define JIMI_LOG_ASSERT_EX_FALSE        JIMI_ASSERT_EX_FALSE
 #define JIMI_LOG_ASSERT_EX              JIMI_LOG_ASSERT_EX_FALSE
 
-#define JIMI_LOG_API                    JIMI_API
+#define JIMI_LOG_DLL                    JIMI_DLL
 
 // namespace iocp
 #define NS_JIMI_LOG_BEGIN               namespace log {

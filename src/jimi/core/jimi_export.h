@@ -60,31 +60,31 @@
    (Define JIMI_DECLARE_EXPORT to export symbols, else they are imported or static)
 **************************************************************************************/
 
-#ifdef JIMI_API
-#undef JIMI_API
+#ifdef JIMI_DLL
+#undef JIMI_DLL
 #endif
 
 #if defined(JIMI_IS_MSVC)  /* is microsoft visual studio ? */
     #if defined(JIMI_DECLARE_EXPORT)              /* is a dll library */
-        #define JIMI_API                __declspec(dllexport)
-        #define JIMI_API_TPL            __declspec(dllexport)
+        #define JIMI_DLL                __declspec(dllexport)
+        #define JIMI_DLL_TPL            __declspec(dllexport)
         #define JIMI_PRIVATE
         #define JIMI_EXPIMP_TEMPLATE
     #elif defined(JIMI_DECLARE_IMPORT)            /* use a dll library */
-        #define JIMI_API                __declspec(dllimport)
-        #define JIMI_API_TPL            __declspec(dllimport)   // or don't defined it!
+        #define JIMI_DLL                __declspec(dllimport)
+        #define JIMI_DLL_TPL            __declspec(dllimport)   // or don't defined it!
         #define JIMI_PRIVATE
         #define JIMI_EXPIMP_TEMPLATE    extern
     #else /* defined(JIMI_DECLARE_STATIC) */      /* is a static library or use static library */
-        #define JIMI_API
-        #define JIMI_API_TPL
+        #define JIMI_DLL
+        #define JIMI_DLL_TPL
         #define JIMI_PRIVATE
         #define JIMI_EXPIMP_TEMPLATE
     #endif
 #elif defined(JIMI_IS_GNUC)   
-    #define JIMI_API                    __attribute__ ((visibility ("default")))
-    #define JIMI_API                    __attribute__ ((visibility ("default")))
-    #define JIMI_API_TPL                __attribute__ ((visibility ("default")))
+    #define JIMI_DLL                    __attribute__ ((visibility ("default")))
+    #define JIMI_DLL                    __attribute__ ((visibility ("default")))
+    #define JIMI_DLL_TPL                __attribute__ ((visibility ("default")))
     #define JIMI_PRIVATE                __attribute__ ((visibility ("default")))
     #if defined(JIMI_DECLARE_IMPORT)
         #define JIMI_EXPIMP_TEMPLATE    extern
@@ -92,8 +92,8 @@
         #define JIMI_EXPIMP_TEMPLATE
     #endif
 #else  /* not is msvc and not is gunc! */
-    #define JIMI_API
-    #define JIMI_API_TPL
+    #define JIMI_DLL
+    #define JIMI_DLL_TPL
     #define JIMI_PRIVATE
     #if defined(JIMI_DECLARE_IMPORT)
         #define JIMI_EXPIMP_TEMPLATE    extern
@@ -102,15 +102,15 @@
     #endif
 #endif
 
-#ifdef JIMIC_API
-#undef JIMIC_API
+#ifdef JIMIC_DLL
+#undef JIMIC_DLL
 #endif
 
 #ifdef JIMIC_PRIVATE
 #undef JIMIC_PRIVATE
 #endif
 
-#define JIMIC_API               JIMI_API
+#define JIMIC_DLL               JIMI_DLL
 #define JIMIC_PRIVATE           JIMI_PRIVATE
 
 #endif  /* _JIMI_EXPORT_H_ */

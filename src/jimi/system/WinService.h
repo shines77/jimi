@@ -206,7 +206,7 @@ typedef struct PowerBroadcastStatus
 //       Writing Tools for Windows in C++
 //       http://sprogram.com.ua/en/articles/how-write-service-for-windows-with-cpp
 
-class JIMI_API IWinServiceBase
+class JIMI_DLL IWinServiceBase
 {
     virtual bool OnServiceInit() = 0;
     virtual bool OnServiceCleanup() = 0;
@@ -233,7 +233,7 @@ class JIMI_API IWinServiceBase
 };
 
 template <class T>
-class JIMI_API WinServiceBase /* : public IWinServiceBase */
+class JIMI_DLL WinServiceBase /* : public IWinServiceBase */
 {
 public:
     typedef struct ExecInfo_t
