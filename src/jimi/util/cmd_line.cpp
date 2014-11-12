@@ -16,7 +16,7 @@ cmd_line::cmd_line()
 , caseSensitive(false)
 , params()
 {
-
+    //
 }
 
 cmd_line::cmd_line(int _argc, char *_argv[])

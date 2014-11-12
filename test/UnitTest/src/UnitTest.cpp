@@ -2431,6 +2431,8 @@ void auto_rvalue_test()
 
 #endif  /* !defined(_MSC_VER) || (_MSC_VER >= 1600) */
 
+#include "jimic/math/log10.h"
+
 void Log10_Test()
 {
 #ifndef _DEBUG
@@ -2477,36 +2479,48 @@ void Log10_Test()
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        exp10 += jmc_log10(val);
+        exp10 += jmc_log10_fast_v0(val);
         val += 100.0;
     }
     sw.stop();
     time3 = sw.getMillisec();
-    printf("jmc_log10():            time = %0.6f ms, exp10 = %d.\n\n", time3, exp10);
+    printf("jmc_log10_fast_v0():    time = %0.6f ms, exp10 = %d.\n\n", time3, exp10);
 
     val = 1000000000.0;
     exp10 = 0;
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        exp10 += jmc_log10_fast1(val);
+        exp10 += jmc_log10_fast_v1(val);
         val += 100.0;
     }
     sw.stop();
     time4 = sw.getMillisec();
-    printf("jmc_log10_fast1():      time = %0.6f ms, exp10 = %d.\n\n", time4, exp10);
+    printf("jmc_log10_fast_v1():    time = %0.6f ms, exp10 = %d.\n\n", time4, exp10);
 
     val = 1000000000.0;
     exp10 = 0;
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        exp10 += jmc_log10_fast2(val);
+        exp10 += jmc_log10_fast_v2(val);
         val += 100.0;
     }
     sw.stop();
     time5 = sw.getMillisec();
-    printf("jmc_log10_fast2():      time = %0.6f ms, exp10 = %d.\n\n", time5, exp10);
+    printf("jmc_log10_fast_v2():    time = %0.6f ms, exp10 = %d.\n\n", time5, exp10);
+
+    val = 1000000000.0;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += jmc_log10_fast_v3(val);
+        val += 100.0;
+    }
+    sw.stop();
+    time6 = sw.getMillisec();
+    printf("jmc_log10_fast_v3():    time = %0.6f ms, exp10 = %d.\n\n", time6, exp10);
 
     val = 1000000000.0;
     exp10 = 0;
@@ -2519,6 +2533,18 @@ void Log10_Test()
     sw.stop();
     time6 = sw.getMillisec();
     printf("jmc_log10_fast():       time = %0.6f ms, exp10 = %d.\n\n", time6, exp10);
+
+    val = 1000000000.0;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += jmc_log10_fast64(val);
+        val += 100.0;
+    }
+    sw.stop();
+    time6 = sw.getMillisec();
+    printf("jmc_log10_fast64():     time = %0.6f ms, exp10 = %d.\n\n", time6, exp10);
 
     printf("\n");
 }
@@ -2540,14 +2566,14 @@ void Log10_Test2(double val)
     exp10 = ieee754_log10_crt_2(val);
     printf("log10_crt_2(val)        = %d.\n", exp10);
 
-    exp10 = jmc_log10(val);
-    printf("jmc_log10(val)          = %d.\n", exp10);
+    exp10 = jmc_log10_fast_v0(val);
+    printf("jmc_log10_fast_v0(val)  = %d.\n", exp10);
 
-    exp10 = jmc_log10_fast1(val);
-    printf("jmc_log10_fast1(val)    = %d.\n", exp10);
+    exp10 = jmc_log10_fast_v1(val);
+    printf("jmc_log10_fast_v1(val)  = %d.\n", exp10);
 
-    exp10 = jmc_log10_fast2(val);
-    printf("jmc_log10_fast2(val)    = %d.\n", exp10);
+    exp10 = jmc_log10_fast_v2(val);
+    printf("jmc_log10_fast_v2(val)  = %d.\n", exp10);
 
     exp10 = jmc_log10_fast(val);
     printf("jmc_log10_fast(val)     = %d.\n", exp10);
@@ -3016,8 +3042,8 @@ int UnitTest_Main(int argc, char *argv[])
     jimi::CommandLine cmdLine;
     int cnt;
     if ((cnt = cmdLine.parse(argc, argv)) >= 0) {
-        std::string strCmdLine = cmdLine.getCmdLine();
-        jmLog.info(strCmdLine.c_str());
+        std::string args = cmdLine.getCmdLine();
+        jmLog.info(args.c_str());
     }
 
     // Test System.out.info()

@@ -105,6 +105,9 @@
     <Filter Include="src\jimi\mt">
       <UniqueIdentifier>{7dc27b16-308f-441b-8284-0712f7bd588c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\jimic\math">
+      <UniqueIdentifier>{9944dc13-9233-4978-a6f0-547ea8aa4cb6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\jimi\jimi_all.h">
@@ -392,6 +395,9 @@
     <ClInclude Include="..\..\..\..\src\jimi\mt\scoped_lock.h">
       <Filter>src\jimi\mt</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\math\log10.h">
+      <Filter>src\jimic\math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">
@@ -462,6 +468,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimi\mt\scoped_lock.cpp">
       <Filter>src\jimi\mt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\math\log10.c">
+      <Filter>src\jimic\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

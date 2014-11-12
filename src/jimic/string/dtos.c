@@ -46,55 +46,15 @@ static const uint64_t float_scales_64[] = {
 };
 
 JMC_DECLARE_NONSTD(int)
-ieee754_log10_crt_1(double val)
+jmc_fget_exponent(float * JMC_RESTRICT pval)
 {
-    static double s_log10;
-    s_log10 = (double)log((double)10.0);
-    return (int)((double)log(val) / s_log10);
-}
-
-JMC_DECLARE_NONSTD(int)
-ieee754_log10_crt_2(double val)
-{
-    return (int)((double)log10(val));
-}
-
-
-/**
- * log10(2^64) = 19.265919722494796493679289262368
- * 131072 / 100000 = 1.31072
- * log10(2^64) * 131072 / 100000 = 25.25222629866837966019531802197
- * zoom = 2525222.629866837966019531802197
- */
-
-JMC_DECLARE_NONSTD(int)
-jmc_log10_fast(double val)
-{
-    jmc_ieee754_double *d64;
+    jmc_ieee754_float *f32;
     int exponent;
-    int exp10;
-
-    d64 = (jmc_ieee754_double *)&val;
-    // exponent = (exponent_mask32 >> (52 - 32)) - 1023;
-    exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
-
-    // exponent is positive (exponent >= 0 && exponent <= 1024)
-    if (exponent >= 0 && exponent <= JMC_IEEE754_DOUBLE_EXPONENT_MAX) {
-        // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
-        // exp10 = exponent * 2525222UL;
-        exp10 = (unsigned int)exponent * 2525222UL;
-        // exp10 = exp10 / 131072 / 64;
-        exp10 = (int)((unsigned int)exp10 >> 23);
-        return (int)exp10;
-    }
-    else {
-        // exp10 = -exponent * 2525222UL;
-        exponent = -exponent;
-        exp10 = (unsigned int)exponent * 2525222UL;
-        // exp10 = exp10 / 131072 / 64, exp10 = exp10 >> (17 + 6), 131072 = 2^17;
-        exp10 = (int)((unsigned int)exp10 >> 23);
-        return (int)-exp10;
-    }   
+    jimic_assert(pval != NULL);
+    f32 = (jmc_ieee754_float *)pval;
+    exponent = f32->ieee.exponent - JMC_IEEE754_FLOAT_EXPONENT_BIAS;
+    jimic_assert(exponent >= JMC_IEEE754_FLOAT_EXPONENT_MIN && exponent <= JMC_IEEE754_FLOAT_EXPONENT_MAX);
+    return exponent;
 }
 
 JMC_DECLARE_NONSTD(int)
