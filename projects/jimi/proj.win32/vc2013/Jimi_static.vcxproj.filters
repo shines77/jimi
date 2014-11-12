@@ -398,6 +398,9 @@
     <ClInclude Include="..\..\..\..\src\jimic\math\log10.h">
       <Filter>src\jimic\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\math\int_log10.h">
+      <Filter>src\jimic\math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">
@@ -470,6 +473,9 @@
       <Filter>src\jimi\mt</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\math\log10.c">
+      <Filter>src\jimic\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\math\int_log10.c">
       <Filter>src\jimic\math</Filter>
     </ClCompile>
   </ItemGroup>

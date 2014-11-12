@@ -2433,7 +2433,39 @@ void auto_rvalue_test()
 
 #include "jimic/math/log10.h"
 
-void Log10_Test()
+void Log10_Test1(double val)
+{
+    int exp10;
+
+    printf("==============================================================================\n\n");
+    printf("  Log10_Test1()\n\n");
+    printf("==============================================================================\n\n");
+
+    //val = 1E+308;
+    printf("val = %0.12E\n\n", val);
+
+    exp10 = ieee754_log10_crt_1(val);
+    printf("log10_crt_1(val)        = %d.\n", exp10);
+
+    exp10 = ieee754_log10_crt_2(val);
+    printf("log10_crt_2(val)        = %d.\n", exp10);
+
+    exp10 = jmc_log10_fast_v0(val);
+    printf("jmc_log10_fast_v0(val)  = %d.\n", exp10);
+
+    exp10 = jmc_log10_fast_v1(val);
+    printf("jmc_log10_fast_v1(val)  = %d.\n", exp10);
+
+    exp10 = jmc_log10_fast_v2(val);
+    printf("jmc_log10_fast_v2(val)  = %d.\n", exp10);
+
+    exp10 = jmc_log10_fast(val);
+    printf("jmc_log10_fast(val)     = %d.\n", exp10);
+
+    printf("\n");
+}
+
+void Log10_Test2()
 {
 #ifndef _DEBUG
     const int LOOP_TIMES = 1000000;
@@ -2447,7 +2479,7 @@ void Log10_Test()
     jimi::stop_watch sw;
 
     printf("==============================================================================\n\n");
-    printf("  Log10_Test()\n\n");
+    printf("  Log10_Test2()\n\n");
     printf("==============================================================================\n\n");
 
     val = 1000000000.0;
@@ -2549,34 +2581,111 @@ void Log10_Test()
     printf("\n");
 }
 
-void Log10_Test2(double val)
+void Log10_Test3()
 {
-    int exp10;
+    const int LOOP_TIMES = 128;
+    double time1;
+    double val;
+    int exp10, sum;
+    int i, loop_times = 0;
+    jimi::stop_watch sw;
 
     printf("==============================================================================\n\n");
-    printf("  Log10_Test2()\n\n");
+    printf("  Log10_Test3()\n\n");
     printf("==============================================================================\n\n");
 
-    //val = 1E+308;
-    printf("val = %0.12E\n\n", val);
+    val = 1.0;
+    sum = 0;
 
-    exp10 = ieee754_log10_crt_1(val);
-    printf("log10_crt_1(val)        = %d.\n", exp10);
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 = jmc_log10_fast(val);
+        printf("jmc_log10_fast(): val = %4d, exp10 = %4d.\n", (int)val, exp10);
+        sum += exp10;
+        val += 1.0;
+    }
+    sw.stop();
+    time1 = sw.getMillisec();
+    printf("jmc_log10_fast(): time = %0.6f ms, sum = %d.\n\n", time1, sum);
 
-    exp10 = ieee754_log10_crt_2(val);
-    printf("log10_crt_2(val)        = %d.\n", exp10);
+    printf("\n");
+}
 
-    exp10 = jmc_log10_fast_v0(val);
-    printf("jmc_log10_fast_v0(val)  = %d.\n", exp10);
+#include "jimic/math/int_log10.h"
 
-    exp10 = jmc_log10_fast_v1(val);
-    printf("jmc_log10_fast_v1(val)  = %d.\n", exp10);
+void Int_Log10_Test()
+{
+#ifndef _DEBUG
+    const int LOOP_TIMES = 1000000;
+#else
+    const int LOOP_TIMES = 2000;
+#endif
 
-    exp10 = jmc_log10_fast_v2(val);
-    printf("jmc_log10_fast_v2(val)  = %d.\n", exp10);
+#ifndef _WIN64
+    double time1, time2, time3;
+#else
+    double time1, time2, time3, time4;
+#endif
+    unsigned int val;
+    unsigned int exp10;
+    int i, loop_times = 0;
+    jimi::stop_watch sw;
 
-    exp10 = jmc_log10_fast(val);
-    printf("jmc_log10_fast(val)     = %d.\n", exp10);
+    printf("==============================================================================\n\n");
+    printf("  Int_Log10_Test()\n\n");
+    printf("==============================================================================\n\n");
+
+    val = 1;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += jmc_uint_log10_sys(val);
+        val += 1;
+    }
+    sw.stop();
+    time1 = sw.getMillisec();
+    printf("jmc_uint_log10_sys():   time = %07.4f ms, exp10 = %d.\n\n", time1, exp10);
+
+    val = 1;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += jmc_uint_log10_fast(val);
+        val += 1;
+    }
+    sw.stop();
+    time2 = sw.getMillisec();
+    printf("jmc_uint_log10_fast():  time = %07.4f ms, exp10 = %d.\n\n", time2, exp10);
+
+    val = 1;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += jmc_uint_log10(val);
+        val += 1;
+    }
+    sw.stop();
+    time3 = sw.getMillisec();
+    printf("jmc_uint_log10():       time = %07.4f ms, exp10 = %d.\n\n", time3, exp10);
+
+#ifdef _WIN64
+
+    val = 1;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += jmc_uint64_log10(val);
+        val += 1;
+    }
+    sw.stop();
+    time4 = sw.getMillisec();
+    printf("jmc_uint64_log10():     time = %0.6f ms, exp10 = %d.\n\n", time4, exp10);
+
+#endif
 
     printf("\n");
 }
@@ -3196,10 +3305,14 @@ int UnitTest_Main(int argc, char *argv[])
 #endif
 
 #if 1
-    Log10_Test();
-    Log10_Test2(1E+308);
-    Log10_Test2(1E+200);
-    Log10_Test2(1E+100);
+    Log10_Test1(1E+308);
+    Log10_Test1(1E+200);
+    Log10_Test1(1E+100);
+    Log10_Test2();
+    Log10_Test3();
+
+    Int_Log10_Test();
+
     Double_And_Float_Test();
 
     jimi::Console.ReadKey_NextLine();

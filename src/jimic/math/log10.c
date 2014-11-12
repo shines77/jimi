@@ -5,6 +5,11 @@
 
 #include <math.h>
 
+//
+// Reference: http://stackoverflow.com/questions/10810105/explanation-wanted-log10-faster-than-log-and-log2-but-only-with-o2-and-greater
+// Reference: https://helloacm.com/fast-integer-log10/
+//
+
 JMC_DECLARE_NONSTD(int)
 ieee754_log10_crt_1(double val)
 {
