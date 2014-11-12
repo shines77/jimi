@@ -7,7 +7,7 @@
 #endif
 
 #ifndef _JIMIC_STDIO_CSHARP_SPRINTF_H_
-#include <jimic/stdio/csharp_sprintf.h>
+#error "Don't include the internal file <jimic/stdio/csharp_sprintf.inl.h> directly; include <jimic/stdio/csharp_sprintf.h> instead."
 #endif
 
 #include <stdarg.h>

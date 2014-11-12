@@ -1,6 +1,8 @@
 
 #include <jimic/string/dtos.h>
+
 #include <jimic/libc/ieee754.h>
+#include <jimic/stdio/sprintf_def.h>
 #include <jimic/string/itoa.h>
 #include <jimic/string/string.h>
 #include <jimic/util/utils.h>
@@ -42,6 +44,21 @@ static const uint64_t float_scales_64[] = {
     10000000000000000ULL,   100000000000000000ULL,
     1000000000000000000ULL, 10000000000000000000ULL
 };
+
+JMC_DECLARE_NONSTD(int)
+ieee754_log10_crt_1(double val)
+{
+    static double s_log10;
+    s_log10 = (double)log((double)10.0);
+    return (int)((double)log(val) / s_log10);
+}
+
+JMC_DECLARE_NONSTD(int)
+ieee754_log10_crt_2(double val)
+{
+    return (int)((double)log10(val));
+}
+
 
 /**
  * log10(2^64) = 19.265919722494796493679289262368

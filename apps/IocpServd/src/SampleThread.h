@@ -12,6 +12,8 @@
 
 #include "IocpServd.h"
 
+using namespace jimi;
+
 NS_IOCPSERVD_BEGIN
 
 class SampleThread : public jimi::ThreadBase<SampleThread>

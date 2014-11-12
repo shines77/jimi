@@ -170,12 +170,6 @@
     <ClInclude Include="..\..\..\..\src\jimi\thread\Event.h">
       <Filter>src\jimi\thread</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\system\mutex.h">
-      <Filter>src\jimi\thread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\system\scoped_lock.h">
-      <Filter>src\jimi\thread</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\thread\Thread.h">
       <Filter>src\jimi\thread</Filter>
     </ClInclude>
@@ -389,14 +383,17 @@
     <ClInclude Include="..\..\..\..\src\jimi\lang\CharTraits.h">
       <Filter>src\jimi\lang</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf_def.h">
+      <Filter>src\jimic\stdio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\mt\mutex.h">
+      <Filter>src\jimi\mt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\mt\scoped_lock.h">
+      <Filter>src\jimi\mt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">
-      <Filter>src\jimi\thread</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimi\system\scoped_lock.cpp">
-      <Filter>src\jimi\thread</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">
       <Filter>src\jimi\system</Filter>
     </ClCompile>
@@ -456,6 +453,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\string\string.c">
       <Filter>src\jimic\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\stdio\sprintf.c">
+      <Filter>src\jimic\stdio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimi\mt\mutex.cpp">
+      <Filter>src\jimi\mt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimi\mt\scoped_lock.cpp">
+      <Filter>src\jimi\mt</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

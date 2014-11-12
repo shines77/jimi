@@ -306,22 +306,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\system\mutex.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimi\system\mutex.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimi\system\scoped_lock.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimi\system\scoped_lock.h"
-						>
-					</File>
-					<File
 						RelativePath="..\..\..\..\src\jimi\thread\Thread.cpp"
 						>
 					</File>
@@ -465,6 +449,22 @@
 				<Filter
 					Name="mt"
 					>
+					<File
+						RelativePath="..\..\..\..\src\jimi\mt\mutex.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\mt\mutex.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\mt\scoped_lock.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\mt\scoped_lock.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="stl"
@@ -678,11 +678,19 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\..\..\src\jimic\stdio\sprintf.c"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimic\stdio\sprintf.h"
 						>
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimic\stdio\sprintf.inl.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\stdio\sprintf_def.h"
 						>
 					</File>
 				</Filter>

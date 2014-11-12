@@ -32,7 +32,7 @@
 
 #define USING_NS_JIMI_LOG               using namespace jimi::log;
 
-#define USING_NS_JIMI_LOG_SUB(NS)       using namespace jimi::log::##NS##;
+#define USING_NS_JIMI_LOG_SUB(NS)       using namespace jimi::NS;
 
 #define JIMI_LOG_MIN(a, b)              ((a) < (b) ? (a) : (b))
 #define JIMI_LOG_MAX(a, b)              ((a) > (b) ? (a) : (b))

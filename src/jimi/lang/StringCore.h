@@ -63,7 +63,7 @@ NS_JIMI_BEGIN
 /* String Null Terminator, ×Ö·û´®½áÎ²×Ö·û. */
 #define STRING_NULL_CHAR        '\0'
 
-typedef enum StringTypeMask
+enum StringTypeMask
 {
     STRING_TYPE_SMALL       = (sizeof(size_t) == 4) ? 0x01000000 : 0x0100000000000000,
     STRING_TYPE_MEDIUM      = (sizeof(size_t) == 4) ? 0x02000000 : 0x0200000000000000,
@@ -71,9 +71,9 @@ typedef enum StringTypeMask
     STRING_TYPE_CONSTANT    = (sizeof(size_t) == 4) ? 0x08000000 : 0x0800000000000000,
     STRING_TYPE_MASK        = (STRING_TYPE_SMALL
         | STRING_TYPE_MEDIUM | STRING_TYPE_LARGE | STRING_TYPE_CONSTANT),
-} StringTypeMask;
+};
 
-typedef enum StringTypeMaskX
+enum StringTypeMaskX
 {
     STRING_TYPE_SMALL_X     = 0x01,
     STRING_TYPE_MEDIUM_X    = 0x02,
@@ -81,7 +81,7 @@ typedef enum StringTypeMaskX
     STRING_TYPE_CONSTANT_X  = 0x08,
     STRING_TYPE_MASK_X      = (STRING_TYPE_SMALL_X
         | STRING_TYPE_MEDIUM_X | STRING_TYPE_LARGE_X | STRING_TYPE_CONSTANT_X),
-} StringTypeMaskX;
+};
 
 #define STRING_TYPE_IS(type, mask)      ((type & mask) != 0)
 

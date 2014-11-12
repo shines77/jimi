@@ -8,11 +8,11 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_def.h>
-
 #ifndef _JIMIC_STRING_JM_STRINGS_H_
-#include <jimic/string/jm_strings.h>
+#error "Don't include the internal file <jimic/string/jm_strings.inl.h> directly; include <jimic/string/jm_strings.h> instead."
 #endif
+
+#include <jimic/core/jimic_def.h>
 
 #include <stdlib.h>
 #include <stdio.h>

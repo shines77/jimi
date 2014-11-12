@@ -15,7 +15,7 @@ NS_JIMI_BEGIN
 NS_JIMI_MT_BEGIN
 
 template<class T>
-class JIMI_DLL scoped_lock : public jimi::internal::NonCopyable
+class JIMI_DLL scoped_lock : public internal::NonCopyable
 {
 public:
     //! Construct lock that has not acquired a mutex. 

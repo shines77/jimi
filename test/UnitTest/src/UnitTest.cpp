@@ -67,11 +67,11 @@
 
 #include <jimi/util/cmd_line.h>
 #include <jimi/thread/Thread.h>
-#include <jimi/system/mutex.h>
-#include <jimi/system/scoped_lock.h>
-
-#include <jimi/system/stop_watch.h>
 #include <jimi/thread/Event.h>
+#include <jimi/mt/mutex.h>
+#include <jimi/mt/scoped_lock.h>
+#include <jimi/system/stop_watch.h>
+
 #include <jimi/lang/Object.h>
 #include <jimi/lang/String.h>
 #include <jimi/lang/Formatter.h>
@@ -143,6 +143,9 @@ void * A_memcpy (void * dest, const void * src, size_t count)
 #if defined(JIMI_HAS_BOOST_LOCALE) && (JIMI_HAS_BOOST_LOCALE != 0)
 #pragma comment(lib, "libboost_locale-vc120-mt-gd-1_55.lib")
 #endif
+
+using namespace jimi;
+using namespace std;
 
 USING_NS_UNITEST
 
@@ -2428,17 +2431,6 @@ void auto_rvalue_test()
 
 #endif  /* !defined(_MSC_VER) || (_MSC_VER >= 1600) */
 
-int ieee754_log10_crt_1(double val)
-{
-    static const double s_log10 = (double)::log((double)10.0);
-    return (int)((double)::log(val) / s_log10);
-}
-
-int ieee754_log10_crt_2(double val)
-{
-    return (int)((double)::log10(val));
-}
-
 void Log10_Test()
 {
 #ifndef _DEBUG
@@ -2747,10 +2739,271 @@ void Double_And_Float_Test()
 #endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 }
 
+static const char s_twodigit_table[][2] = {
+    // 0 - 9
+    { '0', '0' },
+    { '1', '0' },
+    { '2', '0' },
+    { '3', '0' },
+    { '4', '0' },
+    { '5', '0' },
+    { '6', '0' },
+    { '7', '0' },
+    { '8', '0' },
+    { '9', '0' },
+    // 10 - 19
+    { '0', '1' },
+    { '1', '1' },
+    { '2', '1' },
+    { '3', '1' },
+    { '4', '1' },
+    { '5', '1' },
+    { '6', '1' },
+    { '7', '1' },
+    { '8', '1' },
+    { '9', '1' },
+    // 20 - 29
+    { '0', '2' },
+    { '1', '2' },
+    { '2', '2' },
+    { '3', '2' },
+    { '4', '2' },
+    { '5', '2' },
+    { '6', '2' },
+    { '7', '2' },
+    { '8', '2' },
+    { '9', '2' },
+    // 30 - 39
+    { '0', '3' },
+    { '1', '3' },
+    { '2', '3' },
+    { '3', '3' },
+    { '4', '3' },
+    { '5', '3' },
+    { '6', '3' },
+    { '7', '3' },
+    { '8', '3' },
+    { '9', '3' },
+    // 40 - 49
+    { '0', '4' },
+    { '1', '4' },
+    { '2', '4' },
+    { '3', '4' },
+    { '4', '4' },
+    { '5', '4' },
+    { '6', '4' },
+    { '7', '4' },
+    { '8', '4' },
+    { '9', '4' },
+    // 50 - 59
+    { '0', '5' },
+    { '1', '5' },
+    { '2', '5' },
+    { '3', '5' },
+    { '4', '5' },
+    { '5', '5' },
+    { '6', '5' },
+    { '7', '5' },
+    { '8', '5' },
+    { '9', '5' },
+    // 60 - 69
+    { '0', '6' },
+    { '1', '6' },
+    { '2', '6' },
+    { '3', '6' },
+    { '4', '6' },
+    { '5', '6' },
+    { '6', '6' },
+    { '7', '6' },
+    { '8', '6' },
+    { '9', '6' },
+    // 70 - 79
+    { '0', '7' },
+    { '1', '7' },
+    { '2', '7' },
+    { '3', '7' },
+    { '4', '7' },
+    { '5', '7' },
+    { '6', '7' },
+    { '7', '7' },
+    { '8', '7' },
+    { '9', '7' },
+    // 80 - 89
+    { '0', '8' },
+    { '1', '8' },
+    { '2', '8' },
+    { '3', '8' },
+    { '4', '8' },
+    { '5', '8' },
+    { '6', '8' },
+    { '7', '8' },
+    { '8', '8' },
+    { '9', '8' },
+    // 90 - 99
+    { '0', '9' },
+    { '1', '9' },
+    { '2', '9' },
+    { '3', '9' },
+    { '4', '9' },
+    { '5', '9' },
+    { '6', '9' },
+    { '7', '9' },
+    { '8', '9' },
+    { '9', '9' },
+};
+
+void snprintf_lite(char *buf, const char *format, unsigned int val)
+{
+    char *buf_org;
+    unsigned int val_org;
+    unsigned int base;
+    unsigned int num_digits, digit_val;
+    char c;
+    const char *cur = format;
+    char *last;
+    char digits[16];
+    base = 0;
+    buf_org = buf;
+    val_org = val;
+    while ((c = *cur) != '\0') {
+        if (c != '%') {
+            // is not a "%" sign
+            *buf++ = *cur++;
+        }
+        else {
+            // is a "%" sign start
+            ++cur;
+            c = *cur;
+            switch (c) {
+            default:
+                *buf++ = *cur++;
+                break;
+            case '%':
+                // "%%" output a '%' char only
+                *buf++ = c;
+                cur += 2;
+                break;
+            case 'o':
+            case 'O':
+                base = 8;
+                num_digits = 0;
+                last = digits + sizeof(digits) / sizeof(char) - 1;
+                do {
+                    digit_val = val % base;
+                    val /= base;
+                    *last-- = digit_val + '0';
+                    num_digits++;
+                } while (val != 0);
+                last++;
+                while (num_digits > 0) {
+                    *buf++ = *last++;
+                    num_digits--;
+                }
+                cur++;
+                break;
+            case 'd':
+            case 'D':
+                base = 10;
+                num_digits = 0;
+                last = digits + sizeof(digits) / sizeof(char) - 1;
+                do {
+                    digit_val = val % base;
+                    val /= base;
+                    *last-- = digit_val + '0';
+                    num_digits++;
+                } while (val != 0);
+                last++;
+                while (num_digits > 0) {
+                    *buf++ = *last++;
+                    num_digits--;
+                }
+                cur++;
+                break;
+            case 'x':
+            case 'X':
+                base = 16;
+                num_digits = 0;
+                last = digits + sizeof(digits) / sizeof(char) - 1;
+                do {
+                    digit_val = val % base;
+                    val /= base;
+                    if (digit_val >= 10)
+                        digit_val += 'A' - '0' - 10;
+                    *last-- = digit_val + '0';
+                    num_digits++;
+                } while (val != 0);
+                last++;
+                while (num_digits > 0) {
+                    *buf++ = *last++;
+                    num_digits--;
+                }
+                cur++;
+                break;
+            case 't':
+                num_digits = 0;
+                last = digits + sizeof(digits) / sizeof(char) - 1;
+                do {
+                    digit_val = val % 10;
+                    val /= 10;
+                    *last-- = digit_val + '0';
+                    num_digits++;
+                } while (val != 0);
+                last++;
+                while (num_digits > 0) {
+                    *buf++ = *last++;
+                    num_digits--;
+                }
+                cur++;
+                break;
+            case 'T':
+                num_digits = 0;
+                last = digits + sizeof(digits) / sizeof(char) - 1;
+                do {
+                    digit_val = val % 100;
+                    val /= 100;
+                    if (digit_val > 10) {
+                        *last-- = s_twodigit_table[digit_val][0];
+                        *last-- = s_twodigit_table[digit_val][1];
+                        num_digits += 2;
+                    }
+                    else {
+                        *last-- = s_twodigit_table[digit_val][0];
+                        num_digits++;
+                    }
+                } while (val != 0);
+                last++;
+                while (num_digits > 0) {
+                    *buf++ = *last++;
+                    num_digits--;
+                }
+                cur++;
+                break;
+            }
+        }
+    }
+    *buf = '\0';
+    printf("val = %8u, base = %2u, buf = %s\n", val_org, base, buf_org);
+}
+
 int UnitTest_Main(int argc, char *argv[])
 {
-    //using namespace ::jimi;
+    //using namespace jimi;
     //using namespace jimi::system;
+
+    if (true && 0)
+    {
+        char out_buf[256];
+        snprintf_lite(out_buf, "%d", 1234);
+        snprintf_lite(out_buf, "%d", 23456);
+        snprintf_lite(out_buf, "0x%X", 0x12ABCD);
+        snprintf_lite(out_buf, "0%o", 023456);
+        snprintf_lite(out_buf, "#%t", 234567);
+        snprintf_lite(out_buf, "#%T", 1234567);
+
+        printf("\n");
+        jimi::Console.ReadKey();
+        return 0;
+    }
 
     // 设置进程和线程的亲缘性
     set_thread_affinity(0);
@@ -2887,7 +3140,7 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 1
+#if 0
     String_Base_Test();
     if (true && 0) {
         jmLog.log_end();
@@ -2896,7 +3149,7 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 1
+#if 0
     String_Format_Test();
     if (true && 0) {
         jmLog.log_end();

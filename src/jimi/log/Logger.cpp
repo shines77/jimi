@@ -55,8 +55,6 @@ class Utils     Utils;
 class System    System;
 #endif
 
-NS_JIMI_LOG_BEGIN
-
 Logger *Logger::s_Log = NULL;
 
 static char *s_log_filename = NULL;
@@ -1223,7 +1221,5 @@ void Logger::log_end(const char *title)
 {
     log_title_section(title, false);
 }
-
-NS_JIMI_LOG_END
 
 NS_JIMI_END

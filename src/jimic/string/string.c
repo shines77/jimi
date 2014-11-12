@@ -6,6 +6,8 @@
 #include <float.h>
 #include <limits.h>     // for define UINT_MAX
 
+#include <math.h>
+
 #if !defined(JMC_STRNCPY_EX_INLINE_DECLARE) || (JMC_STRNCPY_EX_INLINE_DECLARE == 0)
 
 /* implement source code for .cpp or .inl.h */

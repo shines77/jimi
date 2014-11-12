@@ -13,6 +13,12 @@ extern "C" {
 #endif
 
 JMC_DECLARE_NONSTD(int)
+ieee754_log10_crt_1(double val);
+
+JMC_DECLARE_NONSTD(int)
+ieee754_log10_crt_2(double val);
+
+JMC_DECLARE_NONSTD(int)
 jmc_log10_fast(double val);
 
 JMC_DECLARE_NONSTD(int)

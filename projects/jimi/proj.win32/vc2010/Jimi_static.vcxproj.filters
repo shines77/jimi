@@ -164,13 +164,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\system\Console.h">
       <Filter>src\jimi\system</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\system\mutex.h">
-      <Filter>src\jimi\system</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\system\Program.h">
-      <Filter>src\jimi\system</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\system\scoped_lock.h">
       <Filter>src\jimi\system</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\system\stop_watch.h">
@@ -383,6 +377,15 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\string.inl.h">
       <Filter>src\jimic\string</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\mt\mutex.h">
+      <Filter>src\jimi\mt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\mt\scoped_lock.h">
+      <Filter>src\jimi\mt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf_def.h">
+      <Filter>src\jimic\stdio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\util\cmd_line.cpp">
@@ -396,12 +399,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimi\thread\Thread.cpp">
       <Filter>src\jimi\thread</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp">
-      <Filter>src\jimi\system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimi\system\scoped_lock.cpp">
-      <Filter>src\jimi\system</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">
       <Filter>src\jimi\system</Filter>
@@ -450,6 +447,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\string\string.c">
       <Filter>src\jimic\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimi\mt\mutex.cpp">
+      <Filter>src\jimi\mt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimi\mt\scoped_lock.cpp">
+      <Filter>src\jimi\mt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\stdio\sprintf.c">
+      <Filter>src\jimic\stdio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

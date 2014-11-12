@@ -152,8 +152,6 @@
 
 NS_JIMI_BEGIN
 
-NS_JIMI_LOG_BEGIN
-
 /**
     Global  	Generic level that represents all levels. Useful when setting global configuration for all levels.
     Debug 	    Informational events most useful for developers to debug application.
@@ -334,8 +332,6 @@ private:
     LogConfig m_config;
 };
 
-NS_JIMI_LOG_END
-
 #define JIMI_USE_STATIC_GLOBAL_OBJECT   0
 
 class JIMI_DLL Utils
@@ -345,7 +341,7 @@ public:
     ~Utils() {};
 
 public:
-    log::Logger log;
+    Logger log;
 };
 
 #if defined(JIMI_USE_STATIC_GLOBAL_OBJECT) && (JIMI_USE_STATIC_GLOBAL_OBJECT != 0)
@@ -361,7 +357,7 @@ public:
     ~System() {};
 
 public:
-    log::Logger &out;
+    Logger &out;
 };
 
 #if defined(JIMI_USE_STATIC_GLOBAL_OBJECT) && (JIMI_USE_STATIC_GLOBAL_OBJECT != 0)
@@ -372,8 +368,8 @@ extern class System     System;
 
 NS_JIMI_END
 
-JIMI_EXPIMP_TEMPLATE template class JIMI_DLL_TPL std::allocator<jimi::log::LogConf_Node *>;
-JIMI_EXPIMP_TEMPLATE template class JIMI_DLL_TPL std::vector<jimi::log::LogConf_Node *, std::allocator<jimi::log::LogConf_Node *> >;
+JIMI_EXPIMP_TEMPLATE template class JIMI_DLL_TPL std::allocator<jimi::LogConf_Node *>;
+JIMI_EXPIMP_TEMPLATE template class JIMI_DLL_TPL std::vector<jimi::LogConf_Node *, std::allocator<jimi::LogConf_Node *> >;
 
 #if defined(_MSC_VER)
     #pragma warning (pop)

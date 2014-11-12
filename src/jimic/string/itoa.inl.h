@@ -6,10 +6,13 @@
 #pragma once
 #endif
 
-#ifndef _JIMIC_STRING_STRING_H_
-#include <jimic/string/string.h>
+#ifndef _JIMIC_STRING_ITOA_H_
+#error "Don't include the internal file <jimic/string/itoa.inl.h> directly; include <jimic/string/itoa.h> instead."
 #endif
 
+#include <jimic/stdio/sprintf_def.h>
+
+#include <jimic/string/string.h>
 #include <jimic/string/jm_strings.h>
 
 #include <stdarg.h>
@@ -17,17 +20,13 @@
 #include <float.h>
 #include <limits.h>     // for UINT_MAX
 
-#if 1
-
 JMC_INLINE_NONSTD(int)
 jmc_utoa_r10(char *buf, unsigned int val)
 {
     unsigned int digit_val, num_digits;
     unsigned int digits_cnt;
-    //const char * end;
     char *cur;
     char digits[16];    // 实际最多只会用到10个bytes
-
     const char * const end = digits + jm_countof(digits);
 
     jimic_assert(buf != NULL);
@@ -63,10 +62,8 @@ jmc_utoa_r10(char *buf, unsigned int val)
     return num_digits;
 }
 
-#elif 0
-
 JMC_INLINE_NONSTD(int)
-jmc_utoa_r10(char *buf, unsigned int val)
+jmc_utoa_r10_v1(char *buf, unsigned int val)
 {
     unsigned int digit_val, num_digits;
     const char *end;
@@ -101,10 +98,8 @@ jmc_utoa_r10(char *buf, unsigned int val)
     return num_digits;
 }
 
-#else
-
 JMC_INLINE_NONSTD(int)
-jmc_utoa_r10(char *buf, unsigned int val)
+jmc_utoa_r10_v2(char *buf, unsigned int val)
 {
     unsigned int digit_val, num_digits;
     char *cur;
@@ -137,12 +132,19 @@ jmc_utoa_r10(char *buf, unsigned int val)
     return num_digits;
 }
 
-#endif
-
 JMC_INLINE_NONSTD(int)
 jmc_itoa_r10(char *buf, int val)
 {
 #if 0
+    if (val >= 0) {
+        return jmc_utoa_r10(buf, (unsigned int)val);
+    }
+    else {
+        *buf++ = '-';
+        val = -val;
+        return jmc_utoa_r10(buf, (unsigned int)val) + 1;
+    }
+#elif 1
     int sign;
     if (val < 0) {
         *buf++ = '-';
@@ -153,15 +155,6 @@ jmc_itoa_r10(char *buf, int val)
         sign = 0;
     }
     return jmc_utoa_r10(buf, (unsigned int)val) + sign;
-#elif 1
-    if (val >= 0) {
-        return jmc_utoa_r10(buf, (unsigned int)val);
-    }
-    else {
-        *buf++ = '-';
-        val = -val;
-        return jmc_utoa_r10(buf, (unsigned int)val) + 1;
-    }
 #elif 0
     if (val < 0) {
         *buf++ = '-';

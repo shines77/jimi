@@ -33,7 +33,7 @@ JMC_INLINE_NONSTD(int)
 jmc_vsnprintf(char * JMC_RESTRICT buf, size_t count_max, size_t count,
               const char * JMC_RESTRICT format, va_list args);
 
-JMC_INLINE_NONSTD(char *)
+JMC_DECLARE_NONSTD(char *)
 jmc_vslprintf(char * JMC_RESTRICT buf, size_t count_max, size_t count,
               const char * JMC_RESTRICT format, va_list args);
 

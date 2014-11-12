@@ -75,11 +75,11 @@ template<size_t Size, typename T>
 struct work_around_alignment_bug {
     static const size_t alignment = jimi_alignof(T);
 };
-#define JIMI_TypeWithAlignmentAtLeastAsStrict(T)    jimi::internal::type_with_alignment<jimi::internal::work_around_alignment_bug<sizeof(T), T>::alignment>
+#define JIMI_TypeWithAlignmentAtLeastAsStrict(T)    internal::type_with_alignment<internal::work_around_alignment_bug<sizeof(T), T>::alignment>
 
 #else
 
-#define JIMI_TypeWithAlignmentAtLeastAsStrict(T)    jimi::internal::type_with_alignment<jimi_alignof(T)>
+#define JIMI_TypeWithAlignmentAtLeastAsStrict(T)    internal::type_with_alignment<jimi_alignof(T)>
 
 #endif  /* JIMI_ALIGNOF_NOT_INSTANTIATED_TYPES_BROKEN */
 

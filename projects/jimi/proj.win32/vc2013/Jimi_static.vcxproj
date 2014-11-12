@@ -174,6 +174,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\stdio\csharp_sprintf.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.h" />
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.inl.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf_def.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\dtos.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\itoa.h" />
@@ -183,6 +184,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\jmf_strings.h" />
     <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.c" />
     <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\stdio\sprintf.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\dtos.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.c" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.h">
@@ -261,10 +263,10 @@
     <ClInclude Include="..\..\..\..\src\jimi\log\log_config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\log\log_def.h" />
     <ClInclude Include="..\..\..\..\src\jimi\machine\windows_api.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\mt\mutex.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\mt\scoped_lock.h" />
     <ClInclude Include="..\..\..\..\src\jimi\system\Console.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\system\mutex.h" />
     <ClInclude Include="..\..\..\..\src\jimi\system\Program.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\system\scoped_lock.h" />
     <ClInclude Include="..\..\..\..\src\jimi\system\stop_watch.h" />
     <ClInclude Include="..\..\..\..\src\jimi\system\WinService.h" />
     <ClInclude Include="..\..\..\..\src\jimi\thread\Atomic.h" />
@@ -277,8 +279,8 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\fs\FileSystem.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\log\Logger.cpp" />
-    <ClCompile Include="..\..\..\..\src\jimi\system\mutex.cpp" />
-    <ClCompile Include="..\..\..\..\src\jimi\system\scoped_lock.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimi\mt\mutex.cpp" />
+    <ClCompile Include="..\..\..\..\src\jimi\mt\scoped_lock.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\thread\Thread.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\util\cmd_line.cpp" />

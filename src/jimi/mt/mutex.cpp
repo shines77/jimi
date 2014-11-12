@@ -1,7 +1,7 @@
 
-#include <jimi/system/mutex.h>
+#include <jimi/mt/mutex.h>
+#include <jimi/mt/scoped_lock.h>
 #include <jimi/lang/aligned_space.h>
-#include <jimi/system/scoped_lock.h>
 
 NS_JIMI_BEGIN
 
@@ -18,7 +18,7 @@ mutex::mutex() : m_bLocked(false)
   #else
     int error_code = pthread_mutex_init(&impl, NULL);
     if (error_code)
-        jimi::internal::handle_perror(error_code, "mutex: pthread_mutex_init() failed.");
+        internal::handle_perror(error_code, "mutex: pthread_mutex_init() failed.");
   #endif /* JIMI_IS_WINDOWS */
 #endif /* JIMI_USE_THREADING_TOOLS */
 }
@@ -44,7 +44,7 @@ void mutex::internal_construct() {
   #else
     int error_code = pthread_mutex_init(&impl, NULL);
     if (error_code)
-        jimi::internal::handle_perror(error_code, "mutex: pthread_mutex_init() failed.");
+        internal::handle_perror(error_code, "mutex: pthread_mutex_init() failed.");
   #endif /* JIMI_IS_WINDOWS */    
     ITT_SYNC_CREATE(&impl, _T("jimi::mutex"), _T(""));
 #endif /* JIMI_USE_THREADING_TOOLS */
@@ -126,6 +126,6 @@ void mutex::unlock()
     m_bLocked = false;
 }
 
-NS_JIMI_SYSTEM_END
+NS_JIMI_MT_END
 
 NS_JIMI_END

@@ -16,8 +16,8 @@
 #include <jimi/log/Logger.h>
 #include <jimi/util/cmd_line.h>
 #include <jimi/thread/thread.h>
-#include <jimi/system/mutex.h>
-#include <jimi/system/scoped_lock.h>
+#include <jimi/mt/mutex.h>
+#include <jimi/mt/scoped_lock.h>
 
 #include <jimi/thread/Event.h>
 #include <jimi/lang/Object.h>
@@ -57,6 +57,9 @@ SERVICE_TABLE_ENTRY g_ServiceTable[] = {
 #include "PosixDaemon.h"
 
 #endif  /* JIMI_IS_WINDOWS */
+
+using namespace jimi;
+using namespace std;
 
 USING_NS_IOCPSERVD
 

@@ -6,28 +6,19 @@
 #pragma once
 #endif
 
-#if defined(_MSC_VER) && !defined(_JIMIC_STRING_STRIGN_INL_H_)
-    #error "string.impl.inl only can include in string.inl.h or string.c!"
-#endif // _MSC_VER
+#ifndef _JIMIC_STRING_STRIGN_INL_H_
+#error "Don't include the internal file <jimic/string/string.impl.inl> directly; include <jimic/string/string.h> instead."
+#endif
 
-#ifndef _JIMIC_STRING_ITOA_H_
+#include <jimic/libc/ieee754.h>
 #include <jimic/string/itoa.h>
-#endif
-
-#ifndef _JIMIC_STRING_STRING_H_
 #include <jimic/string/string.h>
-#endif
-
-#ifndef _JIMIC_STRING_JM_STRINGS_H_
 #include <jimic/string/jm_strings.h>
-#endif
 
 #include <stdarg.h>
 #include <math.h>       // for isnan(), isinf()
 #include <float.h>
 #include <limits.h>     // for UINT_MAX
-
-#include <jimic/libc/ieee754.h>
 
 static const double d_pow10_remain_16[] = {
     1.0E+0, 1.0E+4, 1.0E+9, 1.0E+14
