@@ -92,7 +92,7 @@
 #include "cpp11_format.h"
 #endif
 
-//#include "SampleThread.h"
+#include "SampleThread.h"
 
 #include "UnitTests/ftol_test.h"
 #include "UnitTests/snprintf_test.h"

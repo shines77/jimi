@@ -7,9 +7,9 @@
 #endif
 
 #include "jimi/core/jimi_def.h"
-#include "jimi/log/log.h"
 #include "jimi/internal/NonCopyable.h"
 #include "jimi/lang/String.h"
+#include "jimi/log/log.h"
 
 #include <string>
 #include <locale>
