@@ -101,6 +101,9 @@
     <ClInclude Include="..\..\..\..\src\jimic\jimic_all.h" />
     <ClInclude Include="..\..\..\..\src\jimic\libc\endian.h" />
     <ClInclude Include="..\..\..\..\src\jimic\libc\ieee754.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\libc\int64.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\math\int_log10.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\math\log10.h" />
     <ClInclude Include="..\..\..\..\src\jimic\stdio\csharp_sprintf.h" />
     <ClInclude Include="..\..\..\..\src\jimic\stdio\csharp_sprintf.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.h" />
@@ -184,6 +187,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\math\int_log10.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\math\log10.c" />
     <ClCompile Include="..\..\..\..\src\jimic\stdio\sprintf.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\dtos.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.c" />

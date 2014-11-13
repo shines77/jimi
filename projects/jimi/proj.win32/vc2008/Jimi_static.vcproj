@@ -665,6 +665,10 @@
 						RelativePath="..\..\..\..\src\jimic\libc\ieee754.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\libc\int64.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="stdio"
@@ -743,6 +747,26 @@
 					>
 					<File
 						RelativePath="..\..\..\..\src\jimic\util\utils.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="math"
+					>
+					<File
+						RelativePath="..\..\..\..\src\jimic\math\int_log10.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\math\int_log10.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\math\log10.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\math\log10.h"
 						>
 					</File>
 				</Filter>

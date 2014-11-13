@@ -102,6 +102,9 @@
     <Filter Include="src\jimi\mt">
       <UniqueIdentifier>{b6405a67-6e08-46b4-85c3-1e008c2a8c94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\jimic\math">
+      <UniqueIdentifier>{d147ab98-d23c-40d9-904a-908ea13b0576}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\jimi\core\win32\jimi_config.h">
@@ -386,6 +389,15 @@
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf_def.h">
       <Filter>src\jimic\stdio</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\math\int_log10.h">
+      <Filter>src\jimic\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\math\log10.h">
+      <Filter>src\jimic\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\libc\int64.h">
+      <Filter>src\jimic\libc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\util\cmd_line.cpp">
@@ -456,6 +468,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\stdio\sprintf.c">
       <Filter>src\jimic\stdio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\math\int_log10.c">
+      <Filter>src\jimic\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\math\log10.c">
+      <Filter>src\jimic\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
