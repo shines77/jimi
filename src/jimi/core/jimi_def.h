@@ -6,15 +6,15 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_platform_def.h>
-#include <jimi/core/jimi_compiler_def.h>
+#include "jimi/core/jimi_platform_def.h"
+#include "jimi/core/jimi_compiler_def.h"
 
 #if JIMI_IS_WINDOWS
-    #include <jimi/core/win32/jimi_targetver.h>
+    #include "jimi/core/win32/jimi_targetver.h"
 #endif
 
-#include <jimi/core/jimi_config.h>
-#include <jimi/core/jimi_export.h>
+#include "jimi/core/jimi_config.h"
+#include "jimi/core/jimi_export.h"
 
 // Define type size_t
 #ifndef _SIZE_T_DEFINED
@@ -53,7 +53,7 @@
   #include <stdint.h>
   #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
 #elif defined(JIMI_MSC_VER)
-  #include <jimi/core/win32/vs_stdint.h>
+  #include "jimi/core/win32/vs_stdint.h"
 #else
   #ifndef _STDINT
     #define _STDINT
@@ -68,7 +68,7 @@
   #endif
 #endif
 
-#include <jimi/core/jimi_common.h>
+#include "jimi/core/jimi_common.h"
 
 #define USING_NS_JIMI           using namespace jimi;
 
@@ -130,7 +130,7 @@
 /**
  * for assert defines
  */
-#include <jimi/core/jimi_assert.h>
+#include "jimi/core/jimi_assert.h"
 
 /**
  * for jimi_winapi

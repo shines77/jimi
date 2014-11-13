@@ -6,9 +6,9 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/lang/Throwable.h>
-#include <jimi/lang/String.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/lang/Throwable.h"
+#include "jimi/lang/String.h"
 
 NS_JIMI_BEGIN
 

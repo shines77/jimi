@@ -10,7 +10,7 @@
 #error "Don't include the internal file <jimic/string/string.inl.h> directly; include <jimic/string/string.h> instead."
 #endif
 
-#include <jimic/string/jm_strings.h>
+#include "jimic/string/jm_strings.h"
 
 #include <stdarg.h>
 #include <math.h>       // for isnan(), isinf()
@@ -471,7 +471,7 @@ jmc_out_null_string(char *dest, size_t countOfElements)
 #if defined(JMC_STRNCPY_EX_INLINE_DECLARE) && (JMC_STRNCPY_EX_INLINE_DECLARE != 0)
 
 /* implement source code for .cpp or .inl.h */
-#include <jimic/string/string.impl.inl>
+#include "jimic/string/string.impl.inl>
 
 #endif  /* JMC_STRNCPY_EX_INLINE_DECLARE */
 

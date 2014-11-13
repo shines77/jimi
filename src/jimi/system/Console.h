@@ -6,10 +6,10 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/internal/NonCopyable.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/internal/NonCopyable.h"
 
-#include <jimic/system/get_char.h>
+#include "jimic/system/get_char.h"
 
 #include <stdio.h>
 #include <stdarg.h>

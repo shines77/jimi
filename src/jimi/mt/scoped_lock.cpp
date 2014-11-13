@@ -1,5 +1,5 @@
 
-#include <jimi/mt/scoped_lock.h>
+#include "jimi/mt/scoped_lock.h"
 
 NS_JIMI_BEGIN
 

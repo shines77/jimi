@@ -11,7 +11,7 @@
 
 // crtdbg_env.h must be front the stdlib.h
 // crtdbg_env.h 必须放在 stdlib.h 声明之前
-#include <jimic/system/crtdbg_env.h>
+#include "jimic/system/crtdbg_env.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,38 +49,38 @@
 //#include <type_traits>
 #include <array>        // for std::array
 
-#include <jimi/core/jimi_def.h>
+#include "jimi/core/jimi_def.h"
 
-#include <jimic/system/console.h>
-#include <jimic/string/dtos.h>
-#include <jimic/string/string.h>
-#include <jimic/stdio/sprintf.h>
-#include <jimic/stdio/csharp_sprintf.h>
+#include "jimic/system/console.h"
+#include "jimic/string/dtos.h"
+#include "jimic/string/string.h"
+#include "jimic/stdio/sprintf.h"
+#include "jimic/stdio/csharp_sprintf.h"
 
-#include <jimic/string/jmf_strings.h>
-#include <jimic/string/iconv_win.h>
+#include "jimic/string/jmf_strings.h"
+#include "jimic/string/iconv_win.h"
 #if JIMI_IS_WINDOWS
-#include <jimic/platform/win/fast_memcpy.h>
+#include "jimic/platform/win/fast_memcpy.h"
 #else
-#include <jimic/platform/linux/fast_memcpy.h>
+#include "jimic/platform/linux/fast_memcpy.h"
 #endif
 
-#include <jimi/util/cmd_line.h>
-#include <jimi/thread/Thread.h>
-#include <jimi/thread/Event.h>
-#include <jimi/mt/mutex.h>
-#include <jimi/mt/scoped_lock.h>
-#include <jimi/system/stop_watch.h>
+#include "jimi/util/cmd_line.h"
+#include "jimi/thread/Thread.h"
+#include "jimi/thread/Event.h"
+#include "jimi/mt/mutex.h"
+#include "jimi/mt/scoped_lock.h"
+#include "jimi/system/stop_watch.h"
 
-#include <jimi/lang/Object.h>
-#include <jimi/lang/String.h>
-#include <jimi/lang/Formatter.h>
+#include "jimi/lang/Object.h"
+#include "jimi/lang/String.h"
+#include "jimi/lang/Formatter.h"
 
-#include <jimi/lang/SmallString.h>
+#include "jimi/lang/SmallString.h"
 
-#include <jimi/log/Logger.h>
-#include <jimi/system/Program.h>
-#include <jimi/system/Console.h>
+#include "jimi/log/Logger.h"
+#include "jimi/system/Program.h"
+#include "jimi/system/Console.h"
 
 #if defined(JIMI_HAS_BOOST_LOCALE) && (JIMI_HAS_BOOST_LOCALE != 0)
 #include <boost/locale.hpp>
@@ -105,7 +105,7 @@
 /**
  * for asmlib header file
  */
-#include <asmlib/asmlib.h>
+#include "asmlib/asmlib.h"
 
 /**
  * for asmlib lib import

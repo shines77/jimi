@@ -10,25 +10,25 @@
 #include "SampleThread.h"
 #include "IocpServdService.h"
 
-#include <jimi/core/jimi_def.h>
+#include "jimi/core/jimi_def.h"
 
 // Windows的Service支持类
-#include <jimi/log/Logger.h>
-#include <jimi/util/cmd_line.h>
-#include <jimi/thread/thread.h>
-#include <jimi/mt/mutex.h>
-#include <jimi/mt/scoped_lock.h>
+#include "jimi/log/Logger.h"
+#include "jimi/util/cmd_line.h"
+#include "jimi/thread/Thread.h"
+#include "jimi/mt/mutex.h"
+#include "jimi/mt/scoped_lock.h"
 
-#include <jimi/thread/Event.h>
-#include <jimi/lang/Object.h>
-#include <jimi/lang/String.h>
+#include "jimi/thread/Event.h"
+#include "jimi/lang/Object.h"
+#include "jimi/lang/String.h"
 
 #include <string>
 //using namespace std;
 
 #if JIMI_IS_WINDOWS
 
-//#include <jimi/system/WinService.h>
+//#include "jimi/system/WinService.h>
 
 TCHAR g_ServiceName[]        = _T("IocpServd");
 TCHAR g_ServiceDisplayName[] = _T("Windows Iocp Server Daemon Service");

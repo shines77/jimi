@@ -6,14 +6,14 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/lang/Allocator.h>
-#include <jimi/lang/CharTraits.h>
-#include <jimi/lang/RefCounted.h>
-#include <jimi/lang/StringCore.h>
-#include <jimi/lang/StringDetail.h>
-#include <jimic/string/jm_strings.h>
-#include <jimi/log/log.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/lang/Allocator.h"
+#include "jimi/lang/CharTraits.h"
+#include "jimi/lang/RefCounted.h"
+#include "jimi/lang/StringCore.h"
+#include "jimi/lang/StringDetail.h"
+#include "jimic/string/jm_strings.h"
+#include "jimi/log/log.h"
 
 #include <vadefs.h>
 #include <string>

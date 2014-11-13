@@ -6,12 +6,12 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/util/cmd_line.h>
-#include <jimi/log/log_all.h>
-#include <jimi/system/mutex.h>
-#include <jimi/system/scoped_lock.h>
-#include <jimi/system/socket_init.h>
-#include <jimi/core/uiApplication.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/util/cmd_line.h"
+#include "jimi/log/log_all.h"
+#include "jimi/mt/mutex.h"
+#include "jimi/mt/scoped_lock.h"
+#include "jimi/socket/socket_init.h"
+#include "jimi/core/uiApplication.h"
 
 #endif  /* _JIMI_ALL_H_ */

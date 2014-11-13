@@ -6,19 +6,15 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/log/log.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/log/log.h"
 
 #include <string>
-
-/*
 
 NS_JIMI_BEGIN
 
 //
 
 NS_JIMI_END
-
-//*/
 
 #endif  /* _JIMI_LANG_STRING_INL_H_ */

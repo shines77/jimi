@@ -6,9 +6,9 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/lang/AutoCloseable.h>
-#include <jimi/io/IOException.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/lang/AutoCloseable.h"
+#include "jimi/io/IOException.h"
 
 NS_JIMI_BEGIN
 

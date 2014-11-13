@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_def.h>
+#include "jimic/core/jimic_def.h"
 
 #include <stdarg.h>
 
@@ -46,6 +46,6 @@ jmc_csharp_vslprintf(char * JMC_RESTRICT buf, size_t count,
 }
 #endif
 
-#include <jimic/stdio/csharp_sprintf.inl.h>
+#include "jimic/stdio/csharp_sprintf.inl.h"
 
 #endif  /* !_JIMIC_STDIO_CSHARP_SPRINTF_H_ */

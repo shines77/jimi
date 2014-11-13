@@ -6,9 +6,9 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_def.h>
+#include "jimic/core/jimic_def.h"
 
-#include <jimic/libc/int64.h>
+#include "jimic/libc/int64.h"
 
 #define jmc_abs_32(val)        (((int32_t)(val) >= 0) ? (val) : -(val))
 #define jmc_abs_64(val)        (((int64_t)(val) >= 0) ? (val) : -(val))

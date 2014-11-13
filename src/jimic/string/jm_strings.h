@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_def.h>
+#include "jimic/core/jimic_def.h"
 
 #include <string.h>
 
@@ -350,7 +350,7 @@ JMC_INLINE_NONSTD(int) jm_vsnprintf(char *buffer, size_t numberOfElements, size_
 
 ///////////////////////////////////////////////////////////////////////////
 
-#include <jimic/string/jm_strings.inl.h>
+#include "jimic/string/jm_strings.inl.h"
 
 ///////////////////////////////////////////////////////////////////////////
 

@@ -6,7 +6,7 @@
 # pragma once
 #endif
 
-#include <jimic/core/jimic_def.h>
+#include "jimic/core/jimic_def.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 

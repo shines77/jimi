@@ -1,8 +1,8 @@
 
 #include "ftol_test.h"
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/system/stop_watch.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/system/stop_watch.h"
 
 #include <stdio.h>
 #include <stdlib.h>

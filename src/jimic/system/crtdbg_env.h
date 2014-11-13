@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_config.h>
-#include <jimic/core/jimic_config.h>
+#include "jimi/core/jimi_config.h"
+#include "jimic/core/jimic_config.h"
 
 //
 // From: http://msdn.microsoft.com/zh-cn/library/e5ewb1h3%28v=vs.90%29.aspx
@@ -72,7 +72,7 @@
 
 #endif  /* JIMI_USE_CRTDBG_CHECK */
 
-#include <jimic/system/vs_vld.h>
+#include "jimic/system/vs_vld.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -6,15 +6,16 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/log/log.h>
-#include <jimi/thread/Atomic.h>
-#include <jimi/lang/CharTraits.h>
-#include <jimi/lang/RefCounted.h>
-#include <jimi/lang/StringDetail.h>
-#include <jimic/string/jm_strings.h>
-#include <jimic/string/jmf_strings.h>
-#include <jimic/util/utils.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/thread/Atomic.h"
+#include "jimi/lang/CharTraits.h"
+#include "jimi/lang/RefCounted.h"
+#include "jimi/lang/StringDetail.h"
+#include "jimic/string/jm_strings.h"
+#include "jimic/string/jmf_strings.h"
+#include "jimic/util/utils.h"
+
+#include "jimi/log/log.h"
 
 #if defined(_MSC_VER) && (_MSC_VER != 0)
 #pragma warning(push)

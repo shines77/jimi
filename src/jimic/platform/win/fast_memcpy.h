@@ -27,7 +27,7 @@
   This file contains functions which improve and expand standard C-library
 */
 
-#include <jimic/core/jimic_def.h>
+#include "jimic/core/jimic_def.h"
 
 #if defined(_MSC_VER) || defined(_ICC) || defined(_BCB)
 

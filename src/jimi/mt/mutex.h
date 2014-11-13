@@ -6,14 +6,14 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/log/log.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/log/log.h"
 
 #if JIMI_IS_WINDOWS
 /* InitializeCriticalSectionAndSpinCount() 必须定义 #define _WIN32_WINNT 0x0403 */
 /* 因为只有 winnt 4.03 以后才支持这个函数, 可定义为 0x80000400 (1024) 或 0x80000FA0 (4000) */
 #define DEFAULT_CS_SPINCOUNT        4000
-#include <jimi/machine/windows_api.h>
+#include "jimi/machine/windows_api.h"
 #else
 #include <pthread.h>
 #endif

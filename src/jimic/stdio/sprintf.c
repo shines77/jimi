@@ -1,9 +1,9 @@
 
-#include <jimic/stdio/sprintf.h>
+#include "jimic/stdio/sprintf.h"
 
-#include <jimic/string/itoa.h>
-#include <jimic/string/dtos.h>
-#include <jimic/string/string.h>
+#include "jimic/string/itoa.h"
+#include "jimic/string/dtos.h"
+#include "jimic/string/string.h"
 
 #if defined(_MSC_VER) && (_MSC_VER != 0)
 #pragma warning(push)

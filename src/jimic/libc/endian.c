@@ -1,5 +1,5 @@
 
-#include <jimic/libc/endian.h>
+#include "jimic/libc/endian.h"
 
 int jmc_check_endian()
 {

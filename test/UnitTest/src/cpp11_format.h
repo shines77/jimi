@@ -14,7 +14,7 @@
 #include <inttypes.h>
 #include <cctype>
 
-#include <jimic/string/jm_strings.h>
+#include "jimic/string/jm_strings.h"
 
 //using namespace std;
 

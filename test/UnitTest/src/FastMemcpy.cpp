@@ -1,8 +1,8 @@
 
 #include "FastMemcpy.h"
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/log/log.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/log/log.h"
 
 // 一个QWORD几个字节
 #define SIZE_OF_QWORD       8

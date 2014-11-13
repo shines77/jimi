@@ -10,10 +10,10 @@
 #error "Don't include the internal file <jimic/string/itoa.inl.h> directly; include <jimic/string/itoa.h> instead."
 #endif
 
-#include <jimic/stdio/sprintf_def.h>
+#include "jimic/stdio/sprintf_def.h"
 
-#include <jimic/string/string.h>
-#include <jimic/string/jm_strings.h>
+#include "jimic/string/string.h"
+#include "jimic/string/jm_strings.h"
 
 #include <stdarg.h>
 #include <math.h>       // for isnan(), isinf()

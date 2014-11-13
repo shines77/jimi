@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_platform_def.h>
+#include "jimi/core/jimi_platform_def.h"
 
 /* 是否使用简化的测试输出结果, 为1代表使用 */
 #define VSNPRINTF_DISPLAY_TEST_RESULT   1

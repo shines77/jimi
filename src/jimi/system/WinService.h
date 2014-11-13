@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
+#include "jimi/core/jimi_def.h"
 
 #if JIMI_IS_WINDOWS
 
@@ -22,10 +22,10 @@
 #include <strsafe.h>
 #include <string.h>
 
-#include <jimi/thread/Thread.h>
-#include <jimi/log/log.h>
+#include "jimi/thread/Thread.h"
+#include "jimi/log/log.h"
 
-#include <jimic/string/jm_strings.h>
+#include "jimic/string/jm_strings.h"
 
 #pragma comment(lib, "Advapi32.lib")
 #pragma comment(lib, "Wtsapi32.lib")

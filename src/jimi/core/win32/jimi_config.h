@@ -30,7 +30,7 @@
 #define JIMI_USE_VLD                        0
 #endif
 
-#include <jimic/libc/endian.h>
+#include "jimic/libc/endian.h"
 
 /* 小端或大端, 非0表示小端存储 */
 #if (JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN)

@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_def.h>
-#include <jimic/core/jimic_export.h>
+#include "jimic/core/jimic_def.h"
+#include "jimic/core/jimic_export.h"
 
 #if _WIN32 || _WIN64
 #include <time.h>

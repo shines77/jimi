@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_def.h>
+#include "jimic/core/jimic_def.h"
 
 #ifndef JMC_STRNCPY_EX_INLINE_DECLARE
 #define JMC_STRNCPY_EX_INLINE_DECLARE       0
@@ -119,6 +119,6 @@ jmc_out_null_string_ex(char *dest, size_t countOfElements,
 }
 #endif
 
-#include <jimic/string/string.inl.h>
+#include "jimic/string/string.inl.h"
 
 #endif  /* !_JIMIC_STRING_STRING_H_ */

@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/thread/Atomic.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/thread/Atomic.h"
 
 NS_JIMI_BEGIN
 

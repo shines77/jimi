@@ -11,7 +11,7 @@
 #include <iostream>
 #include <string>
 
-#include <jimi/core/jimi_def.h>
+#include "jimi/core/jimi_def.h"
 
 #define JIMI_LOG_ASSERT_TRUE            JIMI_ASSERT_TRUE
 #define JIMI_LOG_ASSERT_FALSE           JIMI_ASSERT_FALSE

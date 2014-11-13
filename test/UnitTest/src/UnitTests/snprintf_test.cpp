@@ -1,12 +1,12 @@
 
 #include "snprintf_test.h"
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/system/stop_watch.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/system/stop_watch.h"
 
-#include <jimic/string/jm_strings.h>
-#include <jimic/stdio/sprintf.h>
-#include <jimic/stdio/csharp_sprintf.h>
+#include "jimic/string/jm_strings.h"
+#include "jimic/stdio/sprintf.h"
+#include "jimic/stdio/csharp_sprintf.h"
 
 #include <iostream>
 #include <sstream>

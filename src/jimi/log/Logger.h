@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/log/log_def.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/log/log_def.h"
 
 #include <stdarg.h>
 #include <vector>
@@ -37,7 +37,7 @@
 
 ////////////////////////////////////////////////////////////////
 
-#include <jimi/log/log_config.h>
+#include "jimi/log/log_config.h"
 
 ////////////////////////////////////////////////////////////////
 

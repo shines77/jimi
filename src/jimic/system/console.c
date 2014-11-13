@@ -1,6 +1,6 @@
 
-#include <jimic/system/console.h>
-#include <jimic/system/sys_timer.h>
+#include "jimic/system/console.h"
+#include "jimic/system/sys_timer.h"
 
 #include <stdio.h>
 

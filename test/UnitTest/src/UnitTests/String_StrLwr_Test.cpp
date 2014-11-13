@@ -2,12 +2,12 @@
 
 #include "String_StrLwr_Test.h"
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/system/stop_watch.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/system/stop_watch.h"
 
-#include <jimic/string/jm_strings.h>
-#include <jimic/string/jmf_strings.h>
-#include <jimic/system/get_char.h>
+#include "jimic/string/jm_strings.h"
+#include "jimic/string/jmf_strings.h"
+#include "jimic/system/get_char.h"
 
 #include <memory.h>
 

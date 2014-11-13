@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_def.h>
+#include "jimic/core/jimic_def.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,6 +63,6 @@ jmc_u64toa_r10_frac(char *buf, uint64_t val, unsigned int precision);
 }
 #endif
 
-#include <jimic/string/itoa.inl.h>
+#include "jimic/string/itoa.inl.h"
 
 #endif  /* !_JIMIC_STRING_ITOA_H_ */

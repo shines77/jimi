@@ -6,15 +6,15 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_platform_def.h>
-#include <jimic/core/jimic_compiler_def.h>
+#include "jimic/core/jimic_platform_def.h"
+#include "jimic/core/jimic_compiler_def.h"
 
 #if JIMI_IS_WINDOWS
-    #include <jimic/core/win32/jimic_targetver.h>
+    #include "jimic/core/win32/jimic_targetver.h"
 #endif
 
-#include <jimic/core/jimic_config.h>
-#include <jimic/core/jimic_export.h>
+#include "jimic/core/jimic_config.h"
+#include "jimic/core/jimic_export.h"
 
 // Define type size_t
 #ifndef _SIZE_T_DEFINED
@@ -31,7 +31,7 @@
   #include <stdint.h>
   #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
 #elif defined(JIMI_MSC_VER)
-  #include <jimic/core/win32/vs_stdint.h>
+  #include "jimic/core/win32/vs_stdint.h"
 #else
   #ifndef _STDINT
     #define _STDINT
@@ -46,7 +46,7 @@
   #endif
 #endif
 
-#include <jimi/core/jimi_common.h>
+#include "jimi/core/jimi_common.h"
 
 /**
  * @file jimic_def.h
@@ -203,7 +203,7 @@ typedef unsigned char   jm_uchar;
 /**
  * for jimic assert defines
  */
-#include <jimic/core/jimic_assert.h>
+#include "jimic/core/jimic_assert.h"
 
 /**
  * for JMC_DECLARE define

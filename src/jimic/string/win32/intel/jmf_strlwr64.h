@@ -6,9 +6,7 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_platform_def.h>
-
-#include <jimic/core/jimic_def.h>
+#include "jimic/core/jimic_def.h"
 
 #if !defined(_JIMIC_STRING_JMF_STRINGS_H_)
 #error "This file [jmf_strlen64.h] only can be inline including in <jmf_strings.h> ."

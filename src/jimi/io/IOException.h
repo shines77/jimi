@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/lang/Exception.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/lang/Exception.h"
 
 NS_JIMI_BEGIN
 

@@ -27,7 +27,7 @@
 #define JIMI_HAVE_SSE                       1
 #define JIMI_HAVE_SSE2                      1
 
-#include <jimic/libc/endian.h>
+#include "jimic/libc/endian.h"
 
 /* 小端或大端, 非0表示小端存储 */
 #if (JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN)

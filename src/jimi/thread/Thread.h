@@ -6,9 +6,9 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/thread/ThreadDef.h>
-#include <jimi/log/log.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/thread/ThreadDef.h"
+#include "jimi/log/log.h"
 
 #if JIMI_IS_WINDOWS
 

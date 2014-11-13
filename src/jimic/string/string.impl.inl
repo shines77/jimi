@@ -10,10 +10,10 @@
 #error "Don't include the internal file <jimic/string/string.impl.inl> directly; include <jimic/string/string.h> instead."
 #endif
 
-#include <jimic/libc/ieee754.h>
-#include <jimic/string/itoa.h>
-#include <jimic/string/string.h>
-#include <jimic/string/jm_strings.h>
+#include "jimic/libc/ieee754.h"
+#include "jimic/string/itoa.h"
+#include "jimic/string/string.h"
+#include "jimic/string/jm_strings.h"
 
 #include <stdarg.h>
 #include <math.h>       // for isnan(), isinf()

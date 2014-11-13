@@ -6,16 +6,16 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_def.h>
+#include "jimic/core/jimic_def.h"
 
 #if JIMI_IS_WINDOWS
 
 #if defined(JIMI_IS_WIN32) && !defined(JIMI_IS_WIN64)
-#include <jimic/string/win32/intel/jmf_strlen32.h>
-#include <jimic/string/win32/intel/jmf_strlwr32.h>
+#include "jimic/string/win32/intel/jmf_strlen32.h"
+#include "jimic/string/win32/intel/jmf_strlwr32.h"
 #else
-#include <jimic/string/win32/intel/jmf_strlen64.h>
-#include <jimic/string/win32/intel/jmf_strlwr64.h>
+#include "jimic/string/win32/intel/jmf_strlen64.h"
+#include "jimic/string/win32/intel/jmf_strlwr64.h"
 #endif
 
 #endif  /* JIMI_IS_WINDOWS */

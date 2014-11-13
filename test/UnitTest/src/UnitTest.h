@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
+#include "jimi/core/jimi_def.h"
 
 #define UNITEST_USE_NAMESPACE       1
 

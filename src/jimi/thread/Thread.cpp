@@ -1,5 +1,5 @@
 
-#include <jimi/thread/Thread.h>
+#include "jimi/thread/Thread.h"
 
 NS_JIMI_BEGIN
 

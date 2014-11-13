@@ -1,11 +1,11 @@
 
-#include <jimic/string/dtos.h>
+#include "jimic/string/dtos.h"
 
-#include <jimic/libc/ieee754.h>
-#include <jimic/stdio/sprintf_def.h>
-#include <jimic/string/itoa.h>
-#include <jimic/string/string.h>
-#include <jimic/util/utils.h>
+#include "jimic/libc/ieee754.h"
+#include "jimic/stdio/sprintf_def.h"
+#include "jimic/string/itoa.h"
+#include "jimic/string/string.h"
+#include "jimic/util/utils.h"
 
 #include <stdarg.h>
 #include <math.h>       // for isnan(), isinf()

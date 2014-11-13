@@ -6,9 +6,9 @@
 #pragma once
 #endif
 
-#include <jimic/core/jimic_def.h>
+#include "jimic/core/jimic_def.h"
 
-#include <jimic/libc/endian.h>
+#include "jimic/libc/endian.h"
 
 union jmc_ieee754_float
 {

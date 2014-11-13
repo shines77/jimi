@@ -2,13 +2,13 @@
 
 #include "String_StrLen_Test.h"
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/system/stop_watch.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/system/stop_watch.h"
 
-#include <jimic/string/jm_strings.h>
-#include <jimic/string/jmf_strings.h>
+#include "jimic/string/jm_strings.h"
+#include "jimic/string/jmf_strings.h"
 
-#include <jimi/lang/CharTraits.h>
+#include "jimi/lang/CharTraits.h"
 
 #if _MSC_VER
 #if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
@@ -26,7 +26,7 @@
 /**
  * for asmlib header file
  */
-#include <asmlib/asmlib.h>
+#include "asmlib/asmlib.h"
 
 /**
  * for asmlib lib import

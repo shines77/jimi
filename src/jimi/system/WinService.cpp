@@ -1,5 +1,5 @@
 
-#include <jimi/system/WinService.h>
+#include "jimi/system/WinService.h"
 
 #if JIMI_IS_WINDOWS
 
@@ -17,7 +17,7 @@
 #pragma warning(default : 4996)
 #include <string.h>
 
-#include <jimi/log/log.h>
+#include "jimi/log/log.h"
 
 //#pragma comment(lib, "Advapi32.lib")
 //#pragma comment(lib, "Wtsapi32.lib")

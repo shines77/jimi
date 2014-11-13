@@ -1,5 +1,7 @@
 
-#include <jimi/log/Logger.h>
+#include "jimi/log/Logger.h"
+
+#include "jimic/string/jm_strings.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -28,8 +30,6 @@
 #endif // _STRICT_ANSI_SAVE_
 
 #endif
-
-#include <jimic/string/jm_strings.h>
 
 #if (defined(JIMI_IS_WINDOWS) && (JIMI_IS_WINDOWS != 0)) \
     || (defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__))

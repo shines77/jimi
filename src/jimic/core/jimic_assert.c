@@ -1,7 +1,7 @@
 
-#include <jimic/core/jimic_def.h>
-#include <jimic/core/jimic_assert.h>
-#include <jimic/string/jm_strings.h>
+#include "jimic/core/jimic_def.h"
+#include "jimic/core/jimic_assert.h"
+#include "jimic/string/jm_strings.h"
 
 // include headers for required function declarations
 #include <stdio.h>

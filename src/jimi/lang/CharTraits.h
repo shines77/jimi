@@ -6,9 +6,9 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/log/log.h>
-#include <jimic/string/jm_strings.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/log/log.h"
+#include "jimic/string/jm_strings.h"
 
 #include <string>
 

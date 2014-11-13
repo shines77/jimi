@@ -6,9 +6,9 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/core/jimi_machine.h>
-#include <jimi/internal/pointer_cast.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/core/jimi_machine.h"
+#include "jimi/internal/pointer_cast.h"
 
 NS_JIMI_BEGIN
 

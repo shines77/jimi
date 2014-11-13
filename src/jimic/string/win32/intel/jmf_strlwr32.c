@@ -1,8 +1,7 @@
 
-#include <jimic/string/jmf_strings.h>
+#include "jimic/string/jmf_strings.h"
 
-#include <jimic/core/jimic_def.h>
-#include <jimic/core/jimic_asm.h>
+#include "jimic/core/jimic_asm.h"
 
 #if defined(JIMI_IS_WIN32) && !defined(JIMI_IS_WIN64)
 
@@ -665,7 +664,7 @@ strlwr_386:
 
 ///////////////////////////////////////////////////////////////////////////
 
-#include <jimic/string/jm_strings.h>
+#include "jimic/string/jm_strings.h>
 
 #if defined(__GNUC__) || defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__)
 

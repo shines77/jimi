@@ -6,9 +6,9 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/internal/NonCopyable.h>
-#include <jimi/lang/String.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/internal/NonCopyable.h"
+#include "jimi/lang/String.h"
 
 #include <string>
 #include <vector>

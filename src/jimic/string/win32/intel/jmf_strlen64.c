@@ -1,8 +1,7 @@
 
-#include <jimic/string/jmf_strings.h>
+#include "jimic/string/jmf_strings.h"
 
-#include <jimic/core/jimic_def.h>
-#include <jimic/core/jimic_asm.h>
+#include "jimic/core/jimic_asm.h"
 
 #if defined(JIMI_IS_WIN64)
 
@@ -192,7 +191,7 @@ strlen_386:
 
 ///////////////////////////////////////////////////////////////////////////
 
-#include <jimic/string/jm_strings.h>
+#include "jimic/string/jm_strings.h>
 
 size_t jmf_strlen(const char *str)
 {

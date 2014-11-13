@@ -6,18 +6,18 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_platform_def.h>
-#include <jimi/core/jimi_compiler_def.h>
+#include "jimi/core/jimi_platform_def.h"
+#include "jimi/core/jimi_compiler_def.h"
 
 #if JIMI_IS_WINDOWS
-    #include <jimi/core/win32/jimi_targetver.h>
+    #include "jimi/core/win32/jimi_targetver.h"
 #endif
 
-#include <jimi/core/win32/jimi_config.h>
-#include <jimi/core/jimi_export.h>
+#include "jimi/core/win32/jimi_config.h"
+#include "jimi/core/jimi_export.h"
 
 #if JIMI_IS_MSVC
-    #include <jimi/core/win32/vs_stdint.h>
+    #include "jimi/core/win32/vs_stdint.h"
     #define snprintf _snprintf
 #else
     #include <stdint.h>

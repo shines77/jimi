@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/internal/NonAssignable.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/internal/NonAssignable.h"
 
 NS_JIMI_BEGIN
 

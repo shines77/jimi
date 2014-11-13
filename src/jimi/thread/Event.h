@@ -6,11 +6,11 @@
 #pragma once
 #endif
 
-#include <jimi/core/jimi_def.h>
-#include <jimi/thread/ThreadDef.h>
-#include <jimi/thread/WaitHandle.h>
-#include <jimi/log/log.h>
-#include <jimic/string/jm_strings.h>
+#include "jimi/core/jimi_def.h"
+#include "jimi/thread/ThreadDef.h"
+#include "jimi/thread/WaitHandle.h"
+#include "jimi/log/log.h"
+#include "jimic/string/jm_strings.h"
 
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
