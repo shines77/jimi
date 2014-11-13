@@ -2431,6 +2431,79 @@ void auto_rvalue_test()
 
 #endif  /* !defined(_MSC_VER) || (_MSC_VER >= 1600) */
 
+/* !!模板成员函数不能定义为虚函数 */
+
+template <typename T, typename _CharType>
+class WidgetBase
+{
+public:
+    WidgetBase()  { printf("WidgetBase::ctor()\n");  }
+    ~WidgetBase() { printf("WidgetBase::~dtor()\n"); }
+
+    virtual void print(const char *message) = 0;
+
+#if 0
+    /* 这样不行 */
+    template <typename _CharType>
+    virtual void print_info(const _CharType * info) {
+        printf("WidgetBase::print_info(): info = %s\n", info);
+    }
+#else
+    /* 这样就可以了 */
+
+    // 这么定义是可以的
+    virtual void print_info(const _CharType * info) {
+        printf("WidgetBase::print_info(): info = %S\n", info);
+    };
+    // 下面这么定义是不行的, 必须实例化
+    //virtual void print_info(const _CharType * info) = 0;
+    /*
+    // 这么定义是可以的
+    virtual void print_info(const _CharType * info) {
+        printf("WidgetBase::print_info(): info = %s\n", info);
+    }
+    //*/
+#endif
+};
+
+class WidgetSample : public WidgetBase<WidgetSample, wchar_t>
+{
+public:
+    WidgetSample()  { printf("WidgetSample::ctor()\n");  }
+    ~WidgetSample() { printf("WidgetSample::~dtor()\n"); }
+
+    virtual void print(const char *message) {
+        printf("WidgetSample::print(): message = %s\n", message);
+    };
+
+#if 1
+#if 0
+    /* 这样不行 */
+    template <typename _CharType>
+    virtual void print_info(const _CharType * info) {
+        printf("WidgetSample::print_info(): info = %s\n", info);
+    }
+#else
+    /* 这样就可以了 */
+    virtual void print_info(const char * info) {
+        printf("WidgetSample::print_info(): info = %s\n", info);
+    }
+
+    virtual void print_info(const wchar_t * info) {
+        printf("WidgetSample::print_info(): info = %S\n", info);
+    }
+#endif
+#endif
+};
+
+void WidgetSampleTest()
+{
+    WidgetSample widgetSample;
+    widgetSample.print("This is WidgetSample test.");
+    widgetSample.print_info("This is WidgetSample char test.");
+    widgetSample.print_info(L"This is WidgetSample wchar_t test.");
+}
+
 #include "jimic/math/log10.h"
 
 void Log10_Test1(double val)
@@ -3186,6 +3259,11 @@ int UnitTest_Main(int argc, char *argv[])
 
     // CPU 唤醒/预热 500毫秒
     jimi_cpu_warmup(500);
+
+    WidgetSampleTest();
+    printf("\n");
+
+    jimi::Console.ReadKey_NextLine();
 
 #if 0
     malloc_addr_test();

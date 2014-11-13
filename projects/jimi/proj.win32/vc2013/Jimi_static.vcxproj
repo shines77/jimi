@@ -168,6 +168,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\jimic_all.h" />
     <ClInclude Include="..\..\..\..\src\jimic\libc\endian.h" />
     <ClInclude Include="..\..\..\..\src\jimic\libc\ieee754.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\libc\int64.h" />
     <ClInclude Include="..\..\..\..\src\jimic\math\int_log10.h" />
     <ClInclude Include="..\..\..\..\src\jimic\math\log10.h" />
     <ClInclude Include="..\..\..\..\src\jimic\platform\linux\fast_memcpy.h" />

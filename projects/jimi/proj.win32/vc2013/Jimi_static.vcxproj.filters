@@ -401,6 +401,9 @@
     <ClInclude Include="..\..\..\..\src\jimic\math\int_log10.h">
       <Filter>src\jimic\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\libc\int64.h">
+      <Filter>src\jimic\libc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">

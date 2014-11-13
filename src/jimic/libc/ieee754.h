@@ -202,13 +202,7 @@ typedef union jmc_ieee754_double jmc_ieee754_double;
 extern "C" {
 #endif
 
-#if 0
-static const jmc_ieee754_float s_f64_exponent_mask = {
-    .ieee.mantissa = 0,
-    .ieee.exponent = JMC_IEEE754_FLOAT_EXPONENT_MASK,
-    .ieee.negative = 0
-};
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
 static const jmc_ieee754_float s_f64_exponent_mask = {
     // .ieee
     {
@@ -217,18 +211,19 @@ static const jmc_ieee754_float s_f64_exponent_mask = {
         0UL                                 // .negative
     }
 };
-#endif
+#else  /* __GNUC__ || _MSC_VER >= 1700 */
+static const jmc_ieee754_float s_f64_exponent_mask = {
+    // .ieee
+    .ieee.mantissa = 0,
+    .ieee.exponent = JMC_IEEE754_FLOAT_EXPONENT_MASK,
+    .ieee.negative = 0
+};
+#endif  /* defined(_MSC_VER) && (_MSC_VER < 1700) */
+
 //static const unsigned int s_float_exponent_mask = s_f64_exponent_mask.ieee.exponent;
 //static const unsigned int s_float_exponent_mask = (0xFFFFFFFFUL & s_f64_exponent_mask.ieee.exponent);
 
-#if 0
-static const jmc_ieee754_double s_d64_exponent_mask = {
-    .ieee.mantissa0 = 0,
-    .ieee.mantissa1 = 0,
-    .ieee.exponent  = JMC_IEEE754_DOUBLE_EXPONENT_MASK,
-    .ieee.negative  = 0
-};
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
 static const jmc_ieee754_double s_d64_exponent_mask = {
     // .ieee
     {
@@ -238,7 +233,16 @@ static const jmc_ieee754_double s_d64_exponent_mask = {
         0                                   // .negative
     }
 };
-#endif
+#else  /* __GNUC__ || _MSC_VER >= 1700 */
+static const jmc_ieee754_double s_d64_exponent_mask = {
+    // .ieee
+    .ieee.mantissa0 = 0,
+    .ieee.mantissa1 = 0,
+    .ieee.exponent  = JMC_IEEE754_DOUBLE_EXPONENT_MASK,
+    .ieee.negative  = 0
+};
+#endif  /* defined(_MSC_VER) && (_MSC_VER < 1700) */
+
 //static const unsigned int s_double_exponent_mask = s_d64_exponent_mask.ieee.exponent;
 //static const unsigned int s_double_exponent_mask = (0xFFFFFFFFFFFFFFFFULL & s_d64_exponent_mask.ieee.exponent);
 
@@ -246,12 +250,7 @@ static const jmc_ieee754_double s_d64_exponent_mask = {
 }
 #endif
 
-#if 1
 #define JMC_IEEE754_FLOAT_EXPONENT_MASK32   (s_f64_exponent_mask.exponent.dword)
 #define JMC_IEEE754_DOUBLE_EXPONENT_MASK32  (s_d64_exponent_mask.exponent.dword)
-#else
-#define JMC_IEEE754_FLOAT_EXPONENT_MASK32   (((jmc_ieee754_float::fexponent_t) (s_f64_exponent_mask).exponent.dword)
-#define JMC_IEEE754_DOUBLE_EXPONENT_MASK32  (((jmc_ieee754_double::dexponent_t)(s_d64_exponent_mask).exponent.dword)
-#endif
 
 #endif  /* !_JIMIC_LIBC_IEEE754_H_ */

@@ -8,79 +8,11 @@
 
 #include <jimic/core/jimic_def.h>
 
-#include <jimic/libc/endian.h>
+#include <jimic/libc/int64.h>
 
 #define jmc_abs_32(val)        (((int32_t)(val) >= 0) ? (val) : -(val))
 #define jmc_abs_64(val)        (((int64_t)(val) >= 0) ? (val) : -(val))
 #define jmc_abs_ex(val, type)  (((type)(val) >= 0) ? (val) : -(val))
-
-union jmc_int64_t
-{
-    int64_t  i64;
-    uint64_t u64;
-
-    struct {
-#if JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN
-        /* Little endian. */
-        uint32_t low;
-        uint32_t high;
-#else
-        /* Big endian. */
-        uint32_t high;
-        uint32_t low;
-#endif
-    } u32;
-
-    struct {
-#if JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN
-        /* Little endian. */
-        uint32_t low:     32;
-        uint32_t high:    31;
-        uint32_t negative: 1;
-#else
-        /* Big endian. */
-        uint32_t negative: 1;
-        uint32_t high:    31;
-        uint32_t low:     32;        
-#endif
-    } i32;
-};
-
-typedef union jmc_int64_t jmc_int64_t;
-
-union jmc_uint64_t
-{
-    uint64_t u64;
-    int64_t  i64;
-
-    struct {
-#if JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN
-        /* Little endian. */
-        uint32_t low;
-        uint32_t high;
-#else
-        /* Big endian. */
-        uint32_t high;
-        uint32_t low;
-#endif
-    } u32;
-
-    struct {
-#if JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN
-        /* Little endian. */
-        uint32_t low:     32;
-        uint32_t high:    31;
-        uint32_t negative: 1;
-#else
-        /* Big endian. */
-        uint32_t negative: 1;
-        uint32_t high:    31;
-        uint32_t low:     32;        
-#endif
-    } i32;
-};
-
-typedef union jmc_uint64_t jmc_uint64_t;
 
 JMC_INLINE
 unsigned int
