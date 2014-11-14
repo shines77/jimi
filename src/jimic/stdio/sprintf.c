@@ -7,7 +7,7 @@
 
 #if defined(_MSC_VER) && (_MSC_VER != 0)
 #pragma warning(push)
-#pragma warning(disable : 4102)         // 禁止warning C4102: "未引用的标签"
+#pragma warning(disable : 4102) // 禁止warning C4102: "未引用的标签"
 #endif  /* _MSC_VER */
 
 /* jmc_vslprintf()是否使用前置处理, 使用为1 */
@@ -658,6 +658,6 @@ vslprintf_exit:
 }
 
 #if defined(_MSC_VER) && (_MSC_VER != 0)
-#pragma warning(pop)                    // 恢复warning状态
+#pragma warning(pop)    // 恢复warning状态
 #endif
 

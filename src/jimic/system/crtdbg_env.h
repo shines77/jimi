@@ -74,6 +74,12 @@
 
 #include "jimic/system/vs_vld.h"
 
+#define DONT_DISPLAY_MEMORY_LEAK    0
+#define ALLOW_DISPLAY_MEMORY_LEAK   1
+
+#define DONT_CHECK_BOUNDS           0
+#define ALWAYS_CHECK_BOUNDS         1
+
 #ifdef __cplusplus
 extern "C" {
 #endif

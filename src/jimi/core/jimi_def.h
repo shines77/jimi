@@ -85,7 +85,7 @@
 #define USING_NS_JIMI_MT        using namespace jimi::mt;
 #define USING_NS_JIMI_STL       using namespace jimi::stl;
 
-#define USING_NS_JIMI_SUB(NS)   using namespace jimi::##NS##;
+#define USING_NS_JIMI_SUB(NS)   using namespace jimi::NS;
 
 // namespace jimi::internal
 #define NS_JIMI_INTERNAL_BEGIN  namespace internal {

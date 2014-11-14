@@ -178,6 +178,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.h" />
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf.inl.h" />
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf_lite.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\dtos.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\iconv_win.h" />
     <ClInclude Include="..\..\..\..\src\jimic\string\itoa.h" />
@@ -190,6 +191,7 @@
     <ClCompile Include="..\..\..\..\src\jimic\math\int_log10.c" />
     <ClCompile Include="..\..\..\..\src\jimic\math\log10.c" />
     <ClCompile Include="..\..\..\..\src\jimic\stdio\sprintf.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\stdio\sprintf_lite.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\dtos.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\iconv_win.c" />
     <ClInclude Include="..\..\..\..\src\jimic\string\jm_strings.h">

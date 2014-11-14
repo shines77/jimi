@@ -163,7 +163,7 @@ NS_UNITEST_BEGIN
 //        http://man7.org/linux/man-pages/man2/sched_setaffinity.2.html
 //
 
-void set_thread_affinity(uint32_t dwCPUMask)
+void jimi_set_thread_affinity(uint32_t dwCPUMask)
 {
 #if defined(_MSC_VER)
     bool echo = false;
@@ -2947,250 +2947,28 @@ void Double_And_Float_Test()
 #endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 }
 
-static const char s_twodigit_table[][2] = {
-    // 0 - 9
-    { '0', '0' },
-    { '1', '0' },
-    { '2', '0' },
-    { '3', '0' },
-    { '4', '0' },
-    { '5', '0' },
-    { '6', '0' },
-    { '7', '0' },
-    { '8', '0' },
-    { '9', '0' },
-    // 10 - 19
-    { '0', '1' },
-    { '1', '1' },
-    { '2', '1' },
-    { '3', '1' },
-    { '4', '1' },
-    { '5', '1' },
-    { '6', '1' },
-    { '7', '1' },
-    { '8', '1' },
-    { '9', '1' },
-    // 20 - 29
-    { '0', '2' },
-    { '1', '2' },
-    { '2', '2' },
-    { '3', '2' },
-    { '4', '2' },
-    { '5', '2' },
-    { '6', '2' },
-    { '7', '2' },
-    { '8', '2' },
-    { '9', '2' },
-    // 30 - 39
-    { '0', '3' },
-    { '1', '3' },
-    { '2', '3' },
-    { '3', '3' },
-    { '4', '3' },
-    { '5', '3' },
-    { '6', '3' },
-    { '7', '3' },
-    { '8', '3' },
-    { '9', '3' },
-    // 40 - 49
-    { '0', '4' },
-    { '1', '4' },
-    { '2', '4' },
-    { '3', '4' },
-    { '4', '4' },
-    { '5', '4' },
-    { '6', '4' },
-    { '7', '4' },
-    { '8', '4' },
-    { '9', '4' },
-    // 50 - 59
-    { '0', '5' },
-    { '1', '5' },
-    { '2', '5' },
-    { '3', '5' },
-    { '4', '5' },
-    { '5', '5' },
-    { '6', '5' },
-    { '7', '5' },
-    { '8', '5' },
-    { '9', '5' },
-    // 60 - 69
-    { '0', '6' },
-    { '1', '6' },
-    { '2', '6' },
-    { '3', '6' },
-    { '4', '6' },
-    { '5', '6' },
-    { '6', '6' },
-    { '7', '6' },
-    { '8', '6' },
-    { '9', '6' },
-    // 70 - 79
-    { '0', '7' },
-    { '1', '7' },
-    { '2', '7' },
-    { '3', '7' },
-    { '4', '7' },
-    { '5', '7' },
-    { '6', '7' },
-    { '7', '7' },
-    { '8', '7' },
-    { '9', '7' },
-    // 80 - 89
-    { '0', '8' },
-    { '1', '8' },
-    { '2', '8' },
-    { '3', '8' },
-    { '4', '8' },
-    { '5', '8' },
-    { '6', '8' },
-    { '7', '8' },
-    { '8', '8' },
-    { '9', '8' },
-    // 90 - 99
-    { '0', '9' },
-    { '1', '9' },
-    { '2', '9' },
-    { '3', '9' },
-    { '4', '9' },
-    { '5', '9' },
-    { '6', '9' },
-    { '7', '9' },
-    { '8', '9' },
-    { '9', '9' },
-};
+#include "jimic/stdio/sprintf_lite.h"
 
-void snprintf_lite(char *buf, const char *format, unsigned int val)
+void sprintf_lite_test()
 {
-    char *buf_org;
-    unsigned int val_org;
-    unsigned int base;
-    unsigned int num_digits, digit_val;
-    char c;
-    const char *cur = format;
-    char *last;
-    char digits[16];
-    base = 0;
-    buf_org = buf;
-    val_org = val;
-    while ((c = *cur) != '\0') {
-        if (c != '%') {
-            // is not a "%" sign
-            *buf++ = *cur++;
-        }
-        else {
-            // is a "%" sign start
-            ++cur;
-            c = *cur;
-            switch (c) {
-            default:
-                *buf++ = *cur++;
-                break;
-            case '%':
-                // "%%" output a '%' char only
-                *buf++ = c;
-                cur += 2;
-                break;
-            case 'o':
-            case 'O':
-                base = 8;
-                num_digits = 0;
-                last = digits + sizeof(digits) / sizeof(char) - 1;
-                do {
-                    digit_val = val % base;
-                    val /= base;
-                    *last-- = digit_val + '0';
-                    num_digits++;
-                } while (val != 0);
-                last++;
-                while (num_digits > 0) {
-                    *buf++ = *last++;
-                    num_digits--;
-                }
-                cur++;
-                break;
-            case 'd':
-            case 'D':
-                base = 10;
-                num_digits = 0;
-                last = digits + sizeof(digits) / sizeof(char) - 1;
-                do {
-                    digit_val = val % base;
-                    val /= base;
-                    *last-- = digit_val + '0';
-                    num_digits++;
-                } while (val != 0);
-                last++;
-                while (num_digits > 0) {
-                    *buf++ = *last++;
-                    num_digits--;
-                }
-                cur++;
-                break;
-            case 'x':
-            case 'X':
-                base = 16;
-                num_digits = 0;
-                last = digits + sizeof(digits) / sizeof(char) - 1;
-                do {
-                    digit_val = val % base;
-                    val /= base;
-                    if (digit_val >= 10)
-                        digit_val += 'A' - '0' - 10;
-                    *last-- = digit_val + '0';
-                    num_digits++;
-                } while (val != 0);
-                last++;
-                while (num_digits > 0) {
-                    *buf++ = *last++;
-                    num_digits--;
-                }
-                cur++;
-                break;
-            case 't':
-                num_digits = 0;
-                last = digits + sizeof(digits) / sizeof(char) - 1;
-                do {
-                    digit_val = val % 10;
-                    val /= 10;
-                    *last-- = digit_val + '0';
-                    num_digits++;
-                } while (val != 0);
-                last++;
-                while (num_digits > 0) {
-                    *buf++ = *last++;
-                    num_digits--;
-                }
-                cur++;
-                break;
-            case 'T':
-                num_digits = 0;
-                last = digits + sizeof(digits) / sizeof(char) - 1;
-                do {
-                    digit_val = val % 100;
-                    val /= 100;
-                    if (digit_val > 10) {
-                        *last-- = s_twodigit_table[digit_val][0];
-                        *last-- = s_twodigit_table[digit_val][1];
-                        num_digits += 2;
-                    }
-                    else {
-                        *last-- = s_twodigit_table[digit_val][0];
-                        num_digits++;
-                    }
-                } while (val != 0);
-                last++;
-                while (num_digits > 0) {
-                    *buf++ = *last++;
-                    num_digits--;
-                }
-                cur++;
-                break;
-            }
-        }
-    }
-    *buf = '\0';
-    printf("val = %8u, base = %2u, buf = %s\n", val_org, base, buf_org);
+    char outbuf[256];
+    snprintf_lite(outbuf, jm_countof(outbuf), jm_countof(outbuf) - 1, "%d", 1234);
+    printf("snprintf_lite(\"%%d\", %d) = %s\n", 1234, outbuf);
+
+    snprintf_lite(outbuf, jm_countof(outbuf), jm_countof(outbuf) - 1, "%d", 23456);
+    printf("snprintf_lite(\"%%d\", %d) = %s\n", 23456, outbuf);
+
+    snprintf_lite(outbuf, jm_countof(outbuf), jm_countof(outbuf) - 1, "0x%X", 0x12ABCD);
+    printf("snprintf_lite(\"0x%%X\", 0x%X) = %s\n", 0x12ABCD, outbuf);
+
+    snprintf_lite(outbuf, jm_countof(outbuf), jm_countof(outbuf) - 1, "0%o", 023456);
+    printf("snprintf_lite(\"0%%o\", 0%o) = %s\n", 023456, outbuf);
+
+    snprintf_lite(outbuf, jm_countof(outbuf), jm_countof(outbuf) - 1, "#%t", 234567);
+    printf("snprintf_lite(\"#%%d\", %d) = %s\n", 234567, outbuf);
+
+    snprintf_lite(outbuf, jm_countof(outbuf), jm_countof(outbuf) - 1, "#%T", 1234567);
+    printf("snprintf_lite(\"#%%d\", %d) = %s\n", 1234567, outbuf);
 }
 
 int UnitTest_Main(int argc, char *argv[])
@@ -3198,26 +2976,11 @@ int UnitTest_Main(int argc, char *argv[])
     //using namespace jimi;
     //using namespace jimi::system;
 
-    if (true && 0)
-    {
-        char out_buf[256];
-        snprintf_lite(out_buf, "%d", 1234);
-        snprintf_lite(out_buf, "%d", 23456);
-        snprintf_lite(out_buf, "0x%X", 0x12ABCD);
-        snprintf_lite(out_buf, "0%o", 023456);
-        snprintf_lite(out_buf, "#%t", 234567);
-        snprintf_lite(out_buf, "#%T", 1234567);
-
-        printf("\n");
-        jimi::Console.ReadKey();
-        return 0;
-    }
-
     // 设置进程和线程的亲缘性
-    set_thread_affinity(0);
+    jimi_set_thread_affinity(0);
 
     // 设置CRTDBG的环境(Debug模式下, 检查内存越界和内存泄漏问题)
-    jimi_set_crtdbg_env(1, 1);
+    jimi_set_crtdbg_env(ALLOW_DISPLAY_MEMORY_LEAK, ALWAYS_CHECK_BOUNDS);
 
     jmLog.log_begin();
 
@@ -3260,10 +3023,12 @@ int UnitTest_Main(int argc, char *argv[])
     // CPU 唤醒/预热 500毫秒
     jimi_cpu_warmup(500);
 
+#if 0
     WidgetSampleTest();
     printf("\n");
 
     jimi::Console.ReadKey_NextLine();
+#endif
 
 #if 0
     malloc_addr_test();
@@ -3336,6 +3101,14 @@ int UnitTest_Main(int argc, char *argv[])
 #if 0
     Emplace_Test();
 #endif
+
+    if (true && 1) {
+        sprintf_lite_test();
+
+        printf("\n");
+        jimi::Console.ReadKey_NextLine();
+        //return 0;
+    }
 
     // 测试std::string是否使用了COW(Copy On Write)
     //String_Copy_On_Write_Test();
