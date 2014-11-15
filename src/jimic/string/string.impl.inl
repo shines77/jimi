@@ -20,39 +20,6 @@
 #include <float.h>
 #include <limits.h>     // for UINT_MAX
 
-static const double d_pow10_remain_16[] = {
-    1.0E+0, 1.0E+4, 1.0E+9, 1.0E+14
-};
-
-static const double d_pow10_remain_8[] = {
-    1.0E+0,  1.0E+2,  1.0E+4,  1.0E+7,
-    1.0E+9,  1.0E+12, 1.0E+14, 1.0E+16,
-};
-
-static const double d_pow10_base_64[] = {
-    1.0E+19,  1.0E+38,  1.0E+57,  1.0E+76,
-    1.0E+95,  1.0E+114, 1.0E+133, 1.0E+152,
-    1.0E+171, 1.0E+190, 1.0E+209, 1.0E+228,
-    1.0E+247, 1.0E+266, 1.0E+285, 1.0E+304,
-    // last 3 items is fill for address aligned to 64 bytes (cache line size)
-    1.0E+308, 1.0E+308, 1.0E+308, 1.0E+308
-};
-
-static const uint32_t float_scales_32[] = {
-    1, 10, 100, 1000, 10000, 100000,
-    1000000, 10000000, 100000000, 1000000000,
-    // fill for address aligned to 64 bytes (cache line size)
-    1, 1, 1, 1, 1, 1
-};
-
-static const uint64_t float_scales_64[] = {
-    10000000000ULL,         100000000000ULL,
-    1000000000000ULL,       10000000000000ULL,
-    100000000000000ULL,     1000000000000000ULL,
-    10000000000000000ULL,   100000000000000000ULL,
-    1000000000000000000ULL, 10000000000000000000ULL
-};
-
 #if defined(JMC_STRNCPY_EX_INLINE_DECLARE) && (JMC_STRNCPY_EX_INLINE_DECLARE != 0)
 JMC_INLINE_NONSTD(size_t)
 #else
