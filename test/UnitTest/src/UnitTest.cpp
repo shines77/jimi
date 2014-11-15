@@ -2965,10 +2965,16 @@ void sprintf_lite_test()
     printf("snprintf_lite(\"0%%o\", 0%o) = %s\n", 023456, outbuf);
 
     snprintf_lite(outbuf, jm_countof(outbuf), jm_countof(outbuf) - 1, "#%t", 234567);
-    printf("snprintf_lite(\"#%%d\", %d) = %s\n", 234567, outbuf);
+    printf("snprintf_lite(\"#%%t\", %d) = %s\n", 234567, outbuf);
 
     snprintf_lite(outbuf, jm_countof(outbuf), jm_countof(outbuf) - 1, "#%T", 1234567);
-    printf("snprintf_lite(\"#%%d\", %d) = %s\n", 1234567, outbuf);
+    printf("snprintf_lite(\"#%%T\", %d) = %s\n", 1234567, outbuf);
+
+    snprintf_lite(outbuf, jm_countof(outbuf), jm_countof(outbuf) - 1, "#%K", 2345678);
+    printf("snprintf_lite(\"#%%K\", %d) = %s\n", 2345678, outbuf);
+
+    snprintf_lite(outbuf, jm_countof(outbuf), jm_countof(outbuf) - 1, "#%M", 3456789);
+    printf("snprintf_lite(\"#%%M\", %d) = %s\n", 3456789, outbuf);
 }
 
 int UnitTest_Main(int argc, char *argv[])
@@ -3027,13 +3033,13 @@ int UnitTest_Main(int argc, char *argv[])
     WidgetSampleTest();
     printf("\n");
 
-    jimi::Console.ReadKey_NextLine();
+    jimi::Console.ReadKey_NewtLine(true);
 #endif
 
 #if 0
     malloc_addr_test();
 
-    jimi::Console.ReadKey_NextLine();
+    jimi::Console.ReadKey_NewtLine(true);
     return 0;
 #endif
 
@@ -3106,7 +3112,7 @@ int UnitTest_Main(int argc, char *argv[])
         sprintf_lite_test();
 
         printf("\n");
-        jimi::Console.ReadKey_NextLine();
+        jimi::Console.ReadKey_NewtLine(true);
         //return 0;
     }
 
@@ -3164,9 +3170,11 @@ int UnitTest_Main(int argc, char *argv[])
 
     Int_Log10_Test();
 
+    jimi::Console.ReadKey_NewtLine(true);
+
     Double_And_Float_Test();
 
-    jimi::Console.ReadKey_NextLine();
+    jimi::Console.ReadKey_NewtLine(true);
 #endif
 
 #if 1
@@ -3196,24 +3204,24 @@ int UnitTest_Main(int argc, char *argv[])
         return 0;
     }
 
-    jimi::Console.ReadKey_NextLine();
+    jimi::Console.ReadKey_NewtLine(true);
 #endif
 
 #if 1
   #if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
     String_Snprintf_Test();
 
-    jimi::Console.ReadKey_NextLine();
+    jimi::Console.ReadKey_NewtLine(true);
   #endif
 
   #if 1
-    Sprintf_Preformance_Test_Integer();
+    Sprintf_Preformance_Test_Integer1();
 
     Snprintf_Preformance_Test_Integer1();
     Snprintf_Preformance_Test_Integer2();
     Snprintf_Preformance_Test_Integer3();
 
-    jimi::Console.ReadKey_NextLine();
+    jimi::Console.ReadKey_NewtLine(true);
   #endif
 
   #if 1
@@ -3222,7 +3230,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Double3();
     Snprintf_Preformance_Test_Double4();
 
-    jimi::Console.ReadKey_NextLine();
+    jimi::Console.ReadKey_NewtLine(true);
   #endif
 
   #if 1
@@ -3232,7 +3240,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_String4();
     Snprintf_Preformance_Test_String5();
 
-    jimi::Console.ReadKey_NextLine();
+    jimi::Console.ReadKey_NewtLine(true);
   #endif
 
     //OStringStream_Performance_Test();
@@ -3248,12 +3256,12 @@ int UnitTest_Main(int argc, char *argv[])
     String_Performance_Test();
     String_Performance_Test2();
 
-    jimi::Console.ReadKey_NextLine();
+    jimi::Console.ReadKey_NewtLine(true);
 #endif
 
 #if 1
     String_StrLen_Test();
-    jimi::Console.ReadKey_NextLine();
+    jimi::Console.ReadKey_NewtLine(true);
 #endif
 
     Jimi_StrLwr_Verify();
@@ -3271,7 +3279,7 @@ int UnitTest_Main(int argc, char *argv[])
     String_StrLwr_Test(256);
     String_StrLwr_Test(1024);
 
-    jimi::Console.ReadKey_NextLine();
+    jimi::Console.ReadKey_NewtLine(true);
 #endif
 
 #if 0

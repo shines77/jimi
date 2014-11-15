@@ -63,7 +63,7 @@ void String_Snprintf_Test()
     //::system("pause");
 }
 
-void Sprintf_Preformance_Test_Integer()
+void Sprintf_Preformance_Test_Integer1()
 {
     int i;
     double time, timeReference;
@@ -76,11 +76,11 @@ void Sprintf_Preformance_Test_Integer()
 
 #if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
     printf("==========================================================================\n\n");
-    printf("  Sprintf_Preformance_Test_Integer()\n\n");
+    printf("  Sprintf_Preformance_Test_Integer1()\n\n");
     //printf("==========================================================================\n\n");
 #else
     printf("==========================================================================\n\n");
-    printf("  Sprintf_Preformance_Test_Integer()\n\n");
+    printf("  Sprintf_Preformance_Test_Integer1()\n\n");
 #endif
 
 #ifndef _DEBUG

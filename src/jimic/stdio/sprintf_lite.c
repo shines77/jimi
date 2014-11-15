@@ -184,7 +184,6 @@ JMC_DECLARE_NONSTD(char *)
 vslprintf_lite(char * JMC_RESTRICT buf, size_t count_max, size_t count,
                const char * JMC_RESTRICT format, va_list args)
 {
-    char *buf_org;
     unsigned int base;
     unsigned int u32;
     unsigned int num_digits, digit_val;
@@ -193,7 +192,6 @@ vslprintf_lite(char * JMC_RESTRICT buf, size_t count_max, size_t count,
     char *last;
     char digits[16];
     base = 0;
-    buf_org = buf;
     while ((c = *cur) != '\0') {
         if (c != '%') {
             // is not a "%" sign
@@ -207,11 +205,13 @@ vslprintf_lite(char * JMC_RESTRICT buf, size_t count_max, size_t count,
             default:
                 *buf++ = *cur++;
                 break;
+
             case '%':
                 // "%%" output a '%' char only
                 *buf++ = c;
                 cur += 2;
                 break;
+
             case 'o':
             case 'O':
                 base = 8;
@@ -231,6 +231,7 @@ vslprintf_lite(char * JMC_RESTRICT buf, size_t count_max, size_t count,
                 }
                 cur++;
                 break;
+
             case 'd':
             case 'D':
                 base = 10;
@@ -254,6 +255,7 @@ vslprintf_lite(char * JMC_RESTRICT buf, size_t count_max, size_t count,
                 }
                 cur++;
                 break;
+
             case 'x':
             case 'X':
                 base = 16;
@@ -275,13 +277,14 @@ vslprintf_lite(char * JMC_RESTRICT buf, size_t count_max, size_t count,
                 }
                 cur++;
                 break;
+
             case 't':
                 num_digits = 0;
                 last = digits + sizeof(digits) / sizeof(char) - 1;
                 u32 = va_arg(args, unsigned int);
                 do {
-                    digit_val = u32 % 10;
-                    u32 /= 10;
+                    digit_val = u32 % 10UL;
+                    u32 /= 10UL;
                     *last-- = digit_val + '0';
                     num_digits++;
                 } while (u32 != 0);
@@ -292,13 +295,14 @@ vslprintf_lite(char * JMC_RESTRICT buf, size_t count_max, size_t count,
                 }
                 cur++;
                 break;
+
             case 'T':
                 num_digits = 0;
                 last = digits + sizeof(digits) / sizeof(char) - 1;
                 u32 = va_arg(args, unsigned int);
                 do {
-                    digit_val = u32 % 100;
-                    u32 /= 100;
+                    digit_val = u32 % 100UL;
+                    u32 /= 100UL;
                     if (digit_val > 10) {
                         *last-- = s_twodigit_table[digit_val][0];
                         *last-- = s_twodigit_table[digit_val][1];
@@ -316,6 +320,108 @@ vslprintf_lite(char * JMC_RESTRICT buf, size_t count_max, size_t count,
                 }
                 cur++;
                 break;
+
+            case 'K':
+                num_digits = 0;
+                last = digits + sizeof(digits) / sizeof(char) - 1;
+                u32 = va_arg(args, unsigned int);
+                do {
+                    digit_val = u32 % 1000UL;
+                    u32 /= 1000UL;
+                    if (digit_val >= 100) {
+                        unsigned int knum = digit_val / 100;
+                        digit_val = digit_val % 100;
+                        *last-- = s_twodigit_table[digit_val][0];
+                        *last-- = s_twodigit_table[digit_val][1];
+                        *last-- = s_twodigit_table[knum][0];
+                        num_digits += 3;
+                    }
+                    else if (digit_val >= 10) {
+                        *last-- = s_twodigit_table[digit_val][0];
+                        *last-- = s_twodigit_table[digit_val][1];
+                        num_digits += 2;
+                    }
+                    else {
+                        *last-- = s_twodigit_table[digit_val][0];
+                        num_digits++;
+                    }
+                } while (u32 != 0);
+                last++;
+                while (num_digits > 0) {
+                    *buf++ = *last++;
+                    num_digits--;
+                }
+                cur++;
+                break;
+
+            case 'M':
+                num_digits = 0;
+                last = digits + sizeof(digits) / sizeof(char) - 1;
+                u32 = va_arg(args, unsigned int);
+#if 1
+                do {
+                    digit_val = u32 % 10000UL;
+                    u32 /= 10000UL;
+                    if (digit_val >= 100) {
+                        unsigned int knum = digit_val / 100;
+                        digit_val = digit_val % 100;
+                        *last-- = s_twodigit_table[digit_val][0];
+                        *last-- = s_twodigit_table[digit_val][1];
+                        *last-- = s_twodigit_table[knum][0];
+                        if (digit_val >= 1000) {
+                            *last-- = s_twodigit_table[knum][1];
+                            num_digits++;
+                        }
+                        num_digits += 3;
+                    }
+                    else {
+                        *last-- = s_twodigit_table[digit_val][0];
+                        if (digit_val >= 10) {
+                            *last-- = s_twodigit_table[digit_val][1];
+                            num_digits++;
+                        }
+                        num_digits++;
+                    }
+                } while (u32 != 0);
+#else
+                do {
+                    digit_val = u32 % 10000UL;
+                    u32 /= 10000UL;
+                    if (digit_val > 1000) {
+                        unsigned int mknum = digit_val / 100;
+                        digit_val = digit_val % 100;
+                        *last-- = s_twodigit_table[digit_val][0];
+                        *last-- = s_twodigit_table[digit_val][1];
+                        *last-- = s_twodigit_table[mknum][0];
+                        *last-- = s_twodigit_table[mknum][1];
+                        num_digits += 4;
+                    }
+                    else if (digit_val > 100) {
+                        unsigned int knum = digit_val / 100;
+                        digit_val = digit_val % 100;
+                        *last-- = s_twodigit_table[digit_val][0];
+                        *last-- = s_twodigit_table[digit_val][1];
+                        *last-- = s_twodigit_table[knum][0];
+                        num_digits += 3;
+                    }
+                    else if (digit_val > 10) {
+                        *last-- = s_twodigit_table[digit_val][0];
+                        *last-- = s_twodigit_table[digit_val][1];
+                        num_digits += 2;
+                    }
+                    else {
+                        *last-- = s_twodigit_table[digit_val][0];
+                        num_digits++;
+                    }
+                } while (u32 != 0);
+#endif
+                last++;
+                while (num_digits > 0) {
+                    *buf++ = *last++;
+                    num_digits--;
+                }
+                cur++;
+                break;
             }
         }
     }
@@ -326,4 +432,3 @@ vslprintf_lite(char * JMC_RESTRICT buf, size_t count_max, size_t count,
 #if defined(_MSC_VER) && (_MSC_VER != 0)
 #pragma warning(pop)    // »Ö¸´warning×´Ì¬
 #endif
-

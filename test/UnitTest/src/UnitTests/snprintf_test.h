@@ -20,7 +20,7 @@ extern "C" {
 
 void String_Snprintf_Test();
 
-void Sprintf_Preformance_Test_Integer();
+void Sprintf_Preformance_Test_Integer1();
 
 void Snprintf_Preformance_Test_Integer1();
 void Snprintf_Preformance_Test_Integer2();

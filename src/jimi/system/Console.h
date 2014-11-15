@@ -48,7 +48,8 @@ public:
         printf("\n");
     }
 
-    static int ReadKey(bool displayTips = true, bool echoInput = false) {
+    static int ReadKey(bool enabledCpuWarmup = false, bool displayTips = true,
+                       bool echoInput = false) {
         int keyCode;
         if (displayTips) {
 #if 1
@@ -68,13 +69,26 @@ public:
                     printf("EOF: (%d)", keyCode);
             }
         }
+
+        // 暂停后, 预热/唤醒一下CPU, 至少500毫秒
+        if (enabledCpuWarmup) {
+            jimi_cpu_warmup(500);
+            //printf("\n");
+        }
         return keyCode;
     }
 
-    static int ReadKey_NextLine(bool displayTips = true, bool echoInput = false) {
+    static int ReadKey_NewtLine(bool enabledCpuWarmup = false, bool displayTips = true,
+                                bool echoInput = false) {
         int keyCode;
-        keyCode = ReadKey(displayTips, echoInput);
+        keyCode = ReadKey(false, displayTips, echoInput);
         printf("\n");
+
+        // 暂停后, 预热/唤醒一下CPU, 至少500毫秒
+        if (enabledCpuWarmup) {
+            jimi_cpu_warmup(500);
+            //printf("\n");
+        }
         return keyCode;
     }
 
