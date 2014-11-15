@@ -155,20 +155,11 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int field_width, int precision)
     int64_t i64;
     uint32_t scale32;
     uint64_t scale, frac;
-    fuint64_t *f64;
     jmc_ieee754_double *d64;
     int exponent;
     unsigned int n;
     int num_width;
     int exp10;
-
-    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_dtos() maybe have some error!");
-
-    if (sizeof(fuint64_t) != sizeof(double)) {
-        // maybe have some error!
-        jimic_assert(sizeof(fuint64_t) == sizeof(double));
-        return -1;
-    }
 
     d64 = (jmc_ieee754_double *)&val;
     exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
@@ -224,9 +215,10 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int field_width, int precision)
         num_width = field_width;
     }
 
-    f64 = (fuint64_t *)&val;
+    d64 = (jmc_ieee754_double *)&val;
+
     // is NaN or INF ? (exponent is maxium ?)
-    if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
+    if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) != JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
         i64 = (int64_t)val;
         //if (val >= 0.0) {
         if (i64 >= 0) {
@@ -275,8 +267,8 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int field_width, int precision)
 
         return len;
     }
-    else if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
-             || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)) {
+    // if mantissa0 and mantissa1 is not equal zero, then it's a NaN (not a number)
+    else if (d64->ieee.mantissa0 != 0 || d64->ieee.mantissa1 != 0) {
         // is NaN, not a number
         len = JIMIC_MAX(field_width, 3);
         field_width -= 3;
@@ -292,7 +284,8 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int field_width, int precision)
     }
     else {
         // is +INF or -INF
-        if ((f64->high & JM_DOUBLE_SIGN_BIT32) == 0) {
+        //if (d64->ieee.negative == 0) {
+        if ((d64->sign.dword & JMC_IEEE754_DOUBLE_SIGN_MASK32) == 0) {
             len = JIMIC_MAX(field_width, 3);
             field_width -= 3;
             while (field_width > 0) {
@@ -442,7 +435,7 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
                 scale = float_scales_32[frac_prec];
             }
             else {
-                jimic_assert(frac_prec > 9 && precision <= FMT_MAX_DOUBLE_PRECISION);
+                jimic_assert(frac_prec > 9 && frac_prec <= FMT_MAX_DOUBLE_PRECISION);
                 scale = float_scales_64[frac_prec - 10];
             }
         }
@@ -455,9 +448,9 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
             jimic_assert(frac_prec > 0);
             if (frac_prec <= 9) {
                 jimic_assert(frac_prec > 0 && frac_prec <= 9);
-                scale32 = 10;
+                scale32 = 10UL;
                 for (n = frac_prec - 1; n > 0; --n)
-                    scale32 *= 10;
+                    scale32 *= 10UL;
                 scale = scale32;
             }
             else {
@@ -578,7 +571,8 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
     // if mantissa0 and mantissa1 is equal zero, then it's a Inf (-/+ INFINITY)
     else {
         // is +INF or -INF
-        if (d64->ieee.negative == 0) {
+        //if (d64->ieee.negative == 0) {
+        if ((d64->sign.dword & JMC_IEEE754_DOUBLE_SIGN_MASK32) == 0) {
             // is a +INF
             if ((flag & FMT_PLUS_FLAG) == 0) {
                 len = JIMIC_MAX(field_width, 3);
@@ -693,7 +687,6 @@ jmc_dtos_ex_old(char * JMC_RESTRICT buf, size_t count, double val, unsigned int 
     unsigned int num_digits;
     uint32_t scale32;
     uint64_t scale, frac;
-    fuint64_t *f64;
     register jmc_ieee754_double *u64;
     register jmc_ieee754_double *d64;
     unsigned int n;
@@ -703,17 +696,8 @@ jmc_dtos_ex_old(char * JMC_RESTRICT buf, size_t count, double val, unsigned int 
     int frac_prec;
     int tail_zeros;
 
-    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_dtos_ex() maybe have some error!");
-
-    if (sizeof(fuint64_t) != sizeof(double)) {
-        // maybe have some error!
-        jimic_assert(sizeof(fuint64_t) == sizeof(double));
-        return -1;
-    }
-
     d64 = (jmc_ieee754_double *)&val;
 
-    f64 = (fuint64_t *)&val;
     // is NaN or INF ? (exponent is maxium ?)
     //if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
     if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) != JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
@@ -900,8 +884,8 @@ jmc_dtos_ex_old(char * JMC_RESTRICT buf, size_t count, double val, unsigned int 
         }
         return len;
     }
-    else if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
-             || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)) {
+    // if mantissa0 and mantissa1 is not equal zero, then it's a NaN (not a number)
+    else if (d64->ieee.mantissa0 != 0 || d64->ieee.mantissa1 != 0) {
         // is NaN, not a number
         len = JIMIC_MAX(field_width, 3);
         field_width -= 3;
@@ -932,9 +916,12 @@ jmc_dtos_ex_old(char * JMC_RESTRICT buf, size_t count, double val, unsigned int 
             return len;
         }
     }
+    // if mantissa0 and mantissa1 is equal zero, then it's a Inf (-/+ INFINITY)
     else {
         // is +INF or -INF
-        if ((f64->high & JM_DOUBLE_SIGN_BIT32) == 0) {
+        //if (d64->ieee.negative == 0) {
+        if ((d64->sign.dword & JMC_IEEE754_DOUBLE_SIGN_MASK32) == 0) {
+            // is a +INF
             if ((flag & FMT_PLUS_FLAG) == 0) {
                 len = JIMIC_MAX(field_width, 3);
                 field_width -= 3;
@@ -1001,6 +988,7 @@ jmc_dtos_ex_old(char * JMC_RESTRICT buf, size_t count, double val, unsigned int 
 
         }
         else {
+            // is a -INF
             len = JIMIC_MAX(field_width, 4);
             field_width -= 4;
             if ((flag & FMT_ALIGN_LEFT) != 0) {
@@ -1019,6 +1007,340 @@ jmc_dtos_ex_old(char * JMC_RESTRICT buf, size_t count, double val, unsigned int 
                 return len;
             }
             else {
+                // align to right
+                while (field_width > 0) {
+                    *buf++ = ' ';
+                    field_width--;
+                }
+                // '-', 0x2D
+                *buf        = '-';
+                *(buf + 1)  = 'I';
+                *(buf + 2)  = 'n';
+                *(buf + 3)  = 'f';
+                *(buf + 4)  = '\0';
+                return len;
+            }
+        }
+    }
+}
+
+JMC_DECLARE_NONSTD(int)
+jmc_dtos_ex2(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag,
+             unsigned int fill, int field_width, int precision)
+{
+    int len;
+    int64_t i64;
+    uint32_t scale32;
+    uint64_t scale, frac;
+    register jmc_ieee754_double *d64;
+    unsigned int n;
+    int num_width;
+
+    if ((flag & FMT_ALIGN_LEFT) != 0) {
+        // align to left
+        if (precision > 0) {
+#if 0
+            if (precision <= 9) {
+                jimic_assert(precision > 0 && precision <= 9);
+                scale = float_scales_32[precision];
+            }
+            else {
+                jimic_assert(precision > 9 && precision <= FMT_MAX_DOUBLE_PRECISION);
+                scale = float_scales_64[precision - 11];
+            }
+#else
+            if (precision <= 9) {
+                jimic_assert(precision >= 0 && precision <= 9);
+                scale32 = 10UL;
+                for (n = precision; n > 0; --n)
+                    scale32 *= 10UL;
+                scale = scale32;
+            }
+            else {
+                jimic_assert(precision > 9 && precision <= FMT_MAX_DOUBLE_PRECISION);
+                if (precision < FMT_MAX_DOUBLE_PRECISION) {
+                    scale = 10000000000ULL;
+                    for (n = precision - 10; n > 0; --n)
+                        scale *= 10;
+                }
+                else {
+                    scale = 100000000000000000ULL;
+                }
+            }
+#endif
+        }
+        else if (precision < 0) {
+            jimic_assert(precision < 0);
+            precision = FMT_DEFAULT_DOUBLE_PRECISION;
+            scale = 1000000;
+        }
+        else {
+            scale = 1;
+        }
+
+        d64 = (jmc_ieee754_double *)&val;
+
+        // is NaN or INF ? (exponent is maxium ?)
+        if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) != JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
+            i64 = (int64_t)val;
+            //if (val >= 0.0) {
+            if (i64 >= 0) {
+                frac = (uint64_t)((val - (double)i64) * scale + 0.5);
+                if (frac == scale) {
+                    i64++;
+                    frac = 0;
+                }
+            }
+            else {
+                frac = (uint64_t)(((double)i64 - val) * scale + 0.5);
+                if (frac == scale) {
+                    i64--;
+                    frac = 0;
+                }
+            }
+
+            // for integer part of double
+            len = jmc_i64toa_r10_ex(buf, -1, i64, flag, fill, 0, 0);
+            field_width -= len;
+            buf += len;
+
+            if (precision > 0) {
+                // output decimal
+                *buf++ = '.';
+
+                // for fractional part of double
+                if (precision >= field_width - 1) {
+                    len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                                                 '0', precision, field_width - 1) + 1;
+                }
+                else {
+                    len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                                                 '0', field_width - 1, precision) + 1;
+                }
+            }
+            return len;
+        }
+        // if mantissa0 and mantissa1 is not equal zero, then it's a NaN (not a number)
+        else if (d64->ieee.mantissa0 != 0 || d64->ieee.mantissa1 != 0) {
+            // is NaN, not a number
+            len = JIMIC_MAX(field_width, 3);
+            field_width -= 3;
+            // align to left
+            *buf        = 'N';
+            *(buf + 1)  = 'a';
+            *(buf + 2)  = 'N';
+            *(buf + 3)  = ' ';
+            buf += 3;
+            while (field_width > 0) {
+                *buf++ = ' ';
+                field_width--;
+            }
+            *buf = '\0';
+            return len;
+        }
+        // if mantissa0 and mantissa1 is equal zero, then it's a Inf (-/+ INFINITY)
+        else {
+            // is +INF or -INF
+            //if (d64->ieee.negative == 0) {
+            if ((d64->sign.dword & JMC_IEEE754_DOUBLE_SIGN_MASK32) == 0) {
+                // is a +INF
+                if ((flag & FMT_PLUS_FLAG) == 0) {
+                    len = JIMIC_MAX(field_width, 3);
+                    field_width -= 3;
+                    // align to left
+                    *buf        = 'I';
+                    *(buf + 1)  = 'n';
+                    *(buf + 2)  = 'f';
+                    *(buf + 3)  = ' ';
+                    buf += 3;
+                    while (field_width > 0) {
+                        *buf++ = ' ';
+                        field_width--;
+                    }
+                    *buf = '\0';
+                    return len;
+                }
+                else {
+                    len = JIMIC_MAX(field_width, 4);
+                    field_width -= 4;
+                    // align to left
+                    // '+', 0x2B
+                    *buf        = '+';
+                    *(buf + 1)  = 'I';
+                    *(buf + 2)  = 'n';
+                    *(buf + 3)  = 'f';
+                    buf += 4;
+                    while (field_width > 0) {
+                        *buf++ = ' ';
+                        field_width--;
+                    }
+                    *buf = '\0';
+                    return len;
+                }
+
+            }
+            else {
+                len = JIMIC_MAX(field_width, 4);
+                field_width -= 4;
+                // align to left
+                // '-', 0x2D
+                *buf        = '-';
+                *(buf + 1)  = 'I';
+                *(buf + 2)  = 'n';
+                *(buf + 3)  = 'f';
+                buf += 4;
+                while (field_width > 0) {
+                    *buf++ = ' ';
+                    field_width--;
+                }
+                *buf = '\0';
+                return len;
+            }
+        }
+    }
+    else {
+        // align to right
+        if (precision > 0) {
+#if 0
+            if (precision <= 10) {
+                jimic_assert(precision >= 0 && precision <= 10);
+                scale = scales32[precision];
+            }
+            else {
+                jimic_assert(precision > 10 && precision <= 20);
+                scale = scales64[precision - 11];
+            }
+#else
+            if (precision <= 10) {
+                jimic_assert(precision >= 0 && precision <= 10);
+                scale32 = 1;
+                for (n = precision; n > 0; --n)
+                    scale32 *= 10;
+                scale = scale32;
+            }
+            else {
+                jimic_assert(precision > 10 && precision <= 20);
+                scale = 10000000000;
+                for (n = precision - 11; n > 0; --n)
+                    scale *= 10;
+            }
+#endif
+            num_width = field_width - precision - 1;
+        }
+        else if (precision < 0) {
+            jimic_assert(precision < 0);
+            precision = FMT_DEFAULT_DOUBLE_PRECISION;
+            scale = 1000000;
+            num_width = field_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
+        }
+        else {
+            scale = 1;
+            num_width = field_width;
+        }
+
+        d64 = (jmc_ieee754_double *)&val;
+
+        // is NaN or INF ? (exponent is maxium ?)
+        if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) != JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
+            i64 = (int64_t)val;
+            //if (val >= 0.0) {
+            if (i64 >= 0) {
+                frac = (uint64_t)((val - (double)i64) * scale + 0.5);
+                if (frac == scale) {
+                    i64++;
+                    frac = 0;
+                }
+            }
+            else {
+                frac = (uint64_t)(((double)i64 - val) * scale + 0.5);
+                if (frac == scale) {
+                    i64--;
+                    frac = 0;
+                }
+            }
+
+            // for integer part of double
+            if (num_width < 0)
+                num_width = 0;
+            len = jmc_i64toa_r10_ex(buf, -1, i64, flag, fill, num_width, num_width);
+            field_width -= len;
+            buf += len;
+
+            if (precision > 0) {
+                // output decimal
+                *buf++ = '.';
+
+                // for fractional part of double
+                if (precision >= field_width - 1) {
+                    len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                                                 '0', precision, field_width - 1) + 1;
+                }
+                else {
+                    len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT,
+                                                 '0', field_width - 1, precision) + 1;
+                }
+            }
+            return len;
+        }
+        // if mantissa0 and mantissa1 is not equal zero, then it's a NaN (not a number)
+        else if (d64->ieee.mantissa0 != 0 || d64->ieee.mantissa1 != 0) {
+            // is NaN, not a number
+            len = JIMIC_MAX(field_width, 3);
+            field_width -= 3;
+            // align to right
+            while (field_width > 0) {
+                *buf++ = ' ';
+                field_width--;
+            }
+            *buf        = 'N';
+            *(buf + 1)  = 'a';
+            *(buf + 2)  = 'N';
+            *(buf + 3)  = '\0';
+            return len;
+        }
+        // if mantissa0 and mantissa1 is equal zero, then it's a Inf (-/+ INFINITY)
+        else {
+            // is +INF or -INF
+            //if (d64->ieee.negative == 0) {
+            if ((d64->sign.dword & JMC_IEEE754_DOUBLE_SIGN_MASK32) == 0) {
+                // is a +INF
+                if ((flag & FMT_PLUS_FLAG) == 0) {
+                    len = JIMIC_MAX(field_width, 3);
+                    field_width -= 3;
+                    // align to right
+                    while (field_width > 0) {
+                        *buf++ = ' ';
+                        field_width--;
+                    }
+                    *buf        = 'I';
+                    *(buf + 1)  = 'n';
+                    *(buf + 2)  = 'f';
+                    *(buf + 3)  = '\0';
+                    return len;
+                }
+                else {
+                    len = JIMIC_MAX(field_width, 4);
+                    field_width -= 4;
+                    // align to left
+                    // '+', 0x2B
+                    *buf        = '+';
+                    *(buf + 1)  = 'I';
+                    *(buf + 2)  = 'n';
+                    *(buf + 3)  = 'f';
+                    buf += 4;
+                    while (field_width > 0) {
+                        *buf++ = ' ';
+                        field_width--;
+                    }
+                    *buf = '\0';
+                    return len;
+                }
+
+            }
+            else {
+                // is a -INF
+                len = JIMIC_MAX(field_width, 4);
+                field_width -= 4;
                 // align to right
                 while (field_width > 0) {
                     *buf++ = ' ';

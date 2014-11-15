@@ -16,18 +16,6 @@
 extern "C" {
 #endif
 
-JMC_DECLARE_NONSTD(int)
-jmc_log10(double val);
-
-JMC_DECLARE_NONSTD(int)
-jmc_log10_fast1(double val);
-
-JMC_DECLARE_NONSTD(int)
-jmc_log10_fast2(double val);
-
-JMC_DECLARE_NONSTD(int)
-jmc_log10_fast_64(double val);
-
 // isnan(), is inf() for float
 JMC_INLINE_NONSTD(int)
 jmc_isnan_f(float val);
