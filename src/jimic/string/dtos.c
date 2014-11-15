@@ -53,7 +53,8 @@ jmc_fget_exponent(float * JMC_RESTRICT pval)
     jimic_assert(pval != NULL);
     f32 = (jmc_ieee754_float *)pval;
     exponent = f32->ieee.exponent - JMC_IEEE754_FLOAT_EXPONENT_BIAS;
-    jimic_assert(exponent >= JMC_IEEE754_FLOAT_EXPONENT_MIN && exponent <= JMC_IEEE754_FLOAT_EXPONENT_MAX);
+    jimic_assert(exponent >= JMC_IEEE754_FLOAT_EXPONENT_MIN
+                 && exponent <= JMC_IEEE754_FLOAT_EXPONENT_MAX);
     return exponent;
 }
 
@@ -65,7 +66,8 @@ jmc_dget_exponent(double * JMC_RESTRICT pval)
     jimic_assert(pval != NULL);
     d64 = (jmc_ieee754_double *)pval;
     exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
-    jimic_assert(exponent >= JMC_IEEE754_DOUBLE_EXPONENT_MIN && exponent <= JMC_IEEE754_DOUBLE_EXPONENT_MAX);
+    jimic_assert(exponent >= JMC_IEEE754_DOUBLE_EXPONENT_MIN
+                 && exponent <= JMC_IEEE754_DOUBLE_EXPONENT_MAX);
     return exponent;
 }
 
@@ -218,7 +220,8 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int field_width, int precision)
     d64 = (jmc_ieee754_double *)&val;
 
     // is NaN or INF ? (exponent is maxium ?)
-    if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) != JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
+    if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) !=
+                               JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
         i64 = (int64_t)val;
         //if (val >= 0.0) {
         if (i64 >= 0) {
@@ -340,7 +343,8 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
     d64 = (jmc_ieee754_double *)&val;
 
     // is a NaN or INF or Normal ? (exponent is maxium ?)
-    if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) != JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
+    if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) !=
+                               JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
         // get the exponent value
         exponent = (int)(d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS);
         // if exponent belong range [0, 64), needn't to adjust
@@ -700,7 +704,8 @@ jmc_dtos_ex_old(char * JMC_RESTRICT buf, size_t count, double val, unsigned int 
 
     // is NaN or INF ? (exponent is maxium ?)
     //if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) != JM_DOUBLE_EXPONENT_MASK32) {
-    if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) != JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
+    if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) !=
+                               JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
         // get the exponent value
         exponent = (int)(d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS);
         // if exponent belong range [0, 64), needn't to adjust
@@ -1081,7 +1086,8 @@ jmc_dtos_ex2(char * JMC_RESTRICT buf, size_t count, double val, unsigned int fla
         d64 = (jmc_ieee754_double *)&val;
 
         // is NaN or INF ? (exponent is maxium ?)
-        if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) != JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
+        if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) !=
+                                   JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
             i64 = (int64_t)val;
             //if (val >= 0.0) {
             if (i64 >= 0) {
@@ -1241,7 +1247,8 @@ jmc_dtos_ex2(char * JMC_RESTRICT buf, size_t count, double val, unsigned int fla
         d64 = (jmc_ieee754_double *)&val;
 
         // is NaN or INF ? (exponent is maxium ?)
-        if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) != JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
+        if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) !=
+                                   JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
             i64 = (int64_t)val;
             //if (val >= 0.0) {
             if (i64 >= 0) {

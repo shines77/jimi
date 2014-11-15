@@ -206,22 +206,22 @@ union jmc_ieee754_double
   #if JIMIC_FLOAT_DWORD_ORDER == JIMIC_LITTLE_ENDIAN
         /* Float(double) dword order is little endian. */
         unsigned int reserve;
-        unsigned int dword;     // exponent at here
+        unsigned int dword;     // signbit at here
   #else
          /* Float(double) dword order is big endian too. */
-        unsigned int dword;     // exponent at here
+        unsigned int dword;     // signbit at here
         unsigned int reserve;
   #endif
 #else
         /* Little endian. */
   #if JIMIC_FLOAT_DWORD_ORDER == JIMIC_BIG_ENDIAN
         /* Float(double) dword order is big endian. */
-        unsigned int dword;     // exponent at here
+        unsigned int dword;     // signbit at here
         unsigned int reserve;
   #else
         /* Float(double) dword order is little endian too. */
         unsigned int reserve;
-        unsigned int dword;     // exponent at here
+        unsigned int dword;     // signbit at here
   #endif
 #endif
     } sign;
@@ -319,6 +319,9 @@ static const jmc_ieee754_double s_d64_exponent_mask = {
 #define JMC_IEEE754_FLOAT_EXPONENT_MASK32   (s_f32_exponent_mask.exponent.dword)
 #define JMC_IEEE754_DOUBLE_EXPONENT_MASK32  (s_d64_exponent_mask.exponent.dword)
 
+#define kFloatExponentMask32                JMC_IEEE754_FLOAT_EXPONENT_MASK32
+#define kDoubleExponentMask32               JMC_IEEE754_DOUBLE_EXPONENT_MASK32
+
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
 static const jmc_ieee754_float s_f32_sign_mask = {
     // .ieee
@@ -359,6 +362,9 @@ static const jmc_ieee754_double s_d64_sign_mask = {
 
 #define JMC_IEEE754_FLOAT_SIGN_MASK32       (s_f32_sign_mask.sign.dword)
 #define JMC_IEEE754_DOUBLE_SIGN_MASK32      (s_d64_sign_mask.sign.dword)
+
+#define kFloatSignBitMask32                 JMC_IEEE754_FLOAT_SIGN_MASK32
+#define kDoubleSignBitMask32                JMC_IEEE754_DOUBLE_SIGN_MASK32
 
 #ifdef __cplusplus
 }
