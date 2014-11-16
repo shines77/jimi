@@ -6,8 +6,11 @@
 #pragma once
 #endif
 
-#include "jimic/core/jimic_platform_def.h"
-#include "jimic/core/jimic_compiler_def.h"
+#include "jimi/core/jimi_platform_def.h"
+#include "jimi/core/jimi_compiler_def.h"
+
+#include "jimi/core/jimi_config.h"
+#include "jimic/core/jimic_config.h"
 
 // Define integer types with known size: int32_t, uint32_t, int64_t, uint64_t.
 // If this doesn't work then insert compiler-specific definitions here:
