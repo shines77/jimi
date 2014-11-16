@@ -3150,6 +3150,16 @@ bool ReadData3(DWORD dwBase, std::shared_ptr<T> &data)
     return true;
 }
 
+template <typename T>
+bool ReadData_Test(DWORD dwBase, std::shared_ptr<T> &data)
+{
+    data = std::make_shared<T>();
+    T *pData = data.get();
+    size_t size = sizeof(T);
+
+    return true;
+}
+
 #include "jimic/libc/ieee754.h"
 
 int UnitTest_Main(int argc, char *argv[])
@@ -3168,6 +3178,12 @@ int UnitTest_Main(int argc, char *argv[])
 
     std::shared_ptr<double> data_dbl;
     ReadData3<double>(1, data_dbl);
+
+    std::shared_ptr<double> dataT = std::shared_ptr<double>();
+    ReadData_Test(0, dataT);
+
+    std::shared_ptr<int> dataT2;
+    ReadData_Test(0, dataT2);
 
     int a = sizeof(jmc_ieee754_double);
 
