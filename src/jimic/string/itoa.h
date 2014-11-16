@@ -6,7 +6,8 @@
 #pragma once
 #endif
 
-#include "jimic/core/jimic_def.h"
+#include "jimic/core/jimic_stdint.h"
+#include "jimic/core/jimic_declare.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,7 +34,7 @@ jmc_u64toa_r10(char *buf, uint64_t val);
 JMC_INLINE_NONSTD(int)
 jmc_i64toa_r10(char *buf, int64_t val);
 
-// itoa_r10_ex()
+// itoa_radix10_ex()
 JMC_INLINE_NONSTD(int)
 jmc_utoa_r10_ex(char *buf, size_t count, unsigned int val, unsigned int flag,
                 unsigned int fill, unsigned int width, int length);
@@ -42,6 +43,7 @@ JMC_INLINE_NONSTD(int)
 jmc_itoa_r10_ex(char *buf, size_t count, int val, unsigned int flag,
                 unsigned int fill, unsigned int width, int length);
 
+// i64toa_radix10_ex()
 JMC_INLINE_NONSTD(int)
 jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
                   unsigned int fill, unsigned int field_width, int length);
@@ -50,6 +52,9 @@ JMC_INLINE_NONSTD(int)
 jmc_i64toa_r10_ex(char *buf, size_t count, int64_t val, unsigned int flag,
                   unsigned int fill, unsigned int field_width, int length);
 
+//
+// for snprintf() double
+//
 JMC_INLINE_NONSTD(int)
 jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign, unsigned int field_width);
 

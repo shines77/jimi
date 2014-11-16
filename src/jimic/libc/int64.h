@@ -6,8 +6,7 @@
 #pragma once
 #endif
 
-#include "jimic/core/jimic_def.h"
-
+#include "jimic/core/jimic_stdint.h"
 #include "jimic/libc/endian.h"
 
 union jmc_int64_t

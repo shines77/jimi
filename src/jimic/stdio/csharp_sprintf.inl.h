@@ -10,6 +10,10 @@
 #error "Don't include the internal file <jimic/stdio/csharp_sprintf.inl.h> directly; include <jimic/stdio/csharp_sprintf.h> instead."
 #endif
 
+#include "jimic/core/jimic_stdint.h"
+#include "jimic/core/jimic_declare.h"
+#include "jimic/core/jimic_assert.h"
+
 #include <stdarg.h>
 
 JMC_INLINE_NONSTD(int)

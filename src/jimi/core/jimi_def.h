@@ -16,10 +16,8 @@
 #include "jimi/core/jimi_config.h"
 #include "jimi/core/jimi_export.h"
 
-// Define type size_t
-#ifndef _SIZE_T_DEFINED
-#include <stddef.h>
-#endif
+#include "jimi/core/jimi_stdint.h"
+#include "jimi/core/jimi_common.h"
 
 #ifndef __has_feature
 #define __has_feature(X)        (0)
@@ -43,89 +41,15 @@
 
 #endif  /* Is noexcept supported? */
 
-// linux maybe need #include <sys/types.h>
+/**
+ * define the name of jimi namespaces
+ */
+#include "jimi/core/jimi_namespace.h"
 
-// Define integer types with known size: int32_t, uint32_t, int64_t, uint64_t.
-// If this doesn't work then insert compiler-specific definitions here:
-// (stdint.h defined from visual studio 2010 (_MSC_VER == 1600))
-#if defined(JIMI_IS_GNUC) || (defined(JIMI_MSC_VER) && JIMI_MSC_VER >= 1600)
-  // Compilers supporting C99 or C++0x have stdint.h defining these integer types
-  #include <stdint.h>
-  #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
-#elif defined(JIMI_MSC_VER)
-  #include "jimi/core/win32/vs_stdint.h"
-#else
-  #ifndef _STDINT
-    #define _STDINT
-    // This works with most compilers
-    typedef signed   short int  int16_t;
-    typedef unsigned short int uint16_t;
-    typedef signed   int        int32_t;
-    typedef unsigned int       uint32_t;
-    typedef long long           int64_t;
-    typedef unsigned long long uint64_t;
-    #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
-  #endif
-#endif
-
-#include "jimi/core/jimi_common.h"
-
-#define USING_NS_JIMI           using namespace jimi;
-
-// namespace jimi
-#define NS_JIMI_BEGIN           namespace jimi {
-#define NS_JIMI_END             }
-
-#define USING_NS_JIMI_CORE      using namespace jimi::core;
-#define USING_NS_JIMI_SYSTEM    using namespace jimi::system;
-#define USING_NS_JIMI_IOCP      using namespace jimi::iocp;
-#define USING_NS_JIMI_FS        using namespace jimi::fs;
-#define USING_NS_JIMI_IO        using namespace jimi::io;
-
-#define USING_NS_JIMI_MT        using namespace jimi::mt;
-#define USING_NS_JIMI_STL       using namespace jimi::stl;
-
-#define USING_NS_JIMI_SUB(NS)   using namespace jimi::NS;
-
-// namespace jimi::internal
-#define NS_JIMI_INTERNAL_BEGIN  namespace internal {
-#define NS_JIMI_INTERNAL_END    }
-
-// namespace jimi::core
-#define NS_JIMI_CORE_BEGIN      namespace core {
-#define NS_JIMI_CORE_END        }
-
-// namespace jimi::system
-#define NS_JIMI_SYSTEM_BEGIN    namespace system {
-#define NS_JIMI_SYSTEM_END      }
-
-// namespace jimi::ui
-#define NS_JIMI_UI_BEGIN        namespace ui {
-#define NS_JIMI_UI_END          }
-
-// namespace jimi::util
-#define NS_JIMI_UTIL_BEGIN      namespace util {
-#define NS_JIMI_UTIL_END        }
-
-// namespace jimi::iocp
-#define NS_JIMI_IOCP_BEGIN      namespace iocp {
-#define NS_JIMI_IOCP_END        }
-
-// namespace jimi::fs
-#define NS_JIMI_FS_BEGIN        namespace fs {
-#define NS_JIMI_FS_END          }
-
-// namespace jimi::io
-#define NS_JIMI_IO_BEGIN        namespace io {
-#define NS_JIMI_IO_END          }
-
-// namespace jimi::mt
-#define NS_JIMI_MT_BEGIN        namespace mt {
-#define NS_JIMI_MT_END          }
-
-// namespace jimi::stl
-#define NS_JIMI_STL_BEGIN       namespace stl {
-#define NS_JIMI_STL_END         }
+/**
+ * define jimic function declare type and inline defines
+ */
+#include "jimi/core/jimi_declare.h"
 
 /**
  * for assert defines

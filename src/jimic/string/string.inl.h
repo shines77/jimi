@@ -10,6 +10,10 @@
 #error "Don't include the internal file <jimic/string/string.inl.h> directly; include <jimic/string/string.h> instead."
 #endif
 
+#include "jimic/core/jimic_stdint.h"
+#include "jimic/core/jimic_declare.h"
+#include "jimic/core/jimic_assert.h"
+
 #include "jimic/string/jm_strings.h"
 
 #include <stdarg.h>

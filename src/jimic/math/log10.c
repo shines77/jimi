@@ -10,7 +10,7 @@
 // From URL: http://segmentfault.com/q/1010000000201351
 //
 
-#if (defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)) && (defined(_WIN32) || defined(_WIN64))
+#if (defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)) && (defined(_WIN32) && !defined(_WIN64))
 
 __declspec(naked)
 JMC_DECLARE_NONSTD(double)

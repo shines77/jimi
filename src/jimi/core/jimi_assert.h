@@ -6,7 +6,9 @@
 #pragma once
 #endif
 
-#include "jimi/core/jimi_def.h"
+#include "jimi/core/jimi_config.h"
+#include "jimi/core/jimi_declare.h"
+#include "jimi/core/jimi_namespace.h"
 
 #include <assert.h>
 

@@ -5,7 +5,9 @@
 
 #include <math.h>
 
+// for _BitScanReverse()
 #include <intrin.h>
+
 #pragma intrinsic(_BitScanReverse)
 
 static const unsigned int s_power10[16] = {

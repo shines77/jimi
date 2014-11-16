@@ -6,8 +6,7 @@
 #pragma once
 #endif
 
-#include "jimic/core/jimic_def.h"
-
+#include "jimic/core/jimic_stdint.h"
 #include "jimic/libc/endian.h"
 
 #ifdef __cplusplus
@@ -272,7 +271,7 @@ typedef union jmc_ieee754_double_u  jmc_ieee754_double;
 /* The maximum value of the exponent about IEEE754 double. */
 #define JMC_IEEE754_DOUBLE_EXPONENT_MAX     ((int)(JMC_IEEE754_DOUBLE_EXPONENT_MASK - JMC_IEEE754_DOUBLE_EXPONENT_BIAS))
 
-#if defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1700))
+#if defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1800))
 static const jmc_ieee754_float s_f32_exponent_mask = {
     // .ieee
     {
@@ -281,19 +280,19 @@ static const jmc_ieee754_float s_f32_exponent_mask = {
         0                                   // .negative
     }
 };
-#else  /* __GNUC__ || _MSC_VER >= 1700 */
+#else  /* __GNUC__ || _MSC_VER >= 1800 */
 static const jmc_ieee754_float s_f32_exponent_mask = {
     // .ieee
     .ieee.mantissa = 0,
     .ieee.exponent = JMC_IEEE754_FLOAT_EXPONENT_MASK,
     .ieee.negative = 0
 };
-#endif  /* defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1700)) */
+#endif  /* defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1800)) */
 
 //static const unsigned int s_float_exponent_mask = s_f32_exponent_mask.ieee.exponent;
 //static const unsigned int s_float_exponent_mask = (0xFFFFFFFFUL & s_f32_exponent_mask.ieee.exponent);
 
-#if defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1700))
+#if defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1800))
 static const jmc_ieee754_double s_d64_exponent_mask = {
     // .ieee
     {
@@ -303,7 +302,7 @@ static const jmc_ieee754_double s_d64_exponent_mask = {
         0                                   // .negative
     }
 };
-#else  /* __GNUC__ || _MSC_VER >= 1700 */
+#else  /* __GNUC__ || _MSC_VER >= 1800 */
 static const jmc_ieee754_double s_d64_exponent_mask = {
     // .ieee
     .ieee.mantissa0 = 0,
@@ -311,7 +310,7 @@ static const jmc_ieee754_double s_d64_exponent_mask = {
     .ieee.exponent  = JMC_IEEE754_DOUBLE_EXPONENT_MASK,
     .ieee.negative  = 0
 };
-#endif  /* defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1700)) */
+#endif  /* defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1800)) */
 
 //static const unsigned int s_double_exponent_mask = s_d64_exponent_mask.ieee.exponent;
 //static const unsigned int s_double_exponent_mask = (0xFFFFFFFFFFFFFFFFULL & s_d64_exponent_mask.ieee.exponent);
@@ -322,7 +321,7 @@ static const jmc_ieee754_double s_d64_exponent_mask = {
 #define kFloatExponentMask32                JMC_IEEE754_FLOAT_EXPONENT_MASK32
 #define kDoubleExponentMask32               JMC_IEEE754_DOUBLE_EXPONENT_MASK32
 
-#if defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1700))
+#if defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1800))
 static const jmc_ieee754_float s_f32_sign_mask = {
     // .ieee
     {
@@ -331,16 +330,16 @@ static const jmc_ieee754_float s_f32_sign_mask = {
         1       // .negative
     }
 };
-#else  /* __GNUC__ || _MSC_VER >= 1700 */
+#else  /* __GNUC__ || _MSC_VER >= 1800 */
 static const jmc_ieee754_float s_f32_sign_mask = {
     // .ieee
     .ieee.mantissa = 0,
     .ieee.exponent = 0,
     .ieee.negative = 1
 };
-#endif  /* defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1700)) */
+#endif  /* defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1800)) */
 
-#if defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1700))
+#if defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1800))
 static const jmc_ieee754_double s_d64_sign_mask = {
     // .ieee
     {
@@ -350,7 +349,7 @@ static const jmc_ieee754_double s_d64_sign_mask = {
         1       // .negative
     }
 };
-#else  /* __GNUC__ || _MSC_VER >= 1700 */
+#else  /* __GNUC__ || _MSC_VER >= 1800 */
 static const jmc_ieee754_double s_d64_sign_mask = {
     // .ieee
     .ieee.mantissa0 = 0,
@@ -358,7 +357,7 @@ static const jmc_ieee754_double s_d64_sign_mask = {
     .ieee.exponent  = 0,
     .ieee.negative  = 1
 };
-#endif  /* defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1700)) */
+#endif  /* defined(__cplusplus) || (defined(_MSC_VER) && (_MSC_VER < 1800)) */
 
 #define JMC_IEEE754_FLOAT_SIGN_MASK32       (s_f32_sign_mask.sign.dword)
 #define JMC_IEEE754_DOUBLE_SIGN_MASK32      (s_d64_sign_mask.sign.dword)

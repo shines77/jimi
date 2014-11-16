@@ -7,6 +7,8 @@
 #include "jimic/string/string.h"
 #include "jimic/util/utils.h"
 
+#include "jimic/core/jimic_assert.h"
+
 #include <stdarg.h>
 #include <math.h>       // for isnan(), isinf()
 #include <float.h>

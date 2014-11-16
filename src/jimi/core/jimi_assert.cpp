@@ -1,6 +1,6 @@
 
-#include "jimi/core/jimi_def.h"
 #include "jimi/core/jimi_assert.h"
+
 #include "jimic/string/jm_strings.h"
 
 // include headers for required function declarations

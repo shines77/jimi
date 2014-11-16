@@ -407,6 +407,30 @@
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf_lite.h">
       <Filter>src\jimic\stdio</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\itoa_fast.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\string\itoa_fast.inl.h">
+      <Filter>src\jimic\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_stdint.h">
+      <Filter>src\jimic\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_stdint.h">
+      <Filter>src\jimi\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_declare.h">
+      <Filter>src\jimic\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_declare.h">
+      <Filter>src\jimi\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_declare_comm.h">
+      <Filter>src\jimi\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_common.h">
+      <Filter>src\jimic\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">
@@ -486,6 +510,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\stdio\sprintf_lite.c">
       <Filter>src\jimic\stdio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\string\itoa_fast.c">
+      <Filter>src\jimic\string</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

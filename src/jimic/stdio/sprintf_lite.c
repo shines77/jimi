@@ -5,6 +5,8 @@
 #include "jimic/string/dtos.h"
 #include "jimic/string/string.h"
 
+#include "jimic/core/jimic_assert.h"
+
 #if defined(_MSC_VER) && (_MSC_VER != 0)
 #pragma warning(push)
 #pragma warning(disable : 4102) // 禁止warning C4102: "未引用的标签"

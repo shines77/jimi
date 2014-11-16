@@ -16,37 +16,29 @@
 #include "jimic/core/jimic_config.h"
 #include "jimic/core/jimic_export.h"
 
-// Define type size_t
-#ifndef _SIZE_T_DEFINED
-#include <stddef.h>
-#endif
+#include "jimic/core/jimic_stdint.h"
+#include "jimic/core/jimic_common.h"
 
-// linux maybe need #include <sys/types.h>
-
-// Define integer types with known size: int32_t, uint32_t, int64_t, uint64_t.
-// If this doesn't work then insert compiler-specific definitions here:
-// (stdint.h defined from visual studio 2010)
-#if defined(JIMI_IS_GNUC) || (defined(JIMI_MSC_VER) && JIMI_MSC_VER >= 1600)
-  // Compilers supporting C99 or C++0x have stdint.h defining these integer types
-  #include <stdint.h>
-  #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
-#elif defined(JIMI_MSC_VER)
-  #include "jimic/core/win32/vs_stdint.h"
+/**
+ * JMC public API wrap for C++ compilers.
+ */
+#ifdef __cplusplus
+#define JMC_BEGIN_DECLS     extern "C" {
+#define JMC_END_DECLS       }
 #else
-  #ifndef _STDINT
-    #define _STDINT
-    // This works with most compilers
-    typedef signed   short int  int16_t;
-    typedef unsigned short int uint16_t;
-    typedef signed   int        int32_t;
-    typedef unsigned int       uint32_t;
-    typedef long long           int64_t;
-    typedef unsigned long long uint64_t;
-    #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
-  #endif
-#endif
+#define JMC_BEGIN_DECLS
+#define JMC_END_DECLS
+#endif  /* __cplusplus */
 
-#include "jimi/core/jimi_common.h"
+/**
+ * define jimic function declare type and inline defines
+ */
+#include "jimic/core/jimic_declare.h"
+
+/**
+ * for jimic assert defines
+ */
+#include "jimic/core/jimic_assert.h"
 
 /**
  * @file jimic_def.h
@@ -175,159 +167,8 @@ typedef struct JIMIC_MACRO_T
     const char *value;
 } JIMIC_MACRO_T;
 
-#ifndef jm_const
-#define jm_const        const
-#endif  /* JM_CONST */
-
-#ifndef JM_CHAR_DEFINED
-#define JM_CHAR_DEFINED
-typedef char            jm_char;
-#endif  /* JM_CHAR_DEFINED */
-
-#ifndef JM_UCHAR_DEFINED
-#define JM_UCHAR_DEFINED
-typedef unsigned char   jm_uchar;
-#endif  /* JM_UCHAR_DEFINED */
-
 /**
- * JMC public API wrap for C++ compilers.
- */
-#ifdef __cplusplus
-#define JMC_BEGIN_DECLS     extern "C" {
-#define JMC_END_DECLS       }
-#else
-#define JMC_BEGIN_DECLS
-#define JMC_END_DECLS
-#endif  /* __cplusplus */
-
-/**
- * for jimic assert defines
- */
-#include "jimic/core/jimic_assert.h"
-
-/**
- * for JMC_DECLARE define
- */
-#if (!defined(JIMI_IS_WINDOWS)) || defined(JIMI_IS_DOXYGEN) || defined(__GUNC__) \
-    || defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__)
-
-#define JMC_DECLARE(type)               type
-#define JMC_DECLARE_NONSTD(type)        type
-#define JMC_INLINE_DECLARE(type)        static JMC_INLINE type
-#define JMC_INLINE_NONSTD(type)         static JMC_INLINE type
-#define JMC_FORCEINLINE_DECLARE(type)   static JMC_FORCEINLINE type
-#define JMC_FORCEINLINE_NONSTD(type)    static JMC_FORCEINLINE type
-#define JMC_DECLARE_DATA
-
-#elif defined(JIMI_DECLARE_IMPORT)
-
-#define JMC_DECLARE(type)               __declspec(dllimport) type __stdcall
-#define JMC_DECLARE_NONSTD(type)        __declspec(dllimport) type __cdecl
-#define JMC_INLINE_DECLARE(type)        static JMC_INLINE __declspec(dllimport) type __stdcall
-#define JMC_INLINE_NONSTD(type)         static JMC_INLINE __declspec(dllimport) type __cdecl
-#define JMC_FORCEINLINE_DECLARE(type)   static JMC_FORCEINLINE __declspec(dllimport) type __stdcall
-#define JMC_FORCEINLINE_NONSTD(type)    static JMC_FORCEINLINE __declspec(dllimport) type __cdecl
-#define JMC_DECLARE_DATA                __declspec(dllimport)
-
-#elif defined(JIMI_DECLARE_EXPORT)
-
-#define JMC_DECLARE(type)               __declspec(dllexport) type __stdcall
-#define JMC_DECLARE_NONSTD(type)        __declspec(dllexport) type __cdecl
-#define JMC_INLINE_DECLARE(type)        static JMC_INLINE __declspec(dllexport) type __stdcall
-#define JMC_INLINE_NONSTD(type)         static JMC_INLINE __declspec(dllexport) type __cdecl
-#define JMC_FORCEINLINE_DECLARE(type)   static JMC_FORCEINLINE __declspec(dllexport) type __stdcall
-#define JMC_FORCEINLINE_NONSTD(type)    static JMC_FORCEINLINE __declspec(dllexport) type __cdecl
-#define JMC_DECLARE_DATA                __declspec(dllexport)
-
-#else
-
-#define JMC_DECLARE(type)               type __stdcall
-#define JMC_DECLARE_NONSTD(type)        type __cdecl
-#define JMC_INLINE_DECLARE(type)        static JMC_INLINE type __stdcall
-#define JMC_INLINE_NONSTD(type)         static JMC_INLINE type __cdecl
-#define JMC_FORCEINLINE_DECLARE(type)   static JMC_FORCEINLINE type __stdcall
-#define JMC_FORCEINLINE_NONSTD(type)    static JMC_FORCEINLINE type __cdecl
-#define JMC_DECLARE_DATA
-
-#endif  /* (!defined(JIMI_IS_WINDOWS)) || defined(JIMI_IS_DOXYGEN) */
-
-/**
- * for thread func define
- */
-#if defined(JIMI_IS_WINDOWS)
-#define JIMIC_THREAD_FUNC           __stdcall
-#else
-#define JIMIC_THREAD_FUNC
-#endif  /* JIMI_IS_WINDOWS */
-
-#if !defined(__GNUC__) && !defined(__attribute__)
-#define __attribute__(__x)
-#endif
-
-/**
- * for exported func
- */
-#if _MSC_VER >= 1400
-    #define JIMIC_EXPORTED_FUNC     __cdecl
-    #define JIMIC_EXPORTED_METHOD   __thiscall
-#else
-    #define JIMIC_EXPORTED_FUNC
-    #define JIMIC_EXPORTED_METHOD
-#endif
-
-#if _MSC_VER || __INTEL_COMPILER
-#define JIMIC_NOINLINE(decl)    __declspec(noinline) decl
-#elif __GNUC__
-#define JIMIC_NOINLINE(decl)    decl __attribute__ ((noinline))
-#else
-#define JIMIC_NOINLINE(decl)    decl
-#endif
-
-/**
- * for jmc_countof helper
- */
-#if defined(_M_MRX000) || defined(_M_ALPHA) || defined(_M_PPC) || defined(_M_IA64) || defined(_M_AMD64)
-#define ALIGNMENT_MACHINE
-#define UNALIGNED   __unaligned
-#if defined(_WIN64)
-#define UNALIGNED64 __unaligned
-#else
-#define UNALIGNED64
-#endif
-#else
-#undef ALIGNMENT_MACHINE
-#ifndef UNALIGNED
-#define UNALIGNED
-#endif
-#ifndef UNALIGNED64
-#define UNALIGNED64
-#endif
-#endif
-
-/**
- * jmc_countof helper
- */
-#if !defined(jmc_countof)
-
-#if !defined(__cplusplus)
-
-#define jmc_countof(_Array)     (sizeof(_Array) / sizeof(_Array[0]))
-
-#else
-
-extern "C++"
-{
-template <typename _CountofType, size_t _SizeOfArray>
-char (*__jmc_countof_helper(UNALIGNED _CountofType (&_Array)[_SizeOfArray]))[_SizeOfArray];
-
-#define jmc_countof(_Array)     sizeof(*__jmc_countof_helper(_Array))
-}
-
-#endif  /* !defined(__cplusplus) */
-
-#endif  /* !defined(jmc_countof) */
-
-/* Done with badly written headers
+  Done with badly written headers
  */
 #if defined(_MSC_VER) && _MSC_VER >= 1200
 //#pragma warning(pop)

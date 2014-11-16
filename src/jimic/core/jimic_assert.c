@@ -1,6 +1,6 @@
 
-#include "jimic/core/jimic_def.h"
 #include "jimic/core/jimic_assert.h"
+
 #include "jimic/string/jm_strings.h"
 
 // include headers for required function declarations
@@ -57,7 +57,7 @@ void JIMIC_EXPORTED_FUNC jimic_assertion_failure(const char * filename, int line
 
 #if !JIMI_MALLOC_BUILD
     //! Report a runtime warning.
-    void JIMI_EXPORTED_FUNC jimic_runtime_warning(const char * format, ...)
+    void JIMIC_EXPORTED_FUNC jimic_runtime_warning(const char * format, ...)
     {
         va_list args;
         char str[1024];
