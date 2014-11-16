@@ -18,6 +18,12 @@ ieee754_log10_crt_1(double val);
 JMC_DECLARE_NONSTD(int)
 ieee754_log10_crt_2(double val);
 
+JMC_DECLARE_NONSTD(double)
+ieee754_log10_x87(double x);
+
+JMC_DECLARE_NONSTD(int)
+ieee754_int_log10_x87(double x);
+
 JMC_DECLARE_NONSTD(int)
 jmc_log10_fast(double val);
 

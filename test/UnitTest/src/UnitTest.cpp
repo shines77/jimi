@@ -2579,6 +2579,19 @@ void Log10_Test2()
     time2 = sw.getMillisec();
     printf("ieee754_log10_crt_2():  time = %0.6f ms, exp10 = %d.\n\n", time2, exp10);
 
+    // ieee754_int_log10_x87()
+    val = 1000000000.0;
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += ieee754_int_log10_x87(val);
+        val += 100.0;
+    }
+    sw.stop();
+    time2 = sw.getMillisec();
+    printf("ieee754_log10_x87():    time = %0.6f ms, exp10 = %d.\n\n", time2, exp10);
+
     val = 1000000000.0;
     exp10 = 0;
 
@@ -2708,41 +2721,55 @@ void Int_Log10_Test()
     printf("  Int_Log10_Test()\n\n");
     printf("==============================================================================\n\n");
 
-    val = 1;
     exp10 = 0;
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        exp10 += jmc_uint_log10_sys(val);
-        val += 1;
+        exp10 += jmc_uint_log10_sys(i);
     }
     sw.stop();
     time1 = sw.getMillisec();
-    printf("jmc_uint_log10_sys():   time = %07.4f ms, exp10 = %d.\n\n", time1, exp10);
+    printf("jmc_uint_log10_sys():   time = %7.4f ms, exp10 = %d.\n\n", time1, exp10);
 
-    val = 1;
     exp10 = 0;
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        exp10 += jmc_uint_log10_fast(val);
-        val += 1;
+        exp10 += jmc_uint_log10_comp(i);
     }
     sw.stop();
     time2 = sw.getMillisec();
-    printf("jmc_uint_log10_fast():  time = %07.4f ms, exp10 = %d.\n\n", time2, exp10);
+    printf("jmc_uint_log10_comp():  time = %7.4f ms, exp10 = %d.\n\n", time2, exp10);
 
-    val = 1;
     exp10 = 0;
 
     sw.restart();
     for (i = 0; i < LOOP_TIMES; ++i) {
-        exp10 += jmc_uint_log10(val);
-        val += 1;
+        exp10 += jmc_uint_log10(i);
     }
     sw.stop();
     time3 = sw.getMillisec();
-    printf("jmc_uint_log10():       time = %07.4f ms, exp10 = %d.\n\n", time3, exp10);
+    printf("jmc_uint_log10():       time = %7.4f ms, exp10 = %d.\n\n", time3, exp10);
+
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += jmc_uint_log10_v2(i);
+    }
+    sw.stop();
+    time1 = sw.getMillisec();
+    printf("jmc_uint_log10_v2():    time = %7.4f ms, exp10 = %d.\n\n", time1, exp10);
+
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES; ++i) {
+        exp10 += jmc_uint_log10_v3(i);
+    }
+    sw.stop();
+    time2 = sw.getMillisec();
+    printf("jmc_uint_log10_v3():    time = %7.4f ms, exp10 = %d.\n\n", time2, exp10);
 
 #ifdef _WIN64
 
@@ -2756,10 +2783,124 @@ void Int_Log10_Test()
     }
     sw.stop();
     time4 = sw.getMillisec();
-    printf("jmc_uint64_log10():     time = %0.6f ms, exp10 = %d.\n\n", time4, exp10);
+    printf("jmc_uint64_log10():     time = %7.4f ms, exp10 = %d.\n\n", time4, exp10);
 
 #endif
 
+    // special test (0-19)
+    printf("special test (0-19):\n\n");
+    
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES / 20; ++i) {
+        for (val = 0; val < 20; ++val) {
+            exp10 += jmc_uint_log10(val);
+        }
+    }
+    sw.stop();
+    time1 = sw.getMillisec();
+    printf("jmc_uint_log10():       time = %7.4f ms, exp10 = %d.\n\n", time1, exp10);
+
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES / 20; ++i) {
+        for (val = 0; val < 20; ++val) {
+            exp10 += jmc_uint_log10_v2(val);
+        }
+    }
+    sw.stop();
+    time2 = sw.getMillisec();
+    printf("jmc_uint_log10_v2():    time = %7.4f ms, exp10 = %d.\n\n", time2, exp10);
+
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES / 20; ++i) {
+        for (val = 0; val < 20; ++val) {
+            exp10 += jmc_uint_log10_v3(val);
+        }
+    }
+    sw.stop();
+    time3 = sw.getMillisec();
+    printf("jmc_uint_log10_v3():    time = %7.4f ms, exp10 = %d.\n\n", time3, exp10);
+
+    // special test (0-99)
+    printf("special test (0-99):\n\n");
+
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES / 100; ++i) {
+        for (val = 0; val < 100; ++val) {
+            exp10 += jmc_uint_log10(val);
+        }
+    }
+    sw.stop();
+    time1 = sw.getMillisec();
+    printf("jmc_uint_log10():       time = %7.4f ms, exp10 = %d.\n\n", time1, exp10);
+
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES / 100; ++i) {
+        for (val = 0; val < 100; ++val) {
+            exp10 += jmc_uint_log10_v2(val);
+        }
+    }
+    sw.stop();
+    time2 = sw.getMillisec();
+    printf("jmc_uint_log10_v2():    time = %7.4f ms, exp10 = %d.\n\n", time2, exp10);
+
+    exp10 = 0;
+
+    sw.restart();
+    for (i = 0; i < LOOP_TIMES / 100; ++i) {
+        for (val = 0; val < 100; ++val) {
+            exp10 += jmc_uint_log10_v3(val);
+        }
+    }
+    sw.stop();
+    time3 = sw.getMillisec();
+    printf("jmc_uint_log10_v3():    time = %7.4f ms, exp10 = %d.\n\n", time3, exp10);
+
+    printf("\n");
+}
+
+void Int_Log10_TestNum(unsigned int val)
+{
+    unsigned int exp10;
+    exp10 = jmc_uint_log10(val);
+    printf("jmc_uint_log10(%u) \t= %u\n", val, exp10);
+}
+
+void Int_Log10_TestNums()
+{
+    ieee754_log10_x87(9.0);
+
+    Int_Log10_TestNum(9);
+    Int_Log10_TestNum(10);
+    printf("\n");
+
+    Int_Log10_TestNum(99);
+    Int_Log10_TestNum(100);
+    printf("\n");
+
+    Int_Log10_TestNum(999);
+    Int_Log10_TestNum(1000);
+    printf("\n");
+
+    Int_Log10_TestNum(99999999);
+    Int_Log10_TestNum(100000000);
+    printf("\n");
+
+    Int_Log10_TestNum(999999999);
+    Int_Log10_TestNum(1000000000);
+    printf("\n");
+
+    Int_Log10_TestNum(2147483648);
+    Int_Log10_TestNum(4294967295);
     printf("\n");
 }
 
@@ -2977,10 +3118,58 @@ void sprintf_lite_test()
     printf("snprintf_lite(\"#%%M\", %d) = %s\n", 3456789, outbuf);
 }
 
+#include <memory>
+
+template <typename T, typename RefType = std::shared_ptr<T> >
+bool ReadData(DWORD dwBase, RefType &data)
+{
+    data = std::make_shared<T>(1);
+    T *pData = data.get();
+    size_t size = sizeof(T);
+
+    return true;
+}
+
+template <typename T>
+bool ReadData2(DWORD dwBase, std::shared_ptr<T> &data)
+{
+    data = std::make_shared<T>(1);
+    T *pData = data.get();
+    size_t size = sizeof(T);
+
+    return true;
+}
+
+template <typename T = int>
+bool ReadData3(DWORD dwBase, std::shared_ptr<T> &data)
+{
+    data = std::make_shared<T>(1);
+    T *pData = data.get();
+    size_t size = sizeof(T);
+
+    return true;
+}
+
+#include "jimic/libc/ieee754.h"
+
 int UnitTest_Main(int argc, char *argv[])
 {
     //using namespace jimi;
     //using namespace jimi::system;
+
+    std::shared_ptr<int> data;
+    ReadData<int>((DWORD)1, data);
+
+    std::shared_ptr<int> data2;
+    ReadData2<int>(1, data2);
+
+    std::shared_ptr<int> data3;
+    ReadData3<>(1, data3);
+
+    std::shared_ptr<double> data_dbl;
+    ReadData3<double>(1, data_dbl);
+
+    int a = sizeof(jmc_ieee754_double);
 
     // 设置进程和线程的亲缘性
     jimi_set_thread_affinity(0);
@@ -2998,13 +3187,13 @@ int UnitTest_Main(int argc, char *argv[])
     }
 
     // Test System.out.info()
-    jimi::System.out.info("System.out.info() test.");
+    jimi::System.out.info("System.out.info() test.\n");
 
     // Test System.out.print()
     jimi::System.out.print("System.out.print() test.\n");
 
     // Test System.out.println()
-    jimi::System.out.println("System.out.println() test.");
+    jimi::System.out.println("System.out.println() test.\n");
 
 #if 0
 #if !defined(_MSC_VER) || (_MSC_VER >= 1600)
@@ -3112,7 +3301,7 @@ int UnitTest_Main(int argc, char *argv[])
         sprintf_lite_test();
 
         printf("\n");
-        jimi::Console.ReadKey_NewtLine(true);
+        //jimi::Console.ReadKey_NewtLine(true);
         //return 0;
     }
 
@@ -3169,6 +3358,7 @@ int UnitTest_Main(int argc, char *argv[])
     Log10_Test3();
 
     Int_Log10_Test();
+    Int_Log10_TestNums();
 
     jimi::Console.ReadKey_NewtLine(true);
 

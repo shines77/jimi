@@ -10,10 +10,14 @@
 
 #include "jimic/libc/endian.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* 注意: 预编译的#else部分代表是默认定义, 因为 JIMIC_BYTE_ORDER 宏可以定义为0或未定义. */
 /* 单精度浮点float默认认为是小端的. */
 
-union jmc_ieee754_float
+union jmc_ieee754_float_u
 {
     /* This is the IEEE 754 single-precision format. */
     struct fieee_t {
@@ -61,7 +65,7 @@ union jmc_ieee754_float
     } exponent;
 };
 
-typedef union jmc_ieee754_float jmc_ieee754_float;
+typedef union jmc_ieee754_float_u   jmc_ieee754_float;
 
 /* Added to exponent. */
 #define JMC_IEEE754_FLOAT_EXPONENT_BIAS     (0x007FL)
@@ -78,7 +82,7 @@ typedef union jmc_ieee754_float jmc_ieee754_float;
 /* 注意: 预编译的#else部分代表是默认定义, 因为 JIMIC_BYTE_ORDER 宏可以定义为0或未定义. */
 /* 双精度浮点double默认认为是小端的. */
 
-union jmc_ieee754_double
+union jmc_ieee754_double_u
 {
     /* This is the IEEE 754 double-precision format. */
     struct dieee_t {
@@ -254,7 +258,7 @@ union jmc_ieee754_double
     } exponent;
 };
 
-typedef union jmc_ieee754_double jmc_ieee754_double;
+typedef union jmc_ieee754_double_u  jmc_ieee754_double;
 
 /* Added to exponent. */
 #define JMC_IEEE754_DOUBLE_EXPONENT_BIAS    (0x03FFL)
@@ -268,11 +272,7 @@ typedef union jmc_ieee754_double jmc_ieee754_double;
 /* The maximum value of the exponent about IEEE754 double. */
 #define JMC_IEEE754_DOUBLE_EXPONENT_MAX     ((int)(JMC_IEEE754_DOUBLE_EXPONENT_MASK - JMC_IEEE754_DOUBLE_EXPONENT_BIAS))
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#if defined(_MSC_VER) && (_MSC_VER < 1700)
+#if defined(_MSC_VER) && ((_MSC_VER < 1700) || defined(__cplusplus))
 static const jmc_ieee754_float s_f32_exponent_mask = {
     // .ieee
     {
@@ -293,7 +293,7 @@ static const jmc_ieee754_float s_f32_exponent_mask = {
 //static const unsigned int s_float_exponent_mask = s_f32_exponent_mask.ieee.exponent;
 //static const unsigned int s_float_exponent_mask = (0xFFFFFFFFUL & s_f32_exponent_mask.ieee.exponent);
 
-#if defined(_MSC_VER) && (_MSC_VER < 1700)
+#if defined(_MSC_VER) && ((_MSC_VER < 1700) || defined(__cplusplus))
 static const jmc_ieee754_double s_d64_exponent_mask = {
     // .ieee
     {
@@ -322,7 +322,7 @@ static const jmc_ieee754_double s_d64_exponent_mask = {
 #define kFloatExponentMask32                JMC_IEEE754_FLOAT_EXPONENT_MASK32
 #define kDoubleExponentMask32               JMC_IEEE754_DOUBLE_EXPONENT_MASK32
 
-#if defined(_MSC_VER) && (_MSC_VER < 1700)
+#if defined(_MSC_VER) && ((_MSC_VER < 1700) || defined(__cplusplus))
 static const jmc_ieee754_float s_f32_sign_mask = {
     // .ieee
     {
@@ -340,7 +340,7 @@ static const jmc_ieee754_float s_f32_sign_mask = {
 };
 #endif  /* defined(_MSC_VER) && (_MSC_VER < 1700) */
 
-#if defined(_MSC_VER) && (_MSC_VER < 1700)
+#if defined(_MSC_VER) && ((_MSC_VER < 1700) || defined(__cplusplus))
 static const jmc_ieee754_double s_d64_sign_mask = {
     // .ieee
     {

@@ -8,7 +8,7 @@
 
 #include "jimi/core/jimi_def.h"
 
-#define UNITEST_USE_NAMESPACE       1
+#define UNITEST_USE_NAMESPACE       0
 
 #if defined(UNITEST_USE_NAMESPACE) && (UNITEST_USE_NAMESPACE != 0)
 
