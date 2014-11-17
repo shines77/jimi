@@ -190,7 +190,7 @@ strlen_386:
 
 ///////////////////////////////////////////////////////////////////////////
 
-#include "jimic/string/jm_strings.h>
+#include "jimic/string/jm_strings.h"
 
 size_t jmf_strlwr(char *str)
 {

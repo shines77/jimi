@@ -36,4 +36,23 @@
 #define JIMIC_IS_LITTLE_ENDIAN              0
 #endif
 
+#if 1 || ( \
+    !(defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__)) \
+    && !(defined(__GNUC__) && defined(__CYGWIN__)) \
+    )
+
+#ifndef __has_feature
+  #define __has_feature(x)      0
+#endif
+
+#ifndef __has_attribute
+  #define __has_attribute(x)    0
+#endif
+
+#ifndef __has_builtin
+  #define __has_builtin(x)      0
+#endif
+
+#endif  /* not is MINGW or cygwin. */
+
 #endif  /* !_JIMIC_CORE_WIN32_CONFIG_H_ */

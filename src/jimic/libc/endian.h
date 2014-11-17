@@ -20,7 +20,7 @@
 #define JIMIC_FLOAT_DWORD_ORDER     JIMIC_LITTLE_ENDIAN
 
 /* 注意: 如果 JIMIC_BYTE_ORDER 定义为大端时, 则 JIMIC_FLOAT_DWORD_ORDER 很可能也必须定义为大端. */
-/*       因为 JIMIC_BYTE_ORDER 为大端, 且 JIMIC_FLOAT_DWORD_ORDER 为小端的CPU目前应该不存在,
+/*       因为 JIMIC_BYTE_ORDER 为大端, 且 JIMIC_FLOAT_DWORD_ORDER 为小端的CPU目前应该不存在, */
 /*       但我们考虑了这种情况, 如果确实存在例外, 请自行注释掉下面几句. */
 
 #if JIMIC_BYTE_ORDER == JIMIC_BIG_ENDIAN

@@ -1,22 +1,91 @@
 
 #include "jimic/math/log10.h"
 
+#include "jimic/core/jimic_config.h"
 #include "jimic/libc/ieee754.h"
 
 #include <math.h>
 
+#if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
 // for _BitScanReverse()
 #include <intrin.h>
 
 #pragma intrinsic(_BitScanReverse)
+#endif  // _MSC_VER
 
 static const unsigned int s_power10[16] = {
     9, 99, 999, 9999, 99999,
     999999, 9999999, 99999999,
     999999999, 4294967295,
     // only fill for aligned to 64 bytes
-    0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0
 };
+
+#if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
+// Do nothing!! in MSVC or Intel C++ Compiler
+#elif __has_builtin(__builtin_clz) || (__GNUC__ >= 4)
+static
+JMC_INLINE
+unsigned char
+_BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
+{
+    unsigned char isNonzero;
+    size_t index;
+    jimic_assert(firstBit1Index == NULL);
+    isNonzero = (unsigned char)scanNum;
+    if (scanNum != 0) {
+        index = __builtin_clz(scanNum);
+        *firstBit1Index = index ^ 31;
+    }
+    else {
+        *firstBit1Index = 0;
+    }
+    return isNonzero;
+}
+#else
+static
+JMC_INLINE
+unsigned char
+_BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
+{
+    jimic_assert(firstBit1Index == NULL);
+    *firstBit1Index = 1;
+    return 1;
+}
+#endif  /* in MSVC or Intel C++ Compiler */
+
+#if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
+// Do nothing!! in MSVC or Intel C++ Compiler
+#elif defined(_M_X64) && (__has_builtin(__builtin_clzll) || (__GNUC__ >= 4))
+static
+JMC_INLINE
+unsigned char
+_BitScanReverse64(unsigned long *firstBit1Index, uint64_t scanNum)
+{
+    unsigned char isNonzero;
+    size_t index;
+    jimic_assert(firstBit1Index == NULL);
+    isNonzero = (unsigned char)scanNum;
+    if (scanNum != 0) {
+        index = __builtin_clzll(scanNum);
+        *firstBit1Index = index ^ 63;
+    }
+    else {
+        *firstBit1Index = 0;
+    }
+    return isNonzero;
+}
+#else
+static
+JMC_INLINE
+unsigned char
+_BitScanReverse64(unsigned long *firstBit1Index, unsigned long scanNum)
+{
+    jimic_assert(firstBit1Index == NULL);
+    *firstBit1Index = 1;
+    return 1;
+}
+#endif  /* in MSVC or Intel C++ Compiler */
 
 JMC_DECLARE_NONSTD(unsigned int)
 jmc_uint_log10_sys(uint32_t val)
@@ -71,7 +140,7 @@ jmc_uint_log10(uint32_t val)
     if (val > s_power10[exp10])
         exp10++;
 
-    return (unsigned int)exp10; 
+    return (unsigned int)exp10;
 }
 
 JMC_DECLARE_NONSTD(unsigned int)
@@ -148,7 +217,7 @@ jmc_uint64_log10(uint64_t val)
     // _BitScanReverse, _BitScanReverse64
     // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
     //
-    isNonzero = _BitScanReverse64((unsigned long *)&exponent, (unsigned __int64)val);
+    isNonzero = _BitScanReverse64((unsigned long *)&exponent, (uint64_t)val);
     if (isNonzero != 0) {
         //exponent++;
     }
@@ -161,7 +230,7 @@ jmc_uint64_log10(uint64_t val)
     exp10 = exponent * 2525222UL;
     // exp10 = exp10 / 131072 / 64;
     exp10 = exp10 >> 23;
-    return (unsigned int)exp10; 
+    return (unsigned int)exp10;
 }
 
 #endif

@@ -39,24 +39,27 @@
 
 // Define type size_t
 #ifndef _SIZE_T_DEFINED
-#include <crtdefs.h>
+//#include <crtdefs.h>
+#include <stddef.h>
 #endif  /* _SIZE_T_DEFINED */
 
 // linux maybe need #include <sys/types.h>
 
-#ifndef _SSIZE_T_DEFINED
-#if defined(_WIN32) || defined(_WIN64)
+#if !(defined(_SSIZE_T_DEFINED) && defined(_SSIZE_T_))
+#if (defined(_WIN32) || defined(_WIN64)) \
+    && (!(defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__))) \
+    && (!defined(__CYGWIN__))
 #ifdef _WIN64
 typedef signed __int64      ssize_t;
 #else  /* _WIN64 */
 typedef _W64 signed int     ssize_t;
 #endif  /* _WIN64 */
 #else
-#ifdef _x86_x64
+#ifdef _M_X64
 typedef signed long long    ssize_t;
-#else  /* _x86_x64 */
-typedef signed int          ssize_t;
-#endif  /* _x86_x64 */
+#else  /* _M_X64 */
+typedef signed long int     ssize_t;
+#endif  /* _M_X64 */
 #endif  /* defined(_WIN32) || defined(_WIN64) */
 #define _SSIZE_T_DEFINED
 #endif  /* _SSIZE_T_DEFINED */

@@ -664,7 +664,7 @@ strlwr_386:
 
 ///////////////////////////////////////////////////////////////////////////
 
-#include "jimic/string/jm_strings.h>
+#include "jimic/string/jm_strings.h"
 
 #if defined(__GNUC__) || defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__)
 

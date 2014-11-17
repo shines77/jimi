@@ -35,7 +35,7 @@ ieee754_log10_x87(double val)
     //   ST(0) <= CONSTANT;
 
     //
-    // 80x87 Instruction Set (x87 - Pentium) 
+    // 80x87 Instruction Set (x87 - Pentium)
     // http://www.cs.dartmouth.edu/~mckeeman/cs48/mxcom/doc/x87.html
     //
 
@@ -64,8 +64,8 @@ ieee754_log10_x87(double val)
 {
     register double ret;
     __asm__(
-        "fldlg2\n\t" 
-        "fxch\n\t" 
+        "fldlg2\n\t"
+        "fxch\n\t"
         "fyl2x"
         :"=t"(ret)
         :"0"(val)
@@ -82,6 +82,8 @@ ieee754_log10_x87(double val)
 }
 
 #endif
+
+#if (defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)) && (defined(_WIN32) && !defined(_WIN64))
 
 JMC_DECLARE_NONSTD(double)
 ieee754_log10_x87_v2(double val)
@@ -108,7 +110,7 @@ ieee754_log10_x87_v2(double val)
     //   ST(0) <= CONSTANT;
 
     //
-    // 80x87 Instruction Set (x87 - Pentium) 
+    // 80x87 Instruction Set (x87 - Pentium)
     // http://www.cs.dartmouth.edu/~mckeeman/cs48/mxcom/doc/x87.html
     //
 
@@ -123,10 +125,36 @@ ieee754_log10_x87_v2(double val)
                                 ; swap ST(0), ST(1)
         fyl2x                   ; fyl2x:    Compute ST(0) <= Y * log2(x)
                                 ; fyl2xp1:  Compute ST(0) <= Y * log2(x+1)
-        //fst     ret_val         ; 
+        //fst     ret_val         ;
     }
     //return ret_val;
 }
+
+#elif defined(__GUNC__) || defined(__linux__) || defined(__llvm__)
+
+JMC_DECLARE_NONSTD(double)
+ieee754_log10_x87_v2(double val)
+{
+    register double ret;
+    __asm__(
+        "fldlg2\n\t"
+        "fxch\n\t"
+        "fyl2x"
+        :"=t"(ret)
+        :"0"(val)
+    );
+    return ret;
+}
+
+#else
+
+JMC_DECLARE_NONSTD(double)
+ieee754_log10_x87_v2(double val)
+{
+    return log(val);
+}
+
+#endif
 
 //
 // Reference: http://stackoverflow.com/questions/10810105/explanation-wanted-log10-faster-than-log-and-log2-but-only-with-o2-and-greater
@@ -193,7 +221,7 @@ jmc_log10_fast(double val)
         // exp10 = exp10 / 131072 / 64, exp10 = exp10 >> (17 + 6), 131072 = 2^17;
         exp10 = (int)((unsigned int)exp10 >> 23);
         return (int)-exp10;
-    }   
+    }
 }
 
 JMC_DECLARE_NONSTD(int)

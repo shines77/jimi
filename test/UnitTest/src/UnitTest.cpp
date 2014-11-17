@@ -2904,6 +2904,8 @@ void Int_Log10_TestNums()
     printf("\n");
 }
 
+#include "jimic/string/dtos.h"
+
 void Double_And_Float_Test()
 {
     char buf[128];
@@ -3088,6 +3090,31 @@ void Double_And_Float_Test()
 #endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 }
 
+#include "jimi/lang/SmallString.h"
+
+void SmallString_Test()
+{
+    jimi::SmallString<char, 120, 15> smallString1("small string test");
+    jimi::SmallString<char, 122, 31> smallString2("small string test! small string test! small string test! "
+                                                  "small string test! small string test! small string test! "
+                                                  "small string test! small string test! small string test! "
+                                                  "small string test! small string test! small string test! ");
+
+    printf("smallString1<char , 128>.capacity()  = %u byte(s),\n", smallString1.capacity());
+    printf("smallString1<char , 128>.alignment() = %u byte(s),\n", smallString1.alignment());
+    printf("smallString1<char , 128>.data()      = 0x%p,\n", smallString1.data());
+    printf("smallString1<char , 128>.size()      = %u byte(s),\n", smallString1.size());
+    printf("smallString1<char , 128>.c_str()     = \"%s\".\n", smallString1.c_str());
+    printf("\n");
+
+    printf("smallString2<char , 128>.capacity()  = %u byte(s),\n", smallString2.capacity());
+    printf("smallString2<char , 128>.alignment() = %u byte(s),\n", smallString2.alignment());
+    printf("smallString2<char , 128>.data()      = 0x%p,\n", smallString2.data());
+    printf("smallString2<char , 128>.size()      = %u byte(s),\n", smallString2.size());
+    printf("smallString2<char , 128>.c_str()     = \"%s\".\n", smallString2.c_str());
+    printf("\n");
+}
+
 #include "jimic/stdio/sprintf_lite.h"
 
 void sprintf_lite_test()
@@ -3238,13 +3265,13 @@ int UnitTest_Main(int argc, char *argv[])
     WidgetSampleTest();
     printf("\n");
 
-    jimi::Console.ReadKey_NewtLine(true);
+    jimi::Console.ReadKey_NewLine(true);
 #endif
 
 #if 0
     malloc_addr_test();
 
-    jimi::Console.ReadKey_NewtLine(true);
+    jimi::Console.ReadKey_NewLine(true);
     return 0;
 #endif
 
@@ -3313,13 +3340,18 @@ int UnitTest_Main(int argc, char *argv[])
     Emplace_Test();
 #endif
 
-    if (true && 1) {
-        sprintf_lite_test();
+#if 1
+    sprintf_lite_test();
+    printf("\n");
 
-        printf("\n");
-        //jimi::Console.ReadKey_NewtLine(true);
-        //return 0;
+    if (true && 0) {
+        jmLog.log_end();
+        jimi::Console.ReadKey();
+        return 0;
     }
+
+    //jimi::Console.ReadKey_NewLine(true);
+#endif
 
     // 测试std::string是否使用了COW(Copy On Write)
     //String_Copy_On_Write_Test();
@@ -3373,36 +3405,20 @@ int UnitTest_Main(int argc, char *argv[])
     Log10_Test2();
     Log10_Test3();
 
+    jimi::Console.ReadKey_NewLine(true);
+
     Int_Log10_Test();
     Int_Log10_TestNums();
 
-    jimi::Console.ReadKey_NewtLine(true);
+    jimi::Console.ReadKey_NewLine(true);
 
     Double_And_Float_Test();
 
-    jimi::Console.ReadKey_NewtLine(true);
+    jimi::Console.ReadKey_NewLine(true);
 #endif
 
 #if 1
-    jimi::SmallString<char, 120, 15> smallString1("small string test");
-    jimi::SmallString<char, 122, 31> smallString2("small string test! small string test! small string test! "
-                                                  "small string test! small string test! small string test! "
-                                                  "small string test! small string test! small string test! "
-                                                  "small string test! small string test! small string test! ");
-
-    printf("smallString1<char , 128>.capacity()  = %u byte(s),\n", smallString1.capacity());
-    printf("smallString1<char , 128>.alignment() = %u byte(s),\n", smallString1.alignment());
-    printf("smallString1<char , 128>.data()      = 0x%p,\n", smallString1.data());
-    printf("smallString1<char , 128>.size()      = %u byte(s),\n", smallString1.size());
-    printf("smallString1<char , 128>.c_str()     = \"%s\".\n", smallString1.c_str());
-    printf("\n");
-
-    printf("smallString2<char , 128>.capacity()  = %u byte(s),\n", smallString2.capacity());
-    printf("smallString2<char , 128>.alignment() = %u byte(s),\n", smallString2.alignment());
-    printf("smallString2<char , 128>.data()      = 0x%p,\n", smallString2.data());
-    printf("smallString2<char , 128>.size()      = %u byte(s),\n", smallString2.size());
-    printf("smallString2<char , 128>.c_str()     = \"%s\".\n", smallString2.c_str());
-    printf("\n");
+    SmallString_Test();
     
     if (true && 0) {
         jmLog.log_end();
@@ -3410,14 +3426,14 @@ int UnitTest_Main(int argc, char *argv[])
         return 0;
     }
 
-    jimi::Console.ReadKey_NewtLine(true);
+    jimi::Console.ReadKey_NewLine(true);
 #endif
 
 #if 1
   #if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
     String_Snprintf_Test();
 
-    jimi::Console.ReadKey_NewtLine(true);
+    jimi::Console.ReadKey_NewLine(true);
   #endif
 
   #if 1
@@ -3427,7 +3443,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Integer2();
     Snprintf_Preformance_Test_Integer3();
 
-    jimi::Console.ReadKey_NewtLine(true);
+    jimi::Console.ReadKey_NewLine(true);
   #endif
 
   #if 1
@@ -3436,7 +3452,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Double3();
     Snprintf_Preformance_Test_Double4();
 
-    jimi::Console.ReadKey_NewtLine(true);
+    jimi::Console.ReadKey_NewLine(true);
   #endif
 
   #if 1
@@ -3446,7 +3462,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_String4();
     Snprintf_Preformance_Test_String5();
 
-    jimi::Console.ReadKey_NewtLine(true);
+    jimi::Console.ReadKey_NewLine(true);
   #endif
 
     //OStringStream_Performance_Test();
@@ -3462,12 +3478,12 @@ int UnitTest_Main(int argc, char *argv[])
     String_Performance_Test();
     String_Performance_Test2();
 
-    jimi::Console.ReadKey_NewtLine(true);
+    jimi::Console.ReadKey_NewLine(true);
 #endif
 
 #if 1
     String_StrLen_Test();
-    jimi::Console.ReadKey_NewtLine(true);
+    jimi::Console.ReadKey_NewLine(true);
 #endif
 
     Jimi_StrLwr_Verify();
@@ -3485,7 +3501,7 @@ int UnitTest_Main(int argc, char *argv[])
     String_StrLwr_Test(256);
     String_StrLwr_Test(1024);
 
-    jimi::Console.ReadKey_NewtLine(true);
+    jimi::Console.ReadKey_NewLine(true);
 #endif
 
 #if 0
@@ -3550,8 +3566,6 @@ int UnitTest_Main(int argc, char *argv[])
     printf("\n");
 #endif
 
-    //jimi::mt::mutex read_mutex;
-    //jimi::mt::scoped_lock<mt::mutex> lock(read_mutex);
     jimi::mt::mutex read_mutex;
     jimi::mt::scoped_lock<jimi::mt::mutex> lock(read_mutex);
     lock.acquire(read_mutex);

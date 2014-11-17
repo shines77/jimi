@@ -10,6 +10,7 @@
 #include "jimi/internal/NonCopyable.h"
 
 #include "jimic/system/get_char.h"
+#include "jimic/system/console.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -78,8 +79,8 @@ public:
         return keyCode;
     }
 
-    static int ReadKey_NewtLine(bool enabledCpuWarmup = false, bool displayTips = true,
-                                bool echoInput = false) {
+    static int ReadKey_NewLine(bool enabledCpuWarmup = false, bool displayTips = true,
+                               bool echoInput = false) {
         int keyCode;
         keyCode = ReadKey(false, displayTips, echoInput);
         printf("\n");
