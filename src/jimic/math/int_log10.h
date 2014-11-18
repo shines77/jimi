@@ -27,7 +27,7 @@ jmc_uint_log10_v2(uint32_t val);
 JMC_DECLARE_NONSTD(unsigned int)
 jmc_uint_log10_v3(uint32_t val);
 
-#ifdef _WIN64
+#if defined(_WIN64) || defined(_M_X64)
 
 JMC_DECLARE_NONSTD(unsigned int)
 jmc_uint64_log10(uint64_t val);

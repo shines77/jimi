@@ -58,7 +58,7 @@ typedef _W64 signed int     ssize_t;
 #ifdef _M_X64
 typedef signed long long    ssize_t;
 #else  /* _M_X64 */
-typedef signed long int     ssize_t;
+typedef signed int          ssize_t;
 #endif  /* _M_X64 */
 #endif  /* defined(_WIN32) || defined(_WIN64) */
 #define _SSIZE_T_DEFINED

@@ -57,18 +57,20 @@ ieee754_log10_x87(double val)
     }
 }
 
-#elif defined(__GUNC__) || defined(__linux__) || defined(__llvm__)
+#elif defined(__GUNC__) || defined(__linux__) || defined(__llvm__) || \
+     (defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__))
 
 JMC_DECLARE_NONSTD(double)
 ieee754_log10_x87(double val)
 {
     register double ret;
-    __asm__(
-        "fldlg2\n\t"
-        "fxch\n\t"
-        "fyl2x"
-        :"=t"(ret)
-        :"0"(val)
+    __asm__ __volatile__ (
+        "fldlg2     \n\t"
+        "fxch       \n\t"
+        "fyl2x      \n\t"
+        : "=t"(ret)
+        : "0"(val)
+        : "memory"
     );
     return ret;
 }
@@ -78,7 +80,7 @@ ieee754_log10_x87(double val)
 JMC_DECLARE_NONSTD(double)
 ieee754_log10_x87(double val)
 {
-    return log(val);
+    return log10(val);
 }
 
 #endif
@@ -130,18 +132,20 @@ ieee754_log10_x87_v2(double val)
     //return ret_val;
 }
 
-#elif defined(__GUNC__) || defined(__linux__) || defined(__llvm__)
+#elif defined(__GUNC__) || defined(__linux__) || defined(__llvm__) || \
+     (defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__))
 
 JMC_DECLARE_NONSTD(double)
 ieee754_log10_x87_v2(double val)
 {
     register double ret;
-    __asm__(
-        "fldlg2\n\t"
-        "fxch\n\t"
-        "fyl2x"
-        :"=t"(ret)
-        :"0"(val)
+    __asm__ __volatile__(
+        "fldlg2     \n\t"
+        "fxch       \n\t"
+        "fyl2x      \n\t"
+        : "=t"(ret)
+        : "0"(val)
+        : "memory"
     );
     return ret;
 }
@@ -151,7 +155,7 @@ ieee754_log10_x87_v2(double val)
 JMC_DECLARE_NONSTD(double)
 ieee754_log10_x87_v2(double val)
 {
-    return log(val);
+    return log10(val);
 }
 
 #endif

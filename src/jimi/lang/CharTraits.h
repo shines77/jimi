@@ -110,7 +110,11 @@ template <>
 JIMI_INLINE
 size_t char_traits<wchar_t>::length(const wchar_t *str)
 {
+#ifdef _MSC_VER
     return ::jm_wcslen(str);
+#else
+    return 0;
+#endif
 }
 
 template <typename char_type>

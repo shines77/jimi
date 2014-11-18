@@ -26,26 +26,37 @@ static const unsigned int s_power10[16] = {
 #elif __has_builtin(__builtin_clz) || (__GNUC__ >= 4)
 static
 JMC_INLINE
-unsigned char
+JMC_DECLARE_NONSTD(unsigned char)
 _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
 {
     unsigned char isNonzero;
-    size_t index;
-    jimic_assert(firstBit1Index == NULL);
+    jimic_assert(firstBit1Index != NULL);
+#if 1
+    __asm__ __volatile__ (
+        "bsrl  %2, %%edx    \n\t"
+        "movl  %%edx, (%1)  \n\t"
+        "setnz %0           \n\t"
+        : "=a"(isNonzero)
+        : "r"(firstBit1Index), "r"(scanNum)
+        : "edx", "memory"
+    );
+#else
     isNonzero = (unsigned char)scanNum;
     if (scanNum != 0) {
-        index = __builtin_clz(scanNum);
+        // countLeadingZeros()
+        size_t index = __builtin_clz(scanNum);
         *firstBit1Index = index ^ 31;
     }
     else {
         *firstBit1Index = 0;
     }
+#endif
     return isNonzero;
 }
 #else
 static
 JMC_INLINE
-unsigned char
+JMC_DECLARE_NONSTD(unsigned char)
 _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
 {
     jimic_assert(firstBit1Index == NULL);
@@ -59,13 +70,13 @@ _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
 #elif defined(_M_X64) && (__has_builtin(__builtin_clzll) || (__GNUC__ >= 4))
 static
 JMC_INLINE
-unsigned char
+JMC_DECLARE_NONSTD(unsigned char)
 _BitScanReverse64(unsigned long *firstBit1Index, uint64_t scanNum)
 {
     unsigned char isNonzero;
     size_t index;
     jimic_assert(firstBit1Index == NULL);
-    isNonzero = (unsigned char)scanNum;
+    isNonzero = (unsigned char)(scanNum != 0);
     if (scanNum != 0) {
         index = __builtin_clzll(scanNum);
         *firstBit1Index = index ^ 63;
@@ -78,7 +89,7 @@ _BitScanReverse64(unsigned long *firstBit1Index, uint64_t scanNum)
 #else
 static
 JMC_INLINE
-unsigned char
+JMC_DECLARE_NONSTD(unsigned char)
 _BitScanReverse64(unsigned long *firstBit1Index, unsigned long scanNum)
 {
     jimic_assert(firstBit1Index == NULL);
@@ -99,10 +110,11 @@ jmc_uint_log10_sys(uint32_t val)
 JMC_DECLARE_NONSTD(unsigned int)
 jmc_uint_log10_comp(uint32_t val)
 {
-    return (val >= 1000000000u) ? 9 : (val >= 100000000u) ? 8 :
-        (val >= 10000000u) ? 7 : (val >= 1000000u) ? 6 :
-        (val >= 100000u) ? 5 : (val >= 10000u) ? 4 :
-        (val >= 1000u) ? 3 : (val >= 100u) ? 2 : (val >= 10u) ? 1u : 0u;
+    return ((val >= 1000000000u) ? 9 : ((val >= 100000000u) ? 8 :
+        ((val >= 10000000u) ? 7 : ((val >= 1000000u) ? 6 :
+        ((val >= 100000u) ? 5 : ((val >= 10000u) ? 4 :
+        ((val >= 1000u) ? 3 : ((val >= 100u) ? 2 :
+        ((val >= 10u) ? 1u : 0u)))))))));
 }
 
 /**
@@ -119,17 +131,52 @@ jmc_uint_log10(uint32_t val)
     unsigned int exp10;
     unsigned char isNonzero;
 
-    //
-    // _BitScanReverse, _BitScanReverse64
-    // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
-    //
-    isNonzero = _BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
+#if 1 && (__has_builtin(__builtin_clz) || (__GNUC__ >= 4))
+
+#if 1
+    __asm__ __volatile__ (
+        "bsrl   %2, %1      \n\t"
+        "setnz  %0          \n\t"
+        : "=a"(isNonzero), "=r"(exponent)
+        : "r"(val)
+        : "memory"
+    );
+
     if (isNonzero != 0) {
         //exponent++;
     }
     else {
         return 0;
     }
+#else
+    __asm__ __volatile__ (
+        "cmp  $0, %1        \n\t"
+        "jnz  1f            \n\t"
+        "movl $0, %%eax     \n\t"
+        "leave              \n\t"
+        "ret                \n\t"
+        //".balign 16         \n\t"
+        "1:                 \n\t"
+        "bsrl %1, %0        \n\t"
+        : "=r"(exponent)
+        : "a"(val)
+        : "memory"
+    );
+#endif
+#else
+    //unsigned char isNonzero;
+    //
+    // _BitScanReverse, _BitScanReverse64
+    // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
+    //
+    isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
+    if (isNonzero != 0) {
+        //exponent++;
+    }
+    else {
+        return 0;
+    }
+#endif // __has_builtin
 
     // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
     // exp10 = exponent * 2525222UL;
@@ -157,7 +204,7 @@ jmc_uint_log10_v2(uint32_t val)
     // _BitScanReverse, _BitScanReverse64
     // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
     //
-    isNonzero = _BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
+    isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
 
     // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
     // exp10 = exponent * 2525222UL;
@@ -183,7 +230,7 @@ jmc_uint_log10_v3(uint32_t val)
         // _BitScanReverse, _BitScanReverse64
         // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
         //
-        isNonzero = _BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
+        isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
 
         // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
         // exp10 = exponent * 2525222UL;
@@ -201,7 +248,7 @@ jmc_uint_log10_v3(uint32_t val)
     }
 }
 
-#ifdef _WIN64
+#if defined(_WIN64) || defined(_M_X64)
 
 JMC_DECLARE_NONSTD(unsigned int)
 jmc_uint64_log10(uint64_t val)
