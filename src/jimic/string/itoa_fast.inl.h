@@ -52,7 +52,7 @@ jmc_utoa_r10_fast(char *buf, unsigned int val)
 {
     unsigned int digit_val, num_digits;
     unsigned int digits_cnt;
-    unsigned int exponent;
+    unsigned int exponent, exp10 = 0;
     unsigned char isNonzero;
     char *cur;
 
@@ -60,7 +60,7 @@ jmc_utoa_r10_fast(char *buf, unsigned int val)
 
 #if 0
     num_digits = jmc_uint_log10(val) + 1;
-#else
+#elif 0
     //unsigned char isNonzero;
     //
     // _BitScanReverse, _BitScanReverse64
@@ -71,6 +71,75 @@ jmc_utoa_r10_fast(char *buf, unsigned int val)
         num_digits = 1;
     }
     else {
+        // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
+        // exp10 = exponent * 2525222UL;
+        num_digits = exponent * 2525222UL;
+        // exp10 = exp10 / 131072 / 64;
+        num_digits = (num_digits >> 23);
+
+        if (val > s_power10[num_digits])
+            num_digits++;
+        num_digits++;
+    }
+#elif 0
+    //unsigned char isNonzero;
+    //
+    // _BitScanReverse, _BitScanReverse64
+    // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
+    //
+    num_digits = 1;
+
+    isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
+    if (isNonzero != 0) {
+        // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
+        // exp10 = exponent * 2525222UL;
+        exp10 = exponent * 2525222UL;
+        // exp10 = exp10 / 131072 / 64;
+        exp10 = (num_digits >> 23);
+
+        if (val > s_power10[exp10])
+            exp10++;
+        num_digits += exp10;
+    }
+#elif 0
+    //unsigned char isNonzero;
+    //
+    // _BitScanReverse, _BitScanReverse64
+    // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
+    //
+    num_digits = 1;
+
+    if (val < 100) {
+        if (val >= 10)
+            num_digits++;
+    }
+    else {
+        isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
+
+        // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
+        // exp10 = exponent * 2525222UL;
+        exp10 = exponent * 2525222UL;
+        // exp10 = exp10 / 131072 / 64;
+        exp10 = (num_digits >> 23);
+
+        if (val > s_power10[exp10])
+            exp10++;
+        num_digits += exp10;
+    }
+#else
+    //unsigned char isNonzero;
+    //
+    // _BitScanReverse, _BitScanReverse64
+    // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
+    //
+    if (val < 100) {
+        num_digits = 1;
+        if (val >= 10)
+            num_digits++;
+    }
+    else {
+        isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
+
         // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
         // exp10 = exponent * 2525222UL;
         num_digits = exponent * 2525222UL;
@@ -438,7 +507,7 @@ jmc_utoa_r10_fast_ex(char *buf, size_t count, unsigned int val, unsigned int fla
 
 #if 0
     num_digits = jmc_uint_log10(val) + 1;
-#else
+#elif 1
     //unsigned char isNonzero;
     //
     // _BitScanReverse, _BitScanReverse64
@@ -449,6 +518,30 @@ jmc_utoa_r10_fast_ex(char *buf, size_t count, unsigned int val, unsigned int fla
         num_digits = 1;
     }
     else {
+        // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
+        // exp10 = exponent * 2525222UL;
+        num_digits = exponent * 2525222UL;
+        // exp10 = exp10 / 131072 / 64;
+        num_digits = (num_digits >> 23);
+
+        if (val > s_power10[num_digits])
+            num_digits++;
+        num_digits++;
+    }
+#else
+    //unsigned char isNonzero;
+    //
+    // _BitScanReverse, _BitScanReverse64
+    // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
+    //
+    if (val < 100) {
+        num_digits = 1;
+        if (val >= 10)
+            num_digits++;
+    }
+    else {
+        isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
+
         // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
         // exp10 = exponent * 2525222UL;
         num_digits = exponent * 2525222UL;
