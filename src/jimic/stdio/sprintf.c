@@ -2,6 +2,7 @@
 #include "jimic/stdio/sprintf.h"
 
 #include "jimic/string/itoa.h"
+#include "jimic/string/itoa_fast.h"
 #include "jimic/string/dtos.h"
 #include "jimic/string/string.h"
 
@@ -261,14 +262,14 @@ vslprintf_out_int:
 #if 1
                     //if (width == 0 && flag == FMT_DEFAULT_FLAG) {
                     if ((field_width | flags) == (0 | FMT_DEFAULT_FLAG)) {
-                        len = jmc_itoa_r10(buf, i32);
+                        len = jmc_itoa_r10_fast(buf, i32);
                         buf += len;
                         cur++;
                         goto vslprintf_try_next;
                     }
                     else {
                         flags |= align_mode;
-                        len = jmc_itoa_r10_ex(buf, -1, i32, flags, fill_char, field_width, precision);
+                        len = jmc_itoa_r10_fast_ex(buf, -1, i32, flags, fill_char, field_width, precision);
                         buf += len;
                         cur++;
                         goto vslprintf_try_next;

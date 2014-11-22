@@ -142,12 +142,8 @@ jmc_uint_log10(uint32_t val)
         : "memory"
     );
 
-    if (isNonzero != 0) {
-        //exponent++;
-    }
-    else {
+    if (isNonzero == 0)
         return 0;
-    }
 #else
     __asm__ __volatile__ (
         "cmp  $0, %1        \n\t"
@@ -170,12 +166,9 @@ jmc_uint_log10(uint32_t val)
     // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
     //
     isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
-    if (isNonzero != 0) {
-        //exponent++;
-    }
-    else {
+    if (isNonzero == 0)
         return 0;
-    }
+
 #endif // __has_builtin
 
     // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
@@ -265,12 +258,8 @@ jmc_uint64_log10(uint64_t val)
     // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
     //
     isNonzero = _BitScanReverse64((unsigned long *)&exponent, (uint64_t)val);
-    if (isNonzero != 0) {
-        //exponent++;
-    }
-    else {
+    if (isNonzero == 0)
         return 0;
-    }
 
     // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
     // exp10 = exponent * 2525222UL;

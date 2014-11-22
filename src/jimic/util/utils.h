@@ -66,7 +66,7 @@ jmc_llabs_ex(int64_t *val)
 #if 1
     jmc_int64_t *i64;
     i64 = (jmc_int64_t *)&val;
-    if (i64->i32.negative != 0)
+    if (i64->s64.negative != 0)
         *val = - *val;
 #else
     if (*val < 0)

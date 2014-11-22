@@ -24,7 +24,7 @@ union jmc_int64_t
         uint32_t high;
         uint32_t low;
 #endif
-    } u32;
+    } dwords;
 
     struct {
 #if JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN
@@ -38,7 +38,7 @@ union jmc_int64_t
         uint32_t high:    31;
         uint32_t low:     32;        
 #endif
-    } i32;
+    } s64;
 };
 
 typedef union jmc_int64_t jmc_int64_t;
@@ -58,7 +58,7 @@ union jmc_uint64_t
         uint32_t high;
         uint32_t low;
 #endif
-    } u32;
+    } dwords;
 
     struct {
 #if JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN
@@ -72,7 +72,7 @@ union jmc_uint64_t
         uint32_t high:    31;
         uint32_t low:     32;        
 #endif
-    } i32;
+    } s64;
 };
 
 typedef union jmc_uint64_t jmc_uint64_t;

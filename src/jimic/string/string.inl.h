@@ -12,9 +12,11 @@
 
 #include "jimic/core/jimic_stdint.h"
 #include "jimic/core/jimic_declare.h"
-#include "jimic/core/jimic_assert.h"
+
+#include "jimic/libc/ieee754.h"
 
 #include "jimic/string/jm_strings.h"
+#include "jimic/core/jimic_assert.h"
 
 #include <stdarg.h>
 #include <math.h>       // for isnan(), isinf()
@@ -84,29 +86,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct fuint64_t {
+typedef struct variant_t {
     union {
-#if defined(JIMIC_IS_LITTLE_ENDIAN) && (JIMIC_IS_LITTLE_ENDIAN != 0)
-        // Ð¡¶Ë´æ´¢
-        struct {
-            uint32_t    low;
-            uint32_t    high;
-        };
-#else
-        // ´ó¶Ë´æ´¢
-        struct {
-            uint32_t    high;
-            uint32_t    low;
-        };
-#endif  /* JIMI_IS_LITTLE_ENDIAN */
-        uint64_t        u64;
-        double          d;
-    };
-} fuint64_t;
-
-typedef struct fvariant_t {
-    union {
-        fuint64_t       f64;
         int64_t         i64;
         uint64_t        u64;
         int             i32;
@@ -120,7 +101,7 @@ typedef struct fvariant_t {
         double          d;
         float           f;
     };
-} fvariant_t;
+} variant_t;
 
 JMC_INLINE_NONSTD(int)
 jmc_isnan_f(float val)
@@ -202,28 +183,26 @@ jmc_is_nan_or_inf_f(float val)
 JMC_INLINE_NONSTD(int)
 jmc_isnan_d(double val)
 {
-    fuint64_t *f64;
+    jmc_ieee754_double *d64;
 #if defined(_DEBUG)
     uint32_t exponent;
 #endif
 
-    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_isnan_d() maybe have some error!");
-
-    if (sizeof(fuint64_t) == sizeof(double)) {
-        f64 = (fuint64_t *)&val;
+    if (sizeof(jmc_ieee754_double) == sizeof(double)) {
+        d64 = (jmc_ieee754_double *)&val;
 #if defined(_DEBUG)
-        exponent = f64->high & JM_DOUBLE_EXPONENT_MASK32;
+        exponent = d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32;
 #endif
-        if (((f64->high & JM_DOUBLE_EXPONENT_MASK32) == JM_DOUBLE_EXPONENT_MASK32)
-            && (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
-            || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0)))
+        if (((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32)
+                                 == JMC_IEEE754_DOUBLE_EXPONENT_MASK32)
+            && (d64->ieee.mantissa0 != 0 || d64->ieee.mantissa1 != 0))
             return 1;
         else
             return 0;
     }
     else {
         // maybe have some error!
-        jimic_assert(sizeof(fuint64_t) == sizeof(double));
+        jimic_assert(sizeof(jmc_ieee754_double) == sizeof(double));
         return -1;
     }
 }
@@ -231,28 +210,26 @@ jmc_isnan_d(double val)
 JMC_INLINE_NONSTD(int)
 jmc_isinf_d(double val)
 {
-    fuint64_t *f64;
+    jmc_ieee754_double *d64;
 #if defined(_DEBUG)
     uint32_t exponent;
 #endif
 
-    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_isinf_d() maybe have some error!");
-
-    if (sizeof(fuint64_t) == sizeof(double)) {
-        f64 = (fuint64_t *)&val;
+    if (sizeof(jmc_ieee754_double) == sizeof(double)) {
+        d64 = (jmc_ieee754_double *)&val;
 #if defined(_DEBUG)
-        exponent = f64->high & JM_DOUBLE_EXPONENT_MASK32;
+        exponent = d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32;
 #endif
-        if (((f64->high & JM_DOUBLE_EXPONENT_MASK32) == JM_DOUBLE_EXPONENT_MASK32)
-            && (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) == 0)
-            && ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) == 0)))
+        if (((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32)
+                                 == JMC_IEEE754_DOUBLE_EXPONENT_MASK32)
+            && (d64->ieee.mantissa0 == 0 || d64->ieee.mantissa1 == 0))
             return 1;
         else
             return 0;
     }
     else {
         // maybe have some error!
-        jimic_assert(sizeof(fuint64_t) == sizeof(double));
+        jimic_assert(sizeof(jmc_ieee754_double) == sizeof(double));
         return -1;
     }
 }
@@ -260,20 +237,19 @@ jmc_isinf_d(double val)
 JMC_INLINE_NONSTD(int)
 jmc_is_nan_or_inf_d(double val)
 {
-    fuint64_t *f64;
+    jmc_ieee754_double *d64;
 
-    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_is_nan_or_inf_d() maybe have some error!");
-
-    if (sizeof(fuint64_t) == sizeof(double)) {
-        f64 = (fuint64_t *)&val;
-        if ((f64->high & JM_DOUBLE_EXPONENT_MASK32) == JM_DOUBLE_EXPONENT_MASK32)
+    if (sizeof(jmc_ieee754_double) == sizeof(double)) {
+        d64 = (jmc_ieee754_double *)&val;
+        if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32)
+                                == JMC_IEEE754_DOUBLE_EXPONENT_MASK32)
             return 1;
         else
             return 0;
     }
     else {
         // maybe have some error!
-        jimic_assert(sizeof(fuint64_t) == sizeof(double));
+        jimic_assert(sizeof(jmc_ieee754_double) == sizeof(double));
         return -1;
     }
 }
@@ -293,8 +269,6 @@ jmc_ftest(float val)
 {
     uint32_t *u32;
     uint32_t exponent;
-
-    static_assert(sizeof(uint32_t) == sizeof(float), "jmc_ftest() maybe have some error!");
 
     if (sizeof(uint32_t) == sizeof(float)) {
         u32 = (uint32_t *)&val;
@@ -336,24 +310,20 @@ jmc_ftest(float val)
 JMC_INLINE_NONSTD(int)
 jmc_dtest(double val)
 {
-    fuint64_t *f64;
+    jmc_ieee754_double *d64;
     uint32_t exponent;
 
-    static_assert(sizeof(fuint64_t) == sizeof(double), "jmc_dtest() maybe have some error!");
-
-    if (sizeof(fuint64_t) == sizeof(double)) {
-        f64 = (fuint64_t *)&val;
-        exponent = f64->high & JM_DOUBLE_EXPONENT_MASK32;
-        if (exponent == JM_DOUBLE_EXPONENT_MASK32) {
-            if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) != 0)
-                || ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) != 0))
+    if (sizeof(jmc_ieee754_double) == sizeof(double)) {
+        d64 = (jmc_ieee754_double *)&val;
+        exponent = d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32;
+        if (exponent == JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
+            if (d64->ieee.mantissa0 != 0 || d64->ieee.mantissa1 != 0)
                 return (JM_FIS_NAN_OR_INF | JM_FIS_NAN);
             else
                 return (JM_FIS_NAN_OR_INF | JM_FIS_INF);
         }
         else if (exponent == 0) {
-            if (((f64->high & JM_DOUBLE_MANTISSA_MASK_HIGH) == 0)
-                && ((f64->low & JM_DOUBLE_MANTISSA_MASK_LOW) == 0))
+             if (d64->ieee.mantissa0 == 0 || d64->ieee.mantissa1 == 0)
                 return JM_FIS_ZERO;
             else
                 return JM_FIS_SUBNORMAL;
@@ -362,7 +332,7 @@ jmc_dtest(double val)
     }
     else {
         // maybe have some error!
-        jimic_assert(sizeof(fuint64_t) == sizeof(double));
+        jimic_assert(sizeof(jmc_ieee754_double) == sizeof(double));
         return JM_FIS_NORMAL;
     }
 }

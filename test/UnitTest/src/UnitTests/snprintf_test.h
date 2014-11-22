@@ -8,10 +8,10 @@
 
 #include "jimi/core/jimi_platform_def.h"
 
-/* 是否使用简化的测试输出结果, 为1代表使用 */
+/* 是否显示测试的输出结果(以便验证), 为1时显示 */
 #define VSNPRINTF_DISPLAY_TEST_RESULT   1
 
-/* 是否运行jm_snprintf()的测试, 为1代表运行 */
+/* 是否运行jm_snprintf()的测试, 为1时表示运行 */
 #define VSNPRINTF_TEST_JM_SNPRINTF      0
 
 #ifdef __cplusplus

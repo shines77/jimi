@@ -74,7 +74,7 @@ void Sprintf_Preformance_Test_Integer1()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Sprintf_Preformance_Test_Integer1()\n\n");
     //printf("==========================================================================\n\n");
@@ -112,7 +112,7 @@ void Sprintf_Preformance_Test_Integer1()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_sprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_sprintf()");
@@ -138,7 +138,7 @@ void Sprintf_Preformance_Test_Integer1()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "sprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "sprintf()");
@@ -163,7 +163,7 @@ void Sprintf_Preformance_Test_Integer1()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_sprintf()", time);
         printf("jmc_sprintf() preformance is sprintf() %0.3f X times.\n\n", timeReference / time);
 #else
@@ -189,7 +189,7 @@ void Snprintf_Preformance_Test_Integer1()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Snprintf_Preformance_Test_Integer1()\n\n");
     //printf("==========================================================================\n\n");
@@ -227,7 +227,7 @@ void Snprintf_Preformance_Test_Integer1()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
@@ -257,7 +257,7 @@ void Snprintf_Preformance_Test_Integer1()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
   #ifdef _MSC_VER
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "_snprintf_s()", time);
   #else
@@ -290,7 +290,7 @@ void Snprintf_Preformance_Test_Integer1()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
         printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
@@ -324,7 +324,7 @@ void Snprintf_Preformance_Test_Integer2()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Snprintf_Preformance_Test_Integer2()\n\n");
     //printf("==========================================================================\n\n");
@@ -362,7 +362,7 @@ void Snprintf_Preformance_Test_Integer2()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
@@ -392,7 +392,7 @@ void Snprintf_Preformance_Test_Integer2()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
   #ifdef _MSC_VER
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "_snprintf_s()", time);
   #else
@@ -425,7 +425,7 @@ void Snprintf_Preformance_Test_Integer2()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
         printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
@@ -459,7 +459,7 @@ void Snprintf_Preformance_Test_Integer3()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Snprintf_Preformance_Test_Integer3()\n\n");
     //printf("==========================================================================\n\n");
@@ -501,7 +501,7 @@ void Snprintf_Preformance_Test_Integer3()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
@@ -533,7 +533,7 @@ void Snprintf_Preformance_Test_Integer3()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
   #ifdef _MSC_VER
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "_snprintf_s()", time);
   #else
@@ -568,7 +568,7 @@ void Snprintf_Preformance_Test_Integer3()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
         printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
@@ -602,7 +602,7 @@ void Snprintf_Preformance_Test_Double1()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Snprintf_Preformance_Test_Double1()\n\n");
     //printf("==========================================================================\n\n");
@@ -642,7 +642,7 @@ void Snprintf_Preformance_Test_Double1()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
@@ -672,7 +672,7 @@ void Snprintf_Preformance_Test_Double1()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
   #ifdef _MSC_VER
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "_snprintf_s()", time);
   #else
@@ -705,7 +705,7 @@ void Snprintf_Preformance_Test_Double1()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
         printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
@@ -739,7 +739,7 @@ void Snprintf_Preformance_Test_Double2()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Snprintf_Preformance_Test_Double2()\n\n");
     //printf("==========================================================================\n\n");
@@ -779,7 +779,7 @@ void Snprintf_Preformance_Test_Double2()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
@@ -809,7 +809,7 @@ void Snprintf_Preformance_Test_Double2()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
   #ifdef _MSC_VER
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "_snprintf_s()", time);
   #else
@@ -842,7 +842,7 @@ void Snprintf_Preformance_Test_Double2()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
         printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
@@ -876,7 +876,7 @@ void Snprintf_Preformance_Test_Double3()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Snprintf_Preformance_Test_Double3()\n\n");
     //printf("==========================================================================\n\n");
@@ -916,7 +916,7 @@ void Snprintf_Preformance_Test_Double3()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
@@ -946,7 +946,7 @@ void Snprintf_Preformance_Test_Double3()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
   #ifdef _MSC_VER
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "_snprintf_s()", time);
   #else
@@ -979,7 +979,7 @@ void Snprintf_Preformance_Test_Double3()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
         printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
@@ -1013,7 +1013,7 @@ void Snprintf_Preformance_Test_Double4()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Snprintf_Preformance_Test_Double4()\n\n");
     //printf("==========================================================================\n\n");
@@ -1053,7 +1053,7 @@ void Snprintf_Preformance_Test_Double4()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
@@ -1083,7 +1083,7 @@ void Snprintf_Preformance_Test_Double4()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
   #ifdef _MSC_VER
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "_snprintf_s()", time);
   #else
@@ -1116,7 +1116,7 @@ void Snprintf_Preformance_Test_Double4()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
         printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
@@ -1150,7 +1150,7 @@ void Snprintf_Preformance_Test_String1()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Snprintf_Preformance_Test_String1()\n\n");
     //printf("==========================================================================\n\n");
@@ -1190,7 +1190,7 @@ void Snprintf_Preformance_Test_String1()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
@@ -1220,7 +1220,7 @@ void Snprintf_Preformance_Test_String1()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
   #ifdef _MSC_VER
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "_snprintf_s()", time);
   #else
@@ -1253,7 +1253,7 @@ void Snprintf_Preformance_Test_String1()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
         printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
@@ -1287,7 +1287,7 @@ void Snprintf_Preformance_Test_String2()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Snprintf_Preformance_Test_String2()\n\n");
     //printf("==========================================================================\n\n");
@@ -1327,7 +1327,7 @@ void Snprintf_Preformance_Test_String2()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
@@ -1357,7 +1357,7 @@ void Snprintf_Preformance_Test_String2()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
   #ifdef _MSC_VER
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "_snprintf_s()", time);
   #else
@@ -1390,7 +1390,7 @@ void Snprintf_Preformance_Test_String2()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
         printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
@@ -1424,7 +1424,7 @@ void Snprintf_Preformance_Test_String3()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Snprintf_Preformance_Test_String3()\n\n");
     //printf("==========================================================================\n\n");
@@ -1464,7 +1464,7 @@ void Snprintf_Preformance_Test_String3()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
@@ -1494,7 +1494,7 @@ void Snprintf_Preformance_Test_String3()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
   #ifdef _MSC_VER
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "_snprintf_s()", time);
   #else
@@ -1527,7 +1527,7 @@ void Snprintf_Preformance_Test_String3()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
         printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
@@ -1561,7 +1561,7 @@ void Snprintf_Preformance_Test_String4()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Snprintf_Preformance_Test_String4()\n\n");
     //printf("==========================================================================\n\n");
@@ -1605,7 +1605,7 @@ void Snprintf_Preformance_Test_String4()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
@@ -1637,7 +1637,7 @@ void Snprintf_Preformance_Test_String4()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
   #ifdef _MSC_VER
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "_snprintf_s()", time);
   #else
@@ -1672,7 +1672,7 @@ void Snprintf_Preformance_Test_String4()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
         printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);
@@ -1706,7 +1706,7 @@ void Snprintf_Preformance_Test_String5()
     char fmtbuf2[512] = { 0 };
     int fmtlen;
 
-#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
+#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
     printf("==========================================================================\n\n");
     printf("  Snprintf_Preformance_Test_String5()\n\n");
     //printf("==========================================================================\n\n");
@@ -1750,7 +1750,7 @@ void Snprintf_Preformance_Test_String5()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jm_snprintf()", time);
 #else
         printf(">>> %-18s <<<\n\n", "jm_snprintf()");
@@ -1782,7 +1782,7 @@ void Snprintf_Preformance_Test_String5()
         time = sw.getMillisec();
         timeReference = time;
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
   #ifdef _MSC_VER
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "_snprintf_s()", time);
   #else
@@ -1817,7 +1817,7 @@ void Snprintf_Preformance_Test_String5()
         sw.stop();
         time = sw.getMillisec();
 
-#if defined(VSNPRINTF_DISPLAY_TEST_RESULT) && (VSNPRINTF_DISPLAY_TEST_RESULT != 0)
+#if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
         printf(">>> %-15s <<<  time = %-8.3f ms\n\n", "jmc_snprintf()", time);
   #ifdef _MSC_VER
         printf("jmc_snprintf() preformance is _snprintf_s() %0.3f X times.\n\n", timeReference / time);

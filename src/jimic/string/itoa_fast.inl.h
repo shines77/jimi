@@ -11,7 +11,9 @@
 #endif
 
 #include "jimic/stdio/sprintf_def.h"
+#include "jimic/libc/int64.h"
 
+#include "jimic/math/int_log10.h"
 #include "jimic/string/string.h"
 #include "jimic/string/jm_strings.h"
 
@@ -22,44 +24,80 @@
 #include <float.h>
 #include <limits.h>     // for UINT_MAX
 
+static const unsigned int s_power10[16] = {
+    9, 99, 999, 9999, 99999,
+    999999, 9999999, 99999999,
+    999999999, 4294967295,
+    // only fill for aligned to 64 bytes
+    0, 0, 0, 0, 0, 0
+};
+
+static const uint64_t s_power10_64[16] = {
+    9999999999,                 // 10
+    99999999999,                // 11
+    999999999999,               // 12
+    9999999999999,              // 13
+    99999999999999,             // 14
+    999999999999999,            // 15
+    9999999999999999,           // 16
+    99999999999999999,          // 17
+    999999999999999999,         // 18
+    18446744073709551615,       // 19
+    // only fill for aligned to 64 bytes
+    0ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL
+};
+
 JMC_INLINE_NONSTD(int)
 jmc_utoa_r10_fast(char *buf, unsigned int val)
 {
     unsigned int digit_val, num_digits;
     unsigned int digits_cnt;
+    unsigned int exponent;
+    unsigned char isNonzero;
     char *cur;
-    char digits[16];    // 实际最多只会用到10个bytes
-    const char * const end = digits + jm_countof(digits);
 
     jimic_assert(buf != NULL);
 
-    //end = (const char * const)(digits + jm_countof(digits));
-    cur = (char *)end;
+#if 0
+    num_digits = jmc_uint_log10(val) + 1;
+#else
+    //unsigned char isNonzero;
+    //
+    // _BitScanReverse, _BitScanReverse64
+    // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
+    //
+    isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
+    if (isNonzero == 0) {
+        num_digits = 1;
+    }
+    else {
+        // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
+        // exp10 = exponent * 2525222UL;
+        num_digits = exponent * 2525222UL;
+        // exp10 = exp10 / 131072 / 64;
+        num_digits = (num_digits >> 23);
+
+        if (val > s_power10[num_digits])
+            num_digits++;
+        num_digits++;
+    }
+#endif
+
+    digits_cnt = 0;
+
+    cur = (char *)buf + num_digits;
+    *cur = '\0';
+
     do {
-        cur--;
         digit_val = val % 10;
         val /= 10;
 
+        cur--;
         *cur = (char)(digit_val + '0');
+
+        digits_cnt++;
+        jimic_assert(digits_cnt > num_digits);
     } while (val != 0);
-
-    num_digits = (unsigned int)(end - cur);
-
-#if 1
-    digits_cnt = num_digits;
-    while (digits_cnt > 0) {
-        *buf++ = *cur++;
-        digits_cnt--;
-    }
-#elif 0
-    do {
-        *buf++ = *cur++;
-    } while (cur != end);
-#else
-    while (cur < end)
-        *buf++ = *cur++;
-#endif
-    *buf = '\0';
 
     return num_digits;
 }
@@ -235,49 +273,126 @@ JMC_INLINE_NONSTD(int)
 jmc_u64toa_r10_fast(char *buf, uint64_t val)
 {
     unsigned int digit_val, num_digits;
-    uint32_t val32;
+    unsigned int digits_cnt;
+    unsigned int exponent;
+    unsigned char isNonzero;
+    uint32_t val32, val32_high;
     char *cur;
-    fuint64_t *u64;
-    char digits[32];    // 实际最多只会用到20个bytes
+    jmc_uint64_t *u64;
 
-    cur = digits;
 #if 0
     if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
 #else
-    u64 = (fuint64_t *)&val;
-    if (u64->high == 0) {
-        val32 = (uint32_t)u64->low;
+    u64 = (jmc_uint64_t *)&val;
+    if (u64->dwords.high == 0) {
+        // Get the low dword in uint64_t
+        val32 = (uint32_t)u64->dwords.low;
 #endif
+
+#if 0
+        num_digits = jmc_uint_log10(val32) + 1;
+#else
+        //unsigned char isNonzero;
+        //
+        // _BitScanReverse, _BitScanReverse64
+        // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
+        //
+        isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val32);
+        if (isNonzero == 0) {
+            num_digits = 1;
+        }
+        else {
+            // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
+            // exp10 = exponent * 2525222UL;
+            num_digits = exponent * 2525222UL;
+            // exp10 = exp10 / 131072 / 64;
+            num_digits = (num_digits >> 23);
+
+            if (val > s_power10[num_digits])
+                num_digits++;
+            num_digits++;
+        }
+
+        digits_cnt = 0;
+
+        cur = (char *)buf + num_digits;
+        *cur = '\0';
+
         do {
             digit_val = val32 % 10;
             val32 /= 10;
 
-            *cur++ = (char)(digit_val + '0');
+            cur--;
+            *cur = (char)(digit_val + '0');
+
+            digits_cnt++;
+            jimic_assert(digits_cnt > num_digits);
         } while (val32 != 0);
+#endif
     }
     else {
+        val32_high = (uint32_t)u64->dwords.high;
+
+#if 0
+        num_digits = jmc_uint64_log10(val32) + 1;
+#else
+        if (val < 10000000000ULL) {
+            num_digits = 10;
+        }
+        else {
+            //unsigned char isNonzero;
+            //
+            // _BitScanReverse, _BitScanReverse64
+            // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
+            //
+            isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val32_high);
+
+            exponent += 32;
+
+            // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
+            // exp10 = exponent * 2525222UL;
+            num_digits = exponent * 2525222UL;
+            // exp10 = exp10 / 131072 / 64;
+            num_digits = (num_digits >> 23);
+
+            if (val > s_power10_64[num_digits - 10])
+                num_digits++;
+            num_digits++;
+        }
+
+        digits_cnt = num_digits - 9;
+
+        cur = (char *)buf + num_digits;
+        *cur = '\0';
+
         do {
             digit_val = val % 10;
             val /= 10;
 
-            *cur++ = (char)(digit_val + '0');
-        } while (val != 0);
-    }
+            cur--;
+            *cur = (char)(digit_val + '0');
 
-    num_digits = (unsigned int)(cur - digits);
+            digits_cnt--;
+            jimic_assert(digits_cnt > num_digits);
+        } while (digits_cnt > 0 && val != 0);
 
-#if 0
-    do {
-        --cur;
-        *buf++ = *cur;
-    } while (cur != digits);
-#else
-    cur--;
-    while (cur >= digits)
-        *buf++ = *cur--;
+        jimic_assert(val <= 4294967295ULL);
+        val32 = (uint32_t)val;
+
+        digits_cnt = 0;
+        do {
+            digit_val = val32 % 10;
+            val32 /= 10;
+
+            cur--;
+            *cur = (char)(digit_val + '0');
+
+            digits_cnt++;
+            jimic_assert(digits_cnt > (num_digits - 9));
+        } while (val32 != 0);
 #endif
-    *buf = '\0';
+    }
 
     return num_digits;
 }
@@ -310,25 +425,41 @@ jmc_utoa_r10_fast_ex(char *buf, size_t count, unsigned int val, unsigned int fla
                      unsigned int fill, unsigned int field_width, int length)
 {
     unsigned int digit_val, num_digits;
-    char *end, *cur;
+    unsigned int digits_cnt;
+    unsigned int exponent;
+    char *cur;
+    unsigned char isNonzero;
     int sign_char;
     int fill_cnt;
     int padding;
-    char digits[16];    // 实际最多只会用到10个bytes
 
     jimic_assert(buf != NULL);
     jimic_assert(count != 0);
 
-    end = digits + jm_countof(digits) - 1;
-    cur = end;
-    do {
-        digit_val = val % 10;
-        val /= 10;
+#if 0
+    num_digits = jmc_uint_log10(val) + 1;
+#else
+    //unsigned char isNonzero;
+    //
+    // _BitScanReverse, _BitScanReverse64
+    // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
+    //
+    isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
+    if (isNonzero == 0) {
+        num_digits = 1;
+    }
+    else {
+        // must 2,525,222 < 4,194,304 ( 2^32 / 1024)
+        // exp10 = exponent * 2525222UL;
+        num_digits = exponent * 2525222UL;
+        // exp10 = exp10 / 131072 / 64;
+        num_digits = (num_digits >> 23);
 
-        *cur-- = (char)(digit_val + '0');
-    } while (val != 0);
-
-    num_digits = (unsigned int)(end - cur);
+        if (val > s_power10[num_digits])
+            num_digits++;
+        num_digits++;
+    }
+#endif
 
     if ((flag & (FMT_SIGN_MASK | FMT_SPACE_FLAG | FMT_PLUS_FLAG)) == 0) {
         sign_char = '\0';
@@ -358,17 +489,23 @@ jmc_utoa_r10_fast_ex(char *buf, size_t count, unsigned int val, unsigned int fla
         // add sign
         if (sign_char != '\0')
             *buf++ = (char)sign_char;
-#if 0
+
+        // start to write the digitals
+        digits_cnt = 0;
+
+        cur = (char *)buf + num_digits;
+        *cur = '\0';
+
         do {
-            ++cur;
-            *buf++ = *cur;
-        } while (cur != end);
-#else
-        cur++;
-        while (cur <= end)
-            *buf++ = *cur++;
-#endif
-        *buf = '\0';
+            digit_val = val % 10;
+            val /= 10;
+
+            cur--;
+            *cur = (char)(digit_val + '0');
+
+            digits_cnt++;
+            jimic_assert(digits_cnt > num_digits);
+        } while (val != 0);
 
         if (sign_char == '\0')
             return num_digits;
@@ -454,16 +591,24 @@ jmc_utoa_r10_fast_ex(char *buf, size_t count, unsigned int val, unsigned int fla
                     }
                 }
 
-#if 0
+                // start to write the digitals
+                digits_cnt = 0;
+
+                cur = (char *)buf + num_digits;
+
                 do {
-                    ++cur;
-                    *buf++ = *cur;
-                } while (cur != end);
-#else
-                cur++;
-                while (cur <= end)
-                    *buf++ = *cur++;
-#endif
+                    digit_val = val % 10;
+                    val /= 10;
+
+                    cur--;
+                    *cur = (char)(digit_val + '0');
+
+                    digits_cnt++;
+                    jimic_assert(digits_cnt > num_digits);
+                } while (val != 0);
+
+                buf += num_digits;
+
                 // fill left padding space
                 while (fill_cnt > 0) {
                     *buf++ = ' ';
@@ -475,16 +620,23 @@ jmc_utoa_r10_fast_ex(char *buf, size_t count, unsigned int val, unsigned int fla
         }
     }
 
-#if 0
+    // start to write the digitals
+    digits_cnt = 0;
+
+    cur = (char *)buf + num_digits;
+
     do {
-        ++cur;
-        *buf++ = *cur;
-    } while (cur != end);
-#else
-    cur++;
-    while (cur <= end)
-        *buf++ = *cur++;
-#endif
+        digit_val = val % 10;
+        val /= 10;
+
+        cur--;
+        *cur = (char)(digit_val + '0');
+
+        digits_cnt++;
+        jimic_assert(digits_cnt > num_digits);
+    } while (val != 0);
+
+    buf += num_digits;
 
 utoa_r10_ex_exit:
     *buf = '\0';
@@ -579,14 +731,12 @@ jmc_u64toa_r10_fast_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
     int sign_char;
     int fill_cnt;
     int padding;
-    fuint64_t *u64;
+    jmc_uint64_t *u64;
     char digits[32];    // 实际最多只会用到20个bytes
 
-    static_assert(sizeof(fuint64_t) == sizeof(uint64_t), "jmc_u64toa_r10_ex() maybe have some error!");
-
-    if (sizeof(fuint64_t) != sizeof(uint64_t)) {
+    if (sizeof(jmc_uint64_t) != sizeof(uint64_t)) {
         // maybe have some error!
-        jimic_assert(sizeof(fuint64_t) == sizeof(uint64_t));
+        jimic_assert(sizeof(jmc_uint64_t) == sizeof(uint64_t));
         return -1;
     }
 
@@ -596,9 +746,9 @@ jmc_u64toa_r10_fast_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
     if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
 #else
-    u64 = (fuint64_t *)&val;
-    if (u64->high == 0) {
-        val32 = (uint32_t)u64->low;
+    u64 = (jmc_uint64_t *)&val;
+    if (u64->dwords.high == 0) {
+        val32 = (uint32_t)u64->dwords.low;
 #endif
         do {
             digit_val = val32 % 10;

@@ -11,6 +11,7 @@
 #endif
 
 #include "jimic/stdio/sprintf_def.h"
+#include "jimic/libc/int64.h"
 
 #include "jimic/string/string.h"
 #include "jimic/string/jm_strings.h"
@@ -237,7 +238,7 @@ jmc_u64toa_r10(char *buf, uint64_t val)
     unsigned int digit_val, num_digits;
     uint32_t val32;
     char *cur;
-    fuint64_t *u64;
+    jmc_uint64_t *u64;
     char digits[32];    // 实际最多只会用到20个bytes
 
     cur = digits;
@@ -245,9 +246,9 @@ jmc_u64toa_r10(char *buf, uint64_t val)
     if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
 #else
-    u64 = (fuint64_t *)&val;
-    if (u64->high == 0) {
-        val32 = (uint32_t)u64->low;
+    u64 = (jmc_uint64_t *)&val;
+    if (u64->dwords.high == 0) {
+        val32 = (uint32_t)u64->dwords.low;
 #endif
         do {
             digit_val = val32 % 10;
@@ -579,14 +580,12 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
     int sign_char;
     int fill_cnt;
     int padding;
-    fuint64_t *u64;
+    jmc_uint64_t *u64;
     char digits[32];    // 实际最多只会用到20个bytes
 
-    static_assert(sizeof(fuint64_t) == sizeof(uint64_t), "jmc_u64toa_r10_ex() maybe have some error!");
-
-    if (sizeof(fuint64_t) != sizeof(uint64_t)) {
+    if (sizeof(jmc_uint64_t) != sizeof(uint64_t)) {
         // maybe have some error!
-        jimic_assert(sizeof(fuint64_t) == sizeof(uint64_t));
+        jimic_assert(sizeof(jmc_uint64_t) == sizeof(uint64_t));
         return -1;
     }
 
@@ -596,9 +595,9 @@ jmc_u64toa_r10_ex(char *buf, size_t count, uint64_t val, unsigned int flag,
     if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
 #else
-    u64 = (fuint64_t *)&val;
-    if (u64->high == 0) {
-        val32 = (uint32_t)u64->low;
+    u64 = (jmc_uint64_t *)&val;
+    if (u64->dwords.high == 0) {
+        val32 = (uint32_t)u64->dwords.low;
 #endif
         do {
             digit_val = val32 % 10;
@@ -799,7 +798,7 @@ jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign,
     uint32_t val32;
     char *cur;
     int padding;
-    fuint64_t *u64;
+    jmc_uint64_t *u64;
     char digits[32];    // 实际最多只会用到20个bytes
     const unsigned int fill = ' ';
 
@@ -808,9 +807,9 @@ jmc_u64toa_r10_integer(char *buf, uint64_t val, int sign,
     if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
 #else
-    u64 = (fuint64_t *)&val;
-    if (u64->high == 0) {
-        val32 = (uint32_t)u64->low;
+    u64 = (jmc_uint64_t *)&val;
+    if (u64->dwords.high == 0) {
+        val32 = (uint32_t)u64->dwords.low;
 #endif
         do {
             digit_val = val32 % 10;
@@ -910,7 +909,7 @@ jmc_u64toa_r10_frac(char *buf, uint64_t val, unsigned int precision)
     uint32_t val32;
     char *cur;
     int padding;
-    fuint64_t *u64;
+    jmc_uint64_t *u64;
     char digits[32];    // 实际最多只会用到20个bytes
     const unsigned int fill = '0';
 
@@ -919,9 +918,9 @@ jmc_u64toa_r10_frac(char *buf, uint64_t val, unsigned int precision)
     if (val <= (uint64_t)JIMIC_UINT_MAX64) {
         val32 = (uint32_t)val;
 #else
-    u64 = (fuint64_t *)&val;
-    if (u64->high == 0) {
-        val32 = (uint32_t)u64->low;
+    u64 = (jmc_uint64_t *)&val;
+    if (u64->dwords.high == 0) {
+        val32 = (uint32_t)u64->dwords.low;
 #endif
         do {
             digit_val = val32 % 10;

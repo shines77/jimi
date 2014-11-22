@@ -3403,7 +3403,7 @@ int UnitTest_Main(int argc, char *argv[])
     Log10_Test1(1E+200);
     Log10_Test1(1E+100);
     Log10_Test2();
-    Log10_Test3();
+    //Log10_Test3();
 
     jimi::Console.ReadKey_NewLine(true);
 
