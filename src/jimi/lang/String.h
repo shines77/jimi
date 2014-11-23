@@ -356,7 +356,7 @@ template <BASIC_STRING_CLASSES>
 void BASIC_STRING::dump()
 {
     size_t size = sizeof(*this);
-    ReleaseUtils::dump((void *)this, size);
+    ReleaseUtils::dump((void *)this, size, false);
 }
 
 template <BASIC_STRING_CLASSES>

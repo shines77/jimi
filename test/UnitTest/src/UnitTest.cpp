@@ -2292,24 +2292,58 @@ void IEEE754_Double_Test()
 class resA
 {
 public:
-    resA()  { std::cout << "resA"  << std::endl; }
-    ~resA() { std::cout << "~resA" << std::endl; }
+    resA()  { std::cout << "resA::ctor()"  << std::endl; }
+    ~resA() { std::cout << "resA::~dtor()" << std::endl; }
 };
 
 class resB
 {
 public:
-    resB()  { std::cout << "resB"  << std::endl; }
-    ~resB() { std::cout << "~resB" << std::endl; }
+    resB()  { std::cout << "resB::ctor()"  << std::endl; }
+    ~resB() { std::cout << "resB::~dtor()" << std::endl; }
+};
+
+class AA
+{
+public:
+    AA() : resA(), valueA(1) { std::cout << "AA::ctor()" << std::endl; }
+    virtual ~AA() {
+        std::cout << "AA::~dtor()" << std::endl;
+    }
+
+    void dump() {
+        ReleaseUtils::dump(this, sizeof(*this));
+    }
+
+public:
+    resA resA;
+    int valueA;
+};
+
+class BB : public AA
+{
+public:
+    BB() : resB(), valueB(2) { std::cout << "BB::ctor()" << std::endl; }
+    virtual ~BB() {
+        std::cout << "BB::~dtor()" << std::endl;
+    }
+
+    void dump() {
+        ReleaseUtils::dump(this, sizeof(*this));
+    }
+
+public:
+    resB resB;
+    int valueB;
 };
 
 template<class T>
 class A
 {
 public:
-    A()  { std::cout << "A" << std::endl; }
+    A()  { std::cout << "A::ctor()" << std::endl; }
     ~A() {
-        std::cout << "~A" << std::endl;
+        std::cout << "A::~dtor()" << std::endl;
         Destroy(true);
     }
     void Destroy(bool isDestructor = false) {
@@ -2329,8 +2363,8 @@ private:
 class B : public A<B>
 {
 public:
-    B() : hasDisposed_(false) { std::cout << "B" << std::endl; }
-    ~B() { std::cout << "~B" << std::endl; }
+    B() : hasDisposed_(false) { std::cout << "B::ctor()" << std::endl; }
+    ~B() { std::cout << "B::~dtor()" << std::endl; }
     bool hasDisposed() { return hasDisposed_; };
     void setDisposed() { hasDisposed_ = true; };
 
@@ -3341,11 +3375,37 @@ int UnitTest_Main(int argc, char *argv[])
 #endif
 
 #if 1
-    jimi::string str("This is a Test String.");
-    str.dump();
-    Console.WriteLine();
+    do {
+        jimi::string str("This is a Test String.");
+        str.dump();
+        jimi::Console.WriteLine();
 
-    str.getStorage().dump();
+        str.getStorage().dump();
+    } while (0);
+
+    jimi::Console.WriteLine();
+
+    do {
+        AA aa;
+        aa.dump();
+
+        ReleaseUtils::dump((void *)(*(unsigned int *)(&aa)), 32);
+
+        ReleaseUtils::dump((void *)(*(unsigned int *)(&aa.resA)), sizeof(aa.resA));
+    } while (0);
+
+    jimi::Console.WriteLine();
+
+    do {
+        BB bb;
+        bb.dump();
+
+        ReleaseUtils::dump((void *)(*(unsigned int *)(&bb)), 32);
+
+        ReleaseUtils::dump((void *)(*(unsigned int *)(&bb.resB)), sizeof(bb.resB));
+    } while (0);
+
+    jimi::Console.WriteLine();
 
     if (true && 1) {
         jmLog.log_end();

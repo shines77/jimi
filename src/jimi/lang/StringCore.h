@@ -722,7 +722,7 @@ template <STRING_CORE_CLASSES>
 void STRING_CORE::dump()
 {
     size_t size = sizeof(*this);
-    ReleaseUtils::dump((void *)this, size);
+    ReleaseUtils::dump2((void *)this, size, false);
 }
 
 template <STRING_CORE_CLASSES>

@@ -19,12 +19,43 @@ public:
     ~ReleaseUtils() {};
 
 public:
-    static void dump(void *p, size_t size);
+    static void dump(void *p, size_t size, bool alignedTo = false,
+                     unsigned int alignment = 16,
+                     unsigned int extraHead = 0,
+                     unsigned int extraTail = 0);
+
+    static void dump2(void *p, size_t size, bool alignedTo = false,
+                      unsigned int alignment = 16,
+                      unsigned int extraHead = 0,
+                      unsigned int extraTail = 0);
 };
 
-void ReleaseUtils::dump(void *p, size_t size)
+void ReleaseUtils::dump(void *p, size_t size, bool alignedTo /* = false */,
+                        unsigned int alignment /* = 16 */,
+                        unsigned int extraHead /* = 0 */,
+                        unsigned int extraTail /* = 0 */)
 {
-    DumpUtils::dump(p, size);
+    __try {
+        DumpUtils::dump(p, size, alignedTo, alignment, extraHead, extraTail);
+    }
+    __except(1) {
+        // Do nothing!!!
+        printf(" Read the memory failed.\n\n");
+    }
+}
+
+void ReleaseUtils::dump2(void *p, size_t size, bool alignedTo /* = false */,
+                         unsigned int alignment /* = 16 */,
+                         unsigned int extraHead /* = 0 */,
+                         unsigned int extraTail /* = 0 */)
+{
+    __try {
+        DumpUtils::dump2(p, size, alignedTo, alignment, extraHead, extraTail);
+    }
+    __except(1) {
+        // Do nothing!!!
+        printf(" Read the memory failed.\n\n");
+    }
 }
 
 NS_JIMI_END
