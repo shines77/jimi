@@ -41,11 +41,13 @@ public:
         va_end(arg_list);
     }
 
-    static void WriteLine(const char *fmt, ...) {
+    static void WriteLine(const char *fmt = NULL, ...) {
         va_list arg_list;
-        va_start(arg_list, fmt);
-        vprintf(fmt, arg_list);
-        va_end(arg_list);
+        if (fmt != NULL) {
+            va_start(arg_list, fmt);
+            vprintf(fmt, arg_list);
+            va_end(arg_list);
+        }
         printf("\n");
     }
 

@@ -12,6 +12,7 @@
 #include "jimi/lang/RefCounted.h"
 #include "jimi/lang/StringCore.h"
 #include "jimi/lang/StringDetail.h"
+#include "jimi/util/DumpUtils.h"
 #include "jimic/string/jm_strings.h"
 #include "jimi/log/log.h"
 
@@ -122,6 +123,8 @@ public:
     // Discontructor
     ~basic_string();
 
+    void dump();
+
     // Assigment operators
     basic_string &operator = (const basic_string &rhs);
     basic_string &operator = (const value_type c);
@@ -183,6 +186,8 @@ private:
 #endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 
 public:
+    storage_type &getStorage() { return _store; }
+
     void push_back(const value_type c);         // primitive
     void pop_back();
 
@@ -345,6 +350,13 @@ template <BASIC_STRING_CLASSES>
 BASIC_STRING::~basic_string()
 {
     destroy();
+}
+
+template <BASIC_STRING_CLASSES>
+void BASIC_STRING::dump()
+{
+    size_t size = sizeof(*this);
+    ReleaseUtils::dump((void *)this, size);
 }
 
 template <BASIC_STRING_CLASSES>

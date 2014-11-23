@@ -3341,6 +3341,20 @@ int UnitTest_Main(int argc, char *argv[])
 #endif
 
 #if 1
+    jimi::string str("This is a Test String.");
+    str.dump();
+    Console.WriteLine();
+
+    str.getStorage().dump();
+
+    if (true && 1) {
+        jmLog.log_end();
+        jimi::Console.ReadKey();
+        return 0;
+    }
+#endif
+
+#if 1
     sprintf_lite_test();
     printf("\n");
 

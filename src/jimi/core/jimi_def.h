@@ -99,6 +99,18 @@
 #define JIMI_ALIGNED_TO(n, alignment)   \
     (((n) + ((alignment) - 1)) & ~size_t((alignment) - 1))
 
+#define JIMI_ADDR_ALIGNED_TO(p, alignment)   \
+    ((void *)((((size_t)(void *)(p)) + ((alignment) - 1)) & ~size_t((alignment) - 1)))
+
+#define JIMI_ADDR_ALIGNED_DOWNTO(p, alignment)   \
+    ((void *)(((size_t)(void *)(p)) & ~size_t((alignment) - 1)))
+
+#define JIMI_PVOID_INC(p, n)    ((void *)((size_t)(p) + 1))
+#define JIMI_PVOID_DEC(p, n)    ((void *)((size_t)(p) - 1))
+
+#define JIMI_PVOID_ADD(p, n)    ((void *)((size_t)(p) + (n)))
+#define JIMI_PVOID_SUB(p, n)    ((void *)((size_t)(p) - (n)))
+
 /**
  * macro for round to power of 2
  */

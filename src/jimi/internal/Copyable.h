@@ -6,7 +6,8 @@
 #pragma once
 #endif
 
-#include "jimi/core/jimi_def.h"
+#include "jimi/core/jimi_namespace.h"
+#include "jimi/core/jimi_config.h"
 
 NS_JIMI_BEGIN
 

@@ -11,6 +11,7 @@
 #include "jimi/lang/CharTraits.h"
 #include "jimi/lang/RefCounted.h"
 #include "jimi/lang/StringDetail.h"
+#include "jimi/util/DumpUtils.h"
 #include "jimic/string/jm_strings.h"
 #include "jimic/string/jmf_strings.h"
 #include "jimic/util/utils.h"
@@ -186,6 +187,8 @@ public:
 
     // Discontructor
     ~string_core();
+
+    void dump();
 
 public:
     // Append operators
@@ -713,6 +716,13 @@ template <STRING_CORE_CLASSES>
 STRING_CORE::~string_core()
 {
     destroy();
+}
+
+template <STRING_CORE_CLASSES>
+void STRING_CORE::dump()
+{
+    size_t size = sizeof(*this);
+    ReleaseUtils::dump((void *)this, size);
 }
 
 template <STRING_CORE_CLASSES>
