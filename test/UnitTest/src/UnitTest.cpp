@@ -3385,6 +3385,7 @@ int UnitTest_Main(int argc, char *argv[])
 
     jimi::Console.WriteLine();
 
+#if 0
     do {
         AA aa;
         aa.dump();
@@ -3406,11 +3407,15 @@ int UnitTest_Main(int argc, char *argv[])
     } while (0);
 
     jimi::Console.WriteLine();
+#endif
 
-    if (true && 1) {
+    if (true && 0) {
         jmLog.log_end();
         jimi::Console.ReadKey();
         return 0;
+    }
+    else {
+        jimi::Console.ReadKey();
     }
 #endif
 
