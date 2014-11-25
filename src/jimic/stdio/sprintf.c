@@ -262,7 +262,8 @@ vslprintf_out_int:
 #if 1
                     //if (width == 0 && flag == FMT_DEFAULT_FLAG) {
                     if ((field_width | flags) == (0 | FMT_DEFAULT_FLAG)) {
-                        len = jmc_itoa_r10_fast(buf, i32);
+                        //len = jmc_itoa_r10_fast(buf, i32);
+                        len = jmc_itoa_r10_ultra(buf, i32);
                         buf += len;
                         cur++;
                         goto vslprintf_try_next;

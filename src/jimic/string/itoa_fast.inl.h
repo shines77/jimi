@@ -12,6 +12,7 @@
 
 #include "jimic/stdio/sprintf_def.h"
 #include "jimic/libc/int64.h"
+#include "jimic/libc/endian.h"
 
 #include "jimic/math/int_log10.h"
 #include "jimic/string/string.h"
@@ -163,6 +164,500 @@ jmc_utoa_r10_fast(char *buf, unsigned int val)
 }
 
 JMC_INLINE_NONSTD(int)
+jmc_utoa_r10_ultra(char *buf, unsigned int val)
+{
+    unsigned int digit_val, num_digits;
+    unsigned int exponent, exp10 = 0;
+    unsigned char isNonzero;
+    char *cur;
+
+    unsigned int offset;
+    unsigned int decimalOrig;
+    unsigned int decimalInt, decimalHigh = 0;
+
+    jimic_assert(buf != NULL);
+
+#if 0
+    num_digits = jmc_uint_log10(val) + 1;
+#elif 0
+    //
+    // _BitScanReverse, _BitScanReverse64
+    // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
+    //
+    num_digits = 1;
+
+    isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
+    if (isNonzero != 0) {
+        // Must be 2,525,222 < 4,194,304 ( 2^32 / 1024)
+        // exp10 = exponent * 2525222UL;
+        exp10 = exponent * 2525222UL;
+        // exp10 = exp10 / 131072 / 64;
+        exp10 = (num_digits >> 23);
+
+        if (val > s_power10[exp10])
+            exp10++;
+        num_digits += exp10;
+    }
+#else
+    //
+    // _BitScanReverse, _BitScanReverse64
+    // Reference: http://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
+    //
+    if (val < 100) {
+        num_digits = 1;
+        if (val >= 10)
+            num_digits++;
+    }
+    else {
+        isNonzero = (unsigned char)_BitScanReverse((unsigned long *)&exponent, (unsigned long)val);
+
+        // Must be 2,525,222 < 4,194,304 ( 2^32 / 1024)
+        // exp10 = exponent * 2525222UL;
+        num_digits = exponent * 2525222UL;
+        // exp10 = exp10 / 131072 / 64;
+        num_digits = (num_digits >> 23);
+
+        if (val > s_power10[num_digits])
+            num_digits++;
+        num_digits++;
+    }
+#endif
+
+#if JIMIC_BYTE_ORDER == JIMIC_BIG_ENDIAN
+    // Calc decimal low 1-4 digits
+    do {
+        digit_val = val % 10;
+        val /= 10;
+
+        decimalInt = (digit_val + (unsigned int)'0');
+
+        digit_val = val % 10;
+        val /= 10;
+
+        decimalInt |= (digit_val + (unsigned int)'0') << 8;
+
+        digit_val = val % 10;
+        val /= 10;
+
+        decimalInt |= (digit_val + (unsigned int)'0') << 16;
+
+        digit_val = val % 10;
+        val /= 10;
+
+        decimalInt |= (digit_val + (unsigned int)'0') << 24;
+    } while (0);
+
+#if 0
+    cur = (char *)buf + num_digits;
+    offset = ((unsigned int)cur) & 3U;
+
+    if (offset == 0) {  // The address of the null terminator is aligned to 0
+        // Example:
+        //      0123
+        //  ABCD
+
+        // Write the null terminator
+        *cur = '\0';
+
+        decimalHigh = 0;
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        cur -= 0 + sizeof(unsigned int);
+        *((unsigned int *)cur) = decimalInt;
+    }
+    else if (offset == 1) {   // The address of the null terminator is aligned to 1
+        // Example:
+        //     0123
+        //  ABCD
+
+        decimalHigh = decimalInt >> 8;
+        decimalOrig = *((unsigned int *)((unsigned int)cur - offset));
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        cur -= 1;
+        // Mask = 0x0000FFFF
+        *((unsigned int *)cur) = (decimalInt << 24) | (decimalOrig & 0x0000FFFFU);
+    }
+    else if (offset == 2) {   // The address of the null terminator is aligned to 2
+        // Example:
+        //    0123
+        //  ABCD
+
+        decimalHigh = decimalInt >> 16;
+        decimalOrig = *((unsigned int *)((unsigned int)cur - offset));
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        cur -= 2;
+        *((unsigned int *)cur) = (decimalInt << 16) | (decimalOrig & 0x000000FFU);
+    }
+    else if (offset == 3) {   // The address of the null terminator is aligned to 3
+        // Example:
+        //   0123
+        //  ABCD
+
+        decimalHigh = decimalInt >> 24;
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        cur -= 3;
+        *((unsigned int *)cur) = (decimalInt << 8);
+    }
+#else
+    cur = (char *)buf + num_digits;
+    offset = ((unsigned int)cur) & 3U;
+
+    if (offset == 0) {  // The address of the null terminator is aligned to 0
+        // Example:
+        //      0123
+        //  ABCD
+
+        // Write the null terminator
+        *cur = '\0';
+
+        decimalHigh = 0;
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        cur -= 0 + sizeof(unsigned int);
+        *((unsigned int *)cur) = decimalInt;
+    }
+    else if (offset == 3) {   // The address of the null terminator is aligned to 3
+        // Example:
+        //   0123
+        //  ABCD
+
+        decimalHigh = decimalInt >> 24;
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        cur -= 3;
+        *((unsigned int *)cur) = (decimalInt << 8);
+    }
+    else {   // The address of the null terminator is aligned to 1 or 2
+        // Example:
+        //     0123
+        //  ABCD
+        //
+        // Or:
+        //     0123
+        //   ABCD
+        unsigned int decimalMask;
+
+        // offsetLast = offset - 1
+        //unsigned int offsetLast = (offset + 3) & 3U;
+
+        decimalOrig = *((unsigned int *)((unsigned int)cur - offset));
+        decimalMask = 0xFFFFFFFFU >> (offset * 8 + 8);
+
+        //decimalHigh = decimalInt >> ((offsetLast + 1) * 8);
+        //decimalInt  = (decimalInt << (32 - (offsetLast + 1) * 8)) | (decimalOrig & decimalMask);
+
+        decimalHigh = decimalInt >> (offset * 8);
+        decimalInt  = (decimalInt << (32 - offset * 8)) | (decimalOrig & decimalMask);
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        cur -= offset;
+        *((unsigned int *)cur) = decimalInt;
+    }
+#endif
+
+#else  /* JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN */
+
+    cur = (char *)buf + num_digits;
+    offset = ((unsigned int)cur) & 3U;
+
+#if 0
+    // Calc the decimal low 1-4 digits
+    do {
+        int digits_cnt;
+        decimalInt = 0;
+        digits_cnt = offset;
+        while (digits_cnt > 0) {
+            digit_val = val % 10;
+            val /= 10;
+
+            decimalInt <<= 8;
+            decimalInt += digit_val;
+            digits_cnt--;
+        }
+    } while (0);
+#endif
+
+#if 1
+    if (offset == 0) {  // The address of the null terminator is aligned to 0
+        // Example:
+        //      0123
+        //  ABCD
+
+        // Write the null terminator
+        *cur = '\0';
+    }
+    else if (offset == 1) {   // The address of the null terminator is aligned to 1
+        // Example:
+        //     0123
+        //  ABCD
+
+        // Calc the decimal low 1 digits
+        do {
+            digit_val = val % 10;
+            val /= 10;
+
+            decimalInt = digit_val;
+        } while (0);
+
+        cur -= 1;
+        decimalOrig = *((unsigned int *)cur);
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        // Mask = 0xFFFF0000
+        *((unsigned int *)cur) = (decimalInt | 0x00000030U) | (decimalOrig & 0xFFFF0000U);
+    }
+    else if (offset == 2) {   // The address of the null terminator is aligned to 2
+        // Example:
+        //    0123
+        //  ABCD
+
+        // Calc the decimal low 2 digits
+        do {
+            digit_val = val % 10;
+            val /= 10;
+
+            decimalInt = digit_val << 8;
+
+            digit_val = val % 10;
+            val /= 10;
+
+            decimalInt |= digit_val;
+        } while (0);
+
+        cur -= 2;
+        decimalOrig = *((unsigned int *)cur);
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        // Mask = 0xFF000000
+        *((unsigned int *)cur) = (decimalInt | 0x00003030U) | (decimalOrig & 0xFF000000U);
+    }
+    else if (offset == 3) {   // The address of the null terminator is aligned to 3
+        // Example:
+        //   0123
+        //  ABCD
+
+        // Calc the decimal low 3 digits
+        do {
+            digit_val = val % 10;
+            val /= 10;
+
+            decimalInt = digit_val << 16;
+
+            digit_val = val % 10;
+            val /= 10;
+
+            decimalInt |= digit_val << 8;
+
+            digit_val = val % 10;
+            val /= 10;
+
+            decimalInt |= digit_val;
+        } while (0);
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        cur -= 3;
+        *((unsigned int *)cur) = (decimalInt | 0x00303030U);
+    }
+#else
+    if (offset == 0) {  // The address of the null terminator is aligned to 0
+        // Example:
+        //      0123
+        //  ABCD
+
+        // Write the null terminator
+        *cur = '\0';
+
+        decimalHigh = 0;
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        cur -= 0 + sizeof(unsigned int);
+        *((unsigned int *)cur) = decimalInt;
+    }
+    else if (offset == 3) {   // The address of the null terminator is aligned to 3
+        // Example:
+        //   0123
+        //  ABCD
+
+        decimalHigh = decimalInt << 24;
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        cur -= 3;
+        *((unsigned int *)cur) = (decimalInt >> 8);
+    }
+    else {   // The address of the null terminator is aligned to 1 or 2
+        // Example:
+        //     0123
+        //  ABCD
+        //
+        // Or:
+        //     0123
+        //   ABCD
+        unsigned int decimalMask;
+
+        // offsetLast = offset - 1
+        //unsigned int offsetLast = (offset + 3) & 3U;
+
+        decimalOrig = *((unsigned int *)((unsigned int)cur - offset));
+        decimalMask = 0xFFFFFFFFU << (offset * 8 + 8);
+
+        //decimalHigh = decimalInt << ((offsetLast + 1) * 8);
+        //decimalInt  = (decimalInt >> (32 - (offsetLast + 1) * 8)) | (decimalOrig & decimalMask);
+
+        decimalHigh = decimalInt << (offset * 8);
+        decimalInt  = (decimalInt >> (32 - offset * 8)) | (decimalOrig & decimalMask);
+
+        // Write the decimalInt(uint32_t) to buffer directly
+        cur -= offset;
+        *((unsigned int *)cur) = decimalInt;
+    }
+#endif
+
+calc_digits_main:
+
+    cur -= sizeof(unsigned int);
+    if (cur >= buf) {
+        // Calc the decimal middle 4 digits
+        do {
+            digit_val = val % 10;
+            val /= 10;
+
+            decimalInt = digit_val << 24;
+
+            digit_val = val % 10;
+            val /= 10;
+
+            decimalInt |= digit_val << 16;
+
+            digit_val = val % 10;
+            val /= 10;
+
+            decimalInt |= digit_val << 8;
+
+            digit_val = val % 10;
+            val /= 10;
+
+            decimalInt |= digit_val;
+        } while (0);
+
+        *((unsigned int *)cur) = (decimalInt | 0x30303030U);
+
+        // Calc the next 4 digits
+        goto calc_digits_main;
+    }
+    else {
+        // Get the offset of the buff aligned to 4 byte
+        offset = ((unsigned int)buf) & 3U;
+        ///*
+        if (offset == 0)
+            return num_digits;
+        //*/
+        jimic_assert(offset == 0);
+
+#if 0
+        // Calc the decimal low 1-4 digits
+        do {
+            int digits_cnt;
+            decimalInt = 0;
+            digits_cnt = (int)(offset ^ 3U);
+            while (digits_cnt >= 0) {
+                digit_val = val % 10;
+                val /= 10;
+
+                decimalInt <<= 8;
+                decimalInt += digit_val;
+                digits_cnt--;
+            }
+        } while (0);
+#endif
+
+        //decimalOrig = *((unsigned int *)((unsigned int)buf - offset));
+
+        if (offset == 1) {   // The address of the buff is aligned to 1
+            // Example:
+            //  0123
+            //   ABCD
+            jimic_assert(offset != 1);
+
+            // Calc the decimal high 3 digits
+            do {
+                digit_val = val % 10;
+                val /= 10;
+
+                decimalInt = digit_val << 16;
+
+                digit_val = val % 10;
+                val /= 10;
+
+                decimalInt |= digit_val << 8;
+
+                digit_val = val % 10;
+                val /= 10;
+
+                decimalInt |= digit_val;
+            } while (0);
+
+            decimalOrig = *((unsigned int *)((unsigned int)buf - 1));
+
+            // Write the decimalInt(uint32_t) to buffer directly
+            // Mask = 0x000000FF
+            *((unsigned int *)cur) = ((decimalInt << 8) | 0x30303000U) | (decimalOrig & 0x000000FFU);
+        }
+        else if (offset == 2) {   // The address of the buff is aligned to 2
+            // Example:
+            //  0123
+            //    ABCD
+            jimic_assert(offset != 2);
+
+            // Calc the decimal high 2 digits
+            do {
+                digit_val = val % 10;
+                val /= 10;
+
+                decimalInt = digit_val << 8;
+
+                digit_val = val % 10;
+                val /= 10;
+
+                decimalInt |= digit_val;
+            } while (0);
+
+            decimalOrig = *((unsigned int *)((unsigned int)buf - 2));
+
+            // Write the decimalInt(uint32_t) to buffer directly
+            // Mask = 0x0000FFFF
+            *((unsigned int *)cur) = ((decimalInt << 16) | 0x30300000U) | (decimalOrig & 0x0000FFFFU);
+        }
+        else {  // The address of the buff is aligned to 3
+            // Example:
+            //  0123
+            //     ABCD
+            jimic_assert(offset != 3);
+
+            // Calc the decimal high 1 digits
+            do {
+                digit_val = val % 10;
+                val /= 10;
+
+                decimalInt = digit_val;
+            } while (0);
+
+            *buf = (char)(decimalInt + '0');
+
+            // Write the decimalInt(uint32_t) to buffer directly
+            //*((unsigned int *)cur) = ((decimalInt << 24) | 0x30000000U) | (decimalOrig & 0x00FFFFFFU);
+        }
+
+    }
+
+#endif  /* JIMIC_BYTE_ORDER == JIMIC_BIG_ENDIAN */
+
+    return num_digits;
+}
+
+JMC_INLINE_NONSTD(int)
 jmc_utoa_r10_fast_v1(char *buf, unsigned int val)
 {
     unsigned int digit_val, num_digits;
@@ -235,7 +730,7 @@ jmc_utoa_r10_fast_v2(char *buf, unsigned int val)
 JMC_INLINE_NONSTD(int)
 jmc_itoa_r10_fast(char *buf, int val)
 {
-#if 0
+#if 1
     if (val >= 0) {
         return jmc_utoa_r10_fast(buf, (unsigned int)val);
     }
@@ -272,6 +767,19 @@ jmc_itoa_r10_fast(char *buf, int val)
     }
     return jmc_utoa_r10_fast(buf, (unsigned int)val) + sign;
 #endif
+}
+
+JMC_INLINE_NONSTD(int)
+jmc_itoa_r10_ultra(char *buf, int val)
+{
+    if (val >= 0) {
+        return jmc_utoa_r10_ultra(buf, (unsigned int)val);
+    }
+    else {
+        *buf++ = '-';
+        val = -val;
+        return jmc_utoa_r10_ultra(buf, (unsigned int)val) + 1;
+    }
 }
 
 JMC_INLINE_NONSTD(int)

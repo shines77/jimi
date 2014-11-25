@@ -65,6 +65,8 @@
 #include "jimic/platform/linux/fast_memcpy.h"
 #endif
 
+#include "jimic/string/itoa_fast.h"
+
 #include "jimi/util/cmd_line.h"
 #include "jimi/thread/Thread.h"
 #include "jimi/thread/Event.h"
@@ -3390,9 +3392,9 @@ int UnitTest_Main(int argc, char *argv[])
         AA aa;
         aa.dump();
 
-        ReleaseUtils::dump((void *)(*(unsigned int *)(&aa)), 32);
+        //ReleaseUtils::dump((void *)(*(unsigned int *)(&aa)), 32);
 
-        ReleaseUtils::dump((void *)(*(unsigned int *)(&aa.resA)), sizeof(aa.resA));
+        //ReleaseUtils::dump((void *)(*(unsigned int *)(&aa.resA)), sizeof(aa.resA));
     } while (0);
 
     jimi::Console.WriteLine();
@@ -3401,15 +3403,47 @@ int UnitTest_Main(int argc, char *argv[])
         BB bb;
         bb.dump();
 
-        ReleaseUtils::dump((void *)(*(unsigned int *)(&bb)), 32);
+        //ReleaseUtils::dump((void *)(*(unsigned int *)(&bb)), 32);
 
-        ReleaseUtils::dump((void *)(*(unsigned int *)(&bb.resB)), sizeof(bb.resB));
+        //ReleaseUtils::dump((void *)(*(unsigned int *)(&bb.resB)), sizeof(bb.resB));
     } while (0);
 
     jimi::Console.WriteLine();
 #endif
 
     if (true && 0) {
+        jmLog.log_end();
+        jimi::Console.ReadKey();
+        return 0;
+    }
+    else {
+        jimi::Console.ReadKey();
+    }
+#endif
+
+#if 0
+    char buff[128];
+    int num_digits;
+
+    num_digits = jmc_utoa_r10_ultra(buff, 1234);
+    printf("buff = %s, size = %d.\n\n", buff, num_digits);
+
+    num_digits = jmc_utoa_r10_ultra(buff, 654321);
+    printf("buff = %s, size = %d.\n\n", buff, num_digits);
+
+    num_digits = jmc_utoa_r10_ultra(buff, 987654321);
+    printf("buff = %s, size = %d.\n\n", buff, num_digits);
+
+    num_digits = jmc_utoa_r10_ultra(buff + 1, 1234);
+    printf("buff = %s, size = %d.\n\n", buff, num_digits);
+
+    num_digits = jmc_utoa_r10_ultra(buff + 2, 654321);
+    printf("buff = %s, size = %d.\n\n", buff, num_digits);
+
+    num_digits = jmc_utoa_r10_ultra(buff + 3, 987654321);
+    printf("buff = %s, size = %d.\n\n", buff, num_digits);
+
+    if (true && 1) {
         jmLog.log_end();
         jimi::Console.ReadKey();
         return 0;

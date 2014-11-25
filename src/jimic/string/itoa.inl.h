@@ -138,7 +138,7 @@ jmc_utoa_r10_v2(char *buf, unsigned int val)
 JMC_INLINE_NONSTD(int)
 jmc_itoa_r10(char *buf, int val)
 {
-#if 0
+#if 1
     if (val >= 0) {
         return jmc_utoa_r10(buf, (unsigned int)val);
     }

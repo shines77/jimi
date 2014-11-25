@@ -52,6 +52,12 @@ JMC_INLINE_NONSTD(int)
 jmc_i64toa_r10_fast_ex(char *buf, size_t count, int64_t val, unsigned int flag,
                   unsigned int fill, unsigned int field_width, int length);
 
+JMC_INLINE_NONSTD(int)
+jmc_utoa_r10_ultra(char *buf, unsigned int val);
+
+JMC_INLINE_NONSTD(int)
+jmc_itoa_r10_ultra(char *buf, int val);
+
 #ifdef __cplusplus
 }
 #endif
