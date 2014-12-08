@@ -105,6 +105,7 @@ enum StringTypeMaskX
 
 #define STRING_CORE_CLASSES    \
     class _CharT, class _RefCount
+
 #define STRING_CORE            \
     string_core<_CharT, _RefCount>
 
@@ -165,6 +166,7 @@ public:
     static const size_type kSmallSizeOffset = (size_type)jmc_abs_ex((intptr_t)(
                                     (unsigned char *)&(((small_t *)0)->info.size)
                                   - (unsigned char *)&(((medium_large_t *)0)->core.type)), size_type);
+
      /* small_t.info.type 相对于 medium_large_t.core.type 的偏移值(单位为字节) */
     static const size_type kSmallTypeOffset = (size_type)jmc_abs_ex((intptr_t)(
                                     (unsigned char *)&(((small_t *)0)->info.type)
@@ -172,6 +174,7 @@ public:
 
     /* small_t.info.size 相对于 medium_large_t.core.type 的偏移值(单位为bit) */
     static const size_type kSmallSizeOffsetBits = kSmallSizeOffset * sizeof(unsigned char) * 8;
+
      /* small_t.info.type 相对于 medium_large_t.core.type 的偏移值(单位为bit) */
     static const size_type kSmallTypeOffsetBits = kSmallTypeOffset * sizeof(unsigned char) * 8;
 
@@ -400,7 +403,7 @@ private:
     }
 
 protected:
-    /* 使用lastShort有时候可以快一点 */
+    /* 使用lastShort有时候可能会快一点 */
     struct small_info_t {
         union {
             struct {
@@ -411,25 +414,26 @@ protected:
         };
     };
 
-    /* medium_large_t 的有效核心数据 */
-    struct core_data_t {
-        char_type  *data;
-        size_type   size;
-        size_type   capacity;
-        flag_type   type;
-    };
-
     /* small string optimized buffer */
     struct small_t {
         union {
             struct {
                 /* (dummy只是占位用, 未使用) */
                 char dummy[(kMaxSmallSizeBytes - sizeof(small_info_t)) / sizeof(char)];
+
                 /* size and type */
                 small_info_t info;
             };
             char_type buf[(kMaxSmallSizeBytes - sizeof(small_info_t)) / sizeof(char_type)];
         };
+    };
+
+    /* medium_large_t 的有效核心数据 */
+    struct core_data_t {
+        char_type  *data;
+        size_type   size;
+        size_type   capacity;
+        flag_type   type;
     };
 
     /* medium 和 large 共享一样的结构 */
@@ -461,7 +465,11 @@ template <STRING_CORE_CLASSES>
 STRING_CORE::string_core()
 {
 #if 1
-    (*(size_t *)(&_small.buf[0])) = (size_t)0;
+    if (sizeof(char_type) <= sizeof(size_t) && kMaxSmallSizeBytes > sizeof(size_t))
+        (*(size_t *)(&_small.buf[0])) = (size_t)0;
+    else
+        (*(char_type *)(&_small.buf[0])) = (char_type)0;
+
     _ml.core.type = kIsSmall;
     //_ml.core.size = 0;
     //_ml.core.capacity = 0;
@@ -582,7 +590,7 @@ template <STRING_CORE_CLASSES>
 STRING_CORE::string_core(const char_type c)
 {
 #if 1
-    if (sizeof(char_type) <= sizeof(size_t))
+    if (sizeof(char_type) <= sizeof(size_t) && kMaxSmallSizeBytes > sizeof(size_t))
         (*(size_t *)(&_small.buf[0])) = (size_t)c;
     else
         (*(char_type *)(&_small.buf[0])) = (char_type)c;

@@ -21,7 +21,7 @@
 #include <limits>
 
 #if (defined(_MSC_VER) && (_MSC_VER >= 1700)) || defined(__GNUC__)
-#include <functional>   // std::less_equal, std::bind2nd
+#include <functional>   // For std::less_equal, std::bind2nd
 #endif
 
 NS_JIMI_BEGIN
@@ -52,6 +52,7 @@ class JIMI_DLL normal_iterator
 
 #define BASIC_STRING_CLASSES    \
     class _CharT, class _Traits, class _Alloc, class _Storage
+
 #define BASIC_STRING            \
     basic_string<_CharT, _Traits, _Alloc, _Storage>
 

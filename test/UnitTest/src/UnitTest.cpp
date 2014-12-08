@@ -148,10 +148,11 @@ void * A_memcpy (void * dest, const void * src, size_t count)
 
 using namespace jimi;
 using namespace std;
+using namespace UnitTest;
 
-USING_NS_UNITEST
+//USING_NS_UNITEST
 
-NS_UNITEST_BEGIN
+//NS_UNITEST_BEGIN
 
 #define SetCPUAffinityMask2(m1, m2)             ((((m2) & 1) << 1) | ((m1) & 1))
 #define SetCPUAffinityMask3(m1, m2, m3)         ((((m3) & 1) << 2) | (((m2) & 1) << 1) | ((m1) & 1))
@@ -3691,7 +3692,7 @@ int UnitTest_Main(int argc, char *argv[])
     return 0;
 }
 
-NS_UNITEST_END
+//NS_UNITEST_END
 
 NS_JIMI_BEGIN
 
@@ -3700,7 +3701,8 @@ class MyProgram : public jimi::Program
 public:
     void Main(int argc, char *argv[]) {
 #if defined(UNITEST_USE_NAMESPACE) && (UNITEST_USE_NAMESPACE != 0)
-        UnitTest::UnitTest_Main(argc, argv);
+        //UnitTest::UnitTest_Main(argc, argv);
+        UnitTest_Main(argc, argv);
 #else
         UnitTest_Main(argc, argv);
 #endif
@@ -3731,7 +3733,8 @@ int main(int argc, char *argv[])
     //jimi::Program program(&UnitTest_Main, 0);
     jimi::Program program;
 #if defined(UNITEST_USE_NAMESPACE) && (UNITEST_USE_NAMESPACE != 0)
-    program.SetMain(&UnitTest::UnitTest_Main);
+    //program.SetMain(&UnitTest::UnitTest_Main);
+    program.SetMain(&UnitTest_Main);
 #else
     program.SetMain(&UnitTest_Main);
 #endif
