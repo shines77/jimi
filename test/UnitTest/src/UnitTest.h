@@ -29,7 +29,7 @@
 NS_UNITEST_BEGIN
 
 // declear namespace UnitTest
-//int UnitTest_Main(int argc, char *argv[]);
+int UnitTest_Main(int argc, char *argv[]);
 
 NS_UNITEST_END
 

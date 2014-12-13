@@ -55,18 +55,18 @@
 *.sln.old
 *.sln_old
 # *.vcxproj.user
-/Debug
-/Release
-/x86-Debug
-/x86-Release
-/x64-Debug
-/x64-Release
+/Debug/
+/Release/
+/x86-Debug/
+/x86-Release/
+/x64-Debug/
+/x64-Release/
 !/deps/
 
 # For Visual Studio Update File
 UpgradeLog.XML
 UpgradeLog.htm
-/Backup
+/Backup/
 
 # For log file
 *.log
@@ -85,10 +85,10 @@ IcUpdateLog.htm
 *.dump
 
 # tmp and obj files
-/obj
-/gen
-/tmp
-/temp
+/obj/
+/gen/
+/tmp/
+/temp/
 
 # For Visual Studio 2013 temp files on Windows
 *.tlog
@@ -109,12 +109,12 @@ Thumbs.db
 # Other files
 /.metadata
 /169.254.0.1
-/ipch
-/cmake
-/Simulator
-/Simulator-Coverage
-/Simulator-Profile
-/Device-Debug
-/Device-Coverage
-/Device-Profile
-/Device-Release
+/ipch/
+/cmake/
+/Simulator/
+/Simulator-Coverage/
+/Simulator-Profile/
+/Device-Debug/
+/Device-Coverage/
+/Device-Profile/
+/Device-Release/

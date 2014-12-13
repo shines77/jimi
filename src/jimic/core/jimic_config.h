@@ -2,6 +2,10 @@
 #ifndef _JIMIC_CORE_CONFIG_H_
 #define _JIMIC_CORE_CONFIG_H_
 
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
+#pragma once
+#endif
+
 #if defined(_WIN32) || defined(_WIN64) || defined(_MSC_VER)
 #include "jimic/core/win32/jimic_config.h"
 #elif defined(__linux__) || defined(__LINUX__)

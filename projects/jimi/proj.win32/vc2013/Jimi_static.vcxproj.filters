@@ -108,6 +108,9 @@
     <Filter Include="src\jimic\math">
       <UniqueIdentifier>{9944dc13-9233-4978-a6f0-547ea8aa4cb6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\jimi\memory">
+      <UniqueIdentifier>{fe54cd8a-85d8-4ba4-aac2-98d02884a31c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\jimi\jimi_all.h">

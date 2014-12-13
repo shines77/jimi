@@ -102,6 +102,15 @@
 #include "UnitTests/String_StrLwr_Test.h"
 #include "FastMemcpy.h"
 
+// namespace UnitTest 里引用的头文件
+#include "jimic/math/int_log10.h"
+#include "jimic/string/dtos.h"
+#include "jimi/lang/SmallString.h"
+#include "jimic/stdio/sprintf_lite.h"
+#include "jimic/libc/ieee754.h"
+
+#include <memory>
+
 #if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
 
 /**
@@ -148,11 +157,11 @@ void * A_memcpy (void * dest, const void * src, size_t count)
 
 using namespace jimi;
 using namespace std;
-using namespace UnitTest;
+//using namespace UnitTest;
 
-//USING_NS_UNITEST
+USING_NS_UNITEST
 
-//NS_UNITEST_BEGIN
+NS_UNITEST_BEGIN
 
 #define SetCPUAffinityMask2(m1, m2)             ((((m2) & 1) << 1) | ((m1) & 1))
 #define SetCPUAffinityMask3(m1, m2, m3)         ((((m3) & 1) << 2) | (((m2) & 1) << 1) | ((m1) & 1))
@@ -219,7 +228,6 @@ void jimi_set_thread_affinity(uint32_t dwCPUMask)
 
 void String_Copy_On_Write_Test()
 {
-#if 0
     std::string str1 = "hello world";
     std::string str2 = str1;
 
@@ -235,7 +243,6 @@ void String_Copy_On_Write_Test()
     printf ("\tstr2's address: %x\n", str2.c_str() );
 
     printf("\n");
-#endif
 }
 
 void String_Performance_Test()
@@ -2734,8 +2741,6 @@ void Log10_Test3()
     printf("\n");
 }
 
-#include "jimic/math/int_log10.h"
-
 void Int_Log10_Test()
 {
 #ifndef _DEBUG
@@ -2941,8 +2946,6 @@ void Int_Log10_TestNums()
     printf("\n");
 }
 
-#include "jimic/string/dtos.h"
-
 void Double_And_Float_Test()
 {
     char buf[128];
@@ -3127,8 +3130,6 @@ void Double_And_Float_Test()
 #endif  /* JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 }
 
-#include "jimi/lang/SmallString.h"
-
 void SmallString_Test()
 {
     jimi::SmallString<char, 120, 15> smallString1("small string test");
@@ -3151,8 +3152,6 @@ void SmallString_Test()
     printf("smallString2<char , 128>.c_str()     = \"%s\".\n", smallString2.c_str());
     printf("\n");
 }
-
-#include "jimic/stdio/sprintf_lite.h"
 
 void sprintf_lite_test()
 {
@@ -3181,8 +3180,6 @@ void sprintf_lite_test()
     snprintf_lite(outbuf, jm_countof(outbuf), jm_countof(outbuf) - 1, "#%M", 3456789);
     printf("snprintf_lite(\"#%%M\", %d) = %s\n", 3456789, outbuf);
 }
-
-#include <memory>
 
 template <typename T, typename RefType = std::shared_ptr<T> >
 bool ReadData(DWORD dwBase, RefType &data)
@@ -3223,8 +3220,6 @@ bool ReadData_Test(DWORD dwBase, std::shared_ptr<T> &data)
 
     return true;
 }
-
-#include "jimic/libc/ieee754.h"
 
 int UnitTest_Main(int argc, char *argv[])
 {
@@ -3692,7 +3687,7 @@ int UnitTest_Main(int argc, char *argv[])
     return 0;
 }
 
-//NS_UNITEST_END
+NS_UNITEST_END
 
 NS_JIMI_BEGIN
 
@@ -3701,8 +3696,7 @@ class MyProgram : public jimi::Program
 public:
     void Main(int argc, char *argv[]) {
 #if defined(UNITEST_USE_NAMESPACE) && (UNITEST_USE_NAMESPACE != 0)
-        //UnitTest::UnitTest_Main(argc, argv);
-        UnitTest_Main(argc, argv);
+        UnitTest::UnitTest_Main(argc, argv);
 #else
         UnitTest_Main(argc, argv);
 #endif
@@ -3733,8 +3727,7 @@ int main(int argc, char *argv[])
     //jimi::Program program(&UnitTest_Main, 0);
     jimi::Program program;
 #if defined(UNITEST_USE_NAMESPACE) && (UNITEST_USE_NAMESPACE != 0)
-    //program.SetMain(&UnitTest::UnitTest_Main);
-    program.SetMain(&UnitTest_Main);
+    program.SetMain(&UnitTest::UnitTest_Main);
 #else
     program.SetMain(&UnitTest_Main);
 #endif

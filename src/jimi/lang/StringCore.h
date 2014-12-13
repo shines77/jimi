@@ -261,13 +261,13 @@ public:
     const size_type capacity_small() const;
     size_type capacity_ml() const;
 
-    // swap below doesn't test whether &rhs == this (and instead
+    // Swap below doesn't test whether &rhs == this (and instead
     // potentially does extra work) on the premise that the rarity of
     // that situation actually makes the check more expensive than is
     // worth.
     void swap(string_core &rhs);
 
-    // stole from rhs, and clear rhs
+    // Stole from rhs, and clear rhs
     void stole(string_core &rhs);
 
 #if defined(JIMI_HAS_CXX11_MOVE_FUNCTIONS) && (JIMI_HAS_CXX11_MOVE_FUNCTIONS != 0)
