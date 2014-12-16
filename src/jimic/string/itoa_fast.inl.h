@@ -554,7 +554,7 @@ calc_digits_main:
         if (offset == 0)
             return num_digits;
         //*/
-        jimic_assert(offset == 0);
+        jimic_assert(offset != 0);
 
 #if 0
         // Calc the decimal low 1-4 digits
@@ -579,7 +579,7 @@ calc_digits_main:
             // Example:
             //  0123
             //   ABCD
-            jimic_assert(offset != 1);
+            jimic_assert(offset == 1);
 
             // Calc the decimal high 3 digits
             do {
@@ -609,7 +609,7 @@ calc_digits_main:
             // Example:
             //  0123
             //    ABCD
-            jimic_assert(offset != 2);
+            jimic_assert(offset == 2);
 
             // Calc the decimal high 2 digits
             do {
@@ -634,7 +634,7 @@ calc_digits_main:
             // Example:
             //  0123
             //     ABCD
-            jimic_assert(offset != 3);
+            jimic_assert(offset == 3);
 
             // Calc the decimal high 1 digits
             do {

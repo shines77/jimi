@@ -84,6 +84,8 @@
 #include "jimi/system/Program.h"
 #include "jimi/system/Console.h"
 
+#include "jimi/util/RingQueue.h"
+
 #if defined(JIMI_HAS_BOOST_LOCALE) && (JIMI_HAS_BOOST_LOCALE != 0)
 #include <boost/locale.hpp>
 #include <boost/locale/encoding.hpp>
@@ -3269,6 +3271,39 @@ int UnitTest_Main(int argc, char *argv[])
 
     // Test System.out.println()
     jimi::System.out.println("System.out.println() test.\n");
+
+#if 1
+    if (true) {
+        RingQueue<uint64_t, 32> ringQueue;
+        uint64_t queue_msg = 123ULL;
+
+        printf("---------------------------------------------------------------\n");
+        printf("RingQueue() test begin...\n\n");
+
+        printf("RingQueue.length() = %u\n", ringQueue.max_length());
+        printf("RingQueue.mask()   = %u\n\n", ringQueue.mask());
+
+        //ringQueue.dump_info();
+
+        ringQueue.push(&queue_msg);
+        ringQueue.push(&queue_msg);
+        //ringQueue.dump_info();
+
+        ringQueue.pop();
+        ringQueue.pop();
+        ringQueue.pop();
+        ringQueue.dump_info();
+
+        printf("RingQueue() test end...\n");
+        printf("---------------------------------------------------------------\n\n");
+
+        if (true) {
+            jmLog.log_end();
+            jimi::Console.ReadKey();
+            return 0;
+        }
+    }
+#endif
 
 #if 0
 #if !defined(_MSC_VER) || (_MSC_VER >= 1600)

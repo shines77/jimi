@@ -44,8 +44,8 @@ public:
     typedef std::reverse_iterator<const_iterator>   const_reverse_iterator;
     typedef std::reverse_iterator<iterator>         reverse_iterator;
 
-    static const size_t _alignment = JIMI_MAX(JIMI_ROUND_TO_POW2(_Alignment), 4);
-    static const size_t _capacity  = JIMI_MAX(JIMI_ALIGNED_TO(_Capacity, _alignment), 1);
+    static const size_type kAlignment = (size_type)JIMI_MAX(JIMI_ROUND_TO_POW2(_Alignment), 4);
+    static const size_type kCapacity  = (size_type)JIMI_MAX(JIMI_ALIGNED_TO(_Capacity, kAlignment), 1);
 
 public:
     // Contructor
@@ -68,8 +68,8 @@ public:
     const size_type size() const      { return _size;           }
     const size_type length() const    { return this->size();    }
 
-    const size_type alignment() const { return _alignment;      }
-    const size_type capacity() const  { return _capacity;       }
+    const size_type alignment() const { return kAlignment;      }
+    const size_type capacity() const  { return kCapacity;       }
 
 protected:
     void init(const value_type *src, size_type size);
@@ -80,7 +80,7 @@ private:
     size_t      _reserve;
 #endif
     size_t      _size;
-    value_type  _data[_capacity];
+    value_type  _data[kCapacity];
 };
 
 template <class _CharT, size_t _Capacity, size_t _Alignment, class _Traits>
@@ -102,15 +102,15 @@ template <class _CharT, size_t _Capacity, size_t _Alignment, class _Traits>
 SmallString<_CharT, _Capacity, _Alignment, _Traits>::SmallString(const value_type c, size_type n)
 : _size(n)
 {
-    if (n < _capacity) {
+    if (n < kCapacity) {
         ::memset(_data, c, n * sizeof(value_type));
         _data[size] = (value_type)'\0';
         _size = size;
     }
     else {
-        ::memset(_data, c, (_capacity - 1) * sizeof(value_type));
-        _data[_capacity - 1] = (value_type)'\0';
-        _size = _capacity - 1;
+        ::memset(_data, c, (kCapacity - 1) * sizeof(value_type));
+        _data[kCapacity - 1] = (value_type)'\0';
+        _size = kCapacity - 1;
     }
 }
 
@@ -162,15 +162,15 @@ template <class _CharT, size_t _Capacity, size_t _Alignment, class _Traits>
 inline
 void SmallString<_CharT, _Capacity, _Alignment, _Traits>::init(const value_type *src, size_type size)
 {
-    if (size < _capacity) {
+    if (size < kCapacity) {
         ::memcpy(_data, src, size * sizeof(value_type));
         _data[size] = (value_type)'\0';
         _size = size;
     }
     else {
-        ::memcpy(_data, src, (_capacity - 1) * sizeof(value_type));
-        _data[_capacity - 1] = (value_type)'\0';
-        _size = _capacity - 1;
+        ::memcpy(_data, src, (kCapacity - 1) * sizeof(value_type));
+        _data[kCapacity - 1] = (value_type)'\0';
+        _size = kCapacity - 1;
     }
 }
 
