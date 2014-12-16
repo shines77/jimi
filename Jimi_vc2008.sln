@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jimi_static", "projects\jimi\proj.win32\vc2008\Jimi_static.vcproj", "{6CC87659-079A-4DF7-852E-8AF52192504D}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jimi_shared", "projects\jimi\proj.win32\vc2008\Jimi_shared.vcproj", "{7AE39F1A-493B-4A38-AC5C-137C2A394933}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "test\UnitTest\proj.win32\vc2008\UnitTest.vcproj", "{916F8AC2-693C-4F26-8FE4-3BF9C5E10772}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6CC87659-079A-4DF7-852E-8AF52192504D} = {6CC87659-079A-4DF7-852E-8AF52192504D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IocpServd", "apps\IocpServd\proj.win32\vc2008\IocpServd.vcproj", "{32E6D992-7397-400C-A12F-61EC3018B9FF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6CC87659-079A-4DF7-852E-8AF52192504D} = {6CC87659-079A-4DF7-852E-8AF52192504D}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "test\UnitTest\proj.win32\vc2008\UnitTest.vcproj", "{916F8AC2-693C-4F26-8FE4-3BF9C5E10772}"
-	ProjectSection(ProjectDependencies) = postProject
-		{6CC87659-079A-4DF7-852E-8AF52192504D} = {6CC87659-079A-4DF7-852E-8AF52192504D}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jimi_static", "projects\jimi\proj.win32\vc2008\Jimi_static.vcproj", "{6CC87659-079A-4DF7-852E-8AF52192504D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jimi_shared", "projects\jimi\proj.win32\vc2008\Jimi_shared.vcproj", "{7AE39F1A-493B-4A38-AC5C-137C2A394933}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "apps", "apps", "{C158E1EA-DFE6-4327-8AEA-CC021B7430DB}"
 EndProject

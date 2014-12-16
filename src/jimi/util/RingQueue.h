@@ -65,10 +65,10 @@
 
 #if defined(_MSC_VER)
 #define jimi_compare_and_swap32(destPtr, oldValue, newValue)    \
-    InterlockedCompareExchange((volatile uint32_t *)destPtr,    \
+    InterlockedCompareExchange((volatile LONG *)destPtr,    \
                             (uint32_t)(newValue), (uint32_t)(oldValue))
 #define jimi_bool_compare_and_swap32(destPtr, oldValue, newValue)       \
-    (InterlockedCompareExchange((volatile uint32_t *)destPtr,           \
+    (InterlockedCompareExchange((volatile LONG *)destPtr,           \
                             (uint32_t)(newValue), (uint32_t)(oldValue)) \
                                 == (uint32_t)(oldValue))
 #elif defined(__linux__) || defined(__cygwin__) || defined(__MINGW__) || defined(__MINGW32__)

@@ -3184,7 +3184,9 @@ void sprintf_lite_test()
     printf("snprintf_lite(\"#%%M\", %d) = %s\n", 3456789, outbuf);
 }
 
-template <typename T, typename RefType = std::shared_ptr<T> >
+#if defined(_MSC_VER) && (_MSC_VER >= 1600)
+
+template <typename T, typename RefType>
 bool ReadData(DWORD dwBase, RefType &data)
 {
     data = std::make_shared<T>(1);
@@ -3204,7 +3206,7 @@ bool ReadData2(DWORD dwBase, std::shared_ptr<T> &data)
     return true;
 }
 
-template <typename T = int>
+template <typename T>
 bool ReadData3(DWORD dwBase, std::shared_ptr<T> &data)
 {
     data = std::make_shared<T>(1);
@@ -3224,11 +3226,14 @@ bool ReadData_Test(DWORD dwBase, std::shared_ptr<T> &data)
     return true;
 }
 
+#endif  /* defined(_MSC_VER) && (_MSC_VER >= 1600) */
+
 int UnitTest_Main(int argc, char *argv[])
 {
     //using namespace jimi;
     //using namespace jimi::system;
 
+#if defined(_MSC_VER) && (_MSC_VER >= 1600)
     std::shared_ptr<int> data;
     ReadData<int>((DWORD)1, data);
 
@@ -3246,6 +3251,7 @@ int UnitTest_Main(int argc, char *argv[])
 
     std::shared_ptr<int> dataT2;
     ReadData_Test(0, dataT2);
+#endif  /* defined(_MSC_VER) && (_MSC_VER >= 1600) */
 
     int a = sizeof(jmc_ieee754_double);
 

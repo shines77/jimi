@@ -381,6 +381,26 @@
 						RelativePath="..\..\..\..\src\jimi\util\cmd_line.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\util\DebugUtils.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\util\DumpUtils.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\util\ReleaseUtils.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\util\RingQueue.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\util\RingQueueEx.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="machine"
@@ -695,6 +715,14 @@
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimic\stdio\sprintf_def.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\stdio\sprintf_lite.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\stdio\sprintf_lite.h"
 						>
 					</File>
 				</Filter>
