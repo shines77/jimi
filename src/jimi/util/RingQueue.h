@@ -10,6 +10,9 @@
 #include "jimi/util/DumpUtils.h"
 #include "jimi/log/log.h"
 
+#ifdef _MSC_VER
+#include <intrin.h>     // For _ReadWriteBarrier(), InterlockedCompareExchange()
+#endif
 #include <emmintrin.h>
 
 #ifndef JIMI_CACHELINE_SIZE
@@ -30,7 +33,9 @@
 
 ///
 /// _ReadWriteBarrier
+///
 /// See: http://msdn.microsoft.com/en-us/library/f20w0x5e%28VS.80%29.aspx
+///
 /// See: http://en.wikipedia.org/wiki/Memory_ordering
 ///
 #define Jimi_ReadWriteBarrier()  _ReadWriteBarrier();
@@ -48,6 +53,9 @@
 ///
 /// See: http://en.wikipedia.org/wiki/Memory_ordering
 ///
+/// See: http://bbs.csdn.net/topics/310025520
+///
+
 #define Jimi_ReadWriteBarrier()     asm volatile ("":::"memory");
 //#define Jimi_ReadWriteBarrier()     __asm__ __volatile__ ("":::"memory");
 
@@ -60,7 +68,7 @@
 #define jimi_bool_compare_and_swap32(destPtr, oldValue, newValue)       \
     (InterlockedCompareExchange((volatile uint32_t *)destPtr,           \
                             (uint32_t)(newValue), (uint32_t)(oldValue)) \
-                            == (uint32_t)(oldValue))
+                                == (uint32_t)(oldValue))
 #elif defined(__linux__) || defined(__cygwin__) || defined(__MINGW__) || defined(__MINGW32__)
 #define jimi_compare_and_swap32(destPtr, oldValue, newValue)    \
     __sync_compare_and_swap((volatile uint32_t *)destPtr,       \

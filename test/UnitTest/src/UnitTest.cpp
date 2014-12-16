@@ -3274,7 +3274,7 @@ int UnitTest_Main(int argc, char *argv[])
 
 #if 1
     if (true) {
-        RingQueue<uint64_t, 32> ringQueue;
+        RingQueue<uint64_t, 22> ringQueue;
         uint64_t queue_msg = 123ULL;
 
         printf("---------------------------------------------------------------\n");
