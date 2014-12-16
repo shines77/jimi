@@ -295,6 +295,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\util\DumpUtils.h" />
     <ClInclude Include="..\..\..\..\src\jimi\util\ReleaseUtils.h" />
     <ClInclude Include="..\..\..\..\src\jimi\util\RingQueue.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\util\RingQueueEx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\fs\FileSystem.cpp" />

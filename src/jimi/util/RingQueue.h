@@ -19,7 +19,9 @@
 #define JIMI_CACHELINE_SIZE     64
 #endif
 
+#ifndef jimi_mm_pause
 #define jimi_mm_pause       _mm_pause
+#endif
 
 #if defined(_MSC_VER)
 
@@ -131,25 +133,69 @@ struct RingQueueHead
 
 typedef struct RingQueueHead RingQueueHead;
 
-template <typename T, uint32_t Capcity = 16U>
-class JIMI_DLL RingQueue
+///////////////////////////////////////////////////////////////////
+// class SmallRingQueueCore<Capcity>
+///////////////////////////////////////////////////////////////////
+
+template <typename T, uint32_t Capcity>
+class JIMI_DLL SmallRingQueueCore
 {
 public:
     typedef uint32_t    size_type;
-    typedef uint32_t    index_type;
-    typedef T *         value_type;
-    typedef T *         pointer;
-    typedef const T *   const_pointer;
-    typedef T &         reference;
-    typedef const T &   const_reference;
+    typedef T *         item_type;
+
+public:
+    static const size_type  kCapcityCore = (size_type)JIMI_MAX(JIMI_ROUND_TO_POW2(Capcity), 2);
+    static const bool kIsAllocOnHeap     = false;
+
+public:
+    RingQueueHead   info;
+    item_type       queue[kCapcityCore];
+};
+
+///////////////////////////////////////////////////////////////////
+// class RingQueueCore<Capcity>
+///////////////////////////////////////////////////////////////////
+
+template <typename T, uint32_t Capcity>
+class JIMI_DLL RingQueueCore
+{
+public:
+    typedef T *     item_type;
+
+public:
+    static const bool kIsAllocOnHeap = true;
+
+public:
+    RingQueueHead   info;
+    item_type *     queue;
+};
+
+///////////////////////////////////////////////////////////////////
+// class RingQueueBase<T, Capcity, CoreTy>
+///////////////////////////////////////////////////////////////////
+
+template <typename T, uint32_t Capcity = 16U, typename CoreTy = RingQueueCore>
+class JIMI_DLL RingQueueBase
+{
+public:
+    typedef uint32_t                    size_type;
+    typedef uint32_t                    index_type;
+    typedef T *                         value_type;
+    typedef typename CoreTy::item_type  item_type;
+    typedef CoreTy                      core_type;
+    typedef T *                         pointer;
+    typedef const T *                   const_pointer;
+    typedef T &                         reference;
+    typedef const T &                   const_reference;
 
 public:
     static const size_type  kCapcity = (size_type)JIMI_MAX(JIMI_ROUND_TO_POW2(Capcity), 2);
     static const index_type kMask    = (index_type)(kCapcity - 1);
 
 public:
-    RingQueue(bool bFillQueue = false, bool bInitHead = false);
-    ~RingQueue();
+    RingQueueBase(bool bInitHead = false);
+    ~RingQueueBase();
 
 public:
     void dump_info();
@@ -160,140 +206,273 @@ public:
     size_type length() const     { return sizes();  };
     size_type sizes() const;
 
-    void init(bool bFillQueue = false, bool bInitHead = false);
+    void init(bool bInitHead = false);
 
     int push(T * item);
     T * pop();
 
-private:
-    RingQueueHead   info;
-    value_type      queue[kCapcity];
+protected:
+    core_type core;
 };
 
-template <typename T, uint32_t Capcity>
-RingQueue<T, Capcity>::RingQueue(bool bFillQueue/* = false */, bool bInitHead/* = false */)
+template <typename T, uint32_t Capcity, typename CoreTy>
+RingQueueBase<T, Capcity, CoreTy>::RingQueueBase(bool bInitHead  /* = false */)
 {
-    init(bInitHead, bFillQueue);
+    printf("RingQueueBase::RingQueueBase();\n\n");
+
+    init(bInitHead);
 }
 
-template <typename T, uint32_t Capcity>
-RingQueue<T, Capcity>::~RingQueue()
+template <typename T, uint32_t Capcity, typename CoreTy>
+RingQueueBase<T, Capcity, CoreTy>::~RingQueueBase()
 {
     // Do nothing!
 }
 
-template <typename T, uint32_t Capcity>
+template <typename T, uint32_t Capcity, typename CoreTy>
 inline
-void RingQueue<T, Capcity>::init(bool bFillQueue/* = false */, bool bInitHead/* = false */)
+void RingQueueBase<T, Capcity, CoreTy>::init(bool bInitHead /* = false */)
 {
+    printf("RingQueueBase::init();\n\n");
+
     if (!bInitHead) {
-        info.p.head = 0;
-        info.p.tail = 0;
-        info.c.head = 0;
-        info.c.tail = 0;
+        core.info.p.head = 0;
+        core.info.p.tail = 0;
+        core.info.c.head = 0;
+        core.info.c.tail = 0;
     }
     else {
-        memset((void *)&info, 0, sizeof(info));
+        memset((void *)&core.info, 0, sizeof(core.info));
     }
-
-    if (bFillQueue)
-        memset((void *)&queue[0], 0, sizeof(queue[0]) * kCapcity);
 }
 
-template <typename T, uint32_t Capcity>
-void RingQueue<T, Capcity>::dump_info()
+template <typename T, uint32_t Capcity, typename CoreTy>
+void RingQueueBase<T, Capcity, CoreTy>::dump_info()
 {
-    ReleaseUtils::dump(&info, sizeof(info));
+    ReleaseUtils::dump(&core.info, sizeof(core.info));
 }
 
-template <typename T, uint32_t Capcity>
-void RingQueue<T, Capcity>::dump_detail()
+template <typename T, uint32_t Capcity, typename CoreTy>
+void RingQueueBase<T, Capcity, CoreTy>::dump_detail()
 {
+#if 0
     printf("---------------------------------------------------------\n");
-    printf("ringQueue.p.head = %u\nringQueue.p.tail = %u\n\n", info.p.head, info.p.tail);
-    printf("ringQueue.c.head = %u\nringQueue.c.tail = %u\n",   info.c.head, info.c.tail);
+    printf("RingQueueBase.p.head = %u\nRingQueueBase.p.tail = %u\n\n", core.info.p.head, core.info.p.tail);
+    printf("RingQueueBase.c.head = %u\nRingQueueBase.c.tail = %u\n",   core.info.c.head, core.info.c.tail);
     printf("---------------------------------------------------------\n\n");
+#else
+    printf("RingQueueBase: p(%u, %u), c(%u, %u)\n",
+           core.info.p.head, core.info.p.tail,
+            core.info.c.head, core.info.c.tail);
+#endif
 }
 
-template <typename T, uint32_t Capcity>
+template <typename T, uint32_t Capcity, typename CoreTy>
 inline
-typename RingQueue<T, Capcity>::size_type
-RingQueue<T, Capcity>::sizes() const
+typename RingQueueBase<T, Capcity, CoreTy>::size_type
+RingQueueBase<T, Capcity, CoreTy>::sizes() const
 {
     index_type head, tail;
 
-    head = info.p.head;
+    head = core.info.p.head;
     Jimi_ReadWriteBarrier();
 
-    while (jimi_unlikely((info.p.tail != head)))
+    while (jimi_unlikely((core.info.p.tail != head)))
         jimi_mm_pause();
 
-    tail = info.c.head;
+    tail = core.info.c.head;
     Jimi_ReadWriteBarrier();
 
-    while (jimi_unlikely((info.c.tail != tail)))
+    while (jimi_unlikely((core.info.c.tail != tail)))
         jimi_mm_pause();
 
     return (size_type)(head - tail);
 }
 
-template <typename T, uint32_t Capcity>
+template <typename T, uint32_t Capcity, typename CoreTy>
 inline
-int RingQueue<T, Capcity>::push(value_type item)
+int RingQueueBase<T, Capcity, CoreTy>::push(T * item)
 {
     index_type head, tail, next;
     int ok;
 
     do {
-        head = info.p.head;
-        tail = info.c.tail;
+        head = core.info.p.head;
+        tail = core.info.c.tail;
         if ((head - tail) > kMask)
             return -1;
         next = head + 1;
-        ok = jimi_bool_compare_and_swap32(&info.p.head, head, next);
+        ok = jimi_bool_compare_and_swap32(&core.info.p.head, head, next);
     } while (!ok);
 
-    queue[head & kMask] = item;
+    core.queue[head & kMask] = item;
     
     Jimi_ReadWriteBarrier();
 
-    while (jimi_unlikely((info.p.tail != head)))
+    while (jimi_unlikely((core.info.p.tail != head)))
         jimi_mm_pause();
 
-    info.p.tail = next;
+    core.info.p.tail = next;
 
     return 0;
 }
 
-template <typename T, uint32_t Capcity>
+template <typename T, uint32_t Capcity, typename CoreTy>
 inline
-typename RingQueue<T, Capcity>::value_type
-RingQueue<T, Capcity>::pop()
+T * RingQueueBase<T, Capcity, CoreTy>::pop()
 {
     index_type head, tail, next;
     value_type item;
     int ok;
 
     do {
-        head = info.c.head;
-        tail = info.p.tail;
+        head = core.info.c.head;
+        tail = core.info.p.tail;
         //if ((tail - head) < 1U)
         if (tail == head)
             return (value_type)NULL;
         next = head + 1;
-        ok = jimi_bool_compare_and_swap32(&info.c.head, head, next);
+        ok = jimi_bool_compare_and_swap32(&core.info.c.head, head, next);
     } while (!ok);
 
-    item = queue[head & kMask];
+    item = core.queue[head & kMask];
 
     Jimi_ReadWriteBarrier();
 
-    while (jimi_unlikely((info.c.tail != head)))
+    while (jimi_unlikely((core.info.c.tail != head)))
         jimi_mm_pause();
 
-    info.c.tail = next;
+    core.info.c.tail = next;
 
     return item;
+}
+
+///////////////////////////////////////////////////////////////////
+// class SmallRingQueue2<T, Capcity>
+///////////////////////////////////////////////////////////////////
+
+template <typename T, uint32_t Capcity = 16U>
+class JIMI_DLL SmallRingQueue2 : public RingQueueBase<T, Capcity, SmallRingQueueCore<T, Capcity>>
+{
+public:
+    SmallRingQueue2(bool bFillQueue = false, bool bInitHead = false);
+    ~SmallRingQueue2();
+
+public:
+    void dump_detail();
+
+protected:
+    void init_queue(bool bFillQueue = false);
+};
+
+template <typename T, uint32_t Capcity>
+SmallRingQueue2<T, Capcity>::SmallRingQueue2(bool bFillQueue /* = false */,
+                                             bool bInitHead  /* = false */)
+: RingQueueBase(bInitHead)
+{
+    printf("SmallRingQueue2::SmallRingQueue2();\n\n");
+
+    init_queue(bFillQueue);
+}
+
+template <typename T, uint32_t Capcity>
+SmallRingQueue2<T, Capcity>::~SmallRingQueue2()
+{
+    // Do nothing!
+}
+
+template <typename T, uint32_t Capcity>
+inline
+void SmallRingQueue2<T, Capcity>::init_queue(bool bFillQueue /* = false */)
+{
+    printf("SmallRingQueue2::init_queue();\n\n");
+
+    if (bFillQueue) {
+        memset((void *)core.queue, 0, sizeof(value_type) * kCapcity);
+    }
+}
+
+template <typename T, uint32_t Capcity>
+void SmallRingQueue2<T, Capcity>::dump_detail()
+{
+#if 0
+    printf("---------------------------------------------------------\n");
+    printf("SmallRingQueue2.p.head = %u\nSmallRingQueue2.p.tail = %u\n\n", core.info.p.head, core.info.p.tail);
+    printf("SmallRingQueue2.c.head = %u\nSmallRingQueue2.c.tail = %u\n",   core.info.c.head, core.info.c.tail);
+    printf("---------------------------------------------------------\n\n");
+#else
+    printf("SmallRingQueue2: p(%u, %u), c(%u, %u)\n",
+            core.info.p.head, core.info.p.tail,
+            core.info.c.head, core.info.c.tail);
+#endif
+}
+
+///////////////////////////////////////////////////////////////////
+// class RingQueue2<T, Capcity>
+///////////////////////////////////////////////////////////////////
+
+template <typename T, uint32_t Capcity = 16U>
+class JIMI_DLL RingQueue2 : public RingQueueBase<T, Capcity, RingQueueCore<T, Capcity>>
+{
+public:
+    RingQueue2(bool bFillQueue = false, bool bInitHead = false);
+    ~RingQueue2();
+
+public:
+    void dump_detail();
+
+protected:
+    void init_queue(bool bFillQueue = false);
+};
+
+template <typename T, uint32_t Capcity>
+RingQueue2<T, Capcity>::RingQueue2(bool bFillQueue /* = false */,
+                                   bool bInitHead  /* = false */)
+: RingQueueBase(bInitHead)
+{
+    printf("RingQueue2::RingQueue2();\n\n");
+
+    init_queue(bFillQueue);
+}
+
+template <typename T, uint32_t Capcity>
+RingQueue2<T, Capcity>::~RingQueue2()
+{
+    // If the queue is allocated on system heap, release them.
+    if (core_type::kIsAllocOnHeap) {
+        delete [] core.queue;
+        core.queue = NULL;
+    }
+}
+
+template <typename T, uint32_t Capcity>
+inline
+void RingQueue2<T, Capcity>::init_queue(bool bFillQueue /* = false */)
+{
+    printf("RingQueue2::init_queue();\n\n");
+
+    value_type *newData = (value_type *)new T[kCapcity];
+    if (newData != NULL) {
+        core.queue = newData;
+        if (bFillQueue) {
+            memset((void *)core.queue, 0, sizeof(value_type) * kCapcity);
+        }
+    }
+}
+
+template <typename T, uint32_t Capcity>
+void RingQueue2<T, Capcity>::dump_detail()
+{
+#if 0
+    printf("---------------------------------------------------------\n");
+    printf("RingQueue2.p.head = %u\nRingQueue2.p.tail = %u\n\n", core.info.p.head, core.info.p.tail);
+    printf("RingQueue2.c.head = %u\nRingQueue2.c.tail = %u\n",   core.info.c.head, core.info.c.tail);
+    printf("---------------------------------------------------------\n\n");
+#else
+    printf("RingQueue2: p(%u, %u), c(%u, %u)\n",
+            core.info.p.head, core.info.p.tail,
+            core.info.c.head, core.info.c.tail);
+#endif
 }
 
 }  /* namespace jimi */

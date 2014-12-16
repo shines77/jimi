@@ -85,6 +85,7 @@
 #include "jimi/system/Console.h"
 
 #include "jimi/util/RingQueue.h"
+#include "jimi/util/RingQueueEx.h"
 
 #if defined(JIMI_HAS_BOOST_LOCALE) && (JIMI_HAS_BOOST_LOCALE != 0)
 #include <boost/locale.hpp>
@@ -3275,6 +3276,7 @@ int UnitTest_Main(int argc, char *argv[])
 #if 1
     if (true) {
         RingQueue<uint64_t, 22> ringQueue;
+
         uint64_t queue_msg = 123ULL;
 
         printf("---------------------------------------------------------------\n");
@@ -3291,7 +3293,7 @@ int UnitTest_Main(int argc, char *argv[])
         ringQueue.push(&queue_msg);
         ringQueue.dump_detail();
 
-        printf("ringQueue.sizes() = %u\n\n", ringQueue.sizes());
+        printf("ringQueue.sizes()   = %u\n\n", ringQueue.sizes());
 
         ringQueue.pop();
         ringQueue.dump_detail();
@@ -3300,17 +3302,117 @@ int UnitTest_Main(int argc, char *argv[])
 
         ringQueue.pop();
         ringQueue.dump_detail();
+
+        printf("ringQueue.sizes()   = %u\n\n", ringQueue.sizes());
 
         ringQueue.dump_info();
 
-        printf("ringQueue.sizes() = %u\n\n", ringQueue.sizes());
         printf("RingQueue() test end...\n");
+        printf("---------------------------------------------------------------\n\n");
+
+        if (false) {
+            jmLog.log_end();
+            jimi::Console.ReadKey();
+            return 0;
+        }
+        else {
+            jimi::Console.ReadKey_NewLine();
+        }
+    }
+#endif
+
+#if 1
+    if (true) {
+        SmallRingQueue2<uint64_t, 22> ringQueue;
+
+        uint64_t queue_msg = 123ULL;
+
+        printf("---------------------------------------------------------------\n");
+        printf("SmallRingQueue2() test begin...\n\n");
+
+        printf("ringQueue.capcity() = %u\n", ringQueue.capcity());
+        printf("ringQueue.mask()    = %u\n\n", ringQueue.mask());
+        printf("ringQueue.sizes()   = %u\n\n", ringQueue.sizes());
+
+        ringQueue.dump_detail();
+
+        ringQueue.push(&queue_msg);
+        ringQueue.dump_detail();
+        ringQueue.push(&queue_msg);
+        ringQueue.dump_detail();
+
+        printf("ringQueue.sizes()   = %u\n\n", ringQueue.sizes());
+
+        ringQueue.pop();
+        ringQueue.dump_detail();
+        ringQueue.pop();
+        ringQueue.dump_detail();
+
+        ringQueue.pop();
+        ringQueue.dump_detail();
+
+        printf("ringQueue.sizes()   = %u\n\n", ringQueue.sizes());
+
+        ringQueue.dump_info();
+        
+        printf("SmallRingQueue2() test end...\n");
+        printf("---------------------------------------------------------------\n\n");
+
+        if (false) {
+            jmLog.log_end();
+            jimi::Console.ReadKey();
+            return 0;
+        }
+        else {
+            jimi::Console.ReadKey_NewLine();
+        }
+    }
+#endif
+
+#if 1
+    if (true) {
+        RingQueue2<uint64_t, 22> ringQueue;
+
+        uint64_t queue_msg = 123ULL;
+
+        printf("---------------------------------------------------------------\n");
+        printf("RingQueue2() test begin...\n\n");
+
+        printf("ringQueue.capcity() = %u\n", ringQueue.capcity());
+        printf("ringQueue.mask()    = %u\n\n", ringQueue.mask());
+        printf("ringQueue.sizes()   = %u\n\n", ringQueue.sizes());
+
+        ringQueue.dump_detail();
+
+        ringQueue.push(&queue_msg);
+        ringQueue.dump_detail();
+        ringQueue.push(&queue_msg);
+        ringQueue.dump_detail();
+
+        printf("ringQueue.sizes()   = %u\n\n", ringQueue.sizes());
+
+        ringQueue.pop();
+        ringQueue.dump_detail();
+        ringQueue.pop();
+        ringQueue.dump_detail();
+
+        ringQueue.pop();
+        ringQueue.dump_detail();
+
+        printf("ringQueue.sizes()   = %u\n\n", ringQueue.sizes());
+
+        ringQueue.dump_info();
+
+        printf("RingQueue2() test end...\n");
         printf("---------------------------------------------------------------\n\n");
 
         if (true) {
             jmLog.log_end();
             jimi::Console.ReadKey();
             return 0;
+        }
+        else {
+            jimi::Console.ReadKey_NewLine();
         }
     }
 #endif

@@ -446,6 +446,9 @@
     <ClInclude Include="..\..\..\..\src\jimi\util\RingQueue.h">
       <Filter>src\jimi\util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\util\RingQueueEx.h">
+      <Filter>src\jimi\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">
