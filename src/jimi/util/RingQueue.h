@@ -131,7 +131,7 @@ struct RingQueueHead
 
 typedef struct RingQueueHead RingQueueHead;
 
-template <typename T, uint32_t Length = 16U>
+template <typename T, uint32_t Capcity = 16U>
 class JIMI_DLL RingQueue
 {
 public:
@@ -144,68 +144,102 @@ public:
     typedef const T &   const_reference;
 
 public:
-    static const size_type  kLength = (size_type)JIMI_MAX(JIMI_ROUND_TO_POW2(Length), 2);
-    static const index_type kMask   = (index_type)(kLength - 1);
+    static const size_type  kCapcity = (size_type)JIMI_MAX(JIMI_ROUND_TO_POW2(Capcity), 2);
+    static const index_type kMask    = (index_type)(kCapcity - 1);
 
 public:
-    RingQueue();
+    RingQueue(bool bFillQueue = false, bool bInitHead = false);
     ~RingQueue();
 
 public:
     void dump_info();
+    void dump_detail();
 
     index_type mask() const      { return kMask;    };
-    size_type max_length() const { return kLength;  };
+    size_type capcity() const    { return kCapcity; };
     size_type length() const     { return sizes();  };
-
     size_type sizes() const;
-    void init();
+
+    void init(bool bFillQueue = false, bool bInitHead = false);
 
     int push(T * item);
     T * pop();
 
 private:
     RingQueueHead   info;
-    value_type      queue[kLength];
+    value_type      queue[kCapcity];
 };
 
-template <typename T, uint32_t Length>
-RingQueue<T, Length>::RingQueue()
+template <typename T, uint32_t Capcity>
+RingQueue<T, Capcity>::RingQueue(bool bFillQueue/* = false */, bool bInitHead/* = false */)
 {
-    init();
+    init(bInitHead, bFillQueue);
 }
 
-template <typename T, uint32_t Length>
-RingQueue<T, Length>::~RingQueue()
+template <typename T, uint32_t Capcity>
+RingQueue<T, Capcity>::~RingQueue()
 {
     // Do nothing!
 }
 
-template <typename T, uint32_t Length>
-void RingQueue<T, Length>::dump_info()
+template <typename T, uint32_t Capcity>
+inline
+void RingQueue<T, Capcity>::init(bool bFillQueue/* = false */, bool bInitHead/* = false */)
+{
+    if (!bInitHead) {
+        info.p.head = 0;
+        info.p.tail = 0;
+        info.c.head = 0;
+        info.c.tail = 0;
+    }
+    else {
+        memset((void *)&info, 0, sizeof(info));
+    }
+
+    if (bFillQueue)
+        memset((void *)&queue[0], 0, sizeof(queue[0]) * kCapcity);
+}
+
+template <typename T, uint32_t Capcity>
+void RingQueue<T, Capcity>::dump_info()
 {
     ReleaseUtils::dump(&info, sizeof(info));
 }
 
-template <typename T, uint32_t Length>
-inline
-void RingQueue<T, Length>::init()
+template <typename T, uint32_t Capcity>
+void RingQueue<T, Capcity>::dump_detail()
 {
-    memset((void *)&info, 0, sizeof(info));
-    memset((void *)&queue[0], 0, sizeof(queue[0]) * kLength);
+    printf("---------------------------------------------------------\n");
+    printf("ringQueue.p.head = %u\nringQueue.p.tail = %u\n\n", info.p.head, info.p.tail);
+    printf("ringQueue.c.head = %u\nringQueue.c.tail = %u\n",   info.c.head, info.c.tail);
+    printf("---------------------------------------------------------\n\n");
 }
 
-template <typename T, uint32_t Length>
+template <typename T, uint32_t Capcity>
 inline
-typename RingQueue<T, Length>::size_type
-RingQueue<T, Length>::sizes() const
+typename RingQueue<T, Capcity>::size_type
+RingQueue<T, Capcity>::sizes() const
 {
-    return 0;
+    index_type head, tail;
+
+    head = info.p.head;
+    Jimi_ReadWriteBarrier();
+
+    while (jimi_unlikely((info.p.tail != head)))
+        jimi_mm_pause();
+
+    tail = info.c.head;
+    Jimi_ReadWriteBarrier();
+
+    while (jimi_unlikely((info.c.tail != tail)))
+        jimi_mm_pause();
+
+    return (size_type)(head - tail);
 }
 
-template <typename T, uint32_t Length>
+template <typename T, uint32_t Capcity>
 inline
-int RingQueue<T, Length>::push(value_type item)
+int RingQueue<T, Capcity>::push(value_type item)
 {
     index_type head, tail, next;
     int ok;
@@ -231,14 +265,14 @@ int RingQueue<T, Length>::push(value_type item)
     return 0;
 }
 
-template <typename T, uint32_t Length>
+template <typename T, uint32_t Capcity>
 inline
-typename RingQueue<T, Length>::value_type
-RingQueue<T, Length>::pop()
+typename RingQueue<T, Capcity>::value_type
+RingQueue<T, Capcity>::pop()
 {
     index_type head, tail, next;
-    int ok;
     value_type item;
+    int ok;
 
     do {
         head = info.c.head;

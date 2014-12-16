@@ -3280,20 +3280,30 @@ int UnitTest_Main(int argc, char *argv[])
         printf("---------------------------------------------------------------\n");
         printf("RingQueue() test begin...\n\n");
 
-        printf("RingQueue.length() = %u\n", ringQueue.max_length());
-        printf("RingQueue.mask()   = %u\n\n", ringQueue.mask());
+        printf("ringQueue.capcity() = %u\n", ringQueue.capcity());
+        printf("ringQueue.mask()    = %u\n\n", ringQueue.mask());
+        printf("ringQueue.sizes()   = %u\n\n", ringQueue.sizes());
 
-        //ringQueue.dump_info();
+        ringQueue.dump_detail();
 
         ringQueue.push(&queue_msg);
+        ringQueue.dump_detail();
         ringQueue.push(&queue_msg);
-        //ringQueue.dump_info();
+        ringQueue.dump_detail();
+
+        printf("ringQueue.sizes() = %u\n\n", ringQueue.sizes());
 
         ringQueue.pop();
+        ringQueue.dump_detail();
         ringQueue.pop();
+        ringQueue.dump_detail();
+
         ringQueue.pop();
+        ringQueue.dump_detail();
+
         ringQueue.dump_info();
 
+        printf("ringQueue.sizes() = %u\n\n", ringQueue.sizes());
         printf("RingQueue() test end...\n");
         printf("---------------------------------------------------------------\n\n");
 
