@@ -218,7 +218,7 @@ protected:
 template <typename T, uint32_t Capcity, typename CoreTy>
 RingQueueBase<T, Capcity, CoreTy>::RingQueueBase(bool bInitHead  /* = false */)
 {
-    printf("RingQueueBase::RingQueueBase();\n\n");
+    //printf("RingQueueBase::RingQueueBase();\n\n");
 
     init(bInitHead);
 }
@@ -233,7 +233,7 @@ template <typename T, uint32_t Capcity, typename CoreTy>
 inline
 void RingQueueBase<T, Capcity, CoreTy>::init(bool bInitHead /* = false */)
 {
-    printf("RingQueueBase::init();\n\n");
+    //printf("RingQueueBase::init();\n\n");
 
     if (!bInitHead) {
         core.info.p.head = 0;
@@ -370,7 +370,7 @@ SmallRingQueue2<T, Capcity>::SmallRingQueue2(bool bFillQueue /* = false */,
                                              bool bInitHead  /* = false */)
 : RingQueueBase(bInitHead)
 {
-    printf("SmallRingQueue2::SmallRingQueue2();\n\n");
+    //printf("SmallRingQueue2::SmallRingQueue2();\n\n");
 
     init_queue(bFillQueue);
 }
@@ -385,7 +385,7 @@ template <typename T, uint32_t Capcity>
 inline
 void SmallRingQueue2<T, Capcity>::init_queue(bool bFillQueue /* = false */)
 {
-    printf("SmallRingQueue2::init_queue();\n\n");
+    //printf("SmallRingQueue2::init_queue();\n\n");
 
     if (bFillQueue) {
         memset((void *)core.queue, 0, sizeof(value_type) * kCapcity);
@@ -430,7 +430,7 @@ RingQueue2<T, Capcity>::RingQueue2(bool bFillQueue /* = false */,
                                    bool bInitHead  /* = false */)
 : RingQueueBase(bInitHead)
 {
-    printf("RingQueue2::RingQueue2();\n\n");
+    //printf("RingQueue2::RingQueue2();\n\n");
 
     init_queue(bFillQueue);
 }
@@ -449,7 +449,7 @@ template <typename T, uint32_t Capcity>
 inline
 void RingQueue2<T, Capcity>::init_queue(bool bFillQueue /* = false */)
 {
-    printf("RingQueue2::init_queue();\n\n");
+    //printf("RingQueue2::init_queue();\n\n");
 
     value_type *newData = (value_type *)new T[kCapcity];
     if (newData != NULL) {
