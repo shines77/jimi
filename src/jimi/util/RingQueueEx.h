@@ -144,7 +144,7 @@ inline
 int SmallRingQueue<T, Capcity>::push(T * item)
 {
     index_type head, tail, next;
-    int ok;
+    bool ok;
 
     do {
         head = info.p.head;
@@ -173,13 +173,14 @@ T * SmallRingQueue<T, Capcity>::pop()
 {
     index_type head, tail, next;
     value_type item;
-    int ok;
+    bool ok;
 
     do {
         head = info.c.head;
         tail = info.p.tail;
         //if ((tail - head) < 1U)
-        if (tail == head)
+        //if (tail == head)
+        if (tail >= head && (head - tail) > kMask)
             return (value_type)NULL;
         next = head + 1;
         ok = jimi_bool_compare_and_swap32(&info.c.head, head, next);
@@ -323,7 +324,7 @@ inline
 int RingQueue<T, Capcity>::push(T *item)
 {
     index_type head, tail, next;
-    int ok;
+    bool ok;
 
     do {
         head = info.p.head;
@@ -352,13 +353,14 @@ T * RingQueue<T, Capcity>::pop()
 {
     index_type head, tail, next;
     value_type item;
-    int ok;
+    bool ok;
 
     do {
         head = info.c.head;
         tail = info.p.tail;
         //if ((tail - head) < 1U)
-        if (tail == head)
+        //if (tail == head)
+        if (tail >= head && (head - tail) > kMask)
             return (value_type)NULL;
         next = head + 1;
         ok = jimi_bool_compare_and_swap32(&info.c.head, head, next);

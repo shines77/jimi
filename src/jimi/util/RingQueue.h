@@ -263,7 +263,7 @@ void RingQueueBase<T, Capcity, CoreTy>::dump_detail()
 #else
     printf("RingQueueBase: p(%u, %u), c(%u, %u)\n",
            core.info.p.head, core.info.p.tail,
-            core.info.c.head, core.info.c.tail);
+           core.info.c.head, core.info.c.tail);
 #endif
 }
 
@@ -294,8 +294,9 @@ inline
 int RingQueueBase<T, Capcity, CoreTy>::push(T * item)
 {
     index_type head, tail, next;
-    int ok;
+    bool ok = false;
 
+#if 0
     do {
         head = core.info.p.head;
         tail = core.info.c.tail;
@@ -304,6 +305,15 @@ int RingQueueBase<T, Capcity, CoreTy>::push(T * item)
         next = head + 1;
         ok = jimi_bool_compare_and_swap32(&core.info.p.head, head, next);
     } while (!ok);
+#else
+    do {
+        head = core.info.p.head;
+        tail = core.info.c.tail;
+        if ((head - tail) > kMask)
+            return -1;
+        next = head + 1;
+    } while (jimi_compare_and_swap32(&core.info.p.head, head, next) != head);
+#endif
 
     core.queue[head & kMask] = item;
     
@@ -323,17 +333,28 @@ T * RingQueueBase<T, Capcity, CoreTy>::pop()
 {
     index_type head, tail, next;
     value_type item;
-    int ok;
+    bool ok = false;
 
+#if 0
     do {
         head = core.info.c.head;
         tail = core.info.p.tail;
         //if ((tail - head) < 1U)
-        if (tail == head)
+        if (tail >= head && (head - tail) > kMask)
             return (value_type)NULL;
         next = head + 1;
         ok = jimi_bool_compare_and_swap32(&core.info.c.head, head, next);
     } while (!ok);
+#else
+    do {
+        head = core.info.c.head;
+        tail = core.info.p.tail;
+        //if ((tail - head) < 1U)
+        if (tail >= head && (head - tail) > kMask)
+            return (value_type)NULL;
+        next = head + 1;
+    } while (jimi_compare_and_swap32(&core.info.c.head, head, next) != head);
+#endif
 
     item = core.queue[head & kMask];
 
