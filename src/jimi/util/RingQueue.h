@@ -15,6 +15,8 @@
 #endif
 #include <emmintrin.h>
 
+#include <stdio.h>
+
 #ifndef JIMI_CACHELINE_SIZE
 #define JIMI_CACHELINE_SIZE     64
 #endif
