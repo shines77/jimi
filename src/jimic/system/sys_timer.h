@@ -9,6 +9,14 @@
 #include "jimic/core/jimic_def.h"
 #include "jimic/core/jimic_export.h"
 
+#ifndef JMC_INLINE
+#ifdef _MSC_VER
+#define JMC_INLINE  __inline
+#else
+#define JMC_INLINE  inline
+#endif // _MSC_VER
+#endif // JMC_INLINE
+
 #if _WIN32 || _WIN64
 #include <time.h>
 #include <windows.h>

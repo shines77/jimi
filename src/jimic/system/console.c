@@ -1,6 +1,7 @@
 
 #include "jimic/system/console.h"
 #include "jimic/system/sys_timer.h"
+#include "jimic/system/get_char.h"
 
 #include <stdio.h>
 
@@ -35,4 +36,50 @@ void JIMIC_DLL jimi_cpu_warmup(int delayTime)
     printf("CPU warm up done  ... \n\n");
     fflush(stdout);
 #endif  /* !_DEBUG */
+}
+
+int jimi_console_readkey(bool enabledCpuWarmup, bool displayTips,
+                         bool echoInput)
+{
+    int keyCode;
+    if (displayTips) {
+#if 1
+        printf("Press any key to continue ...");
+#else
+        printf("请按任意键继续 ...");
+#endif
+        keyCode = jimi_getch();
+        printf("\n");
+    }
+    else {
+        keyCode = jimi_getch();
+        if (echoInput) {
+            if (keyCode != EOF)
+                printf("%c", (char)keyCode);
+            else
+                printf("EOF: (%d)", keyCode);
+        }
+    }
+
+    // 暂停后, 预热/唤醒一下CPU, 至少500毫秒
+    if (enabledCpuWarmup) {
+        jimi_cpu_warmup(500);
+        //printf("\n");
+    }
+    return keyCode;
+}
+
+int jimi_console_readkey_newline(bool enabledCpuWarmup, bool displayTips,
+                                 bool echoInput)
+{
+    int keyCode;
+    keyCode = jimi_console_readkey(false, displayTips, echoInput);
+    printf("\n");
+
+    // 暂停后, 预热/唤醒一下CPU, 至少500毫秒
+    if (enabledCpuWarmup) {
+        jimi_cpu_warmup(500);
+        //printf("\n");
+    }
+    return keyCode;
 }

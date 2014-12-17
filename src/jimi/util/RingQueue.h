@@ -71,7 +71,7 @@
     (InterlockedCompareExchange((volatile LONG *)destPtr,           \
                             (uint32_t)(newValue), (uint32_t)(oldValue)) \
                                 == (uint32_t)(oldValue))
-#elif defined(__linux__) || defined(__cygwin__) || defined(__MINGW__) || defined(__MINGW32__)
+#elif defined(__linux__) || defined(__CYGWIN__) || defined(__MINGW__) || defined(__MINGW32__)
 #define jimi_compare_and_swap32(destPtr, oldValue, newValue)    \
     __sync_compare_and_swap((volatile uint32_t *)destPtr,       \
                             (uint32_t)(oldValue), (uint32_t)(newValue))
@@ -100,9 +100,9 @@ uint32_t __internal_compare_and_swap32(volatile uint32_t *destPtr,
 }
 
 static inline
-uint32_t __internal_bool_compare_and_swap32(volatile uint32_t *destPtr,
-                                            uint32_t oldValue,
-                                            uint32_t newValue)
+bool __internal_bool_compare_and_swap32(volatile uint32_t *destPtr,
+                                        uint32_t oldValue,
+                                        uint32_t newValue)
 {
     if (*destPtr == oldValue) {
         *destPtr = newValue;
@@ -175,7 +175,8 @@ public:
 // class RingQueueBase<T, Capcity, CoreTy>
 ///////////////////////////////////////////////////////////////////
 
-template <typename T, uint32_t Capcity = 16U, typename CoreTy = RingQueueCore>
+template <typename T, uint32_t Capcity = 16U,
+          typename CoreTy = RingQueueCore<T, Capcity> >
 class JIMI_DLL RingQueueBase
 {
 public:
@@ -316,7 +317,7 @@ int RingQueueBase<T, Capcity, CoreTy>::push(T * item)
 #endif
 
     core.queue[head & kMask] = item;
-    
+
     Jimi_ReadWriteBarrier();
 
     while (jimi_unlikely((core.info.p.tail != head)))
@@ -340,7 +341,7 @@ T * RingQueueBase<T, Capcity, CoreTy>::pop()
         head = core.info.c.head;
         tail = core.info.p.tail;
         //if ((tail - head) < 1U)
-        if (tail >= head && (head - tail) > kMask)
+        if (head >= tail && (tail - head) <= kMask)
             return (value_type)NULL;
         next = head + 1;
         ok = jimi_bool_compare_and_swap32(&core.info.c.head, head, next);
@@ -350,7 +351,7 @@ T * RingQueueBase<T, Capcity, CoreTy>::pop()
         head = core.info.c.head;
         tail = core.info.p.tail;
         //if ((tail - head) < 1U)
-        if (tail >= head && (head - tail) > kMask)
+        if (head >= tail && (tail - head) <= kMask)
             return (value_type)NULL;
         next = head + 1;
     } while (jimi_compare_and_swap32(&core.info.c.head, head, next) != head);
@@ -373,8 +374,19 @@ T * RingQueueBase<T, Capcity, CoreTy>::pop()
 ///////////////////////////////////////////////////////////////////
 
 template <typename T, uint32_t Capcity = 16U>
-class JIMI_DLL SmallRingQueue2 : public RingQueueBase<T, Capcity, SmallRingQueueCore<T, Capcity>>
+class JIMI_DLL SmallRingQueue2 : public RingQueueBase<T, Capcity, SmallRingQueueCore<T, Capcity> >
 {
+public:
+    typedef uint32_t                    size_type;
+    typedef uint32_t                    index_type;
+    typedef T *                         value_type;
+    typedef T *                         pointer;
+    typedef const T *                   const_pointer;
+    typedef T &                         reference;
+    typedef const T &                   const_reference;
+
+    static const size_type kCapcity = RingQueueBase<T, Capcity, SmallRingQueueCore<T, Capcity> >::kCapcity;
+
 public:
     SmallRingQueue2(bool bFillQueue = false, bool bInitHead = false);
     ~SmallRingQueue2();
@@ -389,7 +401,7 @@ protected:
 template <typename T, uint32_t Capcity>
 SmallRingQueue2<T, Capcity>::SmallRingQueue2(bool bFillQueue /* = false */,
                                              bool bInitHead  /* = false */)
-: RingQueueBase(bInitHead)
+: RingQueueBase<T, Capcity, SmallRingQueueCore<T, Capcity> >(bInitHead)
 {
     //printf("SmallRingQueue2::SmallRingQueue2();\n\n");
 
@@ -409,7 +421,8 @@ void SmallRingQueue2<T, Capcity>::init_queue(bool bFillQueue /* = false */)
     //printf("SmallRingQueue2::init_queue();\n\n");
 
     if (bFillQueue) {
-        memset((void *)core.queue, 0, sizeof(value_type) * kCapcity);
+        memset((void *)this->core.queue, 0, sizeof(value_type)
+               * RingQueueBase<T, Capcity, SmallRingQueueCore<T, Capcity> >::kCapcity);
     }
 }
 
@@ -423,8 +436,8 @@ void SmallRingQueue2<T, Capcity>::dump_detail()
     printf("---------------------------------------------------------\n\n");
 #else
     printf("SmallRingQueue2: p(%u, %u), c(%u, %u)\n",
-            core.info.p.head, core.info.p.tail,
-            core.info.c.head, core.info.c.tail);
+            this->core.info.p.head, this->core.info.p.tail,
+            this->core.info.c.head, this->core.info.c.tail);
 #endif
 }
 
@@ -433,8 +446,21 @@ void SmallRingQueue2<T, Capcity>::dump_detail()
 ///////////////////////////////////////////////////////////////////
 
 template <typename T, uint32_t Capcity = 16U>
-class JIMI_DLL RingQueue2 : public RingQueueBase<T, Capcity, RingQueueCore<T, Capcity>>
+class JIMI_DLL RingQueue2 : public RingQueueBase<T, Capcity, RingQueueCore<T, Capcity> >
 {
+public:
+    typedef uint32_t                    size_type;
+    typedef uint32_t                    index_type;
+    typedef T *                         value_type;
+    typedef T *                         pointer;
+    typedef const T *                   const_pointer;
+    typedef T &                         reference;
+    typedef const T &                   const_reference;
+
+    typedef RingQueueCore<T, Capcity>   core_type;
+
+    static const size_type kCapcity = RingQueueBase<T, Capcity, RingQueueCore<T, Capcity> >::kCapcity;
+
 public:
     RingQueue2(bool bFillQueue = false, bool bInitHead = false);
     ~RingQueue2();
@@ -449,7 +475,7 @@ protected:
 template <typename T, uint32_t Capcity>
 RingQueue2<T, Capcity>::RingQueue2(bool bFillQueue /* = false */,
                                    bool bInitHead  /* = false */)
-: RingQueueBase(bInitHead)
+: RingQueueBase<T, Capcity, RingQueueCore<T, Capcity> >(bInitHead)
 {
     //printf("RingQueue2::RingQueue2();\n\n");
 
@@ -460,9 +486,9 @@ template <typename T, uint32_t Capcity>
 RingQueue2<T, Capcity>::~RingQueue2()
 {
     // If the queue is allocated on system heap, release them.
-    if (core_type::kIsAllocOnHeap) {
-        delete [] core.queue;
-        core.queue = NULL;
+    if (RingQueueCore<T, Capcity>::kIsAllocOnHeap) {
+        delete [] this->core.queue;
+        this->core.queue = NULL;
     }
 }
 
@@ -474,9 +500,9 @@ void RingQueue2<T, Capcity>::init_queue(bool bFillQueue /* = false */)
 
     value_type *newData = (value_type *)new T[kCapcity];
     if (newData != NULL) {
-        core.queue = newData;
+        this->core.queue = newData;
         if (bFillQueue) {
-            memset((void *)core.queue, 0, sizeof(value_type) * kCapcity);
+            memset((void *)this->core.queue, 0, sizeof(value_type) * kCapcity);
         }
     }
 }
@@ -491,8 +517,8 @@ void RingQueue2<T, Capcity>::dump_detail()
     printf("---------------------------------------------------------\n\n");
 #else
     printf("RingQueue2: p(%u, %u), c(%u, %u)\n",
-            core.info.p.head, core.info.p.tail,
-            core.info.c.head, core.info.c.tail);
+            this->core.info.p.head, this->core.info.p.tail,
+            this->core.info.c.head, this->core.info.c.tail);
 #endif
 }
 

@@ -84,10 +84,15 @@
 #define NOMINMAX
 #endif
 
+#ifndef JIMI_MIN
 #define JIMI_MIN(a, b)          ((a) < (b) ? (a) : (b))
-#define JIMI_MAX(a, b)          ((a) > (b) ? (a) : (b))
+#endif
 
-#if defined(_WIN64) || defined(_MX64)
+#ifndef JIMI_MAX
+#define JIMI_MAX(a, b)          ((a) > (b) ? (a) : (b))
+#endif
+
+#if defined(_WIN64) || defined(_M_X64)
 #define JIMI_SIZE_T_SIZEOF      8
 #else
 #define JIMI_SIZE_T_SIZEOF      4

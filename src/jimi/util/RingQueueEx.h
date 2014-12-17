@@ -180,7 +180,7 @@ T * SmallRingQueue<T, Capcity>::pop()
         tail = info.p.tail;
         //if ((tail - head) < 1U)
         //if (tail == head)
-        if (tail >= head && (head - tail) > kMask)
+        if (head >= tail && (tail - head) <= kMask)
             return (value_type)NULL;
         next = head + 1;
         ok = jimi_bool_compare_and_swap32(&info.c.head, head, next);
@@ -360,7 +360,7 @@ T * RingQueue<T, Capcity>::pop()
         tail = info.p.tail;
         //if ((tail - head) < 1U)
         //if (tail == head)
-        if (tail >= head && (head - tail) > kMask)
+        if (head >= tail && (tail - head) <= kMask)
             return (value_type)NULL;
         next = head + 1;
         ok = jimi_bool_compare_and_swap32(&info.c.head, head, next);
