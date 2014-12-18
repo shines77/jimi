@@ -50,8 +50,6 @@
 *.suo
 *.sdf
 *.opensdf
-*.layout
-*.depend
 *.sln.old
 *.sln_old
 # *.vcxproj.user
@@ -70,6 +68,10 @@ UpgradeLog.htm
 
 # For log file
 *.log
+
+# For CodeBlocks project files
+*.layout
+*.depend
 
 # For Intel C++ Compiler Log File & Project File
 IcUpdateLog.htm

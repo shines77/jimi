@@ -289,7 +289,7 @@ RingQueueBase<T, Capcity, CoreTy>::sizes() const
     while (jimi_unlikely((core.info.c.tail != tail)))
         jimi_mm_pause();
 
-    return (size_type)(head - tail);
+    return (size_type)((head - tail) <= kMask) ? (head - tail) : (size_type)-1;
 }
 
 template <typename T, uint32_t Capcity, typename CoreTy>
@@ -343,7 +343,8 @@ T * RingQueueBase<T, Capcity, CoreTy>::pop()
         head = core.info.c.head;
         tail = core.info.p.tail;
         //if ((tail - head) < 1U)
-        if (head >= tail && (tail - head) <= kMask)
+        //if (head >= tail && (tail - head) <= kMask)
+        if ((head == tail) || (head > tail && (tail - head) > kMask))
             return (value_type)NULL;
         next = head + 1;
         ok = jimi_bool_compare_and_swap32(&core.info.c.head, head, next);
@@ -353,7 +354,8 @@ T * RingQueueBase<T, Capcity, CoreTy>::pop()
         head = core.info.c.head;
         tail = core.info.p.tail;
         //if ((tail - head) < 1U)
-        if (head >= tail && (tail - head) <= kMask)
+        //if (head >= tail && (tail - head) <= kMask)
+        if ((head == tail) || (head > tail && (tail - head) > kMask))
             return (value_type)NULL;
         next = head + 1;
     } while (jimi_compare_and_swap32(&core.info.c.head, head, next) != head);
@@ -390,18 +392,18 @@ public:
     static const size_type kCapcity = RingQueueBase<T, Capcity, SmallRingQueueCore<T, Capcity> >::kCapcity;
 
 public:
-    SmallRingQueue2(bool bFillQueue = false, bool bInitHead = false);
+    SmallRingQueue2(bool bFillQueue = true, bool bInitHead = false);
     ~SmallRingQueue2();
 
 public:
     void dump_detail();
 
 protected:
-    void init_queue(bool bFillQueue = false);
+    void init_queue(bool bFillQueue = true);
 };
 
 template <typename T, uint32_t Capcity>
-SmallRingQueue2<T, Capcity>::SmallRingQueue2(bool bFillQueue /* = false */,
+SmallRingQueue2<T, Capcity>::SmallRingQueue2(bool bFillQueue /* = true */,
                                              bool bInitHead  /* = false */)
 : RingQueueBase<T, Capcity, SmallRingQueueCore<T, Capcity> >(bInitHead)
 {
@@ -418,13 +420,12 @@ SmallRingQueue2<T, Capcity>::~SmallRingQueue2()
 
 template <typename T, uint32_t Capcity>
 inline
-void SmallRingQueue2<T, Capcity>::init_queue(bool bFillQueue /* = false */)
+void SmallRingQueue2<T, Capcity>::init_queue(bool bFillQueue /* = true */)
 {
     //printf("SmallRingQueue2::init_queue();\n\n");
 
     if (bFillQueue) {
-        memset((void *)this->core.queue, 0, sizeof(value_type)
-               * RingQueueBase<T, Capcity, SmallRingQueueCore<T, Capcity> >::kCapcity);
+        memset((void *)this->core.queue, 0, sizeof(value_type) * kCapcity);
     }
 }
 
@@ -464,18 +465,18 @@ public:
     static const size_type kCapcity = RingQueueBase<T, Capcity, RingQueueCore<T, Capcity> >::kCapcity;
 
 public:
-    RingQueue2(bool bFillQueue = false, bool bInitHead = false);
+    RingQueue2(bool bFillQueue = true, bool bInitHead = false);
     ~RingQueue2();
 
 public:
     void dump_detail();
 
 protected:
-    void init_queue(bool bFillQueue = false);
+    void init_queue(bool bFillQueue = true);
 };
 
 template <typename T, uint32_t Capcity>
-RingQueue2<T, Capcity>::RingQueue2(bool bFillQueue /* = false */,
+RingQueue2<T, Capcity>::RingQueue2(bool bFillQueue /* = true */,
                                    bool bInitHead  /* = false */)
 : RingQueueBase<T, Capcity, RingQueueCore<T, Capcity> >(bInitHead)
 {
@@ -496,11 +497,11 @@ RingQueue2<T, Capcity>::~RingQueue2()
 
 template <typename T, uint32_t Capcity>
 inline
-void RingQueue2<T, Capcity>::init_queue(bool bFillQueue /* = false */)
+void RingQueue2<T, Capcity>::init_queue(bool bFillQueue /* = true */)
 {
     //printf("RingQueue2::init_queue();\n\n");
 
-    value_type *newData = (value_type *)new T[kCapcity];
+    value_type *newData = new T *[kCapcity];
     if (newData != NULL) {
         this->core.queue = newData;
         if (bFillQueue) {

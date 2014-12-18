@@ -7,7 +7,7 @@
 
 /* 预热时间至少要大于500毫秒, 如果还不够, 可以自行增加最小预热时间 */
 
-void JIMIC_DLL jimi_cpu_warmup(int delayTime)
+void jimi_cpu_warmup(int delayTime)
 {
 #if defined(NDEBUG) || !defined(_DEBUG)
     jmc_timestamp startTime, stopTime;
@@ -69,8 +69,8 @@ int jimi_console_readkey(bool enabledCpuWarmup, bool displayTips,
     return keyCode;
 }
 
-int jimi_console_readkey_newline(bool enabledCpuWarmup, bool displayTips,
-                                 bool echoInput)
+int jimi_console_readkeyln(bool enabledCpuWarmup, bool displayTips,
+                           bool echoInput)
 {
     int keyCode;
     keyCode = jimi_console_readkey(false, displayTips, echoInput);

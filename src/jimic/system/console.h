@@ -16,11 +16,11 @@ extern "C" {
 
 void JIMIC_DLL jimi_cpu_warmup(int delayTime);
 
-int JIMIC_DLL jimi_console_readkey(bool enabledCpuWarmup, bool displayTips,
+int  JIMIC_DLL jimi_console_readkey(bool enabledCpuWarmup, bool displayTips,
                                    bool echoInput);
 
-int JIMIC_DLL jimi_console_readkey_newline(bool enabledCpuWarmup, bool displayTips,
-                                           bool echoInput);
+int  JIMIC_DLL jimi_console_readkeyln(bool enabledCpuWarmup, bool displayTips,
+                                     bool echoInput);
 
 #ifdef __cplusplus
 }
