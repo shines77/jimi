@@ -449,6 +449,9 @@
     <ClInclude Include="..\..\..\..\src\jimi\util\RingQueueEx.h">
       <Filter>src\jimi\util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\system\sleep.h">
+      <Filter>src\jimic\system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">
@@ -531,6 +534,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\string\itoa_fast.c">
       <Filter>src\jimic\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\system\sleep.c">
+      <Filter>src\jimic\system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

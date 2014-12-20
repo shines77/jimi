@@ -5,15 +5,12 @@
 
 #if defined(__MINGW32__)
 #include <conio.h>
-#include <unistd.h>
 #elif defined(__linux__)
 #include <termios.h>
-#include <unistd.h>
 #endif  /* __MINGW32__ */
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 #include <conio.h>
-#include <windows.h>
 #endif  /* _MSC_VER */
 
 #if defined(__MINGW32__)
@@ -33,11 +30,6 @@ int jimi_getche(void)
     else
         printf("EOF: (%d)", ch);
     return ch;
-}
-
-void jimi_sleep(int millisec)
-{
-    usleep(millisec * 1000);
 }
 
 #elif defined(__linux__)
@@ -90,12 +82,7 @@ int jimi_getche(void)
     return jimi_getch_term(1);
 }
 
-void jimi_sleep(int millisec)
-{
-    usleep(millisec * 1000);
-}
-
-#elif defined(_MSC_VER)
+#elif defined(_MSC_VER) || defined(__INTEL_COMPILER)
 
 /* Read 1 character without echo */
 int jimi_getch(void)
@@ -114,11 +101,6 @@ int jimi_getche(void)
     return ch;
 }
 
-void jimi_sleep(int millisec)
-{
-    Sleep(millisec);
-}
-
 #else  /* other unknown os */
 
 /* Read 1 character without echo */
@@ -131,19 +113,6 @@ int jimi_getch(void)
 int jimi_getche(void)
 {
     return (int)-1;
-}
-
-void jimi_sleep(int millisec)
-{
-    // Do nothing !!
-    volatile int sum = 0;
-    int i, j;
-    for (i = 0; i < 50000; ++i) {
-        sum += i;
-        for (j = 2000; j >= 0; --j) {
-            sum -= j;
-        }
-    }
 }
 
 #endif  /* __linux__ */
