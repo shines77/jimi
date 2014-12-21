@@ -81,7 +81,7 @@ jmc_timestamp_t jmc_get_timestamp(void)
 #endif  /* JIMIC_USE_ASSERT */
         gettimeofday(&tv, NULL);
     JIMIC_ASSERT_EX(status == 0, "gettimeofday failed");
-    result = (jmc_timestamp_t)((int64_t)(1000000UL) * (int64_t)(tv.tv_sec) + (int64_t)(tv.tv_usec);
+    result = (jmc_timestamp_t)((int64_t)(1000000UL) * (int64_t)(tv.tv_sec) + (int64_t)(tv.tv_usec));
 #endif  /*(choice of OS) */
 
     return result;
