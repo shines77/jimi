@@ -183,19 +183,23 @@ void jimi_set_thread_affinity(uint32_t dwCPUMask)
 #if defined(_MSC_VER)
     bool echo = false;
 #if defined(_WIN32) || defined(_WIN64)
-    if (echo)
-        printf("\n");
     HANDLE hCurrentProcess = GetCurrentProcess();
     DWORD dwProcessAffinity = 0, dwSystemAffinity = 0;
     DWORD dwAffinityMask = SetCPUAffinityMask4(1, 0, 0, 0);
     BOOL bAffResult;
+
+    if (echo) {
+        printf("\n");
+    }
+
     if (dwCPUMask != 0)
         dwAffinityMask = dwCPUMask;
     bAffResult = GetProcessAffinityMask(hCurrentProcess, &dwProcessAffinity, &dwSystemAffinity);
     if (bAffResult) {
         if (dwProcessAffinity != dwSystemAffinity) {
-            if (echo)
+            if (echo) {
                 printf("This process can not utilize all processors.\n");
+            }
         }
 
         while ((dwAffinityMask != 0) && (dwAffinityMask <= dwProcessAffinity)) {
@@ -211,8 +215,9 @@ void jimi_set_thread_affinity(uint32_t dwCPUMask)
                     DWORD dwProcessAffinityNew = 0;
                     bAffResult = GetProcessAffinityMask(hCurrentProcess, &dwProcessAffinityNew, &dwSystemAffinity);
                     if (dwProcessAffinityNew == dwAffinityMask) {
-                        if (echo)
+                        if (echo) {
                             printf("SetProcessAffinityMask(): Success.\n");
+                        }
                         bAffResult = SetThreadAffinityMask(GetCurrentThread(), dwAffinityMask);
                         Sleep(0);
                         break;
@@ -221,8 +226,9 @@ void jimi_set_thread_affinity(uint32_t dwCPUMask)
             }
         }
     }
-    if (echo)
+    if (echo) {
         printf("\n");
+    }
 #endif  /* _WIN32 || _WIN64 */
 #endif  /* _MSC_VER */
 }
@@ -3228,6 +3234,39 @@ bool ReadData_Test(DWORD dwBase, std::shared_ptr<T> &data)
 
 #endif  /* defined(_MSC_VER) && (_MSC_VER >= 1600) */
 
+__declspec( noinline )
+void integer_div_test(unsigned int a)
+{
+    unsigned int p;;
+    p = a / 125;
+    printf("p = %u\n", p);
+}
+
+__declspec( noinline )
+void integer_div_test2(int a)
+{
+#if 1
+    int p;;
+    p = a / (int)10;
+    printf("p = %d\n", p);
+#else
+    unsigned int i;
+    unsigned int p, val;
+    unsigned int s[20];
+    i = 0;
+    //a = 278321;
+    val = a;
+    do {
+        s[i] = val % 10 + '0';
+        val  = val / 10;
+        i++;
+    } while (val != 0);
+    s[i] = '\0';
+    p = a / 10;
+    printf("num = %s, p = %u", s, p);
+#endif
+}
+
 int UnitTest_Main(int argc, char *argv[])
 {
     //using namespace jimi;
@@ -3279,7 +3318,7 @@ int UnitTest_Main(int argc, char *argv[])
     // Test System.out.println()
     jimi::System.out.println("System.out.println() test.\n");
 
-#if 1
+#if 0
     if (true) {
         RingQueue<uint64_t, 22> ringQueue;
 
@@ -3327,7 +3366,7 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 1
+#if 0
     if (true) {
         SmallRingQueue2<uint64_t, 22> ringQueue;
 
@@ -3375,7 +3414,7 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 1
+#if 0
     if (true) {
         RingQueue2<uint64_t, 22> ringQueue;
 
@@ -3412,7 +3451,7 @@ int UnitTest_Main(int argc, char *argv[])
         printf("RingQueue2() test end...\n");
         printf("---------------------------------------------------------------\n\n");
 
-        if (true) {
+        if (false) {
             jmLog.log_end();
             jimi::Console.ReadKey();
             return 0;
@@ -3421,6 +3460,15 @@ int UnitTest_Main(int argc, char *argv[])
             jimi::Console.ReadKey_NewLine();
         }
     }
+#endif
+
+#if 0
+    int aa = rand();
+    //aa = -11;
+    integer_div_test((unsigned int)aa);
+    integer_div_test2(aa);
+
+    jimi::Console.ReadKey_NewLine();
 #endif
 
 #if 0
