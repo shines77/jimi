@@ -342,6 +342,7 @@ int RingQueue<T, Capcity>::push(T *item)
     while (jimi_unlikely((info.p.tail != head)))
         jimi_mm_pause();
 
+    Jimi_ReadWriteBarrier();
     info.p.tail = next;
 
     return 0;
@@ -373,6 +374,8 @@ T * RingQueue<T, Capcity>::pop()
     while (jimi_unlikely((info.c.tail != head)))
         jimi_mm_pause();
 
+
+    Jimi_ReadWriteBarrier();
     info.c.tail = next;
 
     return item;

@@ -3366,7 +3366,55 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
+#if 1
+    if (true) {
+        SmallRingQueue<uint64_t, 22> ringQueue;
+
+        uint64_t queue_msg = 123ULL;
+
+        printf("---------------------------------------------------------------\n");
+        printf("SmallRingQueue() test begin...\n\n");
+#if 1
+        printf("ringQueue.capcity() = %u\n", ringQueue.capcity());
+        printf("ringQueue.mask()    = %u\n\n", ringQueue.mask());
+        printf("ringQueue.sizes()   = %u\n\n", ringQueue.sizes());
+
+        ringQueue.dump_detail();
+#endif
+        ringQueue.push(&queue_msg);
+        ringQueue.dump_detail();
+        ringQueue.push(&queue_msg);
+        ringQueue.dump_detail();
+
+        //printf("ringQueue.sizes()   = %u\n\n", ringQueue.sizes());
+
+        ringQueue.pop();
+        ringQueue.dump_detail();
+        ringQueue.pop();
+        ringQueue.dump_detail();
+
+        ringQueue.pop();
+        ringQueue.dump_detail();
 #if 0
+        printf("ringQueue.sizes()   = %u\n\n", ringQueue.sizes());
+
+        ringQueue.dump_info();
+#endif
+        printf("SmallRingQueue() test end...\n");
+        printf("---------------------------------------------------------------\n\n");
+
+        if (false) {
+            jmLog.log_end();
+            jimi::Console.ReadKey();
+            return 0;
+        }
+        else {
+            jimi::Console.ReadKey_NewLine();
+        }
+    }
+#endif
+
+#if 1
     if (true) {
         SmallRingQueue2<uint64_t, 22> ringQueue;
 

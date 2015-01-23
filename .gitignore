@@ -1,23 +1,23 @@
 ### These files should get ignored no matter where they appear.
 
-# Compiled Object files
+# Ignore Compiled Object files
 *.slo
 *.lo
 *.o
 *.obj
 
-# Compiled Dynamic libraries
+# Ignore Compiled Dynamic libraries
 *.so
-*.dylib
 *.dll
+*.dylib
 
-# Compiled Static libraries
+# Ignore Compiled Static libraries
 *.lai
 *.la
 *.a
 *.lib
 
-# Executables
+# Ignore Executables
 *.exe
 *.out
 *.app
@@ -28,93 +28,110 @@
 *~
 *.swp
 
-# For Visual Studio files on Windows
+# Ignore thumbnails created by Windows
+Thumbs.db
+
+# Ignore some files on Windows
+.DS_Store*
+ehthumbs.db
+Icon?
+
+# Ignore files build by Visual Studio
+*.obj
+*.pdb
+*.dep
 *.user
 *.ncb
 *.aps
+*.pch
+*.vspscc
 *.idb
-*.pdb
-*.dep
-*.obj
 *.ilk
 *.tlb
-*.tli
 *.tlh
+*.tli
 *.tmp
+*.sbr
 *.rsp
 *.pgc
 *.pgd
-*.meta
-*.manifest
-*.intermediate.manifest
 *.suo
 *.sdf
 *.opensdf
 *.sln.old
 *.sln_old
+*.meta
+*.manifest
+*.intermediate.manifest
+
 # *.vcxproj.user
-/Debug/
-/Release/
-/x86-Debug/
-/x86-Release/
-/x64-Debug/
-/x64-Release/
+# *_i.c
+# *_p.c
+
+/[Bb]in/
+/[Dd]ebug/
+/[Rr]elease/
+/x86-[Dd]ebug/
+/x86-[Rr]elease/
+/x64-[Dd]ebug/
+/x64-[Rr]elease/
 !/deps/
 
 # For Visual Studio Update File
 UpgradeLog.XML
 UpgradeLog.htm
-/Backup/
+/[Bb]ackup/
+
+# Ignore CodeBlocks project layout/depend files
+*.layout
+*.depend
+
+# Ignore obj file in GCC
+*.pic.d
+*.jet.d
+
+# Ignore stackdump file on Linux
+*.stackdump
 
 # For log file
 *.log
 
-# For CodeBlocks project files
-*.layout
-*.depend
-
-# For Intel C++ Compiler Log File & Project File
+# Ignore Intel C++ Compiler Log File & Project Files
 IcUpdateLog.htm
 *.icproj
 
-# For AStyle backup file
+# Ignore AStyle backup files
 *.orig
 
-# For Code::Blocks backup file
+# Ignore Code::Blocks backup files
 *.sav
 
-# For Sublime Text 2 dump file
+# Ignore Sublime Text 2 dump files
 *.dump
 
-# tmp and obj files
-/obj/
-/gen/
+# Ignore tmp and obj files
+/[Oo]bj/
+/[Gg]en/
 /tmp/
 /temp/
-!/build/ReadMe.txt
-/build/*/
+!/[Bb]uild/ReadMe.txt
+/[Bb]uild/*/
 
-# For Visual Studio 2013 temp files on Windows
+# Ignore Visual Studio 2013 temp files on Windows
 *.tlog
 
-# For Visual Studio C# files on Windows
+# Ignore Visual Studio C# files on Windows
 *.cache
 
-# Zip or Rar files
+# Ignore Zip or Rar files
 *.zip
 *.rar
-
-# Some files on Windows
-.DS_Store*
-ehthumbs.db
-Icon?
-Thumbs.db
 
 # Other files
 /.metadata
 /169.254.0.1
 /ipch/
-/cmake/
+# /cmake/
 /Simulator/
 /Simulator-Coverage/
 /Simulator-Profile/
