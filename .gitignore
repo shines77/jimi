@@ -28,12 +28,12 @@
 *~
 *.swp
 
-# Ignore thumbnails created by Windows
+# Ignore thumbnails and icon cache files created by Windows
 Thumbs.db
+ehthumbs.db
 
 # Ignore some files on Windows
 .DS_Store*
-ehthumbs.db
 Icon?
 
 # Ignore files build by Visual Studio
@@ -63,6 +63,7 @@ Icon?
 *.meta
 *.manifest
 *.intermediate.manifest
+*.bak
 
 # *.vcxproj.user
 # *_i.c
@@ -76,6 +77,12 @@ Icon?
 /x64-[Dd]ebug/
 /x64-[Rr]elease/
 !/deps/
+
+[Bb]in
+[Dd]ebug*/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esult*
 
 # For Visual Studio Update File
 UpgradeLog.XML
@@ -110,6 +117,8 @@ IcUpdateLog.htm
 *.dump
 
 # Ignore tmp and obj files
+[Bb]in
+[Oo]bj/
 /[Oo]bj/
 /[Gg]en/
 /tmp/
