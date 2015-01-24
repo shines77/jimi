@@ -48,7 +48,7 @@
 
 #define ERROR_SERVICE_INSTANCE_NOT_INITED   "Service Instance is not initialized."
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 typedef WINADVAPI BOOL (WINAPI *CSD_T)(SC_HANDLE, DWORD, LPCVOID);
 
@@ -1745,7 +1745,7 @@ int WinServiceBase<T>::RunServiceEx(WinServiceBase<T> *pServiceInstance, SERVICE
 template <class T>
 WinServiceBase<T> *WinServiceBase<T>::s_pServiceInstance = NULL;
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* JIMI_IS_WINDOWS */
 

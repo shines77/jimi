@@ -13,7 +13,7 @@
 
 #include <string>
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class Object;
 
@@ -72,6 +72,6 @@ Throwable::~Throwable()
     this->cause = NULL;
 }
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_LANG_THROWABLE_H_ */

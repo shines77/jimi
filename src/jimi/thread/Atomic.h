@@ -8,7 +8,7 @@
 
 #include "jimi/core/jimi_def.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 template <typename _ValueT = size_t>
 class atomic
@@ -71,6 +71,6 @@ private:
     value_type _value;
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_THREAD_ATOMIC_H_ */

@@ -8,7 +8,7 @@
 
 #include "jimi/core/jimi_def.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 namespace internal {
 
@@ -87,6 +87,6 @@ struct work_around_alignment_bug {
 
 }  /* namespace internal */
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* !_JIMI_CORE_JIMI_MACHINE_H_ */

@@ -13,7 +13,7 @@
 
 //using namespace std;
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 namespace string_utils {
 
@@ -21,6 +21,6 @@ namespace string_utils {
 
 }  /* namespace of string_utils */
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* !_JIMI_LANG_STRINGUTILS_H_ */

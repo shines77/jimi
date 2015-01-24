@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 cmd_line *cmd_line::s_cmd_line = NULL;
 
@@ -219,4 +219,4 @@ int cmd_line::checkToken(int n, const char *arg, std::string &opt)
     return (-1);
 }
 
-NS_JIMI_END
+}  /* namespace jimi */

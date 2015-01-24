@@ -9,7 +9,7 @@
 #include "jimi/core/jimi_def.h"
 #include "jimi/internal/NonAssignable.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 //
 // C++ Idioms - Non Copyable Objects
@@ -49,6 +49,6 @@ private:
 
 typedef internal::NonCopyable NonCopyable;
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* !_JIMI_INTERNAL_NONCOPYABLE_H_ */

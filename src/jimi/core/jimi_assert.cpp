@@ -15,7 +15,7 @@
 #endif
 #endif
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 //! Type for an assertion handler
 typedef void (*assertion_handler_type)(const char * filename, int line,
@@ -82,4 +82,4 @@ namespace internal {
     }
 }
 
-NS_JIMI_END
+}  /* namespace jimi */

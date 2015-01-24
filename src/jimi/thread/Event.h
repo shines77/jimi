@@ -15,7 +15,7 @@
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 /**************************************************************************
  ** EventWaitHandle
@@ -216,6 +216,6 @@ public:
     ~AutoResetEvent() { jmLog.info("AutoResetEvent::~AutoResetEvent()."); };
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_THREAD_EVENT_H_ */

@@ -3,8 +3,8 @@
 #include "jimi/fs/FileSystem.h"
 #include "jimi/log/log.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 //
 
-NS_JIMI_END
+}  /* namespace jimi */

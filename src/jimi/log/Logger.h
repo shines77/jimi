@@ -150,7 +150,7 @@
 
 ////////////////////////////////////////////////////////////////
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 /**
     Global  	Generic level that represents all levels. Useful when setting global configuration for all levels.
@@ -366,7 +366,7 @@ static class System     System;
 extern class System     System;
 #endif
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 JIMI_EXPIMP_TEMPLATE template class JIMI_DLL_TPL std::allocator<jimi::LogConf_Node *>;
 JIMI_EXPIMP_TEMPLATE template class JIMI_DLL_TPL std::vector<jimi::LogConf_Node *, std::allocator<jimi::LogConf_Node *> >;

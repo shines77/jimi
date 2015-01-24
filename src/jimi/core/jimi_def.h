@@ -135,7 +135,7 @@
 #define JIMI_ROUND_TO_POW2(N)   jimi_next_power_of_2(N)
 #endif
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 template <typename value_type>
 inline value_type jimi_min(value_type a, value_type b)
@@ -149,7 +149,7 @@ inline value_type jimi_max(value_type a, value_type b)
     return (a > b ? a : b);
 }
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 /**
  * for c++ const_cast
@@ -200,7 +200,7 @@ typedef struct JIMI_MACRO_T
  */
 #define ITT_SYNC_CREATE(obj, type, name)
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 /**
  * @cond INTERNAL
@@ -231,6 +231,6 @@ public:
 } // internal
 //! @endcond
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_DEF_H_ */

@@ -31,7 +31,7 @@
 //#define JIMI_STRING_PERVERSE
 //#define JIMI_STRING_CONSERVATIVE
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1977,7 +1977,7 @@ void STRING_CORE::writeNullForce()
 #undef STRING_CORE_CLASSES
 #undef STRING_CORE
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #if defined(_MSC_VER) && (_MSC_VER != 0)
 #pragma warning(pop)                    // »Ö¸´warning×´Ì¬

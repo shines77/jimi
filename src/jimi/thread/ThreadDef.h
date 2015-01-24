@@ -13,7 +13,7 @@
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 #define HANDLE_IS_VALID(X)      ((X) != NULL && (X) != INVALID_HANDLE_VALUE)
 
@@ -59,15 +59,15 @@ typedef struct EventResetMode
     static const uint32_t kManualReset  = TRUE;
 } EventResetMode;
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #else
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 typedef void * jm_handle_t;
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* JIMI_IS_WINDOWS */
 

@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class DumpUtils : public NonCopyable
 {
@@ -204,7 +204,7 @@ void DumpUtils::dump2(void *p, size_t size, bool alignedTo /* = false */,
     printf("\n");
 }
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 /* 因为互相引用的关系, 这两个#include必须放在class DumpUtils()定义的后面. */
 #include "jimi/util/DebugUtils.h"

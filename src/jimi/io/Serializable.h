@@ -8,7 +8,7 @@
 
 #include "jimi/core/jimi_def.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class Serializable
 {
@@ -22,6 +22,6 @@ public:
 #endif
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_IO_SERIALIZABLE_H_ */

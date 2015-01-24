@@ -8,7 +8,7 @@
 
 #include "jimi/core/jimi_def.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 namespace internal {
 
@@ -42,6 +42,6 @@ inline T punned_cast(U * ptr) {
 
 }  /* namespace internal */
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* !_JIMI_INTERNAL_POINTER_CAST_H_ */

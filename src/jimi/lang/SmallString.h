@@ -14,7 +14,7 @@
 
 #include <string>
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 template <class _CharT = char,
           size_t _Capacity = 32U,
@@ -182,6 +182,6 @@ void SmallString<_CharT, _Capacity, _Alignment, _Traits>::init(const value_type 
 #define small_wstring(N)    SmallString<wchar_t, (N)>
 #endif
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* !_JIMI_LANG_SMALL_STRING_H_ */

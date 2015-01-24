@@ -10,7 +10,7 @@
 #include "jimi/lang/Throwable.h"
 #include "jimi/lang/String.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class Exception : public Throwable
 {
@@ -21,6 +21,6 @@ public:
     ~Exception() {};
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_LANG_EXCEPTION_H_ */

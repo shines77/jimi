@@ -19,7 +19,7 @@
 
 #define CHAR_TRAITS_STRICT_CHECK        CHAR_TRAITS_STRICT_CHECK_V0
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 template <typename _CharT>
 struct JIMI_DLL char_traits
@@ -927,6 +927,6 @@ int char_traits<char_type>::i64toa_radix10(char_type *buf, int64_t val)
     return char_traits<char_type>::u64toa_radix10(buf, val);
 }
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_LANG_CHAR_TRAITS_H_ */

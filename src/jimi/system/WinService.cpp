@@ -47,10 +47,10 @@ template <class T>
 WinServiceBase<T> *WinServiceBase<T>::s_pServiceInstance = NULL;
 //*/
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 //
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* JIMI_IS_WINDOWS */

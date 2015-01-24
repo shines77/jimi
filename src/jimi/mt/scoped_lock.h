@@ -10,7 +10,7 @@
 #include "jimi/internal/NonCopyable.h"
 #include "jimi/log/log.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 NS_JIMI_MT_BEGIN
 
@@ -134,6 +134,6 @@ public:
 
 NS_JIMI_MT_END
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_MTL_SCOPED_LOCK_H_ */

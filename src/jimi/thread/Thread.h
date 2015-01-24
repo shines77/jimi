@@ -24,7 +24,7 @@
 
 #endif  /* JIMI_IS_WINDOWS */
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 enum ThreadStatusShift
 {
@@ -838,6 +838,6 @@ private:
 
 #endif  /* JIMI_IS_WINDOWS */
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_THREAD_THREAD_H_ */

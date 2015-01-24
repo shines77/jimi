@@ -10,7 +10,7 @@
 #include "jimi/lang/String.h"
 #include "jimi/lang/CloneNotSupportedException.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 template <class T>
 class Cloneable
@@ -28,6 +28,6 @@ public:
 #endif
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_LANG_CLONEABLE_H_ */

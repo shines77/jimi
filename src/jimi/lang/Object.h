@@ -16,7 +16,7 @@
 #include "jimi/lang/String.h"
 #include "jimi/log/log.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class InterruptedException : public Exception
 {
@@ -105,6 +105,6 @@ inline String Object::ToString()
     return Name;
 }
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_LANG_OBJECT_H_ */

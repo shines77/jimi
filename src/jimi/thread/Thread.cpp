@@ -1,7 +1,7 @@
 
 #include "jimi/thread/Thread.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 #if JIMI_IS_WINDOWS
 
@@ -9,4 +9,4 @@ NS_JIMI_BEGIN
 
 #endif  /* JIMI_IS_WINDOWS */
 
-NS_JIMI_END
+}  /* namespace jimi */

@@ -50,7 +50,7 @@
 #include <sys/time.h>
 #endif /* (choice of OS) */
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 ///////////////////////////////////////////////////////////////////////////
 // stop_watch_base<T>
@@ -813,6 +813,6 @@ inline double stop_watch_ex::getTotalElapsedTime(void)
     return getTotalSeconds();
 }
 
-NS_JIMI_END  /* end of the namespace jimi */
+}  /* namespace jimi */  /* end of the namespace jimi */
 
 #endif  /* _JIMI_STOP_WATCH_H_ */

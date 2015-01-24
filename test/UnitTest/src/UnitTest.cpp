@@ -3938,7 +3938,7 @@ int UnitTest_Main(int argc, char *argv[])
 
 NS_UNITEST_END
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class MyProgram : public jimi::Program
 {
@@ -3966,7 +3966,7 @@ public:
     }
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 int main(int argc, char *argv[])
 {

@@ -33,7 +33,7 @@
 
 ////////////////////////////////////////////////////////////////
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 typedef enum Param_Type
 {
@@ -205,6 +205,6 @@ public:
 
 typedef cmd_line CommandLine;
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _CMDLINE_PARSER_H_ */

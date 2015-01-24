@@ -1,7 +1,7 @@
 
 #include "jimi/mt/scoped_lock.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 NS_JIMI_MT_BEGIN
 
@@ -9,4 +9,4 @@ NS_JIMI_MT_BEGIN
 
 NS_JIMI_MT_END
 
-NS_JIMI_END
+}  /* namespace jimi */

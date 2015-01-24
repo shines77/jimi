@@ -16,7 +16,7 @@
 
 #endif
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class FileSystem
 {
@@ -27,6 +27,6 @@ public:
     //
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_FS_FILESYSTEM_H_ */

@@ -10,7 +10,7 @@
 #include "jimi/internal/NonCopyable.h"
 #include "jimi/util/DumpUtils.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class ReleaseUtils : public internal::NonCopyable
 {
@@ -58,6 +58,6 @@ void ReleaseUtils::dump2(void *p, size_t size, bool alignedTo /* = false */,
     }
 }
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_UTIL_RELEASEUTILS_H_ */

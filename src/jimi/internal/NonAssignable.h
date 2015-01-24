@@ -8,7 +8,7 @@
 
 #include "jimi/core/jimi_def.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 namespace internal {    // protection from unintended ADL
 
@@ -34,6 +34,6 @@ private:
 
 typedef internal::NonAssignable NonAssignable;
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* !_JIMI_INTERNAL_NONASSIGNABLE_H_ */

@@ -11,10 +11,10 @@
 
 #include <string>
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 //
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_LANG_STRING_INL_H_ */

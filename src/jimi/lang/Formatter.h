@@ -20,7 +20,7 @@
 #endif
 #include <type_traits>
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 namespace detail {
 
@@ -2069,6 +2069,6 @@ formatter<StringType, Precision>::append_l(std::locale loc, ...)
 
 #endif  /* !JIMI_HAS_CXX11_VARIADIC_TEMPLATES */
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* !_JIMI_LANG_FORMATTER_H_ */

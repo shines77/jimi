@@ -9,7 +9,7 @@
 #include "jimi/core/jimi_def.h"
 #include "jimi/thread/Atomic.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 void *smartRealloc(void *memory, size_t cur_size, size_t cur_capacity, size_t new_size)
 {
@@ -103,6 +103,6 @@ private:
     char_type           _data[1];
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_LANG_REFCOUNTED_H_ */

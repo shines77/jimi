@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class Program : public internal::NonCopyable
 {
@@ -173,6 +173,6 @@ private:
     func_modern_wmain   m_pfnModernWMain;
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* !_JIMI_SYSTEM_PROGRAM_H_ */

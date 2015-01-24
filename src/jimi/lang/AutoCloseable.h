@@ -9,7 +9,7 @@
 #include "jimi/core/jimi_def.h"
 #include "jimi/lang/Exception.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class AutoCloseable
 {
@@ -19,6 +19,6 @@ private:
     }
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_LANG_AUTOCLOSEABLE_H_ */

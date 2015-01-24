@@ -48,7 +48,7 @@
 
 #endif
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 #if !defined(JIMI_USE_STATIC_GLOBAL_OBJECT) || (JIMI_USE_STATIC_GLOBAL_OBJECT == 0)
 class Utils     Utils;
@@ -1222,4 +1222,4 @@ void Logger::log_end(const char *title)
     log_title_section(title, false);
 }
 
-NS_JIMI_END
+}  /* namespace jimi */

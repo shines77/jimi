@@ -24,7 +24,7 @@
 #include <functional>   // For std::less_equal, std::bind2nd
 #endif
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 /// <comment>
 ///
@@ -1967,6 +1967,6 @@ typedef basic_string<wchar_t>   wstring;
 typedef basic_string<char>      String;
 typedef basic_string<wchar_t>   WString;
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_LANG_STRING_H_ */

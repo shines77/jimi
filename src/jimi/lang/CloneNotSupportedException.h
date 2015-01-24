@@ -9,7 +9,7 @@
 #include "jimi/core/jimi_def.h"
 #include "jimi/lang/Exception.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class CloneNotSupportedException : public Exception
 {
@@ -18,6 +18,6 @@ public:
     ~CloneNotSupportedException() {};
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_LANG_CLONENOTSUPPORTEDEXCEPTION_H_ */

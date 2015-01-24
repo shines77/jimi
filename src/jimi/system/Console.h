@@ -19,7 +19,7 @@
 #include <conio.h>
 #endif // _MSC_VER
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class Console : public internal::NonCopyable
 {
@@ -88,13 +88,14 @@ public:
 
     static int Read() {
         int keyCode = 0;
+        // TODO: Read the inputs.
         return keyCode;
     }
 };
 
 static class Console Console;
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 typedef class jimi::Console jimiConsole;
 

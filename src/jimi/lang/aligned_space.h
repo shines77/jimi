@@ -10,7 +10,7 @@
 #include "jimi/core/jimi_machine.h"
 #include "jimi/internal/pointer_cast.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 //! Block of space aligned sufficiently to construct an array T with N elements.
 /** The elements are not constructed or destroyed by this class.
@@ -30,6 +30,6 @@ public:
     T * end()   { return begin() + N; }
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* !_JIMI_LANG_ALIGNED_SPACE_H_ */

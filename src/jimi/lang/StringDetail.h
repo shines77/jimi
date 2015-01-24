@@ -8,7 +8,7 @@
 
 #include "jimi/core/jimi_def.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 namespace string_detail {
 
@@ -77,6 +77,6 @@ void pod_fill(Pod *dest, T c, size_t size) {
 
 }  /* end of the namespace string_detail */
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_LANG_STRINGDETAIL_H_ */

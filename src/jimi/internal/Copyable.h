@@ -9,7 +9,7 @@
 #include "jimi/core/jimi_namespace.h"
 #include "jimi/core/jimi_config.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 namespace internal {    // protection from unintended ADL
 
@@ -36,6 +36,6 @@ public:
 
 typedef internal::Copyable Copyable;
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* !_JIMI_INTERNAL_COPYABLE_H_ */

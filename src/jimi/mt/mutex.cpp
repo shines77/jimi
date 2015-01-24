@@ -3,7 +3,7 @@
 #include "jimi/mt/scoped_lock.h"
 #include "jimi/lang/aligned_space.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 NS_JIMI_MT_BEGIN
 
@@ -128,4 +128,4 @@ void mutex::unlock()
 
 NS_JIMI_MT_END
 
-NS_JIMI_END
+}  /* namespace jimi */

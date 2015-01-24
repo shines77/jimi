@@ -10,7 +10,7 @@
 #include "jimi/lang/AutoCloseable.h"
 #include "jimi/io/IOException.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 class Closeable : public AutoCloseable
 {
@@ -20,6 +20,6 @@ public:
     }
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_IO_CLOSEABLE_H_ */

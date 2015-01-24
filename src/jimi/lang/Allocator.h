@@ -8,7 +8,7 @@
 
 #include "jimi/core/jimi_def.h"
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 template <class _CharT>
 class JIMI_DLL allocator
@@ -22,6 +22,6 @@ public:
     typedef const _CharT *  const_pointer;
 };
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_LANG_ALLOCATOR_H_ */

@@ -71,7 +71,7 @@ typedef void (*assertion_handler_type)(const char * filename, int line,
 #define jimi_assert_ex              JIMI_ASSERT_EX
 #endif
 
-NS_JIMI_BEGIN
+namespace jimi {
 
     //! Set assertion handler and return previous value of it.
     assertion_handler_type JIMI_EXPORTED_FUNC set_assertion_handler(assertion_handler_type new_handler);
@@ -94,6 +94,6 @@ namespace internal {
     void JIMI_EXPORTED_FUNC handle_perror(int error_code, const char *error_info);
 }
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* !_JIMI_ASSERT_H_ */

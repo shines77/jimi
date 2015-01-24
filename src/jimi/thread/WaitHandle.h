@@ -13,7 +13,7 @@
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 
-NS_JIMI_BEGIN
+namespace jimi {
 
 //
 // Reference: http://blog.csdn.net/amdk_7/article/details/1334044
@@ -201,6 +201,6 @@ uint32_t WaitHandle<T>::SignalAndWaitEx(const handle_t toSignal, const handle_t 
     return ::SignalObjectAndWait(toSignal, toWaitOn, uMillisecTimeout, exitContext);
 }
 
-NS_JIMI_END
+}  /* namespace jimi */
 
 #endif  /* _JIMI_THREAD_WAITHANDLE_H_ */
