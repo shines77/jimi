@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_CORE_WIN32_TARGETVER_H_
-#define _JIMI_CORE_WIN32_TARGETVER_H_
+#ifndef _JIMI_BASIC_WIN32_TARGETVER_H_
+#define _JIMI_BASIC_WIN32_TARGETVER_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -35,4 +35,4 @@
 
 #endif  /* JIMI_IS_WINDOWS */
 
-#endif  /* _JIMI_CORE_WIN32_TARGETVER_H_ */
+#endif  /* _JIMI_BASIC_WIN32_TARGETVER_H_ */

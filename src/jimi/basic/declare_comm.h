@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_DECLARE_COMM_H_
-#define _JIMI_DECLARE_COMM_H_
+#ifndef _JIMI_BASIC_DECLARE_COMM_H_
+#define _JIMI_BASIC_DECLARE_COMM_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -107,4 +107,4 @@ typedef unsigned char   jm_uchar;
 
 #endif  /* _MSC_VER */
 
-#endif  /* _JIMI_DECLARE_COMM_H_ */
+#endif  /* _JIMI_BASIC_DECLARE_COMM_H_ */

@@ -467,6 +467,24 @@
     <ClInclude Include="..\..\..\..\src\jimic\basic\platform_def.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\inttypes.h">
+      <Filter>src\jimic\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\stdbool.h">
+      <Filter>src\jimic\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\stdint.h">
+      <Filter>src\jimic\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\inttypes.h">
+      <Filter>src\jimi\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\stdbool.h">
+      <Filter>src\jimi\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\stdint.h">
+      <Filter>src\jimi\basic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">

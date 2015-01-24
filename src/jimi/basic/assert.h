@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_ASSERT_H_
-#define _JIMI_ASSERT_H_
+#ifndef _JIMI_BASIC_ASSERT_H_
+#define _JIMI_BASIC_ASSERT_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -96,4 +96,4 @@ namespace internal {
 
 }  /* namespace jimi */
 
-#endif  /* !_JIMI_ASSERT_H_ */
+#endif  /* !_JIMI_BASIC_ASSERT_H_ */

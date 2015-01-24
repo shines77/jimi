@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_DECLARE_H_
-#define _JIMI_DECLARE_H_
+#ifndef _JIMI_BASIC_DECLARE_H_
+#define _JIMI_BASIC_DECLARE_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -72,4 +72,4 @@
     #define JIMI_EXPORTED_METHOD
 #endif
 
-#endif  /* _JIMI_DECLARE_H_ */
+#endif  /* _JIMI_BASIC_DECLARE_H_ */

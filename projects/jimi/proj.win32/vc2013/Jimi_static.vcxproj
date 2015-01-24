@@ -161,10 +161,13 @@
     <ClInclude Include="..\..\..\..\src\jimic\basic\compiler_def.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\config.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\declare.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\basic\inttypes.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\basic\stdbool.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\stddef.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\export.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\platform_def.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\jimic_stdint.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\basic\stdint.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\win32\jimic_config.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\win32\jimic_targetver.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\win32\vs_stdint.h" />
@@ -241,6 +244,8 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare_comm.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\basic\inttypes.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\basic\stdbool.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\stddef.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\export.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\machine.h" />
@@ -250,6 +255,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\msvc\inttypes.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\msvc\stdbool.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\msvc\stdint.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\basic\stdint.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\win32\jimi_config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\win32\jimi_targetver.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\win32\vs_stdint.h" />

@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_COMMON_H_
-#define _JIMI_COMMON_H_
+#ifndef _JIMI_BASIC_COMMON_H_
+#define _JIMI_BASIC_COMMON_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -85,4 +85,4 @@ char (*__jm_countof_helper(UNALIGNED _CountofType (&_Array)[_SizeOfArray]))[_Siz
 
 #endif  /* !defined(jm_countof) */
 
-#endif  /* _JIMI_COMMON_H_ */
+#endif  /* _JIMI_BASIC_COMMON_H_ */

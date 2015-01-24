@@ -1,8 +1,8 @@
 
-/* The actual file is defined in the "jimi/basic/jimi_platform_def.h" */
+/* The actual file is defined in the "jimi/basic/platform_def.h" */
 
-#ifndef _JIMIC_CORE_PLATFORM_DEF_H_
-#define _JIMIC_CORE_PLATFORM_DEF_H_
+#ifndef _JIMIC_BASIC_PLATFORM_DEF_H_
+#define _JIMIC_BASIC_PLATFORM_DEF_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -10,4 +10,4 @@
 
 #include "jimi/basic/platform_def.h"
 
-#endif  /* _JIMIC_CORE_PLATFORM_DEF_H_ */
+#endif  /* _JIMIC_BASIC_PLATFORM_DEF_H_ */

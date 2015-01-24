@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_STDINT_H_
-#define _JIMI_STDINT_H_
+#ifndef _JIMI_BASIC_STDINT_H_
+#define _JIMI_BASIC_STDINT_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -12,4 +12,4 @@
 #include <stdint.h>
 #endif  /* _MSC_VER */
 
-#endif  /* _JIMI_STDINT_H_ */
+#endif  /* _JIMI_BASIC_STDINT_H_ */

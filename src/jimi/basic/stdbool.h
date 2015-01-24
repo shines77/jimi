@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_STDBOOL_H_
-#define _JIMI_STDBOOL_H_
+#ifndef _JIMI_BASIC_STDBOOL_H_
+#define _JIMI_BASIC_STDBOOL_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -12,4 +12,4 @@
 #include <stdbool.h>
 #endif  /* _MSC_VER */
 
-#endif  /* _JIMI_STDBOOL_H_ */
+#endif  /* _JIMI_BASIC_STDBOOL_H_ */

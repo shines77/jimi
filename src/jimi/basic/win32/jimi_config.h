@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_CORE_WIN32_CONFIG_H_
-#define _JIMI_CORE_WIN32_CONFIG_H_
+#ifndef _JIMI_BASIC_WIN32_CONFIG_H_
+#define _JIMI_BASIC_WIN32_CONFIG_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -78,4 +78,4 @@
 #endif  /* _DEBUG */
 #endif  /* JIMI_USE_CRTDBG_CHECK */
 
-#endif  /* _JIMI_CORE_WIN32_CONFIG_H_ */
+#endif  /* _JIMI_BASIC_WIN32_CONFIG_H_ */

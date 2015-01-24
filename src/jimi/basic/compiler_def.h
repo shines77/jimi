@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_CORE_COMPILER_DEF_H_
-#define _JIMI_CORE_COMPILER_DEF_H_
+#ifndef _JIMI_BASIC_COMPILER_DEF_H_
+#define _JIMI_BASIC_COMPILER_DEF_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -248,4 +248,4 @@
   #endif
 #endif
 
-#endif  /* _JIMI_CORE_COMPILER_DEF_H_ */
+#endif  /* _JIMI_BASIC_COMPILER_DEF_H_ */

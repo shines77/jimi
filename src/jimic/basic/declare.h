@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_DECLARE_H_
-#define _JIMIC_DECLARE_H_
+#ifndef _JIMIC_BASIC_DECLARE_H_
+#define _JIMIC_BASIC_DECLARE_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -123,4 +123,4 @@
 #define JIMIC_NOINLINE(decl)    decl
 #endif
 
-#endif  /* _JIMIC_DECLARE_H_ */
+#endif  /* _JIMIC_BASIC_DECLARE_H_ */

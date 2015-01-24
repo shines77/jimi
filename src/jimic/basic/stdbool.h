@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_STDBOOL_H_
-#define _JIMIC_STDBOOL_H_
+#ifndef _JIMIC_BASIC_STDBOOL_H_
+#define _JIMIC_BASIC_STDBOOL_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -8,4 +8,4 @@
 
 #include "jimi/basic/stdbool.h"
 
-#endif  /* _JIMIC_STDBOOL_H_ */
+#endif  /* _JIMIC_BASIC_STDBOOL_H_ */

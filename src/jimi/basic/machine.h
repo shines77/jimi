@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_CORE_JIMI_MACHINE_H_
-#define _JIMI_CORE_JIMI_MACHINE_H_
+#ifndef _JIMI_BASIC_MACHINE_H_
+#define _JIMI_BASIC_MACHINE_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -89,4 +89,4 @@ struct work_around_alignment_bug {
 
 }  /* namespace jimi */
 
-#endif  /* !_JIMI_CORE_JIMI_MACHINE_H_ */
+#endif  /* !_JIMI_BASIC_MACHINE_H_ */

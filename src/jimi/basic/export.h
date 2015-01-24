@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_EXPORT_H_
-#define _JIMI_EXPORT_H_
+#ifndef _JIMI_BASIC_EXPORT_H_
+#define _JIMI_BASIC_EXPORT_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -113,4 +113,4 @@
 #define JIMIC_DLL               JIMI_DLL
 #define JIMIC_PRIVATE           JIMI_PRIVATE
 
-#endif  /* _JIMI_EXPORT_H_ */
+#endif  /* _JIMI_BASIC_EXPORT_H_ */

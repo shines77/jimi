@@ -1,8 +1,8 @@
 
-/* The actual file is defined in the "jimi/basic/jimi_common.h" */
+/* The actual file is defined in the "jimi/basic/common.h" */
 
-#ifndef _JIMIC_CORE_COMMON_H_
-#define _JIMIC_CORE_COMMON_H_
+#ifndef _JIMIC_BASIC_COMMON_H_
+#define _JIMIC_BASIC_COMMON_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -10,4 +10,4 @@
 
 #include "jimi/basic/common.h"
 
-#endif  /* _JIMIC_CORE_COMMON_H_ */
+#endif  /* _JIMIC_BASIC_COMMON_H_ */

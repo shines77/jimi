@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_ASSERT_H_
-#define _JIMIC_ASSERT_H_
+#ifndef _JIMIC_BASIC_ASSERT_H_
+#define _JIMIC_BASIC_ASSERT_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -94,4 +94,4 @@ extern "C" {
 }
 #endif
 
-#endif  /* _JIMIC_ASSERT_H_ */
+#endif  /* _JIMIC_BASIC_ASSERT_H_ */

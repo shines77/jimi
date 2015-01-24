@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_DEF_H_
-#define _JIMIC_DEF_H_
+#ifndef _JIMIC_BASIC_DEF_H_
+#define _JIMIC_BASIC_DEF_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -175,4 +175,4 @@ typedef struct JIMIC_MACRO_T
 //#pragma warning(disable: 4996)
 #endif
 
-#endif  /* _JIMIC_DEF_H_ */
+#endif  /* _JIMIC_BASIC_DEF_H_ */

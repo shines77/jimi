@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_CORE_CONFIG_H_
-#define _JIMIC_CORE_CONFIG_H_
+#ifndef _JIMIC_BASIC_CONFIG_H_
+#define _JIMIC_BASIC_CONFIG_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -16,4 +16,4 @@
 #include "jimic/basic/default/jimic_config.h"
 #endif
 
-#endif  /* !_JIMIC_CORE_CONFIG_H_ */
+#endif  /* !_JIMIC_BASIC_CONFIG_H_ */

@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_DEF_H_
-#define _JIMI_DEF_H_
+#ifndef _JIMI_BASIC_STDDEF_H_
+#define _JIMI_BASIC_STDDEF_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -233,4 +233,4 @@ public:
 
 }  /* namespace jimi */
 
-#endif  /* _JIMI_DEF_H_ */
+#endif  /* _JIMI_BASIC_STDDEF_H_ */

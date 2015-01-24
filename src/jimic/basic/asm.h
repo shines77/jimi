@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_ASM_H_
-#define _JIMIC_ASM_H_
+#ifndef _JIMIC_BASIC_ASM_H_
+#define _JIMIC_BASIC_ASM_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -90,4 +90,4 @@
 #define movapd          movaps
 #endif
 
-#endif  /* _JIMIC_ASM_H_ */
+#endif  /* _JIMIC_BASIC_ASM_H_ */

@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_CORE_WIN32_CONFIG_H_
-#define _JIMIC_CORE_WIN32_CONFIG_H_
+#ifndef _JIMIC_BASIC_WIN32_CONFIG_H_
+#define _JIMIC_BASIC_WIN32_CONFIG_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -55,4 +55,4 @@
 
 #endif  /* not is MINGW or cygwin. */
 
-#endif  /* !_JIMIC_CORE_WIN32_CONFIG_H_ */
+#endif  /* !_JIMIC_BASIC_WIN32_CONFIG_H_ */

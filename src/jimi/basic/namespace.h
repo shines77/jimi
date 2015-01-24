@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_NAMESPACE_H_
-#define _JIMI_NAMESPACE_H_
+#ifndef _JIMI_BASIC_NAMESPACE_H_
+#define _JIMI_BASIC_NAMESPACE_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -28,8 +28,8 @@
 #define NS_JIMI_INTERNAL_END    }
 
 // namespace jimi::core
-#define NS_JIMI_CORE_BEGIN      namespace core {
-#define NS_JIMI_CORE_END        }
+#define NS_JIMI_BASIC_BEGIN      namespace core {
+#define NS_JIMI_BASIC_END        }
 
 // namespace jimi::system
 #define NS_JIMI_SYSTEM_BEGIN    namespace system {
@@ -63,4 +63,4 @@
 #define NS_JIMI_STL_BEGIN       namespace stl {
 #define NS_JIMI_STL_END         }
 
-#endif  /* _JIMI_NAMESPACE_H_ */
+#endif  /* _JIMI_BASIC_NAMESPACE_H_ */
