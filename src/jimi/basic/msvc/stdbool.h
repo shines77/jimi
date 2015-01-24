@@ -9,26 +9,28 @@
 #include <wtypes.h>
 #include <windef.h>
 
-typedef BOOL    _Bool;
-#endif
+#ifndef BOOL
+#define BOOL    int
+#endif  /* BOOL */
 
-#if (defined(_MSC_VER) && (_MSC_VER < 1700))
+typedef BOOL    _Bool;
 
 #define __bool_true_false_are_defined	1
 
 #ifndef __cplusplus
 
 #define bool	_Bool
+
 #define false	0
 #define true	1
 
-#endif  /* __cplusplus */
+#endif  /* !__cplusplus */
 
-#endif  /* _MSC_VER */
+#endif  /* _MSC_VER && _MSC_VER < 1700 */
 
 #endif  /* _STDBOOL */
 
 /*
  * Copyright (c) 1992-2010 by P.J. Plauger.  ALL RIGHTS RESERVED.
  * Consult your license regarding permissions and restrictions.
-V5.30:0009 */
+   V5.30:0009 */
