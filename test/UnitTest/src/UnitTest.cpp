@@ -3409,7 +3409,7 @@ int UnitTest_Main(int argc, char *argv[])
             return 0;
         }
         else {
-            jimi::Console.ReadKey_NewLine();
+            jimi::Console.ReadKeyLine();
         }
     }
 #endif
@@ -3457,7 +3457,7 @@ int UnitTest_Main(int argc, char *argv[])
             return 0;
         }
         else {
-            jimi::Console.ReadKey_NewLine();
+            jimi::Console.ReadKeyLine();
         }
     }
 #endif
@@ -3763,16 +3763,16 @@ int UnitTest_Main(int argc, char *argv[])
     Log10_Test2();
     //Log10_Test3();
 
-    jimi::Console.ReadKey_NewLine(true);
+    jimi::Console.ReadKeyLine(true);
 
     Int_Log10_Test();
     Int_Log10_TestNums();
 
-    jimi::Console.ReadKey_NewLine(true);
+    jimi::Console.ReadKeyLine(true);
 
     Double_And_Float_Test();
 
-    jimi::Console.ReadKey_NewLine(true);
+    jimi::Console.ReadKeyLine(true);
 #endif
 
 #if 1
@@ -3784,14 +3784,14 @@ int UnitTest_Main(int argc, char *argv[])
         return 0;
     }
 
-    jimi::Console.ReadKey_NewLine(true);
+    jimi::Console.ReadKeyLine(true);
 #endif
 
 #if 1
   #if !defined(VSNPRINTF_DISPLAY_TEST_RESULT) || (VSNPRINTF_DISPLAY_TEST_RESULT == 0)
     String_Snprintf_Test();
 
-    jimi::Console.ReadKey_NewLine(true);
+    jimi::Console.ReadKeyLine(true);
   #endif
 
   #if 1
@@ -3801,7 +3801,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Integer2();
     Snprintf_Preformance_Test_Integer3();
 
-    jimi::Console.ReadKey_NewLine(true);
+    jimi::Console.ReadKeyLine(true);
   #endif
 
   #if 1
@@ -3810,7 +3810,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_Double3();
     Snprintf_Preformance_Test_Double4();
 
-    jimi::Console.ReadKey_NewLine(true);
+    jimi::Console.ReadKeyLine(true);
   #endif
 
   #if 1
@@ -3820,7 +3820,7 @@ int UnitTest_Main(int argc, char *argv[])
     Snprintf_Preformance_Test_String4();
     Snprintf_Preformance_Test_String5();
 
-    jimi::Console.ReadKey_NewLine(true);
+    jimi::Console.ReadKeyLine(true);
   #endif
 
     //OStringStream_Performance_Test();
@@ -3836,12 +3836,12 @@ int UnitTest_Main(int argc, char *argv[])
     String_Performance_Test();
     String_Performance_Test2();
 
-    jimi::Console.ReadKey_NewLine(true);
+    jimi::Console.ReadKeyLine(true);
 #endif
 
 #if 1
     String_StrLen_Test();
-    jimi::Console.ReadKey_NewLine(true);
+    jimi::Console.ReadKeyLine(true);
 #endif
 
     Jimi_StrLwr_Verify();
@@ -3859,7 +3859,7 @@ int UnitTest_Main(int argc, char *argv[])
     String_StrLwr_Test(256);
     String_StrLwr_Test(1024);
 
-    jimi::Console.ReadKey_NewLine(true);
+    jimi::Console.ReadKeyLine(true);
 #endif
 
 #if 0

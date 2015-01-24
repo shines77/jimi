@@ -52,14 +52,11 @@ public:
     }
 
     static int ReadKey(bool enabledCpuWarmup = false, bool displayTips = true,
-                       bool echoInput = false) {
+                       bool echoInput = false, bool newLine = false) {
         int keyCode;
         if (displayTips) {
-#if 1
             printf("Press any key to continue ...");
-#else
-            printf("请按任意键继续 ...");
-#endif
+
             keyCode = jimi_getch();
             printf("\n");
         }
@@ -73,26 +70,20 @@ public:
             }
         }
 
-        // 暂停后, 预热/唤醒一下CPU, 至少500毫秒
+        if (newLine) {
+            printf("\n");
+        }
+
+        // After call jimi_getch(), warm up the CPU again, at least 500 ms.
         if (enabledCpuWarmup) {
             jimi_cpu_warmup(500);
-            //printf("\n");
         }
         return keyCode;
     }
 
-    static int ReadKey_NewLine(bool enabledCpuWarmup = false, bool displayTips = true,
-                               bool echoInput = false) {
-        int keyCode;
-        keyCode = ReadKey(false, displayTips, echoInput);
-        printf("\n");
-
-        // 暂停后, 预热/唤醒一下CPU, 至少500毫秒
-        if (enabledCpuWarmup) {
-            jimi_cpu_warmup(500);
-            //printf("\n");
-        }
-        return keyCode;
+    static int ReadKeyLine(bool enabledCpuWarmup = false, bool displayTips = true,
+                           bool echoInput = false) {
+        return ReadKey(false, displayTips, echoInput, true);
     }
 
     static int Read() {
@@ -104,5 +95,9 @@ public:
 static class Console Console;
 
 NS_JIMI_END
+
+typedef class jimi::Console jimiConsole;
+
+static class jimi::Console jmConsole;
 
 #endif  /* !_JIMI_SYSTEM_CONSOLE_H_ */
