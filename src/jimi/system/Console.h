@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include "jimi/basic/jimi_def.h"
+#include "jimi/basic/stddef.h"
 #include "jimi/internal/NonCopyable.h"
 
 #include "jimic/system/get_char.h"

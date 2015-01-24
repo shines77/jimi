@@ -6,10 +6,10 @@
 #pragma once
 #endif
 
-#include "jimic/basic/jimic_platform_def.h"
+#include "jimic/basic/platform_def.h"
 
-#include "jimic/basic/jimic_stdint.h"
-#include "jimic/basic/jimic_declare.h"
+#include "jimic/basic/stdint.h"
+#include "jimic/basic/declare.h"
 
 #if !defined(_JIMIC_STRING_JMF_STRINGS_H_)
 #error "This file [jmf_strlen64.h] only can be inline including in <jmf_strings.h> ."

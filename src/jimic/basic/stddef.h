@@ -6,18 +6,18 @@
 #pragma once
 #endif
 
-#include "jimic/basic/jimic_platform_def.h"
-#include "jimic/basic/jimic_compiler_def.h"
+#include "jimic/basic/platform_def.h"
+#include "jimic/basic/compiler_def.h"
 
 #if JIMI_IS_WINDOWS
     #include "jimic/basic/win32/jimic_targetver.h"
 #endif
 
-#include "jimic/basic/jimic_config.h"
-#include "jimic/basic/jimic_export.h"
+#include "jimic/basic/config.h"
+#include "jimic/basic/export.h"
 
-#include "jimic/basic/jimic_stdint.h"
-#include "jimic/basic/jimic_common.h"
+#include "jimic/basic/stdint.h"
+#include "jimic/basic/common.h"
 
 /**
  * JMC public API wrap for C++ compilers.
@@ -33,12 +33,12 @@
 /**
  * define jimic function declare type and inline defines
  */
-#include "jimic/basic/jimic_declare.h"
+#include "jimic/basic/declare.h"
 
 /**
  * for jimic assert defines
  */
-#include "jimic/basic/jimic_assert.h"
+#include "jimic/basic/assert.h"
 
 /**
  * @file jimic_def.h

@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include "jimic/basic/jimic_stdint.h"
-#include "jimic/basic/jimic_declare.h"
+#include "jimic/basic/stdint.h"
+#include "jimic/basic/declare.h"
 
 #ifndef JMC_STRNCPY_EX_INLINE_DECLARE
 #define JMC_STRNCPY_EX_INLINE_DECLARE       0

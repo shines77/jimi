@@ -8,7 +8,7 @@
 
 #include "IocpServd.h"
 
-#include "jimi/basic/jimi_def.h"
+#include "jimi/basic/stddef.h"
 #include "jimi/system/WinService.h"
 #include "jimi/log/log.h"
 

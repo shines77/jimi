@@ -18,7 +18,7 @@
 #include "jimic/string/string.h"
 #include "jimic/string/jm_strings.h"
 
-#include "jimic/basic/jimic_assert.h"
+#include "jimic/basic/assert.h"
 
 #include <stdarg.h>
 #include <math.h>       // for isnan(), isinf()

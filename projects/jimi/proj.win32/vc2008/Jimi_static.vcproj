@@ -162,39 +162,63 @@
 					Name="basic"
 					>
 					<File
-						RelativePath="..\..\..\..\src\jimi\basic\jimi_assert.cpp"
+						RelativePath="..\..\..\..\src\jimi\basic\assert.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\basic\jimi_assert.h"
+						RelativePath="..\..\..\..\src\jimi\basic\assert.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\basic\jimi_common.h"
+						RelativePath="..\..\..\..\src\jimi\basic\common.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\basic\jimi_compiler_def.h"
+						RelativePath="..\..\..\..\src\jimi\basic\compiler_def.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\basic\jimi_config.h"
+						RelativePath="..\..\..\..\src\jimi\basic\config.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\basic\jimi_def.h"
+						RelativePath="..\..\..\..\src\jimi\basic\declare.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\basic\jimi_export.h"
+						RelativePath="..\..\..\..\src\jimi\basic\declare_comm.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\basic\jimi_machine.h"
+						RelativePath="..\..\..\..\src\jimi\basic\export.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\basic\jimi_platform_def.h"
+						RelativePath="..\..\..\..\src\jimi\basic\inttypes.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\basic\machine.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\basic\namespace.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\basic\platform_def.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\basic\stdbool.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\basic\stddef.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\basic\stdint.h"
 						>
 					</File>
 					<Filter
@@ -614,39 +638,59 @@
 					Name="basic"
 					>
 					<File
+						RelativePath="..\..\..\..\src\jimic\basic\asm.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\basic\assert.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\basic\assert.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\basic\common.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\basic\compiler_def.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\basic\config.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\basic\declare.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\basic\export.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\basic\inttypes.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimic\basic\jimic.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\basic\jimic_asm.h"
+						RelativePath="..\..\..\..\src\jimic\basic\platform_def.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\basic\jimic_assert.c"
+						RelativePath="..\..\..\..\src\jimic\basic\stdbool.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\basic\jimic_assert.h"
+						RelativePath="..\..\..\..\src\jimic\basic\stddef.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\basic\jimic_compiler_def.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimic\basic\jimic_config.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimic\basic\jimic_def.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimic\basic\jimic_export.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimic\basic\jimic_platform_def.h"
+						RelativePath="..\..\..\..\src\jimic\basic\stdint.h"
 						>
 					</File>
 					<Filter

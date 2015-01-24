@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include "jimi/basic/jimi_def.h"
+#include "jimi/basic/stddef.h"
 #include "jimi/io/Serializable.h"
 #include "jimi/lang/ObjectBase.h"
 #include "jimi/lang/String.h"

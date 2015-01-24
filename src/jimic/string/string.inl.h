@@ -10,13 +10,13 @@
 #error "Don't include the internal file <jimic/string/string.inl.h> directly; include <jimic/string/string.h> instead."
 #endif
 
-#include "jimic/basic/jimic_stdint.h"
-#include "jimic/basic/jimic_declare.h"
+#include "jimic/basic/stdint.h"
+#include "jimic/basic/declare.h"
 
 #include "jimic/libc/ieee754.h"
 
 #include "jimic/string/jm_strings.h"
-#include "jimic/basic/jimic_assert.h"
+#include "jimic/basic/assert.h"
 
 #include <stdarg.h>
 #include <math.h>       // for isnan(), isinf()

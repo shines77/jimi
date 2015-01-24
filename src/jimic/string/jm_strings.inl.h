@@ -12,7 +12,7 @@
 #error "Don't include the internal file <jimic/string/jm_strings.inl.h> directly; include <jimic/string/jm_strings.h> instead."
 #endif
 
-#include "jimic/basic/jimic_def.h"
+#include "jimic/basic/stddef.h"
 
 #include <stdlib.h>
 #include <stdio.h>

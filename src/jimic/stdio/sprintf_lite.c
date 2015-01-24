@@ -5,7 +5,7 @@
 #include "jimic/string/dtos.h"
 #include "jimic/string/string.h"
 
-#include "jimic/basic/jimic_assert.h"
+#include "jimic/basic/assert.h"
 
 #if defined(_MSC_VER) && (_MSC_VER != 0)
 #pragma warning(push)

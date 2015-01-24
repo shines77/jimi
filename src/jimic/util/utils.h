@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include "jimic/basic/jimic_def.h"
+#include "jimic/basic/stddef.h"
 
 #include "jimic/libc/int64.h"
 

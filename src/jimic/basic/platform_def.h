@@ -8,6 +8,6 @@
 #pragma once
 #endif
 
-#include "jimi/basic/jimi_platform_def.h"
+#include "jimi/basic/platform_def.h"
 
 #endif  /* _JIMIC_CORE_PLATFORM_DEF_H_ */

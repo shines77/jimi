@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include "jimi/basic/jimi_def.h"
+#include "jimi/basic/stddef.h"
 //#include "jimi/lang/Throwable.h"
 //#include "jimi/lang/Exception.h"
 #include "jimi/lang/Cloneable.h"

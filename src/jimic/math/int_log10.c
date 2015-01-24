@@ -1,7 +1,7 @@
 
 #include "jimic/math/log10.h"
 
-#include "jimic/basic/jimic_config.h"
+#include "jimic/basic/config.h"
 #include "jimic/libc/ieee754.h"
 
 #include <math.h>

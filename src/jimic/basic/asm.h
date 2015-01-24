@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include "jimic/basic/jimic_def.h"
+#include "jimic/basic/stddef.h"
 
 #ifndef __MMX__
 #define __MMX__

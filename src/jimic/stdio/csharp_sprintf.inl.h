@@ -10,9 +10,9 @@
 #error "Don't include the internal file <jimic/stdio/csharp_sprintf.inl.h> directly; include <jimic/stdio/csharp_sprintf.h> instead."
 #endif
 
-#include "jimic/basic/jimic_stdint.h"
-#include "jimic/basic/jimic_declare.h"
-#include "jimic/basic/jimic_assert.h"
+#include "jimic/basic/stdint.h"
+#include "jimic/basic/declare.h"
+#include "jimic/basic/assert.h"
 
 #include <stdarg.h>
 

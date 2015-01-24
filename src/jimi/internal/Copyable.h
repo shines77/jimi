@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include "jimi/basic/jimi_namespace.h"
-#include "jimi/basic/jimi_config.h"
+#include "jimi/basic/namespace.h"
+#include "jimi/basic/config.h"
 
 namespace jimi {
 

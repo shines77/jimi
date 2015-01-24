@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include "jimi/basic/jimi_def.h"
+#include "jimi/basic/stddef.h"
 #include "jimi/thread/ThreadDef.h"
 #include "jimi/thread/WaitHandle.h"
 #include "jimi/log/log.h"

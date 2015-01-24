@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include "jimic/basic/jimic_stdint.h"
+#include "jimic/basic/stdint.h"
 #include "jimic/libc/endian.h"
 
 #ifdef __cplusplus

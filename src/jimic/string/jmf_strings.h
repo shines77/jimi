@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include "jimic/basic/jimic_platform_def.h"
+#include "jimic/basic/platform_def.h"
 
 #if JIMI_IS_WINDOWS
 

@@ -33,7 +33,7 @@
 #pragma once
 #endif
 
-#include "jimi/basic/jimi_def.h"
+#include "jimi/basic/stddef.h"
 
 #ifdef _MSC_VER
 #include "jimi/basic/win32/vs_stdint.h"
