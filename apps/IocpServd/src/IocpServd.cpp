@@ -10,7 +10,7 @@
 #include "SampleThread.h"
 #include "IocpServdService.h"
 
-#include "jimi/core/jimi_def.h"
+#include "jimi/basic/jimi_def.h"
 
 // Windows的Service支持类
 #include "jimi/log/Logger.h"

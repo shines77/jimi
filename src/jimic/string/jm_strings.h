@@ -6,10 +6,10 @@
 #pragma once
 #endif
 
-#include "jimic/core/jimic_platform_def.h"
+#include "jimic/basic/jimic_platform_def.h"
 
-#include "jimic/core/jimic_stdint.h"
-#include "jimic/core/jimic_declare.h"
+#include "jimic/basic/jimic_stdint.h"
+#include "jimic/basic/jimic_declare.h"
 
 #include <string.h>
 

@@ -6,9 +6,8 @@
 #pragma once
 #endif
 
-#include "jimic/core/jimic_def.h"
-
-#include <stdbool.h>
+#include "jimic/basic/jimic_def.h"
+#include "jimic/basic/stdbool.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include "jimic/core/jimic_def.h"
-#include "jimic/core/jimic_export.h"
+#include "jimic/basic/jimic_def.h"
+#include "jimic/basic/jimic_export.h"
 
 #ifndef JMC_INLINE
 #ifdef _MSC_VER

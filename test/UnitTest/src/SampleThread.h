@@ -8,7 +8,7 @@
 
 #include "UnitTest.h"
 
-#include "jimi/core/jimi_def.h"
+#include "jimi/basic/jimi_def.h"
 #include "jimi/log/log.h"
 #include "jimi/thread/Thread.h"
 

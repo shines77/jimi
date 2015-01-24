@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+    <MsvcPlatformToolset>vc2013</MsvcPlatformToolset>
+    <MsvcPlatformShortName>x64</MsvcPlatformShortName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+    <_PropertySheetDisplayName>ProjEnvProperty</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="MsvcPlatformToolset">
+      <Value>$(MsvcPlatformToolset)</Value>
+    </BuildMacro>
+    <BuildMacro Include="MsvcPlatformShortName">
+      <Value>$(MsvcPlatformShortName)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

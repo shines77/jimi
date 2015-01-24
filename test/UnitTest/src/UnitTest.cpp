@@ -49,7 +49,7 @@
 //#include <type_traits>
 #include <array>        // for std::array
 
-#include "jimi/core/jimi_def.h"
+#include "jimi/basic/jimi_def.h"
 
 #include "jimic/system/console.h"
 #include "jimic/string/dtos.h"

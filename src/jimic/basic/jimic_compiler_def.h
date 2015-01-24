@@ -1,5 +1,5 @@
 
-/* The actual file is defined in the "jimi/core/jimi_compiler_def.h" */
+/* The actual file is defined in the "jimi/basic/jimi_compiler_def.h" */
 
 #ifndef _JIMIC_CORE_COMPILER_DEF_H_
 #define _JIMIC_CORE_COMPILER_DEF_H_
@@ -8,6 +8,6 @@
 #pragma once
 #endif
 
-#include "jimi/core/jimi_compiler_def.h"
+#include "jimi/basic/jimi_compiler_def.h"
 
 #endif  /* _JIMIC_CORE_COMPILER_DEF_H_ */

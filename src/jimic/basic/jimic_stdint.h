@@ -6,6 +6,6 @@
 #pragma once
 #endif
 
-#include "jimi/core/jimi_stdint.h"
+#include "jimi/basic/jimi_stdint.h"
 
 #endif  /* _JIMIC_STDINT_H_ */

@@ -1,5 +1,5 @@
 
-#include "jimi/core/jimi_assert.h"
+#include "jimi/basic/jimi_assert.h"
 
 #include "jimic/string/jm_strings.h"
 

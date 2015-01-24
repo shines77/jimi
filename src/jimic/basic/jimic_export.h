@@ -6,6 +6,6 @@
 #pragma once
 #endif
 
-#include "jimi/core/jimi_export.h"
+#include "jimi/basic/jimi_export.h"
 
 #endif  /* _JIMIC_EXPORT_H_ */

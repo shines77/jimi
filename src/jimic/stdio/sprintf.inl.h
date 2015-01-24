@@ -10,8 +10,8 @@
 #error "Don't include the internal file <jimic/stdio/sprintf.inl.h> directly; include <jimic/stdio/sprintf.h> instead."
 #endif
 
-#include "jimic/core/jimic_stdint.h"
-#include "jimic/core/jimic_declare.h"
+#include "jimic/basic/jimic_stdint.h"
+#include "jimic/basic/jimic_declare.h"
 
 #include <stdarg.h>
 

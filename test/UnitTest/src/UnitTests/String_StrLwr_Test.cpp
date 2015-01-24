@@ -2,7 +2,7 @@
 
 #include "String_StrLwr_Test.h"
 
-#include "jimi/core/jimi_def.h"
+#include "jimi/basic/jimi_def.h"
 #include "jimi/system/stop_watch.h"
 
 #include "jimic/string/jm_strings.h"

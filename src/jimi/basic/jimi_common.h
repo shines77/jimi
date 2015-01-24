@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include "jimi/core/jimi_platform_def.h"
-#include "jimi/core/jimi_compiler_def.h"
+#include "jimi/basic/jimi_platform_def.h"
+#include "jimi/basic/jimi_compiler_def.h"
 
 #if JIMI_IS_MSVC
     #define snprintf _snprintf
@@ -16,7 +16,7 @@
 #define JIMI_LIKELY(x)      (x)
 #define JIMI_UNLIKELY(x)    (x)
 
-#include "jimi/core/jimi_stdint.h"
+#include "jimi/basic/jimi_stdint.h"
 
 /**
  * for jmc_countof and jm_countof helper

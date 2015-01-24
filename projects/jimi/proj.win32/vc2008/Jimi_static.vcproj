@@ -159,57 +159,73 @@
 				Name="jimi"
 				>
 				<Filter
-					Name="core"
+					Name="basic"
 					>
 					<File
-						RelativePath="..\..\..\..\src\jimi\core\jimi_assert.cpp"
+						RelativePath="..\..\..\..\src\jimi\basic\jimi_assert.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\core\jimi_assert.h"
+						RelativePath="..\..\..\..\src\jimi\basic\jimi_assert.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\core\jimi_common.h"
+						RelativePath="..\..\..\..\src\jimi\basic\jimi_common.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\core\jimi_compiler_def.h"
+						RelativePath="..\..\..\..\src\jimi\basic\jimi_compiler_def.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\core\jimi_config.h"
+						RelativePath="..\..\..\..\src\jimi\basic\jimi_config.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\core\jimi_def.h"
+						RelativePath="..\..\..\..\src\jimi\basic\jimi_def.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\core\jimi_export.h"
+						RelativePath="..\..\..\..\src\jimi\basic\jimi_export.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\core\jimi_machine.h"
+						RelativePath="..\..\..\..\src\jimi\basic\jimi_machine.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\core\jimi_platform_def.h"
+						RelativePath="..\..\..\..\src\jimi\basic\jimi_platform_def.h"
 						>
 					</File>
 					<Filter
 						Name="win32"
 						>
 						<File
-							RelativePath="..\..\..\..\src\jimi\core\win32\jimi_config.h"
+							RelativePath="..\..\..\..\src\jimi\basic\win32\jimi_config.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\..\..\src\jimi\core\win32\jimi_targetver.h"
+							RelativePath="..\..\..\..\src\jimi\basic\win32\jimi_targetver.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\..\..\src\jimi\core\win32\vs_stdint.h"
+							RelativePath="..\..\..\..\src\jimi\basic\win32\vs_stdint.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="msvc"
+						>
+						<File
+							RelativePath="..\..\..\..\src\jimi\basic\msvc\inttypes.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\..\src\jimi\basic\msvc\stdbool.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\..\src\jimi\basic\msvc\stdint.h"
 							>
 						</File>
 					</Filter>
@@ -595,57 +611,57 @@
 					</Filter>
 				</Filter>
 				<Filter
-					Name="core"
+					Name="basic"
 					>
 					<File
-						RelativePath="..\..\..\..\src\jimic\core\jimic.h"
+						RelativePath="..\..\..\..\src\jimic\basic\jimic.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\core\jimic_asm.h"
+						RelativePath="..\..\..\..\src\jimic\basic\jimic_asm.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\core\jimic_assert.c"
+						RelativePath="..\..\..\..\src\jimic\basic\jimic_assert.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\core\jimic_assert.h"
+						RelativePath="..\..\..\..\src\jimic\basic\jimic_assert.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\core\jimic_compiler_def.h"
+						RelativePath="..\..\..\..\src\jimic\basic\jimic_compiler_def.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\core\jimic_config.h"
+						RelativePath="..\..\..\..\src\jimic\basic\jimic_config.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\core\jimic_def.h"
+						RelativePath="..\..\..\..\src\jimic\basic\jimic_def.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\core\jimic_export.h"
+						RelativePath="..\..\..\..\src\jimic\basic\jimic_export.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\core\jimic_platform_def.h"
+						RelativePath="..\..\..\..\src\jimic\basic\jimic_platform_def.h"
 						>
 					</File>
 					<Filter
 						Name="win32"
 						>
 						<File
-							RelativePath="..\..\..\..\src\jimic\core\win32\jimic_config.h"
+							RelativePath="..\..\..\..\src\jimic\basic\win32\jimic_config.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\..\..\src\jimic\core\win32\jimic_targetver.h"
+							RelativePath="..\..\..\..\src\jimic\basic\win32\jimic_targetver.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\..\..\src\jimic\core\win32\vs_stdint.h"
+							RelativePath="..\..\..\..\src\jimic\basic\win32\vs_stdint.h"
 							>
 						</File>
 					</Filter>

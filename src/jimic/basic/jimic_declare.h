@@ -6,10 +6,10 @@
 #pragma once
 #endif
 
-#include "jimi/core/jimi_platform_def.h"
-#include "jimi/core/jimi_compiler_def.h"
+#include "jimi/basic/jimi_platform_def.h"
+#include "jimi/basic/jimi_compiler_def.h"
 
-#include "jimi/core/jimi_declare_comm.h"
+#include "jimi/basic/jimi_declare_comm.h"
 
 /**
  * jimic: for inline define

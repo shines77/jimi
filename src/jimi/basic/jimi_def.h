@@ -6,18 +6,18 @@
 #pragma once
 #endif
 
-#include "jimi/core/jimi_platform_def.h"
-#include "jimi/core/jimi_compiler_def.h"
+#include "jimi/basic/jimi_platform_def.h"
+#include "jimi/basic/jimi_compiler_def.h"
 
 #if JIMI_IS_WINDOWS
-    #include "jimi/core/win32/jimi_targetver.h"
+    #include "jimi/basic/win32/jimi_targetver.h"
 #endif
 
-#include "jimi/core/jimi_config.h"
-#include "jimi/core/jimi_export.h"
+#include "jimi/basic/jimi_config.h"
+#include "jimi/basic/jimi_export.h"
 
-#include "jimi/core/jimi_stdint.h"
-#include "jimi/core/jimi_common.h"
+#include "jimi/basic/jimi_stdint.h"
+#include "jimi/basic/jimi_common.h"
 
 #ifndef __has_feature
 #define __has_feature(X)        (0)
@@ -44,17 +44,17 @@
 /**
  * define the name of jimi namespaces
  */
-#include "jimi/core/jimi_namespace.h"
+#include "jimi/basic/jimi_namespace.h"
 
 /**
  * define jimic function declare type and inline defines
  */
-#include "jimi/core/jimi_declare.h"
+#include "jimi/basic/jimi_declare.h"
 
 /**
  * for assert defines
  */
-#include "jimi/core/jimi_assert.h"
+#include "jimi/basic/jimi_assert.h"
 
 /**
  * for jimi_winapi

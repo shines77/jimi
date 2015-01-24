@@ -8,10 +8,10 @@
     <Filter Include="src\jimi">
       <UniqueIdentifier>{963eb0e1-6ebf-4624-abc1-fc4bc5fcbd41}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\jimi\core">
+    <Filter Include="src\jimi\basic">
       <UniqueIdentifier>{94221e15-455b-40bb-aa92-bbe3453f612a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\jimi\core\win32">
+    <Filter Include="src\jimi\basic\win32">
       <UniqueIdentifier>{22b27444-1ff7-460e-afe4-d071801c66ad}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\jimi\platform">
@@ -62,10 +62,10 @@
     <Filter Include="src\jimic\string\win32\intel">
       <UniqueIdentifier>{0598f455-9c22-4831-b72f-ea68023006c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\jimic\core">
+    <Filter Include="src\jimic\basic">
       <UniqueIdentifier>{aa96027d-37cf-459f-87eb-e309f42a8418}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\jimic\core\win32">
+    <Filter Include="src\jimic\basic\win32">
       <UniqueIdentifier>{3cb23f28-002c-4dac-bfcc-54f210dfbf27}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\jimic\platform">
@@ -105,10 +105,13 @@
     <Filter Include="src\jimic\math">
       <UniqueIdentifier>{d147ab98-d23c-40d9-904a-908ea13b0576}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\jimi\basic\msvc">
+      <UniqueIdentifier>{bf056fab-aa44-4b16-8cd5-97164f0dbb5f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\jimi\core\win32\jimi_config.h">
-      <Filter>src\jimi\core\win32</Filter>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\win32\jimi_config.h">
+      <Filter>src\jimi\basic\win32</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\util\cmd_line.h">
       <Filter>src\jimi\util</Filter>
@@ -176,35 +179,35 @@
     <ClInclude Include="..\..\..\..\src\jimi\system\WinService.h">
       <Filter>src\jimi\system</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_assert.h">
-      <Filter>src\jimi\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\jimi_assert.h">
+      <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_common.h">
-      <Filter>src\jimi\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\jimi_common.h">
+      <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_compiler_def.h">
-      <Filter>src\jimi\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\jimi_compiler_def.h">
+      <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_config.h">
-      <Filter>src\jimi\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\jimi_config.h">
+      <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_def.h">
-      <Filter>src\jimi\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\jimi_def.h">
+      <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_export.h">
-      <Filter>src\jimi\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\jimi_export.h">
+      <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_machine.h">
-      <Filter>src\jimi\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\jimi_machine.h">
+      <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\core\jimi_platform_def.h">
-      <Filter>src\jimi\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\jimi_platform_def.h">
+      <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\core\win32\jimi_targetver.h">
-      <Filter>src\jimi\core\win32</Filter>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\win32\jimi_targetver.h">
+      <Filter>src\jimi\basic\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\core\win32\vs_stdint.h">
-      <Filter>src\jimi\core\win32</Filter>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\win32\vs_stdint.h">
+      <Filter>src\jimi\basic\win32</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\internal\Copyable.h">
       <Filter>src\jimi\internal</Filter>
@@ -269,38 +272,38 @@
     <ClInclude Include="..\..\..\..\src\jimi\lang\Throwable.h">
       <Filter>src\jimi\lang</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\core\jimic.h">
-      <Filter>src\jimic\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\jimic.h">
+      <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_asm.h">
-      <Filter>src\jimic\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\jimic_asm.h">
+      <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_assert.h">
-      <Filter>src\jimic\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\jimic_assert.h">
+      <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_compiler_def.h">
-      <Filter>src\jimic\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\jimic_compiler_def.h">
+      <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_config.h">
-      <Filter>src\jimic\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\jimic_config.h">
+      <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_def.h">
-      <Filter>src\jimic\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\jimic_def.h">
+      <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_export.h">
-      <Filter>src\jimic\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\jimic_export.h">
+      <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\core\jimic_platform_def.h">
-      <Filter>src\jimic\core</Filter>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\jimic_platform_def.h">
+      <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\core\win32\jimic_config.h">
-      <Filter>src\jimic\core\win32</Filter>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\win32\jimic_config.h">
+      <Filter>src\jimic\basic\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\core\win32\jimic_targetver.h">
-      <Filter>src\jimic\core\win32</Filter>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\win32\jimic_targetver.h">
+      <Filter>src\jimic\basic\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\core\win32\vs_stdint.h">
-      <Filter>src\jimic\core\win32</Filter>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\win32\vs_stdint.h">
+      <Filter>src\jimic\basic\win32</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.h">
       <Filter>src\jimic\string\win32\intel</Filter>
@@ -416,6 +419,15 @@
     <ClInclude Include="..\..\..\..\src\jimic\stdio\sprintf_lite.h">
       <Filter>src\jimic\stdio</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\msvc\inttypes.h">
+      <Filter>src\jimi\basic\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\msvc\stdbool.h">
+      <Filter>src\jimi\basic\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\msvc\stdint.h">
+      <Filter>src\jimi\basic\msvc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\util\cmd_line.cpp">
@@ -433,11 +445,11 @@
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">
       <Filter>src\jimi\system</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimi\core\jimi_assert.cpp">
-      <Filter>src\jimi\core</Filter>
+    <ClCompile Include="..\..\..\..\src\jimi\basic\jimi_assert.cpp">
+      <Filter>src\jimi\basic</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\core\jimic_assert.c">
-      <Filter>src\jimic\core</Filter>
+    <ClCompile Include="..\..\..\..\src\jimic\basic\jimic_assert.c">
+      <Filter>src\jimic\basic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.c">
       <Filter>src\jimic\string\win32\intel</Filter>

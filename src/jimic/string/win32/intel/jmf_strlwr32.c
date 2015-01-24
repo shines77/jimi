@@ -1,7 +1,7 @@
 
 #include "jimic/string/jmf_strings.h"
 
-#include "jimic/core/jimic_asm.h"
+#include "jimic/basic/jimic_asm.h"
 
 #if defined(JIMI_IS_WIN32) && !defined(JIMI_IS_WIN64)
 

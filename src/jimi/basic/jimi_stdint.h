@@ -6,11 +6,11 @@
 #pragma once
 #endif
 
-#include "jimi/core/jimi_platform_def.h"
-#include "jimi/core/jimi_compiler_def.h"
+#include "jimi/basic/jimi_platform_def.h"
+#include "jimi/basic/jimi_compiler_def.h"
 
-#include "jimi/core/jimi_config.h"
-#include "jimic/core/jimic_config.h"
+#include "jimi/basic/jimi_config.h"
+#include "jimic/basic/jimic_config.h"
 
 // Define integer types with known size: int32_t, uint32_t, int64_t, uint64_t.
 // If this doesn't work then insert compiler-specific definitions here:
@@ -20,7 +20,7 @@
   #include <stdint.h>
   #define INT64_SUPPORTED // Remove this if the compiler doesn't support 64-bit integers
 #elif defined(JIMI_MSC_VER)
-  #include "jimi/core/win32/vs_stdint.h"
+  #include "jimi/basic/win32/vs_stdint.h"
 #else
   #ifndef _STDINT
     #define _STDINT

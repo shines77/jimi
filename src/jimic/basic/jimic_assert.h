@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include "jimic/core/jimic_config.h"
-#include "jimic/core/jimic_declare.h"
+#include "jimic/basic/jimic_config.h"
+#include "jimic/basic/jimic_declare.h"
 
 #include <assert.h>
 

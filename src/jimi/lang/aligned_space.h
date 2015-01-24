@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include "jimi/core/jimi_def.h"
-#include "jimi/core/jimi_machine.h"
+#include "jimi/basic/jimi_def.h"
+#include "jimi/basic/jimi_machine.h"
 #include "jimi/internal/pointer_cast.h"
 
 namespace jimi {

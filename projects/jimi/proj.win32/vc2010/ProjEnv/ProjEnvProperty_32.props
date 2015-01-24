@@ -3,7 +3,6 @@
   <PropertyGroup Label="UserMacros">
     <MsvcPlatformToolset>vc2010</MsvcPlatformToolset>
     <MsvcPlatformShortName>x86</MsvcPlatformShortName>
-    <MsvcPlatformShortName64>x64</MsvcPlatformShortName64>
   </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
@@ -15,9 +14,6 @@
     </BuildMacro>
     <BuildMacro Include="MsvcPlatformShortName">
       <Value>$(MsvcPlatformShortName)</Value>
-    </BuildMacro>
-    <BuildMacro Include="MsvcPlatformShortName64">
-      <Value>$(MsvcPlatformShortName64)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>

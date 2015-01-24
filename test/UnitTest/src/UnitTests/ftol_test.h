@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include "jimi/core/jimi_platform_def.h"
+#include "jimi/basic/jimi_platform_def.h"
 
 #ifdef __cplusplus
 extern "C" {

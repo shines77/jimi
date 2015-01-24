@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#include "jimi/core/jimi_namespace.h"
+#include "jimi/basic/jimi_namespace.h"
 #include "jimi/internal/NonCopyable.h"
 #include "jimi/util/DumpUtils.h"
 
