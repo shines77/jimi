@@ -33,7 +33,7 @@ typedef unsigned char   jm_uchar;
 #endif  /* __CLR_OR_STD_CALL */
 
 #define JIMI_WINAPI         __CLR_OR_STD_CALL
-#define JMC_WINAPI          JIMI_WINAPI
+#define JMC_WINAPI          __CLR_OR_STD_CALL
 #else
 #define JIMI_WINAPI
 #define JMC_WINAPI

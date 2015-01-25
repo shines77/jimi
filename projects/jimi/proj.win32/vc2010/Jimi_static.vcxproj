@@ -205,7 +205,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\util\RingQueueEx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\jimic\basic\assert.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\basic\assert-c.c" />
     <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c" />
     <ClCompile Include="..\..\..\..\src\jimic\math\int_log10.c" />
     <ClCompile Include="..\..\..\..\src\jimic\math\log10.c" />

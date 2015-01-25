@@ -1,6 +1,7 @@
 
 #include "jimi/log/Logger.h"
 
+#include "jimi/basic/assert.h"
 #include "jimic/string/jm_strings.h"
 
 #include <sys/types.h>

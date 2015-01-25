@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\..\src;..\..\..\..\..\src\jimi;..\..\..\..\..\include;..\..\..\..\..\include\jimi;..\..\..\..\..\test;..\..\..\..\..\deps;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;JIMI_LIB;JIMI_USE_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,7 +63,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile="$(OutDir)\$(ProjectName)_debug.lib"
-				AdditionalLibraryDirectories="&quot;..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;..\..\..\..\lib;..\..\..\..\deps;&quot;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(SolutionDir)lib&quot;;&quot;$(SolutionDir)deps&quot;;&quot;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;.\lib;.\deps;&quot;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)deps&quot;"
+				AdditionalLibraryDirectories="&quot;..\..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;..\..\..\..\..\lib;..\..\..\..\..\deps;&quot;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(SolutionDir)lib&quot;;&quot;$(SolutionDir)deps&quot;;&quot;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;.\lib;.\deps;&quot;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)deps&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -109,7 +109,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\..\src;..\..\..\..\..\src\jimi;..\..\..\..\..\include;..\..\..\..\..\include\jimi;..\..\..\..\..\test;..\..\..\..\..\deps;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;JIMI_LIB;JIMI_USE_STATIC"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -128,7 +128,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories="&quot;..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;..\..\..\..\lib;..\..\..\..\deps;&quot;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(SolutionDir)lib&quot;;&quot;$(SolutionDir)deps&quot;;&quot;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;.\lib;.\deps;&quot;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)deps&quot;"
+				AdditionalLibraryDirectories="&quot;..\..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;..\..\..\..\..\lib;..\..\..\..\..\deps;&quot;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(SolutionDir)lib&quot;;&quot;$(SolutionDir)deps&quot;;&quot;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;.\lib;.\deps;&quot;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)deps&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -642,7 +642,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\basic\assert.c"
+						RelativePath="..\..\..\..\src\jimic\basic\assert-c.c"
 						>
 					</File>
 					<File

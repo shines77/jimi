@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\test\UnitTest\src;..\..\..\..\test\UnitTest\include;..\..\..\..\test\UnitTest;..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)test\UnitTest&quot;;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\..\test\UnitTest\src;..\..\..\..\..\test\UnitTest\include;..\..\..\..\..\test\UnitTest;..\..\..\..\..\src;..\..\..\..\..\src\jimi;..\..\..\..\..\include;..\..\..\..\..\include\jimi;..\..\..\..\..\test;..\..\..\..\..\deps;&quot;$(SolutionDir)test\UnitTest&quot;;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;JIMI_USE_STATIC;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,7 +63,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;..\..\..\..\lib;..\..\..\..\deps;..\..\..\..\deps\asmlib;&quot;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(SolutionDir)lib&quot;;&quot;$(SolutionDir)deps&quot;;&quot;$(SolutionDir)deps\asmlib&quot;;&quot;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;.\lib;.\deps;.\deps\asmlib;&quot;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)deps&quot;;&quot;$(ProjectDir)deps\asmlib&quot;"
+				AdditionalLibraryDirectories="&quot;..\..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;..\..\..\..\..\lib;..\..\..\..\..\deps;..\..\..\..\..\deps\asmlib;&quot;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(SolutionDir)lib&quot;;&quot;$(SolutionDir)deps&quot;;&quot;$(SolutionDir)deps\asmlib&quot;;&quot;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;.\lib;.\deps;.\deps\asmlib;&quot;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)deps&quot;;&quot;$(ProjectDir)deps\asmlib&quot;"
 				UACExecutionLevel="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -119,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\..\..\test\UnitTest\src;..\..\..\..\test\UnitTest\include;..\..\..\..\test\UnitTest;..\..\..\..\src;..\..\..\..\src\jimi;..\..\..\..\include;..\..\..\..\include\jimi;..\..\..\..\test;..\..\..\..\deps;&quot;$(SolutionDir)test\UnitTest&quot;;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\..\test\UnitTest\src;..\..\..\..\..\test\UnitTest\include;..\..\..\..\..\test\UnitTest;..\..\..\..\..\src;..\..\..\..\..\src\jimi;..\..\..\..\..\include;..\..\..\..\..\include\jimi;..\..\..\..\..\test;..\..\..\..\..\deps;&quot;$(SolutionDir)test\UnitTest&quot;;&quot;$(SolutionDir)src&quot;;&quot;$(SolutionDir)include&quot;;.\src;.\include;.\test;.\deps;&quot;$(ProjectDir)src&quot;;&quot;$(ProjectDir)include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;JIMI_USE_STATIC;"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -139,7 +139,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;..\..\..\..\lib;..\..\..\..\deps;..\..\..\..\deps\asmlib;&quot;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(SolutionDir)lib&quot;;&quot;$(SolutionDir)deps&quot;;&quot;$(SolutionDir)deps\asmlib&quot;;&quot;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;.\lib;.\deps;.\deps\asmlib;&quot;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)deps&quot;;&quot;$(ProjectDir)deps\asmlib&quot;"
+				AdditionalLibraryDirectories="&quot;..\..\..\..\..\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;..\..\..\..\..\lib;..\..\..\..\..\deps;..\..\..\..\..\deps\asmlib;&quot;$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(SolutionDir)lib&quot;;&quot;$(SolutionDir)deps&quot;;&quot;$(SolutionDir)deps\asmlib&quot;;&quot;.\lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;.\lib;.\deps;.\deps\asmlib;&quot;$(ProjectDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)&quot;;&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)deps&quot;;&quot;$(ProjectDir)deps\asmlib&quot;"
 				UACExecutionLevel="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"

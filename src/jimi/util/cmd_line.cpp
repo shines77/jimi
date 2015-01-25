@@ -1,5 +1,6 @@
 
 #include "jimi/util/cmd_line.h"
+#include "jimi/basic/assert.h"
 
 #include <string.h>
 

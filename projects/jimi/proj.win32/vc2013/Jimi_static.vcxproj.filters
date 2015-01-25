@@ -392,12 +392,6 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\win32\jimi_config.h">
       <Filter>src\jimi\basic\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\jimi_all.h">
-      <Filter>src\jimi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\jimic_all.h">
-      <Filter>src\jimic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\basic\msvc\inttypes.h">
       <Filter>src\jimi\basic\msvc</Filter>
     </ClInclude>
@@ -425,9 +419,6 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\common.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\basic\assert.h">
-      <Filter>src\jimi\basic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\basic\export.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
@@ -441,9 +432,6 @@
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\basic\asm.h">
-      <Filter>src\jimic\basic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\basic\assert.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\basic\common.h">
@@ -484,6 +472,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\basic\stdint.h">
       <Filter>src\jimi\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\assert.h">
+      <Filter>src\jimi\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\assert.h">
+      <Filter>src\jimic\basic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -565,11 +559,11 @@
     <ClCompile Include="..\..\..\..\src\jimic\system\sleep.c">
       <Filter>src\jimic\system</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\basic\assert-c.c">
+      <Filter>src\jimic\basic</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimi\basic\assert.cpp">
       <Filter>src\jimi\basic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\basic\assert.c">
-      <Filter>src\jimic\basic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

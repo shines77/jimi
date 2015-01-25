@@ -538,7 +538,7 @@
     <ClCompile Include="..\..\..\..\src\jimi\basic\assert.cpp">
       <Filter>src\jimi\basic</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\basic\assert.c">
+    <ClCompile Include="..\..\..\..\src\jimic\basic\assert-c.c">
       <Filter>src\jimic\basic</Filter>
     </ClCompile>
   </ItemGroup>

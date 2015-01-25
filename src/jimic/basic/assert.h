@@ -9,19 +9,16 @@
 #include "jimic/basic/config.h"
 #include "jimic/basic/declare.h"
 
+#include <stddef.h>
 #include <assert.h>
 
 #ifndef JIMIC_EXPORTED_FUNC
-#if _MSC_VER >= 1400
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
 #define JIMIC_EXPORTED_FUNC   __cdecl
 #else
 #define JIMIC_EXPORTED_FUNC
 #endif
 #endif  /* JIMIC_EXPORTED_FUNC */
-
-//! Type for an assertion handler
-typedef void (*jimic_assertion_handler_type)(const char * filename, int line,
-                                             const char * expression, const char * comment);
 
 #if JIMIC_USE_ASSERT
 
@@ -29,8 +26,24 @@ typedef void (*jimic_assertion_handler_type)(const char * filename, int line,
 /** If x is false, print assertion failure message.  
     If the comment argument is not NULL, it is printed as part of the failure message.  
     The comment argument has no other effect. */
+#if 0
+#if defined(__cplusplus)
+#define JIMIC_ASSERT_MARCO(predicate, message) \
+    do { \
+        if (!predicate) \
+            ::jimic_assertion_failure(__FILE__, __LINE__, #predicate, message); \
+    } while (0)
+#else
+#define JIMIC_ASSERT_MARCO(predicate, message) \
+    do { \
+        if (!predicate) \
+            jimic_assertion_failure(__FILE__, __LINE__, #predicate, message); \
+    } while (0)
+#endif  /* __cplusplus */
+#else
 #define JIMIC_ASSERT_MARCO(predicate, message) \
     ((predicate) ? ((void)0) : jimic_assertion_failure(__FILE__, __LINE__, #predicate, message))
+#endif
 
 #ifndef JIMIC_ASSERT
 #define JIMIC_ASSERT_TRUE(predicate)                JIMIC_ASSERT_MARCO(!(predicate),  NULL)
@@ -41,7 +54,7 @@ typedef void (*jimic_assertion_handler_type)(const char * filename, int line,
 #ifndef JIMIC_ASSERT_EX
 #define JIMIC_ASSERT_EX_TRUE(predicate, comment)    JIMIC_ASSERT_MARCO(!(predicate),  comment)
 #define JIMIC_ASSERT_EX_FALSE(predicate, comment)   JIMIC_ASSERT_MARCO(!!(predicate), comment)
-#define JIMIC_ASSERT_EX(predicate, comment)         JIMIC_ASSERT_EX_FALSE(predicate, comment)
+#define JIMIC_ASSERT_EX(predicate, comment)         JIMIC_ASSERT_EX_FALSE(predicate,  comment)
 #endif
 
 #else  /* !JIMIC_USE_ASSERT */
@@ -74,9 +87,13 @@ typedef void (*jimic_assertion_handler_type)(const char * filename, int line,
 extern "C" {
 #endif
 
+    //! Type for an assertion handler
+    typedef void (*jimic_assertion_handler_type)(const char * filename, int line,
+                                                 const char * expression, const char * comment);
+
     //! Set assertion handler and return previous value of it.
-    jimic_assertion_handler_type JIMIC_EXPORTED_FUNC
-    set_c_assertion_handler(jimic_assertion_handler_type new_handler);
+    jimic_assertion_handler_type
+    JIMIC_EXPORTED_FUNC set_c_assertion_handler(jimic_assertion_handler_type new_handler);
 
     //! Process an assertion failure.
     /** Normally called from JIMIC_ASSERT macro.
@@ -88,7 +105,7 @@ extern "C" {
 #if !JIMIC_MALLOC_BUILD
     //! Report a runtime warning.
     void JIMIC_EXPORTED_FUNC jimic_runtime_warning(const char * format, ...);
-#endif
+#endif  /* !JIMIC_MALLOC_BUILD */
 
 #ifdef __cplusplus
 }

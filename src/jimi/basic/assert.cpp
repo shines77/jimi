@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+
 #if _MSC_VER
 #include <crtdbg.h>
 #ifndef JIMI_USE_DBGBREAK_DLG
@@ -17,14 +18,10 @@
 
 namespace jimi {
 
-//! Type for an assertion handler
-typedef void (*assertion_handler_type)(const char * filename, int line,
-                                       const char * expression, const char * comment);
+static assertion_handler_type assertion_handler = NULL;
 
-static assertion_handler_type assertion_handler;
-
-assertion_handler_type JIMI_EXPORTED_FUNC
-set_assertion_handler(assertion_handler_type new_handler) {
+assertion_handler_type
+JIMI_EXPORTED_FUNC set_assertion_handler(assertion_handler_type new_handler) {
     assertion_handler_type old_handler = assertion_handler;
     assertion_handler = new_handler;
     return old_handler;
@@ -44,8 +41,9 @@ void JIMI_EXPORTED_FUNC assertion_failure(const char * filename, int line,
                 fprintf(stderr, "Detailed description: %s\n", comment);
 #if JIMI_USE_DBGBREAK_DLG
             if (1 == _CrtDbgReport(_CRT_ASSERT, filename, line, "jimi_shared_debug.dll",
-                "%s\r\n%s", expression, comment ? comment : ""))
+                "%s\r\n%s", expression, comment ? comment : "")) {
                 _CrtDbgBreak();
+            }
 #else
             fflush(stderr);
             abort();

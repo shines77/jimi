@@ -64,7 +64,7 @@
 /**
  * for exported func
  */
-#if _MSC_VER >= 1400
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
     #define JIMI_EXPORTED_FUNC      __cdecl
     #define JIMI_EXPORTED_METHOD    __thiscall
 #else

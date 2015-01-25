@@ -16,13 +16,13 @@
 #endif
 
 //! Type for an assertion handler
-typedef void (*jimic_assertion_handler_type)(const char * filename, int line,
-                                             const char * expression, const char * comment);
+//typedef void (*jimic_assertion_handler_type)(const char * filename, int line,
+//                                             const char * expression, const char * comment);
 
-static jimic_assertion_handler_type jimic_assertion_handler;
+static jimic_assertion_handler_type jimic_assertion_handler = NULL;
 
-jimic_assertion_handler_type JIMIC_EXPORTED_FUNC
-set_c_assertion_handler(jimic_assertion_handler_type new_handler) {
+jimic_assertion_handler_type
+JIMIC_EXPORTED_FUNC set_c_assertion_handler(jimic_assertion_handler_type new_handler) {
     jimic_assertion_handler_type old_handler = jimic_assertion_handler;
     jimic_assertion_handler = new_handler;
     return old_handler;
@@ -30,10 +30,10 @@ set_c_assertion_handler(jimic_assertion_handler_type new_handler) {
 
 void JIMIC_EXPORTED_FUNC jimic_assertion_failure(const char * filename, int line,
                                                  const char * expression, const char * comment) {
-    jimic_assertion_handler_type assert_handler;
     static int already_failed;
+    jimic_assertion_handler_type assert_handler;    
     if (assert_handler = jimic_assertion_handler) {
-        (*jimic_assertion_handler)(filename, line, expression, comment);
+        (*assert_handler)(filename, line, expression, comment);
     }
     else {
         if (!already_failed) {
@@ -43,8 +43,9 @@ void JIMIC_EXPORTED_FUNC jimic_assertion_failure(const char * filename, int line
                 fprintf(stderr, "Detailed description: %s\n", comment);
 #if JIMIC_USE_DBGBREAK_DLG
             if (1 == _CrtDbgReport(_CRT_ASSERT, filename, line, "jimi_shared_debug.dll",
-                "%s\r\n%s", expression, comment ? comment : ""))
+                "%s\r\n%s", expression, comment ? comment : "")) {
                 _CrtDbgBreak();
+            }
 #else
             fflush(stderr);
             abort();

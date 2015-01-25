@@ -107,7 +107,7 @@
 /**
  * for exported func
  */
-#if _MSC_VER >= 1400
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
     #define JIMIC_EXPORTED_FUNC     __cdecl
     #define JIMIC_EXPORTED_METHOD   __thiscall
 #else

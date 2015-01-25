@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="UserMacros">
     <MsvcPlatformToolset>vc2010</MsvcPlatformToolset>
-    <MsvcPlatformShortName>x86</MsvcPlatformShortName>
+    <MsvcPlatformShortName>x64</MsvcPlatformShortName>
   </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>

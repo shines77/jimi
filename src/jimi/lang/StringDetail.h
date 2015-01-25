@@ -7,6 +7,9 @@
 #endif
 
 #include "jimi/basic/stddef.h"
+#include "jimi/basic/assert.h"
+
+using namespace jimi;
 
 namespace jimi {
 
