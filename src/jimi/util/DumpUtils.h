@@ -8,7 +8,7 @@
 
 #include "jimi/basic/stddef.h"
 //#include "jimi/basic/namespace.h"
-//#include "jimi/basic/config.h"
+//#include "jimi/config/config.h"
 #include "jimi/internal/NonCopyable.h"
 
 #include <stdio.h>

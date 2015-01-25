@@ -34,12 +34,7 @@
 #endif
 
 #include "jimi/basic/stddef.h"
-
-#ifdef _MSC_VER
-#include "jimi/basic/win32/vs_stdint.h"
-#else
-#include <stdint.h>
-#endif
+#include "jimi/basic/stdint.h"
 
 #if _WIN32 || _WIN64
 #include <time.h>

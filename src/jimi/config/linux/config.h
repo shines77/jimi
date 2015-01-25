@@ -1,10 +1,14 @@
 
-#ifndef _JIMI_BASIC_WIN32_CONFIG_H_
-#define _JIMI_BASIC_WIN32_CONFIG_H_
+#ifndef _JIMI_CORE_LINUX_CONFIG_H_
+#define _JIMI_CORE_LINUX_CONFIG_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
+
+#if defined(__linux__) || defined(__LINUX__)
+
+#define JIMI_USE_DEFAULT_CONFIG             0
 
 /* The compiler is clang-cl.exe for Visual Studio 20xx ? */
 #ifndef JIMI_MSVC_CLANG
@@ -13,7 +17,7 @@
 
 /* Use Visual Leaker Dector for Visual Studio ? */
 #ifndef JIMI_USE_VLD
-#define JIMI_USE_VLD                        1
+#define JIMI_USE_VLD                        0
 #endif
 
 #ifndef JIMI_USE_CRTDBG_CHECK
@@ -30,7 +34,7 @@
 #define JIMI_USE_VLD                        0
 #endif
 
-#include "jimic/libc/endian.h"
+#include <jimic/libc/endian.h>
 
 /* 小端或大端, 非0表示小端存储 */
 #if (JIMIC_BYTE_ORDER == JIMIC_LITTLE_ENDIAN)
@@ -42,12 +46,8 @@
 #define JIMI_USE_THREADING_TOOLS            0
 #define JIMI_MALLOC_BUILD                   0
 
-#if defined(JIMI_MSVC_CLANG) && (JIMI_MSVC_CLANG != 0)
 #define JIMI_ATTRIBUTE_ALIGNED_PRESENT                  1
-#else
-#define JIMI_DECLSPEC_ALIGN_PRESENT                     1
-#endif
-
+//#define JIMI_DECLSPEC_ALIGN_PRESENT                   0
 #define JIMI_ALIGNOF_NOT_INSTANTIATED_TYPES_BROKEN      1
 
 #define JIMI_CONSTEXPR
@@ -56,12 +56,12 @@
 /*   Reference: http://www.cnblogs.com/zenny-chen/archive/2013/02/03/2890917.html */
 
 /* 编译器是否支持C++11的变长参数模板 */
-#define JIMI_HAS_CXX11_VARIADIC_TEMPLATES   0
+#define JIMI_HAS_CXX11_VARIADIC_TEMPLATES   1
 
 #define JIMI_HAS_DEFAULTED_FUNCTIONS        0
 #define JIMI_HAS_DELETED_FUNCTIONS          0
 
-#define JIMI_HAS_CXX11_MOVE_FUNCTIONS       0
+#define JIMI_HAS_CXX11_MOVE_FUNCTIONS       1
 
 #define JIMI_HAS_BOOST                      0
 #define JIMI_HAS_BOOST_LOCALE               0
@@ -78,4 +78,6 @@
 #endif  /* _DEBUG */
 #endif  /* JIMI_USE_CRTDBG_CHECK */
 
-#endif  /* _JIMI_BASIC_WIN32_CONFIG_H_ */
+#endif  /* __linux__ || __LINUX__ */
+
+#endif  /* _JIMI_CORE_LINUX_CONFIG_H_ */

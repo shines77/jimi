@@ -1,14 +1,13 @@
 
-#ifndef _JIMIC_BASIC_WIN32_TARGETVER_H_
-#define _JIMIC_BASIC_WIN32_TARGETVER_H_
+#ifndef _JIMI_BASIC_TARGETVER_H_
+#define _JIMI_BASIC_TARGETVER_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
-#include "jimic/basic/platform_def.h"
-
-#if JIMI_IS_WINDOWS
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__CYGWIN__) \
+ || defined(__ICL) || defined(__INTEL_COMPILER)
 
 // 以下宏定义要求的最低平台。要求的最低平台
 // 是具有运行应用程序所需功能的 Windows、Internet Explorer 等产品的
@@ -21,8 +20,14 @@
 #define WINVER 0x0501           // 将此值更改为相应的值，以适用于 Windows 的其他版本。
 #endif
 
+/***
+ ** NOTE:
+ **  _WIN32_WINNT defined as 0x0502(Windows 2003 server) for InterlockedExchangeAdd64()
+ **  Same for other functions like InterlockedXXXXX64().
+ **/
+
 #ifndef _WIN32_WINNT            // 指定要求的最低平台是 Windows XP。
-#define _WIN32_WINNT 0x0501     // 将此值更改为相应的值，以适用于 Windows 的其他版本。
+#define _WIN32_WINNT 0x0502     // 将此值更改为相应的值，以适用于 Windows 的其他版本。
 #endif
 
 #ifndef _WIN32_WINDOWS          // 指定要求的最低平台是 Windows 98。
@@ -33,6 +38,6 @@
 #define _WIN32_IE 0x0600        // 将此值更改为相应的值，以适用于 IE 的其他版本。
 #endif
 
-#endif  /* JIMI_IS_WINDOWS */
+#endif  /* _WIN32 || __MINGW32__ || __CYGWIN__ || __ICL || __INTEL_COMPILER */
 
-#endif  /* _JIMIC_BASIC_WIN32_TARGETVER_H_ */
+#endif  /* _JIMI_BASIC_TARGETVER_H_ */

@@ -10,7 +10,7 @@
 
 #if JIMI_IS_WINDOWS
 
-#include "jimi/basic/win32/jimi_targetver.h"
+#include "jimi/basic/targetver.h"
 
 #if _XBOX
 

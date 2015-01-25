@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include "jimi/basic/config.h"
-#include "jimic/basic/config.h"
+#include "jimi/config/config.h"
+#include "jimic/config/config.h"
 
 //
 // From: http://msdn.microsoft.com/zh-cn/library/e5ewb1h3%28v=vs.90%29.aspx

@@ -7,7 +7,7 @@
 #endif
 
 #include "jimi/basic/namespace.h"
-#include "jimi/basic/config.h"
+#include "jimi/config/config.h"
 
 namespace jimi {
 

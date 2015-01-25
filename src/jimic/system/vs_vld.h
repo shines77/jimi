@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#include "jimi/basic/config.h"
-#include "jimic/basic/config.h"
+#include "jimi/config/config.h"
+#include "jimic/config/config.h"
 
 /**********************************************************
  *

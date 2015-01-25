@@ -10,10 +10,10 @@
 #include "jimi/basic/compiler_def.h"
 
 #if JIMI_IS_WINDOWS
-    #include "jimi/basic/win32/jimi_targetver.h"
+    #include "jimi/basic/targetver.h"
 #endif
 
-#include "jimi/basic/config.h"
+#include "jimi/config/config.h"
 #include "jimi/basic/export.h"
 
 #include "jimi/basic/stdint.h"

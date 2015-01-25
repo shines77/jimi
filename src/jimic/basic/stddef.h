@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_BASIC_DEF_H_
-#define _JIMIC_BASIC_DEF_H_
+#ifndef _JIMIC_BASIC_STDDEF_H_
+#define _JIMIC_BASIC_STDDEF_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -9,11 +9,11 @@
 #include "jimic/basic/platform_def.h"
 #include "jimic/basic/compiler_def.h"
 
-#if JIMI_IS_WINDOWS
-    #include "jimic/basic/win32/jimic_targetver.h"
+#if defined(_WIN32) || defined(__MINGW32__)
+    #include "jimic/basic/targetver.h"
 #endif
 
-#include "jimic/basic/config.h"
+#include "jimic/config/config.h"
 #include "jimic/basic/export.h"
 
 #include "jimic/basic/stdint.h"
@@ -175,4 +175,4 @@ typedef struct JIMIC_MACRO_T
 //#pragma warning(disable: 4996)
 #endif
 
-#endif  /* _JIMIC_BASIC_DEF_H_ */
+#endif  /* _JIMIC_BASIC_STDDEF_H_ */
