@@ -136,13 +136,13 @@ public:
     thread_proc_t GetThreadProc() const { return pThreadProc; }
     bool SetThreadProc(thread_proc_t thread_proc);
 
-    operator thread_handle_t     ()     { return hThread;   }
-    thread_handle_t * operator & ()     { return &hThread;  }
-    thread_handle_t & GetThreadHandle() { return hThread;   }
-    thread_id_t GetThreadId()           { return nThreadId; }
+    operator thread_handle_t     () const     { return hThread;   }
+    thread_handle_t * operator & () const     { return &hThread;  }
+    thread_handle_t & GetThreadHandle() const { return hThread;   }
+    thread_id_t GetThreadId() const           { return nThreadId; }
 
-    thread_id_t GetCurrentThreadId()    { return ::GetCurrentThreadId(); }
-    thread_handle_t GetCurrentThread()  { return (thread_handle_t)::GetCurrentThread(); }
+    thread_id_t GetCurrentThreadId() const   { return ::GetCurrentThreadId(); }
+    thread_handle_t GetCurrentThread() const { return (thread_handle_t)::GetCurrentThread(); }
 
     bool IsValid() const;
 
@@ -155,18 +155,18 @@ public:
     bool IsBackground() const;
     bool IsJoining() const;
 
-    thread_status_t GetThreadState()        { return nStatus; }
-    thread_status_t GetThreadExtraState()   { return nExtraStatus; }
-    thread_status_t GetThreadFullState()    { return nStatus | nExtraStatus; }
+    thread_status_t GetThreadState() const      { return nStatus; }
+    thread_status_t GetThreadExtraState() const { return nExtraStatus; }
+    thread_status_t GetThreadFullState() const  { return nStatus | nExtraStatus; }
 
-    thread_status_t GetSafeThreadState()        { return GET_THREAD_STATUS(nStatus); }
-    thread_status_t GetSafeThreadExtraState()   { return GET_THREAD_EXTRA_STATUS(nExtraStatus); }
-    thread_status_t GetSafeThreadFullState()    {
+    thread_status_t GetSafeThreadState() const      { return GET_THREAD_STATUS(nStatus); }
+    thread_status_t GetSafeThreadExtraState() const { return GET_THREAD_EXTRA_STATUS(nExtraStatus); }
+    thread_status_t GetSafeThreadFullState() const {
         return GET_THREAD_STATUS(nStatus) | GET_THREAD_EXTRA_STATUS(nExtraStatus);
     }
 
-    thread_status_t GetThreadStateValue()   { return GET_THREAD_STATUS_VALUE(nStatus); }
-    thread_status_t GetThreadStateValue(thread_status_t nSpecStatus) {
+    thread_status_t GetThreadStateValue() const { return GET_THREAD_STATUS_VALUE(nStatus); }
+    thread_status_t GetThreadStateValue(thread_status_t nSpecStatus) const {
         return GET_THREAD_STATUS_VALUE(nSpecStatus);
     }
 
@@ -203,13 +203,13 @@ public:
         nExtraStatus &= GET_THREAD_EXTRA_STATUS(~nRemoveExtraStatus);
     }
 
-    const char * GetThreadStateString() {
+    const char * GetThreadStateString() const {
         int index = GET_THREAD_STATUS_VALUE(nStatus);
         index = JIMI_MIN(index, kThreadStatusLast - 1);
         return s_szThreadStatusString[index];
     }
 
-    const char * GetThreadStateString(thread_status_t nSpecStatus) {
+    const char * GetThreadStateString(thread_status_t nSpecStatus) const {
         int index = GET_THREAD_STATUS_VALUE(nSpecStatus);
         index = JIMI_MIN(index, kThreadStatusLast - 1);
         return s_szThreadStatusString[index];
