@@ -1,14 +1,14 @@
 
-#ifndef _JIMI_THREAD_EVENT_H_
-#define _JIMI_THREAD_EVENT_H_
+#ifndef _JIMI_CSHARP_THREAD_EVENT_H_
+#define _JIMI_CSHARP_THREAD_EVENT_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
 #include "jimi/basic/stddef.h"
-#include "jimi/thread/ThreadDef.h"
-#include "jimi/thread/WaitHandle.h"
+#include "jimi/csharp/thread/ThreadDef.h"
+#include "jimi/csharp/thread/WaitHandle.h"
 #include "jimi/log/log.h"
 #include "jimic/string/jm_strings.h"
 
@@ -16,6 +16,8 @@
 #include <windows.h>
 
 namespace jimi {
+
+namespace csharp {
 
 /**************************************************************************
  ** EventWaitHandle
@@ -216,6 +218,8 @@ public:
     ~AutoResetEvent() { jmLog.info("AutoResetEvent::~AutoResetEvent()."); };
 };
 
+}  /* namespace csharp */
+
 }  /* namespace jimi */
 
-#endif  /* _JIMI_THREAD_EVENT_H_ */
+#endif  /* _JIMI_CSHARP_THREAD_EVENT_H_ */

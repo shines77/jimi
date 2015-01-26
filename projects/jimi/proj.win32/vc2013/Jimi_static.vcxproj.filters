@@ -120,6 +120,12 @@
     <Filter Include="src\jimic\config\win32">
       <UniqueIdentifier>{0868700a-887d-4e78-87d6-aa4f111836e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\jimi\csharp">
+      <UniqueIdentifier>{b1ddc4b7-37b8-4e10-ae63-4a3e92840006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\csharp\thread">
+      <UniqueIdentifier>{9bde5b23-7e26-4620-a62b-9fd648e8af2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\jimi\lang\Allocator.h">
@@ -162,15 +168,6 @@
       <Filter>src\jimi\lang</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\thread\Atomic.h">
-      <Filter>src\jimi\thread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\thread\Event.h">
-      <Filter>src\jimi\thread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\thread\Thread.h">
-      <Filter>src\jimi\thread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\thread\WaitHandle.h">
       <Filter>src\jimi\thread</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\system\stop_watch.h">
@@ -310,9 +307,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\dtos.h">
       <Filter>src\jimic\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\thread\ThreadDef.h">
-      <Filter>src\jimi\thread</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\itoa.h">
       <Filter>src\jimic\string</Filter>
@@ -479,6 +473,24 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\targetver.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\Event.h">
+      <Filter>src\jimi\csharp\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\Thread.h">
+      <Filter>src\jimi\csharp\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\ThreadDef.h">
+      <Filter>src\jimi\csharp\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\WaitHandle.h">
+      <Filter>src\jimi\csharp\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\thread\Thread.h">
+      <Filter>src\jimi\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\thread\ThreadDef.h">
+      <Filter>src\jimi\thread</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">
@@ -492,9 +504,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimi\fs\FileSystem.cpp">
       <Filter>src\jimi\fs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimi\thread\Thread.cpp">
-      <Filter>src\jimi\thread</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.c">
       <Filter>src\jimic\system</Filter>
@@ -564,6 +573,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\basic\assert-c.c">
       <Filter>src\jimic\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimi\csharp\thread\Thread.cpp">
+      <Filter>src\jimi\csharp\thread</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

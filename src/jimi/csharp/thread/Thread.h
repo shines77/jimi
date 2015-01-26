@@ -1,45 +1,76 @@
 
-#ifndef _JIMI_THREAD_THREAD_H_
-#define _JIMI_THREAD_THREAD_H_
+#ifndef _JIMI_CSHARP_THREAD_THREAD_H_
+#define _JIMI_CSHARP_THREAD_THREAD_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
 #include "jimi/basic/stddef.h"
-#include "jimi/thread/ThreadDef.h"
-
+#include "jimi/csharp/thread/ThreadDef.h"
 #include "jimi/log/log.h"
 
-#if defined(_WIN32)
+#if JIMI_IS_WINDOWS
 
-#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
-#endif
 #include <windows.h>
 #include <process.h>
 
-#else  /* !_WIN32 */
+#else
 
 #ifndef CREATE_SUSPENDED
 #define CREATE_SUSPENDED        0x00000004
 #endif
 
-#endif  /* _WIN32 */
+#endif  /* JIMI_IS_WINDOWS */
 
-#define THREAD_STATUS_MASK                  (ThreadStatusMask::kThreadStatusMask)
+namespace jimi {
 
-#define THREAD_IS_BACKGROUND(status)        (((status) & kBackgroundStatusMask) != 0)
-#define THREAD_IS_JOINING(status)           (((status) & kJoinStatusMask) != 0)
-#define THREAD_IS_ALIVE(status)             (((status) & kAliveStatusMask) != 0)
-#define THREAD_IS_RUNNING(status)           (((status) & kRunningStatusMask) != 0)
+namespace csharp {
 
-#define GET_THREAD_STATUS(status)           ((status) & kThreadStatusMask)
-#define GET_THREAD_EXTRA_STATUS(status)     ((status) & kThreadExtraStatusMask)
+enum ThreadStatusShift
+{
+    // Thread extra status
+    kBackgroundStatusShift      = 31,
+    kJoinStatusShift            = 30,
 
-#define GET_THREAD_STATUS_VALUE(status)     ((status) & kThreadStatusValueMask)
+    // Thread status
+    kAliveStatusShift           = 23,
+    kRunningStatusShift         = 22
+};
 
-#define THREAD_IS_ALIVE_OR_RUNNING(status)  (((status) & kAliveAndRunningStatusMask) != 0)
+enum ThreadStatusMask
+{
+    // Thread extra status mask
+    kBackgroundStatusMask       = (1UL << kBackgroundStatusShift),
+    kJoinStatusMask             = (1UL << kJoinStatusShift),
+
+    // Thread status mask
+    kAliveStatusMask            = (1UL << kAliveStatusShift),
+    kRunningStatusMask          = (1UL << kRunningStatusShift),
+
+    kAliveAndRunningStatusMask  = kAliveStatusMask | kRunningStatusMask,
+
+    kThreadExtraStatusMask      = ((1UL << kBackgroundStatusShift) | (1UL << kJoinStatusShift)),
+    kThreadStatusMask           = ~kThreadExtraStatusMask,
+
+    kThreadStatusValueMask      =  0x0000FFFFUL
+};
+
+#define THREAD_STATUS_MASK              (ThreadStatusMask::kThreadStatusMask)
+
+#define THREAD_IS_BACKGROUND(status)    (((status) & kBackgroundStatusMask) != 0)
+#define THREAD_IS_JOINING(status)       (((status) & kJoinStatusMask) != 0)
+#define THREAD_IS_ALIVE(status)         (((status) & kAliveStatusMask) != 0)
+#define THREAD_IS_RUNNING(status)       (((status) & kRunningStatusMask) != 0)
+
+#define GET_THREAD_STATUS(status)       ((status) & kThreadStatusMask)
+#define GET_THREAD_EXTRA_STATUS(status) ((status) & kThreadExtraStatusMask)
+
+#define GET_THREAD_STATUS_VALUE(status) ((status) & kThreadStatusValueMask)
+
+#define THREAD_IS_ALIVE_OR_RUNNING(status) \
+    (((status) & kAliveAndRunningStatusMask) != 0)
 
 #define THREAD_IS_ALIVE_AND_RUNNING(status) \
     (((status) & kAliveAndRunningStatusMask) == kAliveAndRunningStatusMask)
@@ -52,7 +83,55 @@
         | (((bJoin) & 1UL) << kJoinStatusShift)     \
         | (((bBackground) & 1UL) << kBackgroundStatusShift))
 
-namespace jimi {
+enum ThreadDef
+{
+    /* Abort()或Terminate()终止线程时的等待时间. 默认值: 5000毫秒. */
+    kAbortWaitTime  = 5000
+};
+
+enum ThreadStatusDef
+{
+    kThreadStatusFirst = 0,
+
+    kThreadStatus_Unknown = kThreadStatusFirst,
+
+    // All Unrunning Status
+    kThreadStatus_UnStarted,
+    kThreadStatus_Stopped,
+    kThreadStatus_Aborted,
+
+    // All Alive Status
+    kThreadStatus_StartPending,
+    kThreadStatus_StopPending,
+    kThreadStatus_AbortPending,
+    kThreadStatus_ClosePending,
+
+    // All Running Status
+    kThreadStatus_Running,
+    kThreadStatus_Suspended,
+    kThreadStatus_SuspendPending,
+    kThreadStatus_ResumePending,
+    kThreadStatus_ThreadProcOver,
+
+    kThreadStatusLast
+};
+
+static const char * s_szThreadStatusString[] = {
+    "Unknown",
+    "UnStarted",
+    "Stopped",
+    "Aborted",
+    "StartPending",
+    "StopPending",
+    "AbortPending",
+    "ClosePending",
+    "Running",
+    "Suspended",
+    "SuspendPending",
+    "ResumePending",
+    "ThreadProcOver",
+    "ThreadStatusLast"
+};
 
 typedef struct ThreadStatus
 {
@@ -87,73 +166,79 @@ typedef struct ThreadExtraStatus
     static const uint32_t kBackground       = MAKE_THREAD_EXTRA_STATUS(0, 0, 0, 1, kThreadStatus_Unknown);
 } ThreadExtraStatus;
 
-template <typename T>
+typedef struct ThreadInitFlag
+{
+    static const uint32_t kCreateDefault    = 0;
+    static const uint32_t kCreateSuspended  = CREATE_SUSPENDED;
+} ThreadInitFlag;
+
+typedef struct ThreadVerifySign
+{
+    static const uint32_t kVerifySign       = 'JIMI';
+} ThreadVerifySign;
+
+//typedef void (*thread_proc_t)(void *lpParam);
+
+#if JIMI_IS_WINDOWS
+
+/**
+ * the Thread base class
+ */
+template <class T>
 class ThreadBase
 {
 public:
-    typedef HANDLE              jm_handle_t;
-    typedef jm_handle_t         handle_t;
-    typedef jm_handle_t         thread_handle_t;
-    typedef uint32_t            thread_status_t;
-    typedef unsigned            thread_id_t;
-    typedef uint32_t            affinity_t;
-
+    typedef jm_handle_t thread_handle_t;
+    typedef jm_handle_t handle_t;
+    typedef uint32_t    thread_status_t;
+    typedef unsigned    thread_id_t;
+    typedef uint32_t    affinity_t;
     typedef void (*thread_proc_t)(void *lpParam);
 
+    // 工作者线程的线程参数
     typedef struct Thread_Params
     {
-        ThreadBase *    pThread;        // ThreadBase object.
-        void *          pParam;         // The address of the thread parameters.
-        unsigned int    uVerifySign;    // The verify sign, value is string "JIMI".
-        int             nThreadIdx;     // The index of thread, base on 0.
-    } thread_param_t;
+        ThreadBase      *pThread;       // 传入的Thread指针
+        void            *pObject;       // 传入的对象指针
+        unsigned int    uVerifySign;    // 验证标志值, 值为字符串"JIMI"
+        int             nThreadIdx;     // 线程Idx编号, 从0计起
+    } Thread_Params, *PThread_Params;
 
-public:
     ThreadBase(void);
     ThreadBase(thread_proc_t thread_proc) { pThreadProc = thread_proc; }
     ~ThreadBase(void);
 
+private:
+    explicit ThreadBase(const ThreadBase &) {}
+    void operator = (const ThreadBase &) {}
+
+public:
     void Destroy();
     void OnDestroy();
 
-private:
-#if defined(JIMI_HAS_DELETED_FUNCTIONS) && (JIMI_HAS_DELETED_FUNCTIONS != 0)
-    //! Deny copy construction
-    explicit ThreadBase(const ThreadBase &) = delete;
-    //! Deny assignment operator
-    void operator = (const ThreadBase &) = delete;
-#else
-    //! Deny copy construction
-    explicit ThreadBase(const ThreadBase &) {}
-    //! Deny assignment operator
-    void operator = (const ThreadBase &) {}
-#endif  /* JIMI_HAS_DELETED_FUNCTIONS */
+    void ThreadProcDone();
 
-public:
-    void Detach();
-    void OnDetach();
-
-    thread_proc_t GetThreadProc() const { return pThreadProc; }
+    thread_proc_t GetThreadProc() { return pThreadProc; }
     bool SetThreadProc(thread_proc_t thread_proc);
 
-    operator thread_handle_t     ()     { return hThread;   }
-    thread_handle_t * operator & ()     { return &hThread;  }
-    thread_handle_t & GetThreadHandle() { return hThread;   }
+    operator thread_handle_t     ()     { return hThread;  }
+    thread_handle_t * operator & ()     { return &hThread; }
+    thread_handle_t & GetThreadHandle() { return hThread;  }
     thread_id_t GetThreadId()           { return nThreadId; }
 
+    thread_handle_t GetCurrentThread()  { return (thread_handle_t)::GetCurrentThread();  }
     thread_id_t GetCurrentThreadId()    { return ::GetCurrentThreadId(); }
-    thread_handle_t GetCurrentThread()  { return (thread_handle_t)::GetCurrentThread(); }
 
-    bool IsValid() const;
+    bool IsValid();
 
-    bool IsAlive() const;
-    bool IsRunning() const;
-    bool IsAliveOrRunning() const;
-    bool IsAliveAndRunning() const;
-    bool IsSuspended() const;
+    bool IsAlive();
+    bool IsRunning();
+    bool IsAliveOrRunning();
+    bool IsAliveAndRunning();
+    bool IsSuspended();
 
-    bool IsBackground() const;
-    bool IsJoining() const;
+    bool IsBackground();
+    bool IsJoining();
 
     thread_status_t GetThreadState()        { return nStatus; }
     thread_status_t GetThreadExtraState()   { return nExtraStatus; }
@@ -215,7 +300,7 @@ public:
         return s_szThreadStatusString[index];
     }
 
-    thread_status_t Start(void *pParam = NULL,
+    thread_status_t Start(void *pObject = NULL,
                           unsigned uInitFlag = ThreadInitFlag::kCreateDefault);
     thread_status_t Stop(uint32_t uWaitTime = Timeout::kAbortWaitTime,
                          uint32_t uExitCode = uint32_t(-1));
@@ -233,12 +318,12 @@ public:
     thread_status_t Terminate(uint32_t uWaitTime = Timeout::kAbortWaitTime,
                               uint32_t uExitCode = 0);
 
-    int  GetThreadPriority() const { return ::GetThreadPriority(hThread); }
+    int  GetThreadPriority() { return ::GetThreadPriority(hThread); }
     bool SetThreadPriority(int nNewPriority) {
-        return (bool)(::SetThreadPriority(hThread, nNewPriority) == TRUE);
+        return (bool)::SetThreadPriority(hThread, nNewPriority);
     }
 
-    affinity_t GetProcessorAffinity() const;
+    affinity_t GetProcessorAffinity();
     affinity_t GetThreadAffinity();
 
     affinity_t SetProcessorAffinity();
@@ -253,7 +338,7 @@ public:
 
 protected:
     thread_proc_t   pThreadProc;
-    
+
 private:
     thread_handle_t hThread;
     thread_status_t nStatus;
@@ -278,7 +363,6 @@ ThreadBase<T>::~ThreadBase(void)
 }
 
 template <class T>
-inline
 void ThreadBase<T>::Destroy()
 {
     T *pT = static_cast<T *>(this);
@@ -297,50 +381,61 @@ void ThreadBase<T>::Destroy()
 }
 
 template <class T>
-inline
 void ThreadBase<T>::OnDestroy()
 {
     jmLog.info("ThreadBase<T>::OnDestroy(), error = %d.", ::GetLastError());
 }
 
 template <class T>
+void ThreadBase<T>::ThreadProcDone()
+{
+    jmLog.info("ThreadBase<T>::ThreadProcDone(), error = %d.", ::GetLastError());
+    if (IsValid()) {
+        hThread = NULL;
+        nThreadId = 0;
+        nStatus = ThreadStatus::kUnknown;
+        nExtraStatus = ThreadExtraStatus::kUnknown;
+    }
+}
+
+template <class T>
 inline
-bool ThreadBase<T>::IsValid() const
+bool ThreadBase<T>::IsValid()
 {
     return (hThread != NULL);
 }
 
 template <class T>
 inline
-bool ThreadBase<T>::IsAlive() const
+bool ThreadBase<T>::IsAlive()
 {
     return IsValid() && THREAD_IS_ALIVE(nStatus);
 }
 
 template <class T>
 inline
-bool ThreadBase<T>::IsRunning() const
+bool ThreadBase<T>::IsRunning()
 {
     return IsValid() && THREAD_IS_RUNNING(nStatus);
 }
 
 template <class T>
 inline
-bool ThreadBase<T>::IsAliveOrRunning() const
+bool ThreadBase<T>::IsAliveOrRunning()
 {
     return IsValid() && THREAD_IS_ALIVE_OR_RUNNING(nStatus);
 }
 
 template <class T>
 inline
-bool ThreadBase<T>::IsAliveAndRunning() const
+bool ThreadBase<T>::IsAliveAndRunning()
 {
     return IsValid() && THREAD_IS_ALIVE_AND_RUNNING(nStatus);
 }
 
 template <class T>
 inline
-bool ThreadBase<T>::IsSuspended() const
+bool ThreadBase<T>::IsSuspended()
 {
     return IsAliveAndRunning()
         && (this->GetThreadState() == ThreadStatus::kSuspended
@@ -349,14 +444,14 @@ bool ThreadBase<T>::IsSuspended() const
 
 template <class T>
 inline
-bool ThreadBase<T>::IsBackground() const
+bool ThreadBase<T>::IsBackground()
 {
     return THREAD_IS_BACKGROUND(nExtraStatus);
 }
 
 template <class T>
 inline
-bool ThreadBase<T>::IsJoining() const
+bool ThreadBase<T>::IsJoining()
 {
     return THREAD_IS_JOINING(nExtraStatus);
 }
@@ -372,7 +467,7 @@ bool ThreadBase<T>::SetThreadProc(thread_proc_t thread_proc)
     return false;
 }
 
-/* ThreadBase() local default thread_proc function. */
+/* default thread_proc function */
 template <class T>
 void JIMI_WINAPI ThreadBase<T>::ThreadProc(void *lpParam)
 {
@@ -387,12 +482,12 @@ unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
     jmLog.info("ThreadBase<T>::ThreadProcBase() Enter.");
     jmLog.info("ThreadBase<T>::ThreadProcBase(), lpParam = 0x%08X.", lpParam);
 
-    thread_param_t *pThreadParam = static_cast<thread_param_t *>(lpParam);
+    Thread_Params *pParam = (Thread_Params *)lpParam;
     ThreadBase<T> *pThread = NULL;
     void *pObject = NULL;
-    if (pThreadParam != NULL) {
-        pThread = pThreadParam->pThread;
-        pObject = pThreadParam->pParam;
+    if (pParam) {
+        pThread = pParam->pThread;
+        pObject = pParam->pObject;
 
         if (pThread && pThread->IsValid())
             pThread->SetThreadState(ThreadStatus::kRunning);
@@ -401,16 +496,16 @@ unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
         if (pThis != NULL) {
             thread_proc_t pThreadProc = pThis->GetThreadProc();
             if (pThreadProc != NULL)
-                pThreadProc(pObject);
+                pThreadProc(lpParam);
             else
-                pThis->ThreadProc(pObject);
+                pThis->ThreadProc(lpParam);
 
-            if (pThreadParam) {
-                pThreadParam->pThread = NULL;
-                pThreadParam->pParam = NULL;
-                pThreadParam->uVerifySign = 0;
-                pThreadParam->nThreadIdx = -1;
-                delete pThreadParam;
+            if (pParam) {
+                pParam->pThread = NULL;
+                pParam->pObject = NULL;
+                pParam->uVerifySign = 0;
+                pParam->nThreadIdx = -1;
+                delete pParam;
             }
         }
 
@@ -427,16 +522,16 @@ unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
 }
 
 template <class T>
-typename ThreadBase<T>::thread_status_t ThreadBase<T>::Start(void *pParam /* = NULL */,
+typename ThreadBase<T>::thread_status_t ThreadBase<T>::Start(void *pObject /* = NULL */,
                                                              unsigned uInitFlag /* = ThreadInitFlag::kCreateDefault */)
 {
     jmLog.info("ThreadBase<T>::Start() Enter.");
 
     if (!IsValid()) {
         if (!IsAliveOrRunning()) {
-            thread_param_t *pParams = new thread_param_t;
+            Thread_Params *pParams = new Thread_Params;
             pParams->pThread = (ThreadBase<T> *)this;
-            pParams->pParam = pParam;
+            pParams->pObject = pObject;
             pParams->uVerifySign = ThreadVerifySign::kVerifySign;
             pParams->nThreadIdx = 0;
             hThread = (thread_handle_t)::_beginthreadex(NULL, 0, &ThreadBase<T>::ThreadProcBase,
@@ -679,24 +774,74 @@ void ThreadBase<T>::Sleep(uint32_t uMilliSecs)
 class Thread : public ThreadBase<Thread>
 {
 public:
-    Thread(void) : ThreadBase<Thread>() {}
-    Thread(thread_proc_t thread_proc) : ThreadBase<Thread>(thread_proc) {}
-    ~Thread(void) { }
+    Thread(void) : ThreadBase<Thread>() { };
+    Thread(thread_proc_t thread_proc) { pThreadProc = thread_proc; }
+    ~Thread(void) { };
 
 private:
-#if defined(JIMI_HAS_DELETED_FUNCTIONS) && (JIMI_HAS_DELETED_FUNCTIONS != 0)
-    //! Deny copy construction
-    explicit Thread(const Thread &) = delete;
-    //! Deny assignment operator
-    void operator = (const Thread &) = delete;
-#else
-    //! Deny copy construction
-    explicit Thread(const Thread &) {}
-    //! Deny assignment operator
-    void operator = (const Thread &) {}
-#endif  /* JIMI_HAS_DELETED_FUNCTIONS */
+    explicit Thread(const Thread &) { }
+    void operator = (const Thread &) { }
 };
+
+#else
+
+/**
+ * the Thread base class
+ */
+template <class T>
+class ThreadBase
+{
+public:
+    typedef jm_handle_t thread_handle_t;
+    typedef jm_handle_t handle_t;
+    typedef uint32_t    thread_status_t;
+    typedef unsigned    thread_id_t;
+    typedef uint32_t    affinity_t;
+    typedef void (*thread_proc_t)(void *lpParam);
+
+public:
+    ThreadBase(void);
+    ThreadBase(thread_proc_t thread_proc) { pThreadProc = thread_proc; }
+    ~ThreadBase(void);
+
+private:
+    explicit ThreadBase(const ThreadBase &) { }
+    void operator = (const ThreadBase &) { }
+
+protected:
+    thread_proc_t   pThreadProc;
+};
+
+template <class T>
+ThreadBase<T>::ThreadBase(void)
+: pThreadProc(NULL)
+{
+}
+
+template <class T>
+ThreadBase<T>::~ThreadBase(void)
+{
+}
+
+/**
+ * the Thread class
+ */
+class Thread : public ThreadBase<Thread>
+{
+public:
+    Thread(void) : ThreadBase<Thread>() { };
+    Thread(thread_proc_t thread_proc) { pThreadProc = thread_proc; }
+    ~Thread(void) { };
+
+private:
+    explicit Thread(const Thread &) { }
+    void operator = (const Thread &) { }
+};
+
+#endif  /* JIMI_IS_WINDOWS */
+
+}  /* namespace csharp */
 
 }  /* namespace jimi */
 
-#endif  /* _JIMI_THREAD_THREAD_H_ */
+#endif  /* _JIMI_CSHARP_THREAD_THREAD_H_ */

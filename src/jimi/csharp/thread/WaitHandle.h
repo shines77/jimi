@@ -1,19 +1,21 @@
 
-#ifndef _JIMI_THREAD_WAITHANDLE_H_
-#define _JIMI_THREAD_WAITHANDLE_H_
+#ifndef _JIMI_CSHARP_THREAD_WAITHANDLE_H_
+#define _JIMI_CSHARP_THREAD_WAITHANDLE_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
 #include "jimi/basic/stddef.h"
-#include "jimi/thread/ThreadDef.h"
+#include "jimi/csharp/thread/ThreadDef.h"
 #include "jimi/log/log.h"
 
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 
 namespace jimi {
+
+namespace csharp {
 
 //
 // Reference: http://blog.csdn.net/amdk_7/article/details/1334044
@@ -201,6 +203,8 @@ uint32_t WaitHandle<T>::SignalAndWaitEx(const handle_t toSignal, const handle_t 
     return ::SignalObjectAndWait(toSignal, toWaitOn, uMillisecTimeout, exitContext);
 }
 
+}  /* namespace csharp */
+
 }  /* namespace jimi */
 
-#endif  /* _JIMI_THREAD_WAITHANDLE_H_ */
+#endif  /* _JIMI_CSHARP_THREAD_WAITHANDLE_H_ */

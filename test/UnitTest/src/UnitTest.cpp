@@ -69,7 +69,7 @@
 
 #include "jimi/util/cmd_line.h"
 #include "jimi/thread/Thread.h"
-#include "jimi/thread/Event.h"
+#include "jimi/csharp/thread/Event.h"
 #include "jimi/mt/mutex.h"
 #include "jimi/mt/scoped_lock.h"
 #include "jimi/system/stop_watch.h"

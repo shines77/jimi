@@ -1488,12 +1488,12 @@ void WinServiceBase<T>::WorkerThreadProc(void *pvData)
 {
     jmLog.info("WinServiceBase<T>::WorkerThreadProc() Enter.");
 
-    Thread::THREAD_PARAMS *pParams = (Thread::THREAD_PARAMS *)pvData;
+    Thread::thread_param_t *pParams = static_cast<Thread::thread_param_t *>(pvData);
     Thread *pThread = NULL;
     ExecInfo_t *pExecInfo = NULL;
     if (pParams != NULL) {
         pThread = (Thread *)pParams->pThread;
-        pExecInfo = (ExecInfo_t *)pParams->pObject;
+        pExecInfo = (ExecInfo_t *)pParams->pParam;
     }
     if (pExecInfo == NULL)
         return;

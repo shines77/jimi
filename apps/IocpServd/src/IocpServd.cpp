@@ -19,7 +19,7 @@
 #include "jimi/mt/mutex.h"
 #include "jimi/mt/scoped_lock.h"
 
-#include "jimi/thread/Event.h"
+#include "jimi/csharp/thread/Event.h"
 #include "jimi/lang/Object.h"
 #include "jimi/lang/String.h"
 
@@ -148,10 +148,10 @@ int IocpServd_main(int argc, char *argv[])
     printf("\n");
 
     do {
-        ManualResetEvent *event = new ManualResetEvent(false);
+        csharp::ManualResetEvent *event = new csharp::ManualResetEvent(false);
         //ManualResetEvent event2(false);
-        EventWaitHandle *event3 = new EventWaitHandle();
-        EventWaitHandle *event_base = (EventWaitHandle *)event;
+        csharp::EventWaitHandle *event3 = new csharp::EventWaitHandle();
+        csharp::EventWaitHandle *event_base = (csharp::EventWaitHandle *)event;
         event->Set();
         event->Reset();
         if (event_base) {
