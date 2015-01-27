@@ -111,6 +111,7 @@
 #include "jimi/lang/SmallString.h"
 #include "jimic/stdio/sprintf_lite.h"
 #include "jimic/libc/ieee754.h"
+#include "jimic/math/log10.h"
 
 #include <memory>
 
@@ -2308,99 +2309,6 @@ void IEEE754_Double_Test()
     jimi::Console.ReadKey(true, false);
 }
 
-class resA
-{
-public:
-    resA()  { std::cout << "resA::ctor()"  << std::endl; }
-    ~resA() { std::cout << "resA::~dtor()" << std::endl; }
-};
-
-class resB
-{
-public:
-    resB()  { std::cout << "resB::ctor()"  << std::endl; }
-    ~resB() { std::cout << "resB::~dtor()" << std::endl; }
-};
-
-class AA
-{
-public:
-    AA() : resA(), valueA(1) { std::cout << "AA::ctor()" << std::endl; }
-    virtual ~AA() {
-        std::cout << "AA::~dtor()" << std::endl;
-    }
-
-    void dump() {
-        ReleaseUtils::dump(this, sizeof(*this));
-    }
-
-public:
-    resA resA;
-    int valueA;
-};
-
-class BB : public AA
-{
-public:
-    BB() : resB(), valueB(2) { std::cout << "BB::ctor()" << std::endl; }
-    virtual ~BB() {
-        std::cout << "BB::~dtor()" << std::endl;
-    }
-
-    void dump() {
-        ReleaseUtils::dump(this, sizeof(*this));
-    }
-
-public:
-    resB resB;
-    int valueB;
-};
-
-template<class T>
-class A
-{
-public:
-    A()  { std::cout << "A::ctor()" << std::endl; }
-    ~A() {
-        std::cout << "A::~dtor()" << std::endl;
-        Destroy(true);
-    }
-    void Destroy(bool isDestructor = false) {
-        T* pThis = static_cast<T *>(this);
-        if (pThis && !pThis->hasDisposed()) {
-            pThis->setDisposed();
-            if (isDestructor)
-                pThis->~T();
-            else
-                delete pThis;
-        }
-    }
-private:
-    resA resA;
-};
-
-class B : public A<B>
-{
-public:
-    B() : hasDisposed_(false) { std::cout << "B::ctor()" << std::endl; }
-    ~B() { std::cout << "B::~dtor()" << std::endl; }
-    bool hasDisposed() { return hasDisposed_; };
-    void setDisposed() { hasDisposed_ = true; };
-
-private:
-    bool hasDisposed_;
-    resB resB;
-};
-
-void template_inherit_test()
-{
-    A<B>* a = new B();
-    char *p = (char *)a;
-    //*(p + sizeof(A<B>) + 3) = 0;
-    a->Destroy();
-    //delete a;
-}
-
 #if !defined(_MSC_VER) || (_MSC_VER >= 1600)
 
 class Widget
@@ -2557,7 +2465,213 @@ void WidgetSampleTest()
     widgetSample.print_info(L"This is WidgetSample wchar_t test.");
 }
 
-#include "jimic/math/log10.h"
+class resA
+{
+public:
+    resA()  { std::cout << "resA::ctor()"  << std::endl; }
+    ~resA() { std::cout << "resA::~dtor()" << std::endl; }
+};
+
+class resB
+{
+public:
+    resB()  { std::cout << "resB::ctor()"  << std::endl; }
+    ~resB() { std::cout << "resB::~dtor()" << std::endl; }
+};
+
+class AA
+{
+public:
+    AA() : resA(), valueA(1) { std::cout << "AA::ctor()" << std::endl; }
+    virtual ~AA() {
+        std::cout << "AA::~dtor()" << std::endl;
+    }
+
+    void dump() {
+        ReleaseUtils::dump(this, sizeof(*this));
+    }
+
+public:
+    resA resA;
+    int valueA;
+};
+
+class BB : public AA
+{
+public:
+    BB() : resB(), valueB(2) { std::cout << "BB::ctor()" << std::endl; }
+    virtual ~BB() {
+        std::cout << "BB::~dtor()" << std::endl;
+    }
+
+    void dump() {
+        ReleaseUtils::dump(this, sizeof(*this));
+    }
+
+public:
+    resB resB;
+    int valueB;
+};
+
+template<class T>
+class A
+{
+public:
+    A()  { std::cout << "A::ctor()" << std::endl; }
+    ~A() {
+        std::cout << "A::~dtor()" << std::endl;
+        Destroy(true);
+    }
+    void Destroy(bool isDestructor = false) {
+        T* pThis = static_cast<T *>(this);
+        if (pThis && !pThis->hasDisposed()) {
+            pThis->setDisposed();
+            if (isDestructor)
+                pThis->~T();
+            else
+                delete pThis;
+        }
+    }
+private:
+    resA resA;
+};
+
+class B : public A<B>
+{
+public:
+    B() : hasDisposed_(false) { std::cout << "B::ctor()" << std::endl; }
+    ~B() { std::cout << "B::~dtor()" << std::endl; }
+    bool hasDisposed() { return hasDisposed_; };
+    void setDisposed() { hasDisposed_ = true; };
+
+private:
+    bool hasDisposed_;
+    resB resB;
+};
+
+// 关于模板多态的两次析构问题
+void template_inherit_test()
+{
+    A<B>* a = new B();
+    char *p = (char *)a;
+    //*(p + sizeof(A<B>) + 3) = 0;
+    a->Destroy();
+    //delete a;
+}
+
+void string_test()
+{
+    std::map<std::string, int> p_times;
+    std::map<std::string, int>::iterator it;
+
+    std::list<std::shared_ptr<std::string>> values;
+    char T[32];
+    std::string str;
+
+    for (int i = 0; i < 10000; ++i) {
+        std::string *ptr = new std::string("abcdefgdfafdfssssssssss2312321321ssssssss2332132sssssssssssssss1312312321sssss");
+        sprintf(T, "%16p", ptr->c_str());
+        str = T;
+        it = p_times.find(str);
+        if (it != p_times.end())
+            p_times[str] = p_times[str] + 1;
+        else
+            p_times[str] = 1;
+        delete ptr;
+        //ptr = new std::string("23122222222223dsadasdasda21234234ssssfdsdf1322aadsaada");
+        ptr = new std::string("abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0");
+        values.push_back(std::shared_ptr<std::string>(ptr));
+        //delete ptr;
+    }
+
+    std::map<std::string, int>::const_iterator iter;
+    int index = 0;
+    int totals = 0;
+    for (iter = p_times.begin(); iter != p_times.end(); ++iter) {
+        printf("index = %u, key = %s, times = %u\n",
+               index, iter->first.c_str(), iter->second);
+        totals += iter->second;
+        index++;
+    }
+
+    printf("totals = %d\n", totals);
+    printf("sizeof(string) = %d\n", sizeof(str));
+    printf("\n");
+}
+
+template <typename T>
+struct Has_DoSomeThingFoo
+{
+    template<typename U, void (U::*)()> struct SFINAE {};
+    template<typename U> static char DoSomeThing(SFINAE<U, &U::DoSomeThing> *);
+    template<typename U> static int  DoSomeThing(...);
+    static const bool value = (sizeof(DoSomeThing<T>(0)) == sizeof(char));
+};
+
+template <typename T>
+class InterfaceBase
+{
+public:
+    void DoSomeThing(int p1, int p2) {
+        T *pThis = static_cast<T *>(this);
+        if (pThis) {
+            if (Has_DoSomeThingFoo<T>::value) {
+                pThis->DoSomeThing(p1, p2);
+                return;
+            }
+        }
+        printf("InterfaceBase::DoSomeThing(): Enter.\n");
+        printf("InterfaceBase::DoSomeThing(): p1 = %d, p2 = %d\n", p1, p2);
+        printf("InterfaceBase::DoSomeThing(): Over.\n");
+    }
+};
+
+class ImplSample : public InterfaceBase<ImplSample>
+{
+public:
+#if 1
+    void DoSomeThing(int p1, int p2) {
+        printf("ImplSample::DoSomeThing(): Enter.\n");
+        printf("ImplSample::DoSomeThing(): p1 = %d, p2 = %d\n", p1, p2);
+        printf("ImplSample::DoSomeThing(): Over.\n");
+    }
+#endif
+    void DoSomeThing2(int p1, int p2) {}
+};
+
+class ImplSample2 : public InterfaceBase<ImplSample2>
+{
+public:
+#if 1
+    void DoSomeThing(int p1, int p2) {
+        printf("ImplSample2::DoSomeThing(): Enter.\n");
+        printf("ImplSample2::DoSomeThing(): p1 = %d, p2 = %d\n", p1, p2);
+        printf("ImplSample2::DoSomeThing(): Over.\n");
+    }
+#endif
+};
+
+// 关于模板多态的演示代码
+void ImplSampleTest()
+{
+    string_test();
+
+    ImplSample *impl1 = new ImplSample();
+    impl1->DoSomeThing(1, 2);
+    printf("\n");
+
+    InterfaceBase<ImplSample> *impl2 = static_cast<InterfaceBase<ImplSample> *>(new ImplSample());
+    impl2->DoSomeThing(3, 4);
+    printf("\n");
+
+    ImplSample *impl3 = static_cast<ImplSample *>(impl2);
+    impl3->DoSomeThing(5, 6);
+
+    if (impl1)
+        delete impl1;
+    if (impl2)
+        delete impl2;
+}
 
 void Log10_Test1(double val)
 {
@@ -3317,6 +3431,19 @@ int UnitTest_Main(int argc, char *argv[])
 
     // Test System.out.println()
     jimi::System.out.println("System.out.println() test.\n");
+    
+#if 0
+    ImplSampleTest();
+
+    if (true) {
+        jmLog.log_end();
+        jimi::Console.ReadKey();
+        return 0;
+    }
+    else {
+        jimi::Console.ReadKeyLine();
+    }
+#endif
 
 #if 0
     if (true) {
@@ -3366,7 +3493,7 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 1
+#if 0
     if (true) {
         SmallRingQueue<uint64_t, 22> ringQueue;
 
@@ -3414,7 +3541,7 @@ int UnitTest_Main(int argc, char *argv[])
     }
 #endif
 
-#if 1
+#if 0
     if (true) {
         SmallRingQueue2<uint64_t, 22> ringQueue;
 
