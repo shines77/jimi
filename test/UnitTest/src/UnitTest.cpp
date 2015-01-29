@@ -2600,8 +2600,46 @@ void string_test()
 }
 
 template <typename T>
-struct Has_DoSomeThingFoo
+class has_virtual_dtor_helper : public T
 {
+public:
+    //has_virtual_dtor_helper() : value(true) {}
+
+    ~has_virtual_dtor_helper() {
+        //printf("jimi::has_virtual_dtor_helper::~has_virtual_dtor_helper()\n");
+        value = false;
+    }
+
+    static bool value;
+};
+
+template <typename T>
+bool has_virtual_dtor_helper<T>::value = true;
+
+template <typename T>
+struct has_virtual_dtor
+{
+public:
+    static bool check_has_virtual_dtor()
+    {
+        has_virtual_dtor_helper<T> *helper = static_cast<has_virtual_dtor_helper<T> *>(new T());
+        if (helper) {
+            delete helper;
+            return has_virtual_dtor_helper<T>::value;
+        }
+        return false;
+    }
+
+    static bool value;
+};
+
+template <typename T>
+bool has_virtual_dtor<T>::value = has_virtual_dtor<T>::check_has_virtual_dtor();
+
+template <typename T>
+struct has_DoSomeThing
+{
+public:
     template<typename U, void (U::*)()> struct SFINAE {};
     template<typename U> static char DoSomeThing(SFINAE<U, &U::DoSomeThing> *);
     template<typename U> static int  DoSomeThing(...);
@@ -2612,10 +2650,15 @@ template <typename T>
 class InterfaceBase
 {
 public:
+    InterfaceBase()  {}
+
+    virtual
+    ~InterfaceBase() { /* printf("InterfaceBase::~InterfaceBase()\n"); */ }
+
     void DoSomeThing(int p1, int p2) {
         T *pThis = static_cast<T *>(this);
         if (pThis) {
-            if (Has_DoSomeThingFoo<T>::value) {
+            if (has_DoSomeThing<T>::value) {
                 pThis->DoSomeThing(p1, p2);
                 return;
             }
@@ -2628,6 +2671,10 @@ public:
 
 class ImplSample : public InterfaceBase<ImplSample>
 {
+public:
+    ImplSample()  {}
+    ~ImplSample() { /* printf("ImplSample::~ImplSample()\n"); */ }
+
 public:
 #if 1
     void DoSomeThing(int p1, int p2) {
@@ -2654,8 +2701,20 @@ public:
 // 关于模板多态的演示代码
 void ImplSampleTest()
 {
-    string_test();
+    //string_test();
 
+    // 检测是否使用了虚析构函数 ?
+    printf("jimi::has_virtual_dtor<ImplSample>::value = %d, size = %u\n\n",
+           has_virtual_dtor<ImplSample>::value,
+           sizeof(has_virtual_dtor<ImplSample>));
+
+    int value = std::has_virtual_destructor<ImplSample>::value;
+    printf("std::has_virtual_destructor<ImplSample>::value = %d\n\n", value);
+
+    value = std::is_polymorphic<ImplSample>::value;
+    printf("std::is_polymorphic<ImplSample>::value = %d\n\n", value);
+
+    ///*
     ImplSample *impl1 = new ImplSample();
     impl1->DoSomeThing(1, 2);
     printf("\n");
@@ -2671,6 +2730,7 @@ void ImplSampleTest()
         delete impl1;
     if (impl2)
         delete impl2;
+    //*/
 }
 
 void Log10_Test1(double val)
