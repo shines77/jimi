@@ -2646,6 +2646,23 @@ public:
     static const bool value = (sizeof(DoSomeThing<T>(0)) == sizeof(char));
 };
 
+//
+// std::is_destructible
+// See: http://en.cppreference.com/w/cpp/types/is_destructible
+//
+template <typename T>
+struct has_virtual_dtor_check
+{
+public:
+    typedef typename std::remove_all_extents<T>::type Ty;
+    //std::declval<Ty&>().~Ty()
+    template<typename U, void (U::*)()> struct SFINAE {};
+    template<typename U> static char HasVirtualDtor(SFINAE<U, &U::DoSomeThing> *);
+    template<typename U> static int  HasVirtualDtor(...);
+    static const bool value = (sizeof(HasVirtualDtor<Ty>(0)) == sizeof(char));
+    //static const bool value2 = std::declval<Ty&>().~Ty();
+};
+
 template <typename T>
 class InterfaceBase
 {
@@ -2713,6 +2730,12 @@ void ImplSampleTest()
 
     value = std::is_polymorphic<ImplSample>::value;
     printf("std::is_polymorphic<ImplSample>::value = %d\n\n", value);
+
+    //value = has_virtual_dtor_check<ImplSample>::value;
+    //printf("std::has_virtual_dtor_check<ImplSample>::value = %d\n\n", value);
+
+    value = std::is_destructible<ImplSample>::value;
+    printf("std::is_destructible<ImplSample>::value = %d\n\n", value);
 
     ///*
     ImplSample *impl1 = new ImplSample();
@@ -3808,7 +3831,7 @@ int UnitTest_Main(int argc, char *argv[])
     Emplace_Test();
 #endif
 
-#if 1
+#if 0
     do {
         jimi::string str("This is a Test String.");
         str.dump();
