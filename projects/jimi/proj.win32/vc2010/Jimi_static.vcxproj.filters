@@ -11,9 +11,6 @@
     <Filter Include="src\jimi\basic">
       <UniqueIdentifier>{94221e15-455b-40bb-aa92-bbe3453f612a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\jimi\basic\win32">
-      <UniqueIdentifier>{22b27444-1ff7-460e-afe4-d071801c66ad}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\jimi\platform">
       <UniqueIdentifier>{c7a79aaa-de4f-47d1-a052-3ee1d8530965}</UniqueIdentifier>
     </Filter>
@@ -65,9 +62,6 @@
     <Filter Include="src\jimic\basic">
       <UniqueIdentifier>{aa96027d-37cf-459f-87eb-e309f42a8418}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\jimic\basic\win32">
-      <UniqueIdentifier>{3cb23f28-002c-4dac-bfcc-54f210dfbf27}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\jimic\platform">
       <UniqueIdentifier>{3233b5c6-6357-4e86-bb5d-12633073bdcd}</UniqueIdentifier>
     </Filter>
@@ -108,11 +102,26 @@
     <Filter Include="src\jimi\basic\msvc">
       <UniqueIdentifier>{bf056fab-aa44-4b16-8cd5-97164f0dbb5f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\jimi\csharp">
+      <UniqueIdentifier>{2a7f1b30-8e7f-4109-bf39-ab1f0ca42681}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\csharp\thread">
+      <UniqueIdentifier>{85725133-7cfb-4f5d-8172-ba05f98633e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\config">
+      <UniqueIdentifier>{8f909f97-4fad-4a18-aa59-bed2e23f162e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimi\config\win32">
+      <UniqueIdentifier>{0825878a-fcc1-4dbf-a170-bcf39fb67aa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimic\config">
+      <UniqueIdentifier>{d6b93d98-3e02-4d9c-9cd9-814745c10eee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\jimic\config\win32">
+      <UniqueIdentifier>{27956e43-7e43-44d0-b592-da4f1f6d6ede}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\jimi\basic\win32\jimi_config.h">
-      <Filter>src\jimi\basic\win32</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\util\cmd_line.h">
       <Filter>src\jimi\util</Filter>
     </ClInclude>
@@ -155,16 +164,10 @@
     <ClInclude Include="..\..\..\..\src\jimi\thread\Atomic.h">
       <Filter>src\jimi\thread</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\thread\Event.h">
-      <Filter>src\jimi\thread</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\thread\Thread.h">
       <Filter>src\jimi\thread</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\thread\ThreadDef.h">
-      <Filter>src\jimi\thread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\thread\WaitHandle.h">
       <Filter>src\jimi\thread</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\system\Console.h">
@@ -178,12 +181,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\system\WinService.h">
       <Filter>src\jimi\system</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\basic\win32\jimi_targetver.h">
-      <Filter>src\jimi\basic\win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\basic\win32\vs_stdint.h">
-      <Filter>src\jimi\basic\win32</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\internal\Copyable.h">
       <Filter>src\jimi\internal</Filter>
@@ -248,15 +245,6 @@
     <ClInclude Include="..\..\..\..\src\jimi\lang\Throwable.h">
       <Filter>src\jimi\lang</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\basic\win32\jimic_config.h">
-      <Filter>src\jimic\basic\win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\basic\win32\jimic_targetver.h">
-      <Filter>src\jimic\basic\win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\basic\win32\vs_stdint.h">
-      <Filter>src\jimic\basic\win32</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlen32.h">
       <Filter>src\jimic\string\win32\intel</Filter>
     </ClInclude>
@@ -268,9 +256,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.h">
       <Filter>src\jimic\string\win32\intel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\jimic_all.h">
-      <Filter>src\jimic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\stdio\csharp_sprintf.h">
       <Filter>src\jimic\stdio</Filter>
@@ -294,9 +279,6 @@
       <Filter>src\jimic\system</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\system\sys_timer.h">
-      <Filter>src\jimic\system</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\system\vs_vld.h">
       <Filter>src\jimic\system</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\libc\endian.h">
@@ -461,6 +443,48 @@
     <ClInclude Include="..\..\..\..\src\jimic\basic\stdint.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\Event.h">
+      <Filter>src\jimi\csharp\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\Thread.h">
+      <Filter>src\jimi\csharp\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\ThreadDef.h">
+      <Filter>src\jimi\csharp\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\WaitHandle.h">
+      <Filter>src\jimi\csharp\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\stdsize.h">
+      <Filter>src\jimi\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\targetver.h">
+      <Filter>src\jimi\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\vld.h">
+      <Filter>src\jimi\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\stdsize.h">
+      <Filter>src\jimic\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\targetver.h">
+      <Filter>src\jimic\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\vld.h">
+      <Filter>src\jimic\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\config\config.h">
+      <Filter>src\jimi\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\config\win32\config.h">
+      <Filter>src\jimi\config\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\config\config.h">
+      <Filter>src\jimic\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\config\win32\config.h">
+      <Filter>src\jimic\config\win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\util\cmd_line.cpp">
@@ -471,9 +495,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimi\fs\FileSystem.cpp">
       <Filter>src\jimi\fs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimi\thread\Thread.cpp">
-      <Filter>src\jimi\thread</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">
       <Filter>src\jimi\system</Filter>

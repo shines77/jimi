@@ -56,6 +56,24 @@
 
 #define JIMI_CONSTEXPR
 
+#if defined(_MSC_VER) && (_MSC_VER < 1600)
+#define JIMI_HAS_SHARED_PTR                 0
+#else
+#define JIMI_HAS_SHARED_PTR                 1
+#endif  /* _MSC_VER */
+
+#if defined(_MSC_VER) && (_MSC_VER < 1600)
+#define JIMI_HAS_CXX11_TYPE_TRAITS          0
+#else
+#define JIMI_HAS_CXX11_TYPE_TRAITS          1
+#endif  /* _MSC_VER */
+
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+#define JIMI_IS_CXX11                       0
+#else
+#define JIMI_IS_CXX11                       1
+#endif  /* _MSC_VER */
+
 /* 介绍C++11标准的变长参数模板       */
 /*   Reference: http://www.cnblogs.com/zenny-chen/archive/2013/02/03/2890917.html */
 

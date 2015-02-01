@@ -46,7 +46,7 @@
 #include <cctype>
 #endif
 
-//#include <type_traits>
+#include <type_traits>
 #include <array>        // for std::array
 
 #include "jimi/basic/stddef.h"
@@ -2561,6 +2561,7 @@ void template_inherit_test()
 
 void string_test()
 {
+#if defined(JIMI_HAS_SHARED_PTR) && (JIMI_HAS_SHARED_PTR != 0)
     std::map<std::string, int> p_times;
     std::map<std::string, int>::iterator it;
 
@@ -2597,6 +2598,7 @@ void string_test()
     printf("totals = %d\n", totals);
     printf("sizeof(string) = %d\n", sizeof(str));
     printf("\n");
+#endif  /* JIMI_HAS_SHARED_PTR */
 }
 
 template <typename T>
@@ -2654,12 +2656,17 @@ template <typename T>
 struct has_virtual_dtor_check
 {
 public:
-    typedef typename std::remove_all_extents<T>::type Ty;
-    //std::declval<Ty&>().~Ty()
+#if defined(_MSC_VER) && (_MSC_VER < 1600)
+    typedef typename std::tr1::remove_all_extents<T>::type type;
+#else
+    typedef typename std::remove_all_extents<T>::type type;
+#endif
+
+    //std::declval<Ty&>().~Ty();
     template<typename U, void (U::*)()> struct SFINAE {};
     template<typename U> static char HasVirtualDtor(SFINAE<U, &U::DoSomeThing> *);
     template<typename U> static int  HasVirtualDtor(...);
-    static const bool value = (sizeof(HasVirtualDtor<Ty>(0)) == sizeof(char));
+    static const bool value = (sizeof(HasVirtualDtor<type>(0)) == sizeof(char));
     //static const bool value2 = std::declval<Ty&>().~Ty();
 };
 
@@ -2718,6 +2725,7 @@ public:
 // 关于模板多态的演示代码
 void ImplSampleTest()
 {
+#if defined(JIMI_HAS_CXX11_TYPE_TRAITS) && (JIMI_HAS_CXX11_TYPE_TRAITS != 0)
     //string_test();
 
     // 检测是否使用了虚析构函数 ?
@@ -2734,8 +2742,10 @@ void ImplSampleTest()
     //value = has_virtual_dtor_check<ImplSample>::value;
     //printf("std::has_virtual_dtor_check<ImplSample>::value = %d\n\n", value);
 
+#if defined(JIMI_IS_CXX11) && (JIMI_IS_CXX11 != 0)
     value = std::is_destructible<ImplSample>::value;
     printf("std::is_destructible<ImplSample>::value = %d\n\n", value);
+#endif
 
     ///*
     ImplSample *impl1 = new ImplSample();
@@ -2754,6 +2764,7 @@ void ImplSampleTest()
     if (impl2)
         delete impl2;
     //*/
+#endif  /* JIMI_HAS_CXX11_TYPE_TRAITS */
 }
 
 void Log10_Test1(double val)

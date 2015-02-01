@@ -221,6 +221,18 @@
 						RelativePath="..\..\..\..\src\jimi\basic\stdint.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\basic\stdsize.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\basic\targetver.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\basic\vld.h"
+						>
+					</File>
 					<Filter
 						Name="win32"
 						>
@@ -234,22 +246,6 @@
 						</File>
 						<File
 							RelativePath="..\..\..\..\src\jimi\basic\win32\vs_stdint.h"
-							>
-						</File>
-					</Filter>
-					<Filter
-						Name="msvc"
-						>
-						<File
-							RelativePath="..\..\..\..\src\jimi\basic\msvc\inttypes.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\..\..\src\jimi\basic\msvc\stdbool.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\..\..\src\jimi\basic\msvc\stdint.h"
 							>
 						</File>
 					</Filter>
@@ -342,23 +338,11 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\thread\Event.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimi\thread\Thread.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\..\..\..\src\jimi\thread\Thread.h"
 						>
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimi\thread\ThreadDef.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimi\thread\WaitHandle.h"
 						>
 					</File>
 				</Filter>
@@ -530,6 +514,46 @@
 					Name="stl"
 					>
 				</Filter>
+				<Filter
+					Name="config"
+					>
+					<File
+						RelativePath="..\..\..\..\src\jimi\config\config.h"
+						>
+					</File>
+					<Filter
+						Name="win32"
+						>
+						<File
+							RelativePath="..\..\..\..\src\jimi\config\win32\config.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
+				<Filter
+					Name="csharp"
+					>
+					<Filter
+						Name="thread"
+						>
+						<File
+							RelativePath="..\..\..\..\src\jimi\csharp\thread\Event.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\..\src\jimi\csharp\thread\Thread.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\..\src\jimi\csharp\thread\ThreadDef.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\..\src\jimi\csharp\thread\WaitHandle.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="jimic"
@@ -693,22 +717,18 @@
 						RelativePath="..\..\..\..\src\jimic\basic\stdint.h"
 						>
 					</File>
-					<Filter
-						Name="win32"
+					<File
+						RelativePath="..\..\..\..\src\jimic\basic\stdsize.h"
 						>
-						<File
-							RelativePath="..\..\..\..\src\jimic\basic\win32\jimic_config.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\..\..\src\jimic\basic\win32\jimic_targetver.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\..\..\src\jimic\basic\win32\vs_stdint.h"
-							>
-						</File>
-					</Filter>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\basic\targetver.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\basic\vld.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="platform"
@@ -825,10 +845,6 @@
 						RelativePath="..\..\..\..\src\jimic\system\sys_timer.h"
 						>
 					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimic\system\vs_vld.h"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="util"
@@ -857,6 +873,22 @@
 						RelativePath="..\..\..\..\src\jimic\math\log10.h"
 						>
 					</File>
+				</Filter>
+				<Filter
+					Name="config"
+					>
+					<File
+						RelativePath="..\..\..\..\src\jimic\config\config.h"
+						>
+					</File>
+					<Filter
+						Name="win32"
+						>
+						<File
+							RelativePath="..\..\..\..\src\jimic\config\win32\config.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
