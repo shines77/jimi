@@ -173,6 +173,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\basic\stdint.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\stdsize.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\targetver.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\basic\vld.h" />
     <ClInclude Include="..\..\..\..\src\jimic\config\config.h" />
     <ClInclude Include="..\..\..\..\src\jimic\config\win32\config.h" />
     <ClInclude Include="..\..\..\..\src\jimic\libc\endian.h" />
@@ -224,7 +225,6 @@
     <ClInclude Include="..\..\..\..\src\jimic\system\get_char.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\sleep.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\sys_timer.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\system\vs_vld.h" />
     <ClInclude Include="..\..\..\..\src\jimic\util\utils.h" />
     <ClCompile Include="..\..\..\..\src\jimic\string\itoa.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\itoa_fast.c" />
@@ -256,6 +256,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\stdint.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\stdsize.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\targetver.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\basic\vld.h" />
     <ClInclude Include="..\..\..\..\src\jimi\config\config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\config\win32\config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\Event.h" />

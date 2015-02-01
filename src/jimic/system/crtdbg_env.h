@@ -44,16 +44,18 @@
 //
 
 #if (defined(_DEBUG) || !defined(NDEBUG))
-#ifndef DBG_NEW
-  #if defined(_MSC_VER) && (_MSC_VER >= 1600)
-    #define DBG_NEW  new(_CLIENT_BLOCK, __FILE__, __LINE__)
-  #else
-    #define DBG_NEW  new(_NORMAL_BLOCK, __FILE__, __LINE__)
-  #endif
+  #ifndef DBG_NEW
+    #if defined(_MSC_VER) && (_MSC_VER >= 1600)
+      #define DBG_NEW  new(_CLIENT_BLOCK, __FILE__, __LINE__)
+    #else
+      #define DBG_NEW  new(_NORMAL_BLOCK, __FILE__, __LINE__)
+    #endif
+  #endif  /* DBG_NEW */
 #else
-  #define DBG_NEW
-#endif  /* DBG_NEW */
-#endif
+  #ifndef DBG_NEW
+    #define DBG_NEW   new
+  #endif  /* DBG_NEW */
+#endif  /* _DEBUG */
 
 #if defined(_DEBUG) || !defined(NDEBUG)
   #if defined(_MSC_VER) && (_MSC_VER >= 1600)
@@ -72,7 +74,7 @@
 
 #endif  /* JIMI_USE_CRTDBG_CHECK */
 
-#include "jimic/system/vs_vld.h"
+#include "jimic/basic/vld.h"
 
 #define DONT_DISPLAY_MEMORY_LEAK    0
 #define ALLOW_DISPLAY_MEMORY_LEAK   1

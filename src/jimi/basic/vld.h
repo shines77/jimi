@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_SYSTEM_VS_VLD_H_
-#define _JIMIC_SYSTEM_VS_VLD_H_
+#ifndef _JIMI_BASIC_VLD_H_
+#define _JIMI_BASIC_VLD_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -28,4 +28,4 @@
 
 #endif  /* _MSC_VER */
 
-#endif  /* !_JIMIC_SYSTEM_VS_VLD_H_ */
+#endif  /* !_JIMI_BASIC_VLD_H_ */
