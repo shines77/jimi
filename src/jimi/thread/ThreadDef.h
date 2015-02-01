@@ -17,6 +17,12 @@
 #endif
 #include <windows.h>
 
+#else  /* !_WIN32 */
+
+#ifndef CREATE_SUSPENDED
+#define CREATE_SUSPENDED        0x00000004
+#endif
+
 #endif  /* _WIN32 */
 
 namespace jimi {

@@ -19,12 +19,6 @@
 #include <windows.h>
 #include <process.h>
 
-#else  /* !_WIN32 */
-
-#ifndef CREATE_SUSPENDED
-#define CREATE_SUSPENDED        0x00000004
-#endif
-
 #endif  /* _WIN32 */
 
 #define THREAD_STATUS_MASK                  (ThreadStatusMask::kThreadStatusMask)
@@ -87,11 +81,16 @@ typedef struct ThreadExtraStatus
     static const uint32_t kBackground       = MAKE_THREAD_EXTRA_STATUS(0, 0, 0, 1, kThreadStatus_Unknown);
 } ThreadExtraStatus;
 
+#if defined(_WIN32)
+
+/**
+ * the Thread base class
+ */
 template <typename T>
 class ThreadBase
 {
 public:
-    typedef HANDLE              jm_handle_t;
+    //typedef HANDLE              jm_handle_t;
     typedef jm_handle_t         handle_t;
     typedef jm_handle_t         thread_handle_t;
     typedef uint32_t            thread_status_t;
@@ -113,9 +112,6 @@ public:
     ThreadBase(thread_proc_t thread_proc) { pThreadProc = thread_proc; }
     ~ThreadBase(void);
 
-    void Destroy();
-    void OnDestroy();
-
 private:
 #if defined(JIMI_HAS_DELETED_FUNCTIONS) && (JIMI_HAS_DELETED_FUNCTIONS != 0)
     //! Deny copy construction
@@ -130,8 +126,13 @@ private:
 #endif  /* JIMI_HAS_DELETED_FUNCTIONS */
 
 public:
+    void Destroy();
+    void OnDestroy();
+
     void Detach();
     void OnDetach();
+
+    void ThreadProcDone();
 
     thread_proc_t GetThreadProc() const { return pThreadProc; }
     bool SetThreadProc(thread_proc_t thread_proc);
@@ -239,7 +240,7 @@ public:
     }
 
     affinity_t GetProcessorAffinity() const;
-    affinity_t GetThreadAffinity();
+    affinity_t GetThreadAffinity() const;
 
     affinity_t SetProcessorAffinity();
     affinity_t SetThreadAffinity();
@@ -261,7 +262,7 @@ private:
     thread_id_t     nThreadId;
 };
 
-template <class T>
+template <typename T>
 ThreadBase<T>::ThreadBase(void)
 : pThreadProc(NULL)
 , hThread(NULL)
@@ -271,13 +272,13 @@ ThreadBase<T>::ThreadBase(void)
 {
 }
 
-template <class T>
+template <typename T>
 ThreadBase<T>::~ThreadBase(void)
 {
     this->Destroy();
 }
 
-template <class T>
+template <typename T>
 inline
 void ThreadBase<T>::Destroy()
 {
@@ -296,49 +297,49 @@ void ThreadBase<T>::Destroy()
     }
 }
 
-template <class T>
+template <typename T>
 inline
 void ThreadBase<T>::OnDestroy()
 {
     jmLog.info("ThreadBase<T>::OnDestroy(), error = %d.", ::GetLastError());
 }
 
-template <class T>
+template <typename T>
 inline
 bool ThreadBase<T>::IsValid() const
 {
     return (hThread != NULL);
 }
 
-template <class T>
+template <typename T>
 inline
 bool ThreadBase<T>::IsAlive() const
 {
     return IsValid() && THREAD_IS_ALIVE(nStatus);
 }
 
-template <class T>
+template <typename T>
 inline
 bool ThreadBase<T>::IsRunning() const
 {
     return IsValid() && THREAD_IS_RUNNING(nStatus);
 }
 
-template <class T>
+template <typename T>
 inline
 bool ThreadBase<T>::IsAliveOrRunning() const
 {
     return IsValid() && THREAD_IS_ALIVE_OR_RUNNING(nStatus);
 }
 
-template <class T>
+template <typename T>
 inline
 bool ThreadBase<T>::IsAliveAndRunning() const
 {
     return IsValid() && THREAD_IS_ALIVE_AND_RUNNING(nStatus);
 }
 
-template <class T>
+template <typename T>
 inline
 bool ThreadBase<T>::IsSuspended() const
 {
@@ -347,21 +348,21 @@ bool ThreadBase<T>::IsSuspended() const
             || this->GetThreadState() == ThreadStatus::kSuspendPending);
 }
 
-template <class T>
+template <typename T>
 inline
 bool ThreadBase<T>::IsBackground() const
 {
     return THREAD_IS_BACKGROUND(nExtraStatus);
 }
 
-template <class T>
+template <typename T>
 inline
 bool ThreadBase<T>::IsJoining() const
 {
     return THREAD_IS_JOINING(nExtraStatus);
 }
 
-template <class T>
+template <typename T>
 inline
 bool ThreadBase<T>::SetThreadProc(thread_proc_t thread_proc)
 {
@@ -372,15 +373,27 @@ bool ThreadBase<T>::SetThreadProc(thread_proc_t thread_proc)
     return false;
 }
 
+template <typename T>
+void ThreadBase<T>::ThreadProcDone()
+{
+    jmLog.info("ThreadBase<T>::ThreadProcDone(), error = %d.", ::GetLastError());
+    if (IsValid()) {
+        hThread = NULL;
+        nThreadId = 0;
+        nStatus = ThreadStatus::kUnknown;
+        nExtraStatus = ThreadExtraStatus::kUnknown;
+    }
+}
+
 /* ThreadBase() local default thread_proc function. */
-template <class T>
+template <typename T>
 void JIMI_WINAPI ThreadBase<T>::ThreadProc(void *lpParam)
 {
     // Do nothing !!
     jmLog.info("ThreadBase<T>::ThreadProc().");
 }
 
-template <class T>
+template <typename T>
 /* static */
 unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
 {
@@ -401,7 +414,7 @@ unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
         if (pThis != NULL) {
             thread_proc_t pThreadProc = pThis->GetThreadProc();
             if (pThreadProc != NULL)
-                pThreadProc(pObject);
+                pThreadProc(lpParam);
             else
                 pThis->ThreadProc(pObject);
 
@@ -426,7 +439,7 @@ unsigned JIMI_WINAPI ThreadBase<T>::ThreadProcBase(void *lpParam)
     return 0;
 }
 
-template <class T>
+template <typename T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Start(void *pParam /* = NULL */,
                                                              unsigned uInitFlag /* = ThreadInitFlag::kCreateDefault */)
 {
@@ -463,7 +476,7 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Start(void *pParam /* = N
     return this->GetThreadState();
 }
 
-template <class T>
+template <typename T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Stop(uint32_t uWaitTime /* = Timeout::kAbortWaitTime */,
                                                             uint32_t nExitCode /* = -1 */)
 {
@@ -482,7 +495,7 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Stop(uint32_t uWaitTime /
     return this->GetThreadState();
 }
 
-template <class T>
+template <typename T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Suspend()
 {
     if (!IsSuspended()) {
@@ -496,7 +509,7 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Suspend()
     return this->GetThreadState();
 }
 
-template <class T>
+template <typename T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Resume()
 {
     if (IsSuspended()) {
@@ -510,7 +523,7 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Resume()
     return this->GetThreadState();
 }
 
-template <class T>
+template <typename T>
 int32_t ThreadBase<T>::SpinWait(int32_t iterations)
 {
     volatile int32_t sum = 0;
@@ -521,7 +534,7 @@ int32_t ThreadBase<T>::SpinWait(int32_t iterations)
     return sum;
 }
 
-template <class T>
+template <typename T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Wait(handle_t hObject,
                                                             uint32_t uWaitTime /* = Timeout::kInfinite */)
 {
@@ -552,7 +565,7 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Wait(handle_t hObject,
     return this->GetThreadFullState();
 }
 
-template <class T>
+template <typename T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Join(uint32_t uWaitTime /* = Timeout::kInfinite */)
 {
     DWORD dwResult;
@@ -603,7 +616,7 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Join(uint32_t uWaitTime /
     return this->GetThreadFullState();
 }
 
-template <class T>
+template <typename T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Abort(uint32_t uWaitTime /* = Timeout::kAbortWaitTime */,
                                                              uint32_t uExitCode /* = 0 */)
 {
@@ -651,14 +664,14 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Abort(uint32_t uWaitTime 
     return this->GetThreadState();
 }
 
-template <class T>
+template <typename T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Interrupt(uint32_t uWaitTime /* = Timeout::kAbortWaitTime */,
                                                                  uint32_t uExitCode /* = 0 */)
 {
     return this->Abort(uWaitTime, uExitCode);
 }
 
-template <class T>
+template <typename T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Terminate(uint32_t uWaitTime /* = Timeout::kAbortWaitTime */,
                                                                  uint32_t uExitCode /* = 0 */)
 {
@@ -666,7 +679,7 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Terminate(uint32_t uWaitT
 }
 
 /* static */
-template <class T>
+template <typename T>
 inline
 void ThreadBase<T>::Sleep(uint32_t uMilliSecs)
 {
@@ -681,7 +694,7 @@ class Thread : public ThreadBase<Thread>
 public:
     Thread(void) : ThreadBase<Thread>() {}
     Thread(thread_proc_t thread_proc) : ThreadBase<Thread>(thread_proc) {}
-    ~Thread(void) { }
+    ~Thread(void) {}
 
 private:
 #if defined(JIMI_HAS_DELETED_FUNCTIONS) && (JIMI_HAS_DELETED_FUNCTIONS != 0)
@@ -696,6 +709,82 @@ private:
     void operator = (const Thread &) {}
 #endif  /* JIMI_HAS_DELETED_FUNCTIONS */
 };
+
+#else  /* !_WIN32 */
+
+/**
+ * the Thread base class
+ */
+template <typename T>
+class ThreadBase
+{
+public:
+    typedef jm_handle_t thread_handle_t;
+    typedef jm_handle_t handle_t;
+    typedef uint32_t    thread_status_t;
+    typedef unsigned    thread_id_t;
+    typedef uint32_t    affinity_t;
+
+    typedef void (*thread_proc_t)(void *lpParam);
+
+public:
+    ThreadBase(void);
+    ThreadBase(thread_proc_t thread_proc) { pThreadProc = thread_proc; }
+    ~ThreadBase(void);
+
+private:
+#if defined(JIMI_HAS_DELETED_FUNCTIONS) && (JIMI_HAS_DELETED_FUNCTIONS != 0)
+    //! Deny copy construction
+    explicit ThreadBase(const ThreadBase &) = delete;
+    //! Deny assignment operator
+    void operator = (const ThreadBase &) = delete;
+#else
+    //! Deny copy construction
+    explicit ThreadBase(const ThreadBase &) {}
+    //! Deny assignment operator
+    void operator = (const ThreadBase &) {}
+#endif  /* JIMI_HAS_DELETED_FUNCTIONS */
+
+protected:
+    thread_proc_t   pThreadProc;
+};
+
+template <typename T>
+ThreadBase<T>::ThreadBase(void)
+: pThreadProc(NULL)
+{
+}
+
+template <typename T>
+ThreadBase<T>::~ThreadBase(void)
+{
+}
+
+/**
+ * the Thread class
+ */
+class Thread : public ThreadBase<Thread>
+{
+public:
+    Thread(void) : ThreadBase<Thread>() { };
+    Thread(thread_proc_t thread_proc) : ThreadBase<Thread>(thread_proc) {}
+    ~Thread(void) { };
+
+private:
+#if defined(JIMI_HAS_DELETED_FUNCTIONS) && (JIMI_HAS_DELETED_FUNCTIONS != 0)
+    //! Deny copy construction
+    explicit Thread(const Thread &) = delete;
+    //! Deny assignment operator
+    void operator = (const Thread &) = delete;
+#else
+    //! Deny copy construction
+    explicit Thread(const Thread &) {}
+    //! Deny assignment operator
+    void operator = (const Thread &) {}
+#endif  /* JIMI_HAS_DELETED_FUNCTIONS */
+};
+
+#endif  /* _WIN32 */
 
 }  /* namespace jimi */
 

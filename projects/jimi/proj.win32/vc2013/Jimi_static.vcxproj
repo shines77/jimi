@@ -312,7 +312,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\basic\assert.cpp" />
-    <ClCompile Include="..\..\..\..\src\jimi\csharp\thread\Thread.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\fs\FileSystem.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\log\Logger.cpp" />
     <ClCompile Include="..\..\..\..\src\jimi\mt\mutex.cpp" />
