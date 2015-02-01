@@ -11,22 +11,22 @@
  */
 
 // Compiler name
-#define JIMI_MACRO_TO_STR(x)        #x
-#define JIMI_MACRO_VAL2STR(x)       JIMI_MACRO_TO_STR(x)
+#define _JIMI_STRING_ESCAPE(x)      #x
+#define _JIMI_TO_STRING(x)          _JIMI_STRING_ESCAPE(x)
 
 #if defined(__ICL) || defined(__INTEL_COMPILER)     // Intel C++
 #  if defined(__VERSION__)
 #    define JIMI_COMPILER_NAME      "Intel C++ " __VERSION__
 #  elif defined(__INTEL_COMPILER_BUILD_DATE)
-#    define JIMI_COMPILER_NAME      "Intel C++ (" JIMI_MACRO_VAL2STR(__INTEL_COMPILER_BUILD_DATE) ")"
+#    define JIMI_COMPILER_NAME      "Intel C++ (" _JIMI_TO_STRING(__INTEL_COMPILER_BUILD_DATE) ")"
 #  else
 #    define JIMI_COMPILER_NAME      "Intel C++"
 #  endif    // #  if defined(__VERSION__)
 #elif defined(_MSC_VER)     // Microsoft VC++
 #  if defined(_MSC_FULL_VER)
-#    define JIMI_COMPILER_NAME      "Microsoft VC++ (" JIMI_MACRO_VAL2STR(_MSC_FULL_VER) ")"
+#    define JIMI_COMPILER_NAME      "Microsoft VC++ (" _JIMI_TO_STRING(_MSC_FULL_VER) ")"
 #  elif defined(_MSC_VER)
-#    define JIMI_COMPILER_NAME      "Microsoft VC++ (" JIMI_MACRO_VAL2STR(_MSC_VER) ")"
+#    define JIMI_COMPILER_NAME      "Microsoft VC++ (" _JIMI_TO_STRING(_MSC_VER) ")"
 #  else
 #    define JIMI_COMPILER_NAME      "Microsoft VC++"
 #  endif    // #  if defined(_MSC_FULL_VER)
@@ -40,11 +40,11 @@
 #  endif    // #  if defined(__CYGWIN__)
 #elif defined(__TURBOC__)   // Borland C++
 #  if defined(__BCPLUSPLUS__)
-#    define JIMI_COMPILER_NAME      "Borland C++ (" JIMI_MACRO_VAL2STR(__BCPLUSPLUS__) ")"
+#    define JIMI_COMPILER_NAME      "Borland C++ (" _JIMI_TO_STRING(__BCPLUSPLUS__) ")"
 #  elif defined(__BORLANDC__)
-#    define JIMI_COMPILER_NAME      "Borland C (" JIMI_MACRO_VAL2STR(__BORLANDC__) ")"
+#    define JIMI_COMPILER_NAME      "Borland C (" _JIMI_TO_STRING(__BORLANDC__) ")"
 #  else
-#    define JIMI_COMPILER_NAME      "Turbo C (" JIMI_MACRO_VAL2STR(__TURBOC__) ")"
+#    define JIMI_COMPILER_NAME      "Turbo C (" _JIMI_TO_STRING(__TURBOC__) ")"
 #  endif    // #  if defined(_MSC_FULL_VER)
 #else
 #  define JIMI_COMPILER_NAME        "Unknown Compiler"
@@ -242,10 +242,8 @@
 //////////////////////////////////////////////////////////////////////////
 
 // check user set compiler
-#if !JIMI_TARGET_COMPILER
-  #ifndef _MSC_VER
+#if (!defined(JIMI_TARGET_COMPILER)) || (JIMI_TARGET_COMPILER == JIMI_COMPILER_UNKNOWN)
     #error "Cannot recognize the target compiler; are you targeting an unsupported compiler?"
-  #endif
 #endif
 
 #endif  /* _JIMI_BASIC_COMPILER_DEF_H_ */

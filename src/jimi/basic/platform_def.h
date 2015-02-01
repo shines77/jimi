@@ -152,7 +152,7 @@
 #endif
 
 // linux
-#if defined(LINUX) || defined(__linux__)
+#if defined(__linux__) || defined(__linux) || defined(LINUX)
     #undef  JIMI_TARGET_PLATFORM
     #define JIMI_TARGET_PLATFORM        JIMI_PLATFORM_LINUX
     // JIMI_IS_LINUX has defined below
@@ -162,7 +162,7 @@
 #endif
 
 // WinCE (Windows CE)
-#if defined(WCE) && defined(_WCE)
+#if defined(WCE) || defined(_WCE) || defined(WINCE) || defined(_WIN32_WCE)
     #undef  JIMI_TARGET_PLATFORM
     #define JIMI_TARGET_PLATFORM        JIMI_PLATFORM_WINCE
     #ifndef JIMI_IS_WINCE
@@ -171,7 +171,7 @@
 #endif
 
 // WinRT (Windows Store App)
-#if defined(WINRT) && defined(_WINRT)
+#if defined(WINRT) || defined(_WINRT)
     #undef  JIMI_TARGET_PLATFORM
     #define JIMI_TARGET_PLATFORM        JIMI_PLATFORM_WINRT
     #ifndef JIMI_IS_WINRT
@@ -180,7 +180,7 @@
 #endif
 
 // WP8 (Windows Phone 8 App)
-#if defined(WP8) && defined(_WP8)
+#if defined(WP8) || defined(_WP8)
     #undef  JIMI_TARGET_PLATFORM
     #define JIMI_TARGET_PLATFORM        JIMI_PLATFORM_WP8
     #ifndef JIMI_IS_WP8
@@ -189,7 +189,7 @@
 #endif
 
 // win32
-#if defined(WIN32) || defined(_WIN32) || defined(_WINDOWS)
+#if defined(WIN32) || defined(_WIN32) || defined(_WINDOWS) || defined(__WIN32__) || defined(__NT__)
     #undef  JIMI_TARGET_PLATFORM
     #define JIMI_TARGET_PLATFORM        JIMI_PLATFORM_WIN32
     #ifndef JIMI_IS_WIN32
@@ -198,7 +198,7 @@
 #endif
 
 // win64
-#if defined(WIN64) || defined(_WIN64) || defined(_WINDOWS)
+#if defined(WIN64) || defined(_WIN64) || defined(__WIN64__)
     #undef  JIMI_TARGET_PLATFORM
     #define JIMI_TARGET_PLATFORM        JIMI_PLATFORM_WIN64
     #ifndef JIMI_IS_WIN64
@@ -215,8 +215,8 @@
 
 #if defined(JIMI_IS_WIN32) || defined(JIMI_IS_WIN64) || defined(JIMI_IS_WINCE) \
  || defined(JIMI_IS_WINRT) || defined(JIMI_IS_WP8)
-#ifndef JIMI_IS_WIN_FAMILY
-#define JIMI_IS_WIN_FAMILY              (JIMI_CHECK_PLATFORM(WIN32) || JIMI_CHECK_PLATFORM(WIN64) \
+#ifndef JIMI_IS_WINFAMILY
+#define JIMI_IS_WINFAMILY               (JIMI_CHECK_PLATFORM(WIN32) || JIMI_CHECK_PLATFORM(WIN64) \
                                       || JIMI_CHECK_PLATFORM(WINCE) || JIMI_CHECK_PLATFORM(WINRT) \
                                       || JIMI_CHECK_PLATFORM(WP8))
 #endif
@@ -264,10 +264,8 @@
 //////////////////////////////////////////////////////////////////////////
 
 // check user set platform
-#if !defined(JIMI_TARGET_PLATFORM) || !JIMI_TARGET_PLATFORM
-  #ifndef _MSC_VER
+#if (!defined(JIMI_TARGET_PLATFORM)) || (JIMI_TARGET_PLATFORM == JIMI_PLATFORM_UNKNOWN)
     #error "Cannot recognize the target platform; are you targeting an unsupported platform?"
-  #endif
 #endif
 
 #if (JIMI_TARGET_PLATFORM == JIMI_PLATFORM_WIN32 || JIMI_TARGET_PLATFORM == JIMI_PLATFORM_WIN64)
