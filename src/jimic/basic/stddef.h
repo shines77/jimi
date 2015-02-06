@@ -36,11 +36,6 @@
 #include "jimic/basic/declare.h"
 
 /**
- * for jimic assert defines
- */
-#include "jimic/basic/assert.h"
-
-/**
  * @file jimic_def.h
  * @brief JIMIC Platform Definitions
  * @remark This is a generated header generated from include/jimic_def.h.in by

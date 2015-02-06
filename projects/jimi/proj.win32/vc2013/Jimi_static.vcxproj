@@ -242,7 +242,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\common.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\compiler_def.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\basic\declare_comm.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\basic\declare-comm.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\inttypes.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\stdbool.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\stddef.h" />

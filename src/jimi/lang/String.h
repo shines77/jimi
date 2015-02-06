@@ -361,7 +361,7 @@ void BASIC_STRING::dump()
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::assign(const BASIC_STRING &str)
+BASIC_STRING & BASIC_STRING::assign(const BASIC_STRING &str)
 {
     if (&str == this)
         return *this;
@@ -369,27 +369,27 @@ BASIC_STRING &BASIC_STRING::assign(const BASIC_STRING &str)
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::assign(const value_type c)
+BASIC_STRING & BASIC_STRING::assign(const value_type c)
 {
     _store.assign(c);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::assign(const value_type c, size_type n)
+BASIC_STRING & BASIC_STRING::assign(const value_type c, size_type n)
 {
     _store.assign(c, n);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::assign(const value_type *s)
+BASIC_STRING & BASIC_STRING::assign(const value_type *s)
 {
     return assign(s, traits_type::length(s));
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::assign(const value_type *s, const size_type n)
+BASIC_STRING & BASIC_STRING::assign(const value_type *s, const size_type n)
 {
     size_type _size = size();
     if (_size >= n) {
@@ -409,7 +409,7 @@ BASIC_STRING &BASIC_STRING::assign(const value_type *s, const size_type n)
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &rhs)
+BASIC_STRING & BASIC_STRING::operator = (const BASIC_STRING &rhs)
 {
     if (&rhs == this)
         return *this;
@@ -437,20 +437,20 @@ BASIC_STRING &BASIC_STRING::operator = (const BASIC_STRING &rhs)
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::operator = (const value_type *str)
+BASIC_STRING & BASIC_STRING::operator = (const value_type *str)
 {
     return assign(str);
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::operator = (const value_type c)
+BASIC_STRING & BASIC_STRING::operator = (const value_type c)
 {
     return assign(c);
 }
 
 // Compatibility with std::string
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::operator = (const std::string &rhs)
+BASIC_STRING & BASIC_STRING::operator = (const std::string &rhs)
 {
     return assign(rhs.data(), rhs.size());
 }
@@ -463,7 +463,7 @@ std::string BASIC_STRING::toStdString() const
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const basic_string &str)
+BASIC_STRING & BASIC_STRING::append(const basic_string &str)
 {
 #if defined(_DEBUG) || !defined(NDEBUG)
     size_type nDesiredSize = size() + str.size();
@@ -474,14 +474,14 @@ BASIC_STRING &BASIC_STRING::append(const basic_string &str)
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const value_type c)
+BASIC_STRING & BASIC_STRING::append(const value_type c)
 {
     push_back(c);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const value_type c, size_type n)
+BASIC_STRING & BASIC_STRING::append(const value_type c, size_type n)
 {
 #if 0
     resize(size() + n, c);
@@ -494,13 +494,13 @@ BASIC_STRING &BASIC_STRING::append(const value_type c, size_type n)
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const value_type *s)
+BASIC_STRING & BASIC_STRING::append(const value_type *s)
 {
     return append(s, traits_type::length(s));
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const value_type *s, size_type n)
+BASIC_STRING & BASIC_STRING::append(const value_type *s, size_type n)
 {
     if (JIMI_UNLIKELY(!n)) {
         // Unlikely but must be done
@@ -559,56 +559,56 @@ void BASIC_STRING::pop_back()
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const int n)
+BASIC_STRING & BASIC_STRING::append(const int n)
 {
     _store.append(n);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const unsigned int u)
+BASIC_STRING & BASIC_STRING::append(const unsigned int u)
 {
     _store.append(u);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const long l)
+BASIC_STRING & BASIC_STRING::append(const long l)
 {
     _store.append(l);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const unsigned long ul)
+BASIC_STRING & BASIC_STRING::append(const unsigned long ul)
 {
     _store.append(ul);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const int64_t i64)
+BASIC_STRING & BASIC_STRING::append(const int64_t i64)
 {
     _store.append(i64);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const uint64_t u64)
+BASIC_STRING & BASIC_STRING::append(const uint64_t u64)
 {
     _store.append(u64);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const float f)
+BASIC_STRING & BASIC_STRING::append(const float f)
 {
     _store.append(f);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append(const double d)
+BASIC_STRING & BASIC_STRING::append(const double d)
 {
     _store.append(d);
     return *this;
@@ -629,42 +629,42 @@ int hex_to_string(const char *buf, uint64_t hex64)
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append_hex(uint32_t hex32,
-                                       const bool isUpper /* = true */)
+BASIC_STRING & BASIC_STRING::append_hex(uint32_t hex32,
+                                        const bool isUpper /* = true */)
 {
     _store.append_hex(hex32, isUpper);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::append_hex(uint64_t hex64,
-                                       const bool isUpper /* = true */)
+BASIC_STRING & BASIC_STRING::append_hex(uint64_t hex64,
+                                        const bool isUpper /* = true */)
 {
     _store.append_hex(hex64, isUpper);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::operator += (const basic_string &rhs)
+BASIC_STRING & BASIC_STRING::operator += (const basic_string &rhs)
 {
     return append(str);
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::operator += (const value_type c)
+BASIC_STRING & BASIC_STRING::operator += (const value_type c)
 {
     push_back(c);
     return *this;
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::operator += (const value_type *str)
+BASIC_STRING & BASIC_STRING::operator += (const value_type *str)
 {
     return append(s);
 }
 
 template <BASIC_STRING_CLASSES>
-BASIC_STRING &BASIC_STRING::operator += (value_type *str)
+BASIC_STRING & BASIC_STRING::operator += (value_type *str)
 {
     return append(s);
 }
@@ -944,7 +944,7 @@ JIMI_INLINE
 #else
 JIMI_FORCEINLINE
 #endif
-BASIC_STRING &BASIC_STRING::format(const value_type *fmt, Args const ... args)
+BASIC_STRING & BASIC_STRING::format(const value_type *fmt, Args const ... args)
 {
     int delta = 0;
     size_t index;
@@ -1066,7 +1066,7 @@ void BASIC_STRING::append_format_next(const T & value, Args const ... args)
 template <BASIC_STRING_CLASSES>
 template <typename ...Args>
 JIMI_FORCEINLINE
-BASIC_STRING &BASIC_STRING::append_format(Args const & ... args)
+BASIC_STRING & BASIC_STRING::append_format(Args const & ... args)
 {
     int delta = 0;
 #ifdef _DEBUG
@@ -1090,7 +1090,7 @@ BASIC_STRING &BASIC_STRING::append_format(Args const & ... args)
 
 template <BASIC_STRING_CLASSES>
 JIMI_INLINE
-BASIC_STRING &BASIC_STRING::format_c(const value_type *format, const value_type *args, ...)
+BASIC_STRING & BASIC_STRING::format_c(const value_type *format, const value_type *args, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1264,7 +1264,7 @@ BASIC_STRING &BASIC_STRING::format_c(const value_type *format, const value_type 
 
 template <BASIC_STRING_CLASSES>
 JIMI_INLINE
-BASIC_STRING &BASIC_STRING::format_c(const value_type *fmt, const value_type *args, ...)
+BASIC_STRING & BASIC_STRING::format_c(const value_type *fmt, const value_type *args, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1458,7 +1458,7 @@ BASIC_STRING &BASIC_STRING::format_c(const value_type *fmt, const value_type *ar
 
 template <BASIC_STRING_CLASSES>
 FORCEINLINE
-BASIC_STRING &BASIC_STRING::format_c(const value_type *fmt, const value_type *args, ...)
+BASIC_STRING & BASIC_STRING::format_c(const value_type *fmt, const value_type *args, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1641,7 +1641,7 @@ BASIC_STRING &BASIC_STRING::format_c(const value_type *fmt, const value_type *ar
 #if 0
 template <BASIC_STRING_CLASSES>
 FORCEINLINE
-BASIC_STRING &BASIC_STRING::append_format_c(const value_type *fmt, ...)
+BASIC_STRING & BASIC_STRING::append_format_c(const value_type *fmt, ...)
 {
     int delta = 0;
     int offset = 0;
@@ -1758,7 +1758,7 @@ BASIC_STRING &BASIC_STRING::append_format_c(const value_type *fmt, ...)
 #else
 template <BASIC_STRING_CLASSES>
 FORCEINLINE
-BASIC_STRING &BASIC_STRING::append_format_c(const value_type *fmt, ...)
+BASIC_STRING & BASIC_STRING::append_format_c(const value_type *fmt, ...)
 {
     int delta = 0;
     int offset = 0;

@@ -9,16 +9,20 @@
 #include "jimi/basic/stddef.h"
 #include "jimi/csharp/thread/ThreadDef.h"
 
-
 #include "jimi/log/log.h"
+#include "jimic/basic/asm.h"
 
-#if defined(_WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(_WINDOWS) || defined(__WIN32__) || defined(__NT__)
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #endif
 #include <windows.h>
 #include <process.h>
+
+#else  /* !_WIN32 */
+
+#include <pthread.h>
 
 #endif  /* _WIN32 */
 
@@ -39,11 +43,11 @@
 #define THREAD_IS_ALIVE_AND_RUNNING(status) \
     (((status) & kAliveAndRunningStatusMask) == kAliveAndRunningStatusMask)
 
-#define MAKE_THREAD_STATUS(bAlive, bRunning, nStatus)   \
+#define THREAD_STATUS(bAlive, bRunning, nStatus)   \
     (((((bAlive) & 1UL) << kAliveStatusShift) | (((bRunning) & 1UL) << kRunningStatusShift)) + (nStatus))
 
-#define MAKE_THREAD_EXTRA_STATUS(bAlive, bRunning, bJoin, bBackground, nStatus) \
-    (MAKE_THREAD_STATUS(bAlive, bRunning, nStatus)  \
+#define THREAD_EXTRA_STATUS(bAlive, bRunning, bJoin, bBackground, nStatus) \
+    (THREAD_STATUS(bAlive, bRunning, nStatus)  \
         | (((bJoin) & 1UL) << kJoinStatusShift)     \
         | (((bBackground) & 1UL) << kBackgroundStatusShift))
 
@@ -53,38 +57,38 @@ namespace csharp {
 
 typedef struct ThreadStatus
 {
-    static const uint32_t kUnknown          = MAKE_THREAD_STATUS(0, 0, kThreadStatus_Unknown);
+    static const uint32_t kUnknown          = THREAD_STATUS(kIsDead,  kIsStopped, kThreadStatus_Unknown);
 
     // All Unrunning Status
-    static const uint32_t kUnStarted        = MAKE_THREAD_STATUS(0, 0, kThreadStatus_UnStarted);
-    static const uint32_t kStopped          = MAKE_THREAD_STATUS(0, 0, kThreadStatus_Stopped);
-    static const uint32_t kAborted          = MAKE_THREAD_STATUS(0, 0, kThreadStatus_Aborted);
+    static const uint32_t kUnStarted        = THREAD_STATUS(kIsDead,  kIsStopped, kThreadStatus_UnStarted);
+    static const uint32_t kStopped          = THREAD_STATUS(kIsDead,  kIsStopped, kThreadStatus_Stopped);
+    static const uint32_t kAborted          = THREAD_STATUS(kIsDead,  kIsStopped, kThreadStatus_Aborted);
 
     // All Alive Status
-    static const uint32_t kStartPending     = MAKE_THREAD_STATUS(1, 0, kThreadStatus_StartPending);
-    static const uint32_t kStopPending      = MAKE_THREAD_STATUS(1, 0, kThreadStatus_StopPending);
-    static const uint32_t kAbortPending     = MAKE_THREAD_STATUS(1, 0, kThreadStatus_AbortPending);
-    static const uint32_t kClosePending     = MAKE_THREAD_STATUS(1, 0, kThreadStatus_ClosePending);
+    static const uint32_t kStartPending     = THREAD_STATUS(kIsAlive, kIsStopped, kThreadStatus_StartPending);
+    static const uint32_t kStopPending      = THREAD_STATUS(kIsAlive, kIsStopped, kThreadStatus_StopPending);
+    static const uint32_t kAbortPending     = THREAD_STATUS(kIsAlive, kIsStopped, kThreadStatus_AbortPending);
+    static const uint32_t kClosePending     = THREAD_STATUS(kIsAlive, kIsStopped, kThreadStatus_ClosePending);
 
     // All Running Status
-    static const uint32_t kRunning          = MAKE_THREAD_STATUS(1, 1, kThreadStatus_Running);
-    static const uint32_t kSuspended        = MAKE_THREAD_STATUS(1, 1, kThreadStatus_Suspended);
-    static const uint32_t kSuspendPending   = MAKE_THREAD_STATUS(1, 1, kThreadStatus_SuspendPending);
-    static const uint32_t kResumePending    = MAKE_THREAD_STATUS(1, 1, kThreadStatus_ResumePending);
-    static const uint32_t kThreadProcOver   = MAKE_THREAD_STATUS(1, 1, kThreadStatus_ThreadProcOver);
+    static const uint32_t kRunning          = THREAD_STATUS(kIsAlive, kIsRunning, kThreadStatus_Running);
+    static const uint32_t kSuspended        = THREAD_STATUS(kIsAlive, kIsRunning, kThreadStatus_Suspended);
+    static const uint32_t kSuspendPending   = THREAD_STATUS(kIsAlive, kIsRunning, kThreadStatus_SuspendPending);
+    static const uint32_t kResumePending    = THREAD_STATUS(kIsAlive, kIsRunning, kThreadStatus_ResumePending);
+    static const uint32_t kThreadProcOver   = THREAD_STATUS(kIsAlive, kIsRunning, kThreadStatus_ThreadProcOver);
 } ThreadStatus;
 
 typedef struct ThreadExtraStatus
 {
-    static const uint32_t kUnknown          = MAKE_THREAD_EXTRA_STATUS(0, 0, 0, 0, kThreadStatus_Unknown);
+    static const uint32_t kUnknown          = THREAD_EXTRA_STATUS(kIsDead, kIsStopped, 0, 0, kThreadStatus_Unknown);
 
     // wait, for and join
-    static const uint32_t kWaitSleepJoin    = MAKE_THREAD_EXTRA_STATUS(0, 0, 1, 0, kThreadStatus_Unknown);
+    static const uint32_t kWaitSleepJoin    = THREAD_EXTRA_STATUS(kIsDead, kIsStopped, 1, 0, kThreadStatus_Unknown);
     // background thread
-    static const uint32_t kBackground       = MAKE_THREAD_EXTRA_STATUS(0, 0, 0, 1, kThreadStatus_Unknown);
+    static const uint32_t kBackground       = THREAD_EXTRA_STATUS(kIsDead, kIsStopped, 0, 1, kThreadStatus_Unknown);
 } ThreadExtraStatus;
 
-#if defined(_WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(_WINDOWS) || defined(__WIN32__) || defined(__NT__)
 
 /**
  * the Thread base class
@@ -247,10 +251,13 @@ public:
     affinity_t SetProcessorAffinity();
     affinity_t SetThreadAffinity();
 
-    static int32_t SpinWait(int32_t iterations);
-    static void Sleep(uint32_t uMilliSecs);
+    static void SpinWait(int32_t iterations);
+    static void SpinOne();
 
-    void JIMI_WINAPI ThreadProc(void *lpParam);
+    static void Sleep(uint32_t uMilliSecs);
+    static int  YieldTo();
+
+    void ThreadProc(void *lpParam);
 
     static unsigned JIMI_WINAPI ThreadProcBase(void *lpParam);
 
@@ -526,17 +533,6 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Resume()
 }
 
 template <typename T>
-int32_t ThreadBase<T>::SpinWait(int32_t iterations)
-{
-    volatile int32_t sum = 0;
-    int32_t i;
-    for (i = 0; i < iterations; ++i)
-        sum += i;
-
-    return sum;
-}
-
-template <typename T>
 typename ThreadBase<T>::thread_status_t ThreadBase<T>::Wait(handle_t hObject,
                                                             uint32_t uWaitTime /* = Timeout::kInfinite */)
 {
@@ -547,7 +543,7 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Wait(handle_t hObject,
         int failed_counter = 0;
         this->AddThreadExtraState(ThreadStatus::kWaitSleepJoin);
         while ((dwResult = ::WaitForSingleObject(hObject, uWaitTime)) != WAIT_OBJECT_0) {
-#ifndef NDEBUG
+#ifdef _DEBUG
             ThreadBase<T>::Sleep(1);
             failed_counter++;
             if (failed_counter > 5)
@@ -579,7 +575,7 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Join(uint32_t uWaitTime /
         int failed_counter = 0;
         while (IsValid() &&
                ((dwResult = ::WaitForSingleObject(hThread, uWaitTime)) != WAIT_OBJECT_0)) {
-#ifndef NDEBUG
+#ifdef _DEBUG
             ThreadBase<T>::Sleep(1);
             failed_counter++;
             if (failed_counter > 5)
@@ -682,10 +678,35 @@ typename ThreadBase<T>::thread_status_t ThreadBase<T>::Terminate(uint32_t uWaitT
 
 /* static */
 template <typename T>
+void ThreadBase<T>::SpinWait(int32_t iterations)
+{
+    int32_t i;
+    for (i = iterations; i > 0; --i) {
+        jimi_mm_pause();
+    }
+}
+
+/* static */
+template <typename T>
+void ThreadBase<T>::SpinOne()
+{
+    jimi_mm_pause();
+}
+
+/* static */
+template <typename T>
 inline
 void ThreadBase<T>::Sleep(uint32_t uMilliSecs)
 {
     ::Sleep(uMilliSecs);
+}
+
+/* static */
+template <typename T>
+inline
+int ThreadBase<T>::YieldTo()
+{
+    return (int)::SwitchToThread();
 }
 
 /**

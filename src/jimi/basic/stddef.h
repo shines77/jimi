@@ -52,11 +52,6 @@
 #include "jimi/basic/declare.h"
 
 /**
- * for assert defines
- */
-#include "jimi/basic/assert.h"
-
-/**
  * for jimi_winapi
  */
 #if defined(JIMI_IS_MSVC)

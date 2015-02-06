@@ -9,7 +9,7 @@
 #include "jimi/basic/platform_def.h"
 #include "jimi/basic/compiler_def.h"
 
-#include "jimi/basic/declare_comm.h"
+#include "jimi/basic/declare-comm.h"
 
 #ifdef __cplusplus
 # define JIMI_CRT_INLINE        inline

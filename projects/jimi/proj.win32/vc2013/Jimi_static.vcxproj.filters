@@ -377,9 +377,6 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\stddef.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\basic\declare_comm.h">
-      <Filter>src\jimi\basic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
@@ -492,6 +489,9 @@
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\basic\vld.h">
+      <Filter>src\jimi\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\declare-comm.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
   </ItemGroup>

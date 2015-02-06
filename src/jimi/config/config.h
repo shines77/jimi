@@ -2,6 +2,8 @@
 #ifndef _JIMI_CONFIG_CONFIG_H_
 #define _JIMI_CONFIG_CONFIG_H_
 
+#include "jimi/config/config-pre.h"
+
 #if defined(__linux__) || defined(__LINUX__)
 #include "jimi/config/linux/config.h"
 #elif defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__)
@@ -13,5 +15,7 @@
 #else
 #include "jimi/config/default/config.h"
 #endif
+
+#include "jimi/config/config-pre.h"
 
 #endif  /* !_JIMI_CONFIG_CONFIG_H_ */

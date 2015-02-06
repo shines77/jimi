@@ -9,6 +9,8 @@
 #include "jimi/basic/stddef.h"
 #include "jimi/thread/Atomic.h"
 
+#include "jimi/basic/assert.h"
+
 namespace jimi {
 
 void *smartRealloc(void *memory, size_t cur_size, size_t cur_capacity, size_t new_size)

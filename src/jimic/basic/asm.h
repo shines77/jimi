@@ -6,8 +6,6 @@
 #pragma once
 #endif
 
-#include "jimic/basic/stddef.h"
-
 #ifndef __MMX__
 #define __MMX__
 #endif
@@ -88,6 +86,10 @@
 
 #ifndef movapd
 #define movapd          movaps
+#endif
+
+#ifndef jimi_mm_pause
+#define jimi_mm_pause   _mm_pause
 #endif
 
 #endif  /* _JIMIC_BASIC_ASM_H_ */

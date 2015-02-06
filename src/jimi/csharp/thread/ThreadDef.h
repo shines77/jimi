@@ -10,7 +10,7 @@
 
 #define HANDLE_IS_VALID(X)      ((X) != NULL && (X) != INVALID_HANDLE_VALUE)
 
-#if defined(_WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(_WINDOWS) || defined(__WIN32__) || defined(__NT__)
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
@@ -29,7 +29,7 @@ namespace jimi {
 
 namespace csharp {
 
-#if defined(_WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(_WINDOWS) || defined(__WIN32__) || defined(__NT__)
 typedef HANDLE jm_handle_t;
 #else
 typedef void * jm_handle_t;
@@ -110,6 +110,18 @@ typedef struct ThreadBackgroundMode
 } ThreadBackgroundMode;
 
 /* For class ThreadBase() thread status. */
+enum ThreadAliveStatus
+{
+    kIsDead     = 0,
+    kIsAlive    = 1
+};
+
+enum ThreadRunningStatus
+{
+    kIsStopped  = 0,
+    kIsRunning  = 1
+};
+
 enum ThreadStatusShift
 {
     // Thread extra status

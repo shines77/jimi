@@ -6,6 +6,8 @@
 #pragma once
 #endif
 
+#include "jimic/config/config-pre.h"
+
 #if defined(_WIN32) || defined(_WIN64) || defined(_MSC_VER)
 #include "jimic/config/win32/config.h"
 #elif defined(__linux__) || defined(__LINUX__)
@@ -17,5 +19,7 @@
 #else
 #include "jimic/config/default/config.h"
 #endif
+
+#include "jimic/config/config-comm.h"
 
 #endif  /* !_JIMIC_CONFIG_CONFIG_H_ */

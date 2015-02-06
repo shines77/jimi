@@ -7,7 +7,6 @@
 #endif
 
 #include "jimi/basic/stddef.h"
-//#include "jimi/basic/namespace.h"
 //#include "jimi/config/config.h"
 #include "jimi/internal/NonCopyable.h"
 
