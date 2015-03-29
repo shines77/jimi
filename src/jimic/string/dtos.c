@@ -28,18 +28,18 @@ static const double d_pow10_base_64[] = {
     1.0E+95,  1.0E+114, 1.0E+133, 1.0E+152,
     1.0E+171, 1.0E+190, 1.0E+209, 1.0E+228,
     1.0E+247, 1.0E+266, 1.0E+285, 1.0E+304,
-    // last 3 items is fill for address aligned to 64 bytes (cache line size)
-    1.0E+308, 1.0E+308, 1.0E+308, 1.0E+308
+    1.0E+308,
+    // last 3 items is fill for address aligned to 64 bytes only
+    1.0E+308, 1.0E+308, 1.0E+308
 };
 
-static const uint32_t float_scales_32[] = {
-    1, 10, 100, 1000, 10000, 100000,
-    1000000, 10000000, 100000000, 1000000000,
-    // fill for address aligned to 64 bytes (cache line size)
+static const uint32_t pow10_scales_int32[] = {
+    1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000,
+    // fill for address aligned to 64 bytes only
     1, 1, 1, 1, 1, 1
 };
 
-static const uint64_t float_scales_64[] = {
+static const uint64_t pow10_scales_int64[] = {
     10000000000ULL,         100000000000ULL,
     1000000000000ULL,       10000000000000ULL,
     100000000000000ULL,     1000000000000000ULL,
@@ -74,19 +74,19 @@ jmc_dget_exponent(double * JMC_RESTRICT pval)
 }
 
 JMC_DECLARE_NONSTD(int)
-jmc_fadjust_to_bin32(float * JMC_RESTRICT pval, int exponent)
+jmc_adjustf_to_bin32(float * JMC_RESTRICT pval, int exponent)
 {
     // TODO:
     return 0;
 }
 
 JMC_DECLARE_NONSTD(int)
-jmc_dadjust_to_bin64(double * JMC_RESTRICT pval, int exponent)
+jmc_adjustd_to_bin64(double * JMC_RESTRICT pval, int exponent)
 {
     int exp10;
     int base_index;
     int remain_index;
-    double pow10;
+    double pow10_base;
 
     jimic_assert(pval != NULL);
     jimic_assert(exponent >= JMC_IEEE754_DOUBLE_EXPONENT_MIN
@@ -106,13 +106,13 @@ jmc_dadjust_to_bin64(double * JMC_RESTRICT pval, int exponent)
         // if exponent >= 0 and exponent < 64, needn't to adjust
         if (base_index > 0) {
             jimic_assert(base_index > 0 && base_index < 20);
-            pow10 = d_pow10_base_64[base_index - 1];
+            pow10_base = d_pow10_base_64[base_index - 1];
 
             remain_index = (exponent & 63) >> 3;
             jimic_assert(remain_index >= 0 && remain_index < 8);
 
-            pow10 *= d_pow10_remain_8[remain_index];
-            *pval = (*pval) / pow10;
+            pow10_base *= d_pow10_remain_8[remain_index];
+            *pval = (*pval) / pow10_base;
         }
         return exp10;
     }
@@ -126,13 +126,13 @@ jmc_dadjust_to_bin64(double * JMC_RESTRICT pval, int exponent)
 
         base_index = ((exponent + 4) >> 6);
         jimic_assert(base_index >= 0 && base_index < 20);
-        pow10 = d_pow10_base_64[base_index];
+        pow10_base = d_pow10_base_64[base_index];
 
         remain_index = (exponent & 63) >> 3;
         jimic_assert(remain_index >= 0 && remain_index < 8);
 
-        pow10 *= d_pow10_remain_8[remain_index];
-        *pval = (*pval) * pow10;
+        pow10_base *= d_pow10_remain_8[remain_index];
+        *pval = (*pval) * pow10_base;
         return -exp10;
     }
 }
@@ -167,7 +167,7 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int field_width, int precision)
 
     d64 = (jmc_ieee754_double *)&val;
     exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
-    exp10 = jmc_dadjust_to_bin64(&val, exponent);
+    exp10 = jmc_adjustd_to_bin64(&val, exponent);
 
     if (precision < 0) {
         jimic_assert(precision < 0);
@@ -179,11 +179,11 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int field_width, int precision)
 #if 0
         if (precision <= 9) {
             jimic_assert(precision > 0 && precision <= 9);
-            scale = float_scales_32[precision];
+            scale = pow10_scales_int32[precision];
         }
         else {
             jimic_assert(precision > 9 && precision <= 20);
-            scale = float_scales_64[precision - 11];
+            scale = pow10_scales_int64[precision - 11];
         }
 #elif 1
         if (precision <= 9) {
@@ -353,7 +353,7 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
         exp10 = 0;
         if (exponent < 0 || exponent >= 64) {
             // adjust double value to range like (1 ~ 2^64) * 10^N
-            exp10 = jmc_dadjust_to_bin64(&val, exponent);
+            exp10 = jmc_adjustd_to_bin64(&val, exponent);
         }
 
         i64 = (int64_t)val;
@@ -438,11 +438,11 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
             jimic_assert(frac_prec > 0);
             if (frac_prec <= 9) {
                 jimic_assert(frac_prec > 0 && frac_prec <= 9);
-                scale = float_scales_32[frac_prec];
+                scale = pow10_scales_int32[frac_prec];
             }
             else {
                 jimic_assert(frac_prec > 9 && frac_prec <= FMT_MAX_DOUBLE_PRECISION);
-                scale = float_scales_64[frac_prec - 10];
+                scale = pow10_scales_int64[frac_prec - 10];
             }
         }
         else {
@@ -714,7 +714,7 @@ jmc_dtos_ex_old(char * JMC_RESTRICT buf, size_t count, double val, unsigned int 
         exp10 = 0;
         if (exponent >= 0 && exponent < 64) {
             // adjust double value to range like (1 ~ 2^64) * 10^N
-            exp10 = jmc_dadjust_to_bin64(&val, exponent);
+            exp10 = jmc_adjustd_to_bin64(&val, exponent);
         }
 
         i64 = (int64_t)val;
@@ -787,11 +787,11 @@ jmc_dtos_ex_old(char * JMC_RESTRICT buf, size_t count, double val, unsigned int 
             jimic_assert(frac_prec > 0);
             if (frac_prec <= 9) {
                 jimic_assert(frac_prec > 0 && frac_prec <= 9);
-                scale = float_scales_32[frac_prec];
+                scale = pow10_scales_int32[frac_prec];
             }
             else {
                 jimic_assert(frac_prec > 9 && precision <= FMT_MAX_DOUBLE_PRECISION);
-                scale = float_scales_64[frac_prec - 10];
+                scale = pow10_scales_int64[frac_prec - 10];
             }
         }
         else {
@@ -1049,11 +1049,11 @@ jmc_dtos_ex2(char * JMC_RESTRICT buf, size_t count, double val, unsigned int fla
 #if 0
             if (precision <= 9) {
                 jimic_assert(precision > 0 && precision <= 9);
-                scale = float_scales_32[precision];
+                scale = pow10_scales_int32[precision];
             }
             else {
                 jimic_assert(precision > 9 && precision <= FMT_MAX_DOUBLE_PRECISION);
-                scale = float_scales_64[precision - 11];
+                scale = pow10_scales_int64[precision - 11];
             }
 #else
             if (precision <= 9) {
