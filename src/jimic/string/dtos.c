@@ -14,16 +14,16 @@
 #include <float.h>
 #include <limits.h>     // for define UINT_MAX
 
-static const double d_pow10_remain_16[] = {
+static const double pow10_remain_d16[] = {
     1.0E+0, 1.0E+4, 1.0E+9, 1.0E+14
 };
 
-static const double d_pow10_remain_8[] = {
+static const double pow10_remain_d8[] = {
     1.0E+0,  1.0E+2,  1.0E+4,  1.0E+7,
     1.0E+9,  1.0E+12, 1.0E+14, 1.0E+16,
 };
 
-static const double d_pow10_base_64[] = {
+static const double pow10_base_d64[] = {
     1.0E+19,  1.0E+38,  1.0E+57,  1.0E+76,
     1.0E+95,  1.0E+114, 1.0E+133, 1.0E+152,
     1.0E+171, 1.0E+190, 1.0E+209, 1.0E+228,
@@ -44,11 +44,13 @@ static const uint64_t pow10_scales_int64[] = {
     1000000000000ULL,       10000000000000ULL,
     100000000000000ULL,     1000000000000000ULL,
     10000000000000000ULL,   100000000000000000ULL,
-    1000000000000000000ULL, 10000000000000000000ULL
+    1000000000000000000ULL, 10000000000000000000ULL,
+    // fill for address aligned to 64 bytes only
+    1ULL, 1ULL, 1ULL, 1ULL, 1ULL, 1ULL
 };
 
 JMC_DECLARE_NONSTD(int)
-jmc_fget_exponent(float * JMC_RESTRICT pval)
+jmc_get_fexponent(float * JMC_RESTRICT pval)
 {
     jmc_ieee754_float *f32;
     int exponent;
@@ -61,7 +63,7 @@ jmc_fget_exponent(float * JMC_RESTRICT pval)
 }
 
 JMC_DECLARE_NONSTD(int)
-jmc_dget_exponent(double * JMC_RESTRICT pval)
+jmc_get_dexponent(double * JMC_RESTRICT pval)
 {
     jmc_ieee754_double *d64;
     int exponent;
@@ -106,12 +108,12 @@ jmc_adjustd_to_bin64(double * JMC_RESTRICT pval, int exponent)
         // if exponent >= 0 and exponent < 64, needn't to adjust
         if (base_index > 0) {
             jimic_assert(base_index > 0 && base_index < 20);
-            pow10_base = d_pow10_base_64[base_index - 1];
+            pow10_base = pow10_base_d64[base_index - 1];
 
             remain_index = (exponent & 63) >> 3;
             jimic_assert(remain_index >= 0 && remain_index < 8);
 
-            pow10_base *= d_pow10_remain_8[remain_index];
+            pow10_base *= pow10_remain_d8[remain_index];
             *pval = (*pval) / pow10_base;
         }
         return exp10;
@@ -126,12 +128,12 @@ jmc_adjustd_to_bin64(double * JMC_RESTRICT pval, int exponent)
 
         base_index = ((exponent + 4) >> 6);
         jimic_assert(base_index >= 0 && base_index < 20);
-        pow10_base = d_pow10_base_64[base_index];
+        pow10_base = pow10_base_d64[base_index];
 
         remain_index = (exponent & 63) >> 3;
         jimic_assert(remain_index >= 0 && remain_index < 8);
 
-        pow10_base *= d_pow10_remain_8[remain_index];
+        pow10_base *= pow10_remain_d8[remain_index];
         *pval = (*pval) * pow10_base;
         return -exp10;
     }
@@ -684,7 +686,7 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
 
 JMC_DECLARE_NONSTD(int)
 jmc_dtos_ex_old(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag,
-            unsigned int fill, int field_width, int precision)
+                unsigned int fill, int field_width, int precision)
 {
     int len;
     int64_t i64;

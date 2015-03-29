@@ -3295,7 +3295,7 @@ void Double_And_Float_Test()
     double dd = d;
     uint64_t u64 = (uint64_t)d;
     printf("printf(1.2345678901234567E+19) = %I64u\n", (uint64_t)1.234567890123456789E+19);
-    jmc_adjustd_to_bin64((double *)&dd, jmc_dget_exponent((double *)&dd));
+    jmc_adjustd_to_bin64((double *)&dd, jmc_get_dexponent((double *)&dd));
     printf("printf(1.23456789E+200)        = %0.20f\n", dd);
 
     jmc_snprintf(buf, jm_countof(buf), jm_countof(buf) - 1, "jmc_snprintf(1.23456789E+200)  = %0.20f\n", d);

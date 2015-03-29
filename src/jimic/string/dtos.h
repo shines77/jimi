@@ -14,10 +14,10 @@ extern "C" {
 #endif
 
 JMC_DECLARE_NONSTD(int)
-jmc_fget_exponent(float * JMC_RESTRICT pval);
+jmc_get_fexponent(float * JMC_RESTRICT pval);
 
 JMC_DECLARE_NONSTD(int)
-jmc_dget_exponent(double * JMC_RESTRICT pval);
+jmc_get_dexponent(double * JMC_RESTRICT pval);
 
 // jmc_ftos()
 JMC_DECLARE_NONSTD(int)

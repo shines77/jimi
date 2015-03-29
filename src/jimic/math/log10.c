@@ -1,6 +1,5 @@
 
 #include "jimic/math/log10.h"
-
 #include "jimic/libc/ieee754.h"
 
 #include <math.h>
