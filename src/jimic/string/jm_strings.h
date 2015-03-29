@@ -7,6 +7,7 @@
 #endif
 
 #include "jimic/basic/platform_def.h"
+#include "jimic/config/config.h"
 
 #include "jimic/basic/stdint.h"
 #include "jimic/basic/declare.h"

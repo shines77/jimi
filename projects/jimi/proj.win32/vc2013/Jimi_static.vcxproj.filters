@@ -494,6 +494,24 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare-comm.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\config\config_comm.h">
+      <Filter>src\jimic\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\config\config_pre.h">
+      <Filter>src\jimic\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\config\config_comm.h">
+      <Filter>src\jimi\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\config\config_pre.h">
+      <Filter>src\jimi\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\config\config_arch.h">
+      <Filter>src\jimi\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\config\config_arch.h">
+      <Filter>src\jimic\config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\system\WinService.cpp">

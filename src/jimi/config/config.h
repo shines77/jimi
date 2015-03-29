@@ -2,7 +2,8 @@
 #ifndef _JIMI_CONFIG_CONFIG_H_
 #define _JIMI_CONFIG_CONFIG_H_
 
-#include "jimi/config/config-pre.h"
+#include "jimi/config/config_pre.h"
+#include "jimi/config/config_arch.h"
 
 #if defined(__linux__) || defined(__LINUX__)
 #include "jimi/config/linux/config.h"
@@ -16,6 +17,6 @@
 #include "jimi/config/default/config.h"
 #endif
 
-#include "jimi/config/config-pre.h"
+#include "jimi/config/config_comm.h"
 
 #endif  /* !_JIMI_CONFIG_CONFIG_H_ */

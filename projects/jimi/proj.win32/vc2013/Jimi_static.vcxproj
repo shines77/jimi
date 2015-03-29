@@ -175,6 +175,9 @@
     <ClInclude Include="..\..\..\..\src\jimic\basic\targetver.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\vld.h" />
     <ClInclude Include="..\..\..\..\src\jimic\config\config.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\config\config_arch.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\config\config_comm.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\config\config_pre.h" />
     <ClInclude Include="..\..\..\..\src\jimic\config\win32\config.h" />
     <ClInclude Include="..\..\..\..\src\jimic\libc\endian.h" />
     <ClInclude Include="..\..\..\..\src\jimic\libc\ieee754.h" />
@@ -258,6 +261,9 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\targetver.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\vld.h" />
     <ClInclude Include="..\..\..\..\src\jimi\config\config.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\config\config_arch.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\config\config_comm.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\config\config_pre.h" />
     <ClInclude Include="..\..\..\..\src\jimi\config\win32\config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\Event.h" />
     <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\Thread.h" />
