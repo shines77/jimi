@@ -35,7 +35,7 @@ static const double pow10_base_d64[] = {
 
 static const uint32_t pow10_scales_int32[] = {
     1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000,
-    // fill for address aligned to 64 bytes only
+    // Fill for address aligned to 64 bytes only
     1, 1, 1, 1, 1, 1
 };
 
@@ -45,7 +45,7 @@ static const uint64_t pow10_scales_int64[] = {
     100000000000000ULL,     1000000000000000ULL,
     10000000000000000ULL,   100000000000000000ULL,
     1000000000000000000ULL, 10000000000000000000ULL,
-    // fill for address aligned to 64 bytes only
+    // Fill for address aligned to 64 bytes only
     1ULL, 1ULL, 1ULL, 1ULL, 1ULL, 1ULL
 };
 
@@ -168,64 +168,64 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int field_width, int precision)
     int exp10;
 
     d64 = (jmc_ieee754_double *)&val;
-    exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
-    exp10 = jmc_adjustd_to_bin64(&val, exponent);
 
-    if (precision < 0) {
-        jimic_assert(precision < 0);
-        precision = FMT_DEFAULT_DOUBLE_PRECISION;
-        scale = 1000000;
-        num_width = field_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
-    }
-    else if (precision > 0) {
-#if 0
-        if (precision <= 9) {
-            jimic_assert(precision > 0 && precision <= 9);
-            scale = pow10_scales_int32[precision];
-        }
-        else {
-            jimic_assert(precision > 9 && precision <= 20);
-            scale = pow10_scales_int64[precision - 11];
-        }
-#elif 1
-        if (precision <= 9) {
-            jimic_assert(precision > 0 && precision <= 9);
-            scale32 = 10;
-            for (n = precision - 1; n > 0; --n)
-                scale32 *= 10;
-            scale = scale32;
-        }
-        else {
-            jimic_assert(precision > 9);
-            if (precision <= FMT_MAX_DOUBLE_PRECISION) {
-                scale = 10000000000ULL;
-                for (n = precision - 10; n > 0; --n)
-                    scale *= 10;
-            }
-            else {
-                precision = FMT_MAX_DOUBLE_PRECISION;
-                scale = 100000000000000000ULL;
-            }
-            jimic_assert(precision <= FMT_MAX_DOUBLE_PRECISION);
-        }
-#else
-        jimic_assert(precision >= 0 && precision <= 20);
-        scale = 1;
-        for (n = precision; n > 0; --n)
-            scale *= 10;
-#endif
-        num_width = field_width - precision - 1;
-    }
-    else {
-        scale = 1ULL;
-        num_width = field_width;
-    }
-
-    d64 = (jmc_ieee754_double *)&val;
-
-    // is NaN or INF ? (exponent is maxium ?)
+    // Check the exponent of IEEE754 double, exponent is the maxium value? It is a NaN or INF or Normal type?
     if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) !=
                                JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
+        exponent = d64->ieee.exponent - JMC_IEEE754_DOUBLE_EXPONENT_BIAS;
+        exp10 = jmc_adjustd_to_bin64(&val, exponent);
+
+        if (precision < 0) {
+            jimic_assert(precision < 0);
+            precision = FMT_DEFAULT_DOUBLE_PRECISION;
+            scale = 1000000;
+            num_width = field_width - FMT_DEFAULT_DOUBLE_PRECISION - 1;
+        }
+        else if (precision > 0) {
+#if 0
+            if (precision <= 9) {
+                jimic_assert(precision > 0 && precision <= 9);
+                scale = pow10_scales_int32[precision];
+            }
+            else {
+                jimic_assert(precision > 9 && precision <= 20);
+                scale = pow10_scales_int64[precision - 11];
+            }
+#elif 1
+            if (precision <= 9) {
+                jimic_assert(precision > 0 && precision <= 9);
+                scale32 = 10;
+                for (n = precision - 1; n > 0; --n)
+                    scale32 *= 10;
+                scale = scale32;
+            }
+            else {
+                jimic_assert(precision > 9);
+                if (precision <= FMT_MAX_DOUBLE_PRECISION) {
+                    scale = 10000000000ULL;
+                    for (n = precision - 10; n > 0; --n)
+                        scale *= 10;
+                }
+                else {
+                    precision = FMT_MAX_DOUBLE_PRECISION;
+                    scale = 100000000000000000ULL;
+                }
+                jimic_assert(precision <= FMT_MAX_DOUBLE_PRECISION);
+            }
+#else
+            jimic_assert(precision >= 0 && precision <= 20);
+            scale = 1;
+            for (n = precision; n > 0; --n)
+                scale *= 10;
+#endif
+            num_width = field_width - precision - 1;
+        }
+        else {
+            scale = 1ULL;
+            num_width = field_width;
+        }
+
+        // Get the fractional part of double
         i64 = (int64_t)val;
         //if (val >= 0.0) {
         if (i64 >= 0) {
@@ -253,7 +253,7 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int field_width, int precision)
         }
         else {
 #if 1
-            // for integer part of double
+            // For the integer part of double
             len = jmc_i64toa_r10_integer(buf, i64, num_width);
 #else
             len = jmc_i64toa_r10_ex(buf, -1, i64, FMT_ALIGN_RIGHT, ' ', num_width, num_width);
@@ -262,10 +262,10 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int field_width, int precision)
         }
 
         if (precision > 0) {
-            // output decimal
+            // Output the decimal
             *buf++ = '.';
 #if 1
-            // for fractional part of double
+            // For the fractional part of double, fractional always is positive.
             len += jmc_u64toa_r10_frac(buf, frac, precision) + 1;
 #else
             len += jmc_u64toa_r10_ex(buf, -1, frac, FMT_ALIGN_LEFT, '0', precision, 0) + 1;
@@ -274,7 +274,7 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int field_width, int precision)
 
         return len;
     }
-    // if mantissa0 and mantissa1 is not equal zero, then it's a NaN (not a number)
+    // If mantissa0 and mantissa1 is not equal zero, then it's a NaN double (not a number).
     else if (d64->ieee.mantissa0 != 0 || d64->ieee.mantissa1 != 0) {
         // is NaN, not a number
         len = JIMIC_MAX(field_width, 3);
@@ -289,6 +289,7 @@ jmc_dtos(char * JMC_RESTRICT buf, double val, int field_width, int precision)
         *(buf + 3)  = '\0';
         return len;
     }
+    // Otherwise, if mantissa0 and mantissa1 is equal zero, then it's a +Inf or -Inf double. (+/- INFINITY)
     else {
         // is +INF or -INF
         //if (d64->ieee.negative == 0) {
@@ -346,7 +347,7 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
 
     d64 = (jmc_ieee754_double *)&val;
 
-    // is a NaN or INF or Normal ? (exponent is maxium ?)
+    // Check the exponent of IEEE754 double, exponent is the maxium value? It is a NaN or INF or Normal type?
     if ((d64->exponent.dword & JMC_IEEE754_DOUBLE_EXPONENT_MASK32) !=
                                JMC_IEEE754_DOUBLE_EXPONENT_MASK32) {
         // get the exponent value
@@ -544,7 +545,7 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
         //}
         return len;
     }
-    // if mantissa0 and mantissa1 is not equal zero, then it's a NaN (not a number)
+    // If mantissa0 and mantissa1 is not equal zero, then it's a NaN double (not a number).
     else if (d64->ieee.mantissa0 != 0 || d64->ieee.mantissa1 != 0) {
         // is NaN, not a number
         len = JIMIC_MAX(field_width, 3);
@@ -576,7 +577,7 @@ jmc_dtos_ex(char * JMC_RESTRICT buf, size_t count, double val, unsigned int flag
             return len;
         }
     }
-    // if mantissa0 and mantissa1 is equal zero, then it's a Inf (-/+ INFINITY)
+    // Otherwise, if mantissa0 and mantissa1 is equal zero, then it's a +Inf or -Inf double. (+/- INFINITY)
     else {
         // is +INF or -INF
         //if (d64->ieee.negative == 0) {
