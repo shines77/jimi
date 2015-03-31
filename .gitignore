@@ -6,10 +6,17 @@
 *.o
 *.obj
 
+# Ignore Precompiled Headers
+*.gch
+*.pch
+
 # Ignore Compiled Dynamic libraries
 *.so
-*.dll
 *.dylib
+*.dll
+
+# Ignore Fortran module files
+*.mod
 
 # Ignore Compiled Static libraries
 *.lai
@@ -69,6 +76,63 @@ Icon?
 # *_i.c
 # *_p.c
 
+# Ignore AStyle backup files
+*.orig
+
+# Ignore Code::Blocks backup files
+*.sav
+
+# Ignore Sublime Text 2 dump files
+*.dump
+
+# Ignore stackdump files on Linux
+*.stackdump
+
+# Ignore Intel C++ Compiler Log Files & Project Files
+IcUpdateLog.htm
+*.icproj
+
+# Ignore CodeBlocks project layout/depend files
+*.layout
+*.depend
+
+# Ignore obj files in GCC
+*.pic.d
+*.jet.d
+
+# Ignore log files
+*.log
+
+# Ignore Visual Studio 2013 temp files
+*.tlog
+
+# Ignore Visual Studio C# files
+*.cache
+
+# Ignore Visual Studio Update Files
+UpgradeLog.XML
+UpgradeLog.htm
+/[Bb]ackup/
+
+# Ignore Zip or Rar files
+*.zip
+*.rar
+
+# Ignore CMake cache or temp files(folders)
+/CMakeFiles
+*CMakeCache.txt
+
+# Ignore tmp and obj folders
+[Bb]in
+[Oo]bj/
+/[Oo]bj/
+/[Gg]en/
+/tmp/
+/temp/
+!/[Bb]uild/ReadMe.txt
+/[Bb]uild/*/
+
+# Ignore bin and build folders
 /[Bb]in/
 /[Dd]ebug/
 /[Rr]elease/
@@ -84,59 +148,7 @@ Icon?
 _ReSharper*/
 [Tt]est[Rr]esult*
 
-# For Visual Studio Update File
-UpgradeLog.XML
-UpgradeLog.htm
-/[Bb]ackup/
-
-# Ignore CodeBlocks project layout/depend files
-*.layout
-*.depend
-
-# Ignore obj file in GCC
-*.pic.d
-*.jet.d
-
-# Ignore stackdump file on Linux
-*.stackdump
-
-# For log file
-*.log
-
-# Ignore Intel C++ Compiler Log File & Project Files
-IcUpdateLog.htm
-*.icproj
-
-# Ignore AStyle backup files
-*.orig
-
-# Ignore Code::Blocks backup files
-*.sav
-
-# Ignore Sublime Text 2 dump files
-*.dump
-
-# Ignore tmp and obj files
-[Bb]in
-[Oo]bj/
-/[Oo]bj/
-/[Gg]en/
-/tmp/
-/temp/
-!/[Bb]uild/ReadMe.txt
-/[Bb]uild/*/
-
-# Ignore Visual Studio 2013 temp files on Windows
-*.tlog
-
-# Ignore Visual Studio C# files on Windows
-*.cache
-
-# Ignore Zip or Rar files
-*.zip
-*.rar
-
-# Other files
+# Other files or folders
 /.metadata
 /169.254.0.1
 /ipch/
