@@ -14,7 +14,7 @@
 #include <float.h>
 #include <limits.h>     // for define UINT_MAX
 
-static const double pow10_remain_d16[] = {
+static const double pow10_remain_d4[] = {
     1.0E+0, 1.0E+4, 1.0E+9, 1.0E+14
 };
 
@@ -31,6 +31,25 @@ static const double pow10_base_d64[] = {
     1.0E+308,
     // last 3 items is fill for address aligned to 64 bytes only
     1.0E+308, 1.0E+308, 1.0E+308
+};
+
+static const double pow10_remain_d4_minus[] = {
+    1.0E+0, 1.0E-4, 1.0E-9, 1.0E-14
+};
+
+static const double pow10_remain_d8_minus[] = {
+    1.0E+0,  1.0E-2,  1.0E-4,  1.0E-7,
+    1.0E-9,  1.0E-12, 1.0E-14, 1.0E-16,
+};
+
+static const double pow10_base_d64_minus[] = {
+    1.0E-19,  1.0E-38,  1.0E-57,  1.0E-76,
+    1.0E-95,  1.0E-114, 1.0E-133, 1.0E-152,
+    1.0E-171, 1.0E-190, 1.0E-209, 1.0E-228,
+    1.0E-247, 1.0E-266, 1.0E-285, 1.0E-304,
+    1.0E-308,
+    // last 3 items is fill for address aligned to 64 bytes only
+    1.0E-308, 1.0E-308, 1.0E-308
 };
 
 static const uint32_t pow10_scales_int32[] = {
@@ -108,13 +127,13 @@ jmc_adjustd_to_bin64(double * JMC_RESTRICT pval, int exponent)
         // if exponent >= 0 and exponent < 64, needn't to adjust
         if (base_index > 0) {
             jimic_assert(base_index > 0 && base_index < 20);
-            pow10_base = pow10_base_d64[base_index - 1];
+            pow10_base = pow10_base_d64_minus[base_index - 1];
 
             remain_index = (exponent & 63) >> 3;
             jimic_assert(remain_index >= 0 && remain_index < 8);
 
-            pow10_base *= pow10_remain_d8[remain_index];
-            *pval = (*pval) / pow10_base;
+            pow10_base *= pow10_remain_d8_minus[remain_index];
+            *pval = (*pval) * pow10_base;
         }
         return exp10;
     }

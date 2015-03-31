@@ -2,6 +2,10 @@
 #ifndef _JIMIC_CONFIG_CONFIG_PRE_H_
 #define _JIMIC_CONFIG_CONFIG_PRE_H_
 
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
+#pragma once
+#endif
+
 #if defined(__linux__) || defined(__LINUX__)
 //
 #elif defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__)

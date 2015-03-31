@@ -106,12 +106,13 @@
 #include "FastMemcpy.h"
 
 // namespace UnitTest 里引用的头文件
-#include "jimic/math/int_log10.h"
 #include "jimic/string/dtos.h"
-#include "jimi/lang/SmallString.h"
 #include "jimic/stdio/sprintf_lite.h"
 #include "jimic/libc/ieee754.h"
+#include "jimic/math/int_log10.h"
 #include "jimic/math/log10.h"
+
+#include "jimi/lang/SmallString.h"
 
 #include <memory>
 

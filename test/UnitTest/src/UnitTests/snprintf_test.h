@@ -9,7 +9,7 @@
 #include "jimi/basic/platform_def.h"
 
 /* 是否显示测试的输出结果(以便验证), 为1时显示 */
-#define VSNPRINTF_DISPLAY_TEST_RESULT   0
+#define VSNPRINTF_DISPLAY_TEST_RESULT   1
 
 /* 是否运行jm_snprintf()的测试, 为1时表示运行 */
 #define VSNPRINTF_TEST_JM_SNPRINTF      0

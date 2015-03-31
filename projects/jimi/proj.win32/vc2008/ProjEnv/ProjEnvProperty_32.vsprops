@@ -12,8 +12,4 @@
 		Name="MsvcPlatformShortName"
 		Value="x86"
 	/>
-	<UserMacro
-		Name="MsvcPlatformShortName64"
-		Value="x64"
-	/>
 </VisualStudioPropertySheet>
