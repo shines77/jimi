@@ -30,11 +30,11 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="ProjEnv\ProjEnvProperty_32.props" />
+    <Import Project="..\..\..\ProjEnv\vc2010\ProjEnvProperty_32.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="ProjEnv\ProjEnvProperty_32.props" />
+    <Import Project="..\..\..\ProjEnv\vc2010\ProjEnvProperty_32.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -87,11 +87,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\asmlib\asmlib.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\basic\arch_def.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\asm.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\assert.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\common.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\compiler_def.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\basic\config.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\declare.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\export.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\inttypes.h" />
@@ -104,6 +104,9 @@
     <ClInclude Include="..\..\..\..\src\jimic\basic\targetver.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\vld.h" />
     <ClInclude Include="..\..\..\..\src\jimic\config\config.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\config\config_arch.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\config\config_comm.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\config\config_pre.h" />
     <ClInclude Include="..\..\..\..\src\jimic\config\win32\config.h" />
     <ClInclude Include="..\..\..\..\src\jimic\libc\endian.h" />
     <ClInclude Include="..\..\..\..\src\jimic\libc\ieee754.h" />
@@ -133,10 +136,10 @@
     <ClInclude Include="..\..\..\..\src\jimic\system\crtdbg_env.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\get_char.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\sys_timer.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\basic\arch_def.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\assert.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\common.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\compiler_def.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\basic\config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare_comm.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\export.h" />
@@ -154,6 +157,9 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\targetver.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\vld.h" />
     <ClInclude Include="..\..\..\..\src\jimi\config\config.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\config\config_arch.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\config\config_comm.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\config\config_pre.h" />
     <ClInclude Include="..\..\..\..\src\jimi\config\win32\config.h" />
     <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\Event.h" />
     <ClInclude Include="..\..\..\..\src\jimi\csharp\thread\Thread.h" />

@@ -371,9 +371,6 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\compiler_def.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\basic\config.h">
-      <Filter>src\jimi\basic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
@@ -414,9 +411,6 @@
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\basic\compiler_def.h">
-      <Filter>src\jimic\basic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\basic\config.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\basic\declare.h">
@@ -484,6 +478,30 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\config\win32\config.h">
       <Filter>src\jimic\config\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\basic\arch_def.h">
+      <Filter>src\jimi\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\config\config_arch.h">
+      <Filter>src\jimi\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\config\config_comm.h">
+      <Filter>src\jimi\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimi\config\config_pre.h">
+      <Filter>src\jimi\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\config\config_arch.h">
+      <Filter>src\jimic\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\config\config_comm.h">
+      <Filter>src\jimic\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\config\config_pre.h">
+      <Filter>src\jimic\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\basic\arch_def.h">
+      <Filter>src\jimic\basic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

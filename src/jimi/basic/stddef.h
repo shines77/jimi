@@ -6,6 +6,7 @@
 #pragma once
 #endif
 
+#include "jimi/basic/arch_def.h"
 #include "jimi/basic/platform_def.h"
 #include "jimi/basic/compiler_def.h"
 
@@ -87,7 +88,7 @@
 #define JIMI_MAX(a, b)          ((a) > (b) ? (a) : (b))
 #endif
 
-#if defined(_WIN64) || defined(_M_X64)
+#if defined(JIMI_ARCH_X64) || defined(JIMI_ARCH_IA64)
 #define JIMI_SIZE_T_SIZEOF      8
 #else
 #define JIMI_SIZE_T_SIZEOF      4

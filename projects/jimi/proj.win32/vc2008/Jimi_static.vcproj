@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)"
 			IntermediateDirectory="$(SolutionDir)gen\tmp\$(MsvcPlatformToolset)\$(ProjectName)\$(MsvcPlatformShortName)-$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\ProjEnv\ProjEnvProperty_32.vsprops"
+			InheritedPropertySheets="..\..\..\ProjEnv\vc2008\ProjEnvProperty_32.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -86,7 +86,7 @@
 			OutputDirectory="$(SolutionDir)lib\$(MsvcPlatformToolset)\$(MsvcPlatformShortName)"
 			IntermediateDirectory="$(SolutionDir)gen\tmp\$(MsvcPlatformToolset)\$(ProjectName)\$(MsvcPlatformShortName)-$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\ProjEnv\ProjEnvProperty_32.vsprops"
+			InheritedPropertySheets="..\..\..\ProjEnv\vc2008\ProjEnvProperty_32.vsprops"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
@@ -162,6 +162,10 @@
 					Name="basic"
 					>
 					<File
+						RelativePath="..\..\..\..\src\jimi\basic\arch_def.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimi\basic\assert.cpp"
 						>
 					</File>
@@ -175,10 +179,6 @@
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimi\basic\compiler_def.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimi\basic\config.h"
 						>
 					</File>
 					<File
@@ -521,6 +521,18 @@
 						RelativePath="..\..\..\..\src\jimi\config\config.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\config\config_arch.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\config\config_comm.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimi\config\config_pre.h"
+						>
+					</File>
 					<Filter
 						Name="win32"
 						>
@@ -662,6 +674,10 @@
 					Name="basic"
 					>
 					<File
+						RelativePath="..\..\..\..\src\jimic\basic\arch_def.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\..\src\jimic\basic\asm.h"
 						>
 					</File>
@@ -679,10 +695,6 @@
 					</File>
 					<File
 						RelativePath="..\..\..\..\src\jimic\basic\compiler_def.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\..\src\jimic\basic\config.h"
 						>
 					</File>
 					<File
@@ -879,6 +891,18 @@
 					>
 					<File
 						RelativePath="..\..\..\..\src\jimic\config\config.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\config\config_arch.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\config\config_comm.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\config\config_pre.h"
 						>
 					</File>
 					<Filter

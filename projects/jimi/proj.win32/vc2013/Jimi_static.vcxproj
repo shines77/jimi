@@ -51,19 +51,19 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="ProjEnv\ProjEnvProperty_32.props" />
+    <Import Project="..\..\..\ProjEnv\vc2013\ProjEnvProperty_32.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="ProjEnv\ProjEnvProperty_32.props" />
+    <Import Project="..\..\..\ProjEnv\vc2013\ProjEnvProperty_64.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="ProjEnv\ProjEnvProperty_32.props" />
+    <Import Project="..\..\..\ProjEnv\vc2013\ProjEnvProperty_32.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="ProjEnv\ProjEnvProperty_32.props" />
+    <Import Project="..\..\..\ProjEnv\vc2013\ProjEnvProperty_64.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\asmlib\asmlib.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\basic\arch_def.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\asm.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\assert.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\common.h" />
@@ -241,11 +242,12 @@
     <ClCompile Include="..\..\..\..\src\jimic\system\get_char.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\sleep.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\sys_timer.c" />
+    <ClInclude Include="..\..\..\..\src\jimi\basic\arch_def.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\assert.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\common.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\compiler_def.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\basic\declare-comm.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\basic\declare_comm.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\inttypes.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\stdbool.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\stddef.h" />
