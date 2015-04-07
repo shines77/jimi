@@ -7,7 +7,7 @@
 
 #include "jimic/string/jm_strings.h"
 #include "jimic/string/jmf_strings.h"
-#include "jimic/system/get_char.h"
+#include "jimic/system/getchar.h"
 
 #include <memory.h>
 

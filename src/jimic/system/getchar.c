@@ -1,5 +1,5 @@
 
-#include "jimic/system/get_char.h"
+#include "jimic/system/getchar.h"
 
 #include <stdio.h>
 
@@ -40,22 +40,31 @@ int jimi_getche(void)
 ///
 /// From: http://stackoverflow.com/questions/7469139/what-is-equivalent-to-getch-getche-in-linux
 ///
+/// See: http://blog.sina.com.cn/s/blog_49f9ea930100nyqc.html
+///
 /// </comment>
 
-static struct termios s_term_old, s_term_new;
+///
+/// clear terminator screen: "clear" command or "reset" command or printf("%s",   "\033[1H\033[2J");
+///
+
+static struct termios s_term_old;
 
 /* Initialize new terminal i/o settings */
-void init_terminal_os(int echo)
+static void init_terminal_os(int echo)
 {
+    struct termios term_new;
     tcgetattr(0, &s_term_old);                  /* grab old terminal i/o settings */
-    s_term_new = s_term_old;                    /* make new settings same as old settings */
-    s_term_new.c_lflag &= ~ICANON;              /* disable buffered i/o */
-    s_term_new.c_lflag &= echo ? ECHO : ~ECHO;  /* set echo mode */
-    tcsetattr(0, TCSANOW, &s_term_new);         /* use these new terminal i/o settings now */
+    term_new = s_term_old;                      /* make new settings same as old settings */
+    term_new.c_lflag &= ~ICANON;                /* disable buffered i/o */
+    term_new.c_lflag &= echo ? ECHO : ~ECHO;    /* set echo mode */
+    term_new.c_cc[VTIME] = 0;
+    term_new.c_cc[VMIN]  = 1;
+    tcsetattr(0, TCSANOW, &term_new);           /* use these new terminal i/o settings now */
 }
 
 /* Restore old terminal i/o settings */
-void reset_terminal_os(void)
+static void reset_terminal_os(void)
 {
     tcsetattr(0, TCSANOW, &s_term_old);
 }
@@ -64,9 +73,14 @@ void reset_terminal_os(void)
 int jimi_getch_term(int echo)
 {
     int ch;
-    init_terminal_os(echo);
-    ch = getchar();
-    reset_terminal_os();
+    if (!echo) {
+        init_terminal_os(echo);
+        ch = getchar();
+        reset_terminal_os();
+    }
+    else {
+        ch = getchar();
+    }
     return ch;
 }
 

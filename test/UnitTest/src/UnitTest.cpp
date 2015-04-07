@@ -52,6 +52,7 @@
 #include "jimi/basic/stddef.h"
 
 #include "jimic/system/console.h"
+#include "jimic/system/time.h"
 #include "jimic/string/dtos.h"
 #include "jimic/string/string.h"
 #include "jimic/stdio/sprintf.h"
@@ -4190,8 +4191,119 @@ public:
 
 }  /* namespace jimi */
 
+// #include <intrin.h>
+
+#if defined(_MSC_VER)
+#include <intrin.h>
+#ifndef Jimi_ReadWriteBarrier
+#define Jimi_ReadWriteBarrier()     _ReadWriteBarrier()
+#endif
+#define Jimi_MemoryBarrier()        MemoryBarrier()
+#else
+#ifndef Jimi_ReadWriteBarrier
+#define Jimi_ReadWriteBarrier()     do { __asm__ __volatile__ ("" : : :"memory"); } while (0)
+#endif
+#define Jimi_MemoryBarrier()        do { __sync_synchronize(); } while (0)
+#endif
+
+float float_test1()
+{
+    const float x = 1.1f;
+    const float z = 1.123f;
+    float y = x;
+    for(int j = 0; j < 90000000; j++) {
+        y *= x;
+        y /= z;
+        y += 0.1f;
+        y -= 0.1f;
+    }
+    return y;
+}
+
+float float_test2()
+{
+    const float x = 1.1f;
+    const float z = 1.123f;
+    float y = x;
+    for(int j = 0; j < 90000000; j++) {
+        y *= x;
+        y /= z;
+        y += 0;
+        y -= 0;
+    }
+    return y;
+}
+
+void float_test()
+{
+    jmc_timestamp_t starttime, endtime;
+    jmc_timefloat_t elapsedtime;
+    volatile
+    float value = 0.0f;
+
+    printf("\n");
+
+#if 0
+    const float x = 1.1f;
+    const float z = 1.123f;
+    float y = x;
+    for(int j = 0; j < 90000000; j++) {
+        y *= x;
+        y /= z;
+        y += 0;
+        y -= 0;
+    }
+#endif
+
+    starttime = jmc_get_timestamp();
+    Jimi_ReadWriteBarrier();
+
+    value = float_test1();
+
+    Jimi_ReadWriteBarrier();
+
+    elapsedtime = jmc_get_elapsedtime_msf(starttime);
+    Jimi_ReadWriteBarrier();
+    endtime = jmc_get_timestamp();
+
+    Jimi_ReadWriteBarrier();
+
+    printf("start = %llu, end = %llu\n", starttime, endtime);
+    Jimi_ReadWriteBarrier();
+    printf("y = %0.10g, time = %0.3f ms\n\n", value, elapsedtime);
+
+    Jimi_ReadWriteBarrier();
+    Jimi_MemoryBarrier();
+
+    starttime = jmc_get_timestamp();
+    Jimi_ReadWriteBarrier();
+
+    value = float_test2();
+
+    Jimi_ReadWriteBarrier();
+
+    elapsedtime = jmc_get_elapsedtime_msf(starttime);
+    Jimi_ReadWriteBarrier();
+    endtime = jmc_get_timestamp();
+
+    Jimi_ReadWriteBarrier();
+
+    printf("start = %llu, end = %llu\n", starttime, endtime);
+    Jimi_ReadWriteBarrier();
+    printf("y = %0.10g, time = %0.3f ms\n\n", value, elapsedtime);
+
+    Jimi_ReadWriteBarrier();
+    Jimi_MemoryBarrier();
+}
+
 int main(int argc, char *argv[])
 {
+#if 0
+    float_test();
+    Console::ReadKeyLine();
+    return 0;
+#endif
+
 #if 0
     jimi::MyProgram program;
 #else

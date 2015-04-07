@@ -17,22 +17,22 @@
  */
 #if (defined(JIMI_MSC_VER) || defined(JIMI_IS_ICC)) && (!defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0))
 
-#define JMC_INLINE              __inline
-#define JMC_FORCEINLINE         __forceinline
+#define JMC_INLINE              static __inline
+#define JMC_FORCEINLINE         static __forceinline
 #define JMC_RESTRICT            __restrict
 #define JMC_HAS_INLINE          1
 
 #elif defined(__GNUC__) || (defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG != 0))
 
-#define JMC_INLINE              inline
-#define JMC_FORCEINLINE         inline
+#define JMC_INLINE              static inline
+#define JMC_FORCEINLINE         static inline
 #define JMC_RESTRICT            __restrict
 #define JMC_HAS_INLINE          1
 
 #else
 
-#define JMC_INLINE              inline
-#define JMC_FORCEINLINE         inline
+#define JMC_INLINE              static inline
+#define JMC_FORCEINLINE         static inline
 #define JMC_RESTRICT
 #define JMC_HAS_INLINE          1
 
@@ -54,40 +54,40 @@
 
 #define JMC_DECLARE(type)               type
 #define JMC_DECLARE_NONSTD(type)        type
-#define JMC_INLINE_DECLARE(type)        static JMC_INLINE type
-#define JMC_INLINE_NONSTD(type)         static JMC_INLINE type
-#define JMC_FORCEINLINE_DECLARE(type)   static JMC_FORCEINLINE type
-#define JMC_FORCEINLINE_NONSTD(type)    static JMC_FORCEINLINE type
+#define JMC_INLINE_DECLARE(type)        JMC_INLINE type
+#define JMC_INLINE_NONSTD(type)         JMC_INLINE type
+#define JMC_FORCEINLINE_DECLARE(type)   JMC_FORCEINLINE type
+#define JMC_FORCEINLINE_NONSTD(type)    JMC_FORCEINLINE type
 #define JMC_DECLARE_DATA
 
 #elif defined(JIMI_DECLARE_IMPORT)
 
 #define JMC_DECLARE(type)               __declspec(dllimport) type __stdcall
 #define JMC_DECLARE_NONSTD(type)        __declspec(dllimport) type __cdecl
-#define JMC_INLINE_DECLARE(type)        static JMC_INLINE __declspec(dllimport) type __stdcall
-#define JMC_INLINE_NONSTD(type)         static JMC_INLINE __declspec(dllimport) type __cdecl
-#define JMC_FORCEINLINE_DECLARE(type)   static JMC_FORCEINLINE __declspec(dllimport) type __stdcall
-#define JMC_FORCEINLINE_NONSTD(type)    static JMC_FORCEINLINE __declspec(dllimport) type __cdecl
+#define JMC_INLINE_DECLARE(type)        JMC_INLINE __declspec(dllimport) type __stdcall
+#define JMC_INLINE_NONSTD(type)         JMC_INLINE __declspec(dllimport) type __cdecl
+#define JMC_FORCEINLINE_DECLARE(type)   JMC_FORCEINLINE __declspec(dllimport) type __stdcall
+#define JMC_FORCEINLINE_NONSTD(type)    JMC_FORCEINLINE __declspec(dllimport) type __cdecl
 #define JMC_DECLARE_DATA                __declspec(dllimport)
 
 #elif defined(JIMI_DECLARE_EXPORT)
 
 #define JMC_DECLARE(type)               __declspec(dllexport) type __stdcall
 #define JMC_DECLARE_NONSTD(type)        __declspec(dllexport) type __cdecl
-#define JMC_INLINE_DECLARE(type)        static JMC_INLINE __declspec(dllexport) type __stdcall
-#define JMC_INLINE_NONSTD(type)         static JMC_INLINE __declspec(dllexport) type __cdecl
-#define JMC_FORCEINLINE_DECLARE(type)   static JMC_FORCEINLINE __declspec(dllexport) type __stdcall
-#define JMC_FORCEINLINE_NONSTD(type)    static JMC_FORCEINLINE __declspec(dllexport) type __cdecl
+#define JMC_INLINE_DECLARE(type)        JMC_INLINE __declspec(dllexport) type __stdcall
+#define JMC_INLINE_NONSTD(type)         JMC_INLINE __declspec(dllexport) type __cdecl
+#define JMC_FORCEINLINE_DECLARE(type)   JMC_FORCEINLINE __declspec(dllexport) type __stdcall
+#define JMC_FORCEINLINE_NONSTD(type)    JMC_FORCEINLINE __declspec(dllexport) type __cdecl
 #define JMC_DECLARE_DATA                __declspec(dllexport)
 
 #else
 
 #define JMC_DECLARE(type)               type __stdcall
 #define JMC_DECLARE_NONSTD(type)        type __cdecl
-#define JMC_INLINE_DECLARE(type)        static JMC_INLINE type __stdcall
-#define JMC_INLINE_NONSTD(type)         static JMC_INLINE type __cdecl
-#define JMC_FORCEINLINE_DECLARE(type)   static JMC_FORCEINLINE type __stdcall
-#define JMC_FORCEINLINE_NONSTD(type)    static JMC_FORCEINLINE type __cdecl
+#define JMC_INLINE_DECLARE(type)        JMC_INLINE type __stdcall
+#define JMC_INLINE_NONSTD(type)         JMC_INLINE type __cdecl
+#define JMC_FORCEINLINE_DECLARE(type)   JMC_FORCEINLINE type __stdcall
+#define JMC_FORCEINLINE_NONSTD(type)    JMC_FORCEINLINE type __cdecl
 #define JMC_DECLARE_DATA
 
 #endif  /* (!defined(JIMI_IS_WINDOWS)) || defined(JIMI_IS_DOXYGEN) */

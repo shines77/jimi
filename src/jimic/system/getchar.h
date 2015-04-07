@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_SYSTEM_GET_CHAR_H_
-#define _JIMIC_SYSTEM_GET_CHAR_H_
+#ifndef _JIMIC_SYSTEM_GETCHAR_H_
+#define _JIMIC_SYSTEM_GETCHAR_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -20,8 +20,8 @@ extern "C" {
 
 #if defined(__linux__)
 
-void init_terminal_os(int echo);
-void reset_terminal_os(void);
+//static void init_terminal_os(int echo);
+//static void reset_terminal_os(void);
 
 /* Read 1 character - echo defines echo mode */
 int jimi_getch_term(int echo);

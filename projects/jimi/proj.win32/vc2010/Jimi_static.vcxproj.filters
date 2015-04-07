@@ -275,12 +275,6 @@
     <ClInclude Include="..\..\..\..\src\jimic\system\crtdbg_env.h">
       <Filter>src\jimic\system</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\system\get_char.h">
-      <Filter>src\jimic\system</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\system\sys_timer.h">
-      <Filter>src\jimic\system</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\libc\endian.h">
       <Filter>src\jimic\libc</Filter>
     </ClInclude>
@@ -503,6 +497,15 @@
     <ClInclude Include="..\..\..\..\src\jimic\basic\arch_def.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\system\getchar.h">
+      <Filter>src\jimic\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\system\sleep.h">
+      <Filter>src\jimic\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\jimic\system\time.h">
+      <Filter>src\jimic\system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\jimi\util\cmd_line.cpp">
@@ -533,12 +536,6 @@
       <Filter>src\jimic\system</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.c">
-      <Filter>src\jimic\system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\system\get_char.c">
-      <Filter>src\jimic\system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\jimic\system\sys_timer.c">
       <Filter>src\jimic\system</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\libc\endian.c">
@@ -579,6 +576,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\jimic\basic\assert-c.c">
       <Filter>src\jimic\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\system\getchar.c">
+      <Filter>src\jimic\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\jimic\system\sleep.c">
+      <Filter>src\jimic\system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

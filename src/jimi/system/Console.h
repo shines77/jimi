@@ -9,7 +9,7 @@
 #include "jimi/basic/stddef.h"
 #include "jimi/internal/NonCopyable.h"
 
-#include "jimic/system/get_char.h"
+#include "jimic/system/getchar.h"
 #include "jimic/system/console.h"
 
 #include <stdio.h>

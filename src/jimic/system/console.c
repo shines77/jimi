@@ -1,7 +1,7 @@
 
 #include "jimic/system/console.h"
-#include "jimic/system/sys_timer.h"
-#include "jimic/system/get_char.h"
+#include "jimic/system/time.h"
+#include "jimic/system/getchar.h"
 
 #include <stdio.h>
 
@@ -29,7 +29,7 @@ void jimi_cpu_warmup(int delayTime)
             }
         }
         stopTime = jmc_get_timestamp();
-        elapsedTime += jmc_get_interval_millisecf(stopTime - startTime);
+        elapsedTime += jmc_get_interval_msf(stopTime - startTime);
     } while (elapsedTime < delayTimeLimit);
 
     // 输出sum的值只是为了防止编译器把循环优化掉

@@ -842,19 +842,23 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\system\get_char.c"
+						RelativePath="..\..\..\..\src\jimic\system\getchar.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\system\get_char.h"
+						RelativePath="..\..\..\..\src\jimic\system\getchar.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\system\sys_timer.c"
+						RelativePath="..\..\..\..\src\jimic\system\sleep.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\system\sys_timer.h"
+						RelativePath="..\..\..\..\src\jimic\system\sleep.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src\jimic\system\time.h"
 						>
 					</File>
 				</Filter>

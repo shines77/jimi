@@ -226,9 +226,9 @@
     <ClInclude Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\console.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\crtdbg_env.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\system\get_char.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\system\getchar.h" />
     <ClInclude Include="..\..\..\..\src\jimic\system\sleep.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\system\sys_timer.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\system\time.h" />
     <ClInclude Include="..\..\..\..\src\jimic\util\utils.h" />
     <ClCompile Include="..\..\..\..\src\jimic\string\itoa.c" />
     <ClCompile Include="..\..\..\..\src\jimic\string\itoa_fast.c" />
@@ -239,9 +239,8 @@
     <ClCompile Include="..\..\..\..\src\jimic\string\win32\intel\jmf_strlwr64.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\console.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.c" />
-    <ClCompile Include="..\..\..\..\src\jimic\system\get_char.c" />
+    <ClCompile Include="..\..\..\..\src\jimic\system\getchar.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\sleep.c" />
-    <ClCompile Include="..\..\..\..\src\jimic\system\sys_timer.c" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\arch_def.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\assert.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\common.h" />
