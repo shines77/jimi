@@ -160,17 +160,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\asmlib\asmlib.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\basic\arch_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\basic\archdef.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\asm.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\assert.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\common.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\basic\compiler_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\basic\compiler.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\declare.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\inttypes.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\stdbool.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\stddef.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\export.h" />
-    <ClInclude Include="..\..\..\..\src\jimic\basic\platform_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimic\basic\platform.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\stdint.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\stdsize.h" />
     <ClInclude Include="..\..\..\..\src\jimic\basic\targetver.h" />
@@ -241,10 +241,10 @@
     <ClCompile Include="..\..\..\..\src\jimic\system\crtdbg_env.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\getchar.c" />
     <ClCompile Include="..\..\..\..\src\jimic\system\sleep.c" />
-    <ClInclude Include="..\..\..\..\src\jimi\basic\arch_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\basic\archdef.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\assert.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\common.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\basic\compiler_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\basic\compiler.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare_comm.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\inttypes.h" />
@@ -253,7 +253,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\export.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\machine.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\namespace.h" />
-    <ClInclude Include="..\..\..\..\src\jimi\basic\platform_def.h" />
+    <ClInclude Include="..\..\..\..\src\jimi\basic\platform.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\msvc\inttypes.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\msvc\stdbool.h" />
     <ClInclude Include="..\..\..\..\src\jimi\basic\msvc\stdint.h" />

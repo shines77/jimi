@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_BASIC_COMPILER_DEF_H_
-#define _JIMI_BASIC_COMPILER_DEF_H_
+#ifndef _JIMI_BASIC_COMPILER_H_
+#define _JIMI_BASIC_COMPILER_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -246,4 +246,4 @@
     #error "Cannot recognize the target compiler; are you targeting an unsupported compiler?"
 #endif
 
-#endif  /* _JIMI_BASIC_COMPILER_DEF_H_ */
+#endif  /* _JIMI_BASIC_COMPILER_H_ */

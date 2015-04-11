@@ -162,7 +162,7 @@
 					Name="basic"
 					>
 					<File
-						RelativePath="..\..\..\..\src\jimi\basic\arch_def.h"
+						RelativePath="..\..\..\..\src\jimi\basic\archdef.h"
 						>
 					</File>
 					<File
@@ -178,7 +178,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\basic\compiler_def.h"
+						RelativePath="..\..\..\..\src\jimi\basic\compiler.h"
 						>
 					</File>
 					<File
@@ -206,7 +206,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimi\basic\platform_def.h"
+						RelativePath="..\..\..\..\src\jimi\basic\platform.h"
 						>
 					</File>
 					<File
@@ -674,7 +674,7 @@
 					Name="basic"
 					>
 					<File
-						RelativePath="..\..\..\..\src\jimic\basic\arch_def.h"
+						RelativePath="..\..\..\..\src\jimic\basic\archdef.h"
 						>
 					</File>
 					<File
@@ -694,7 +694,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\basic\compiler_def.h"
+						RelativePath="..\..\..\..\src\jimic\basic\compiler.h"
 						>
 					</File>
 					<File
@@ -714,7 +714,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\src\jimic\basic\platform_def.h"
+						RelativePath="..\..\..\..\src\jimic\basic\platform.h"
 						>
 					</File>
 					<File

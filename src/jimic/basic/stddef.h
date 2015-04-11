@@ -6,9 +6,9 @@
 #pragma once
 #endif
 
-#include "jimic/basic/arch_def.h"
-#include "jimic/basic/platform_def.h"
-#include "jimic/basic/compiler_def.h"
+#include "jimic/basic/archdef.h"
+#include "jimic/basic/platform.h"
+#include "jimic/basic/compiler.h"
 
 #if defined(_WIN32) || defined(__MINGW32__)
     #include "jimic/basic/targetver.h"

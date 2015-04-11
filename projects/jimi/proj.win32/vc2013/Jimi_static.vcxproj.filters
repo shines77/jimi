@@ -374,7 +374,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\basic\compiler_def.h">
+    <ClInclude Include="..\..\..\..\src\jimi\basic\compiler.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\basic\common.h">
@@ -389,7 +389,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\namespace.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\basic\platform_def.h">
+    <ClInclude Include="..\..\..\..\src\jimi\basic\platform.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\basic\asm.h">
@@ -398,7 +398,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\basic\common.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\basic\compiler_def.h">
+    <ClInclude Include="..\..\..\..\src\jimic\basic\compiler.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\basic\declare.h">
@@ -410,7 +410,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\basic\export.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\basic\platform_def.h">
+    <ClInclude Include="..\..\..\..\src\jimic\basic\platform.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\basic\inttypes.h">
@@ -506,10 +506,10 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare_comm.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\basic\arch_def.h">
+    <ClInclude Include="..\..\..\..\src\jimic\basic\archdef.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\basic\arch_def.h">
+    <ClInclude Include="..\..\..\..\src\jimi\basic\archdef.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\system\getchar.h">

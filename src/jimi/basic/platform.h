@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_BASIC_PLATFORM_DEF_H_
-#define _JIMI_BASIC_PLATFORM_DEF_H_
+#ifndef _JIMI_BASIC_PLATFORM_H_
+#define _JIMI_BASIC_PLATFORM_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -272,4 +272,4 @@
 #pragma warning (disable:4127)
 #endif  // JIMI_PLATFORM_WIN32
 
-#endif  /* _JIMI_BASIC_PLATFORM_DEF_H_ */
+#endif  /* _JIMI_BASIC_PLATFORM_H_ */

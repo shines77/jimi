@@ -1,6 +1,6 @@
 
-#ifndef _JIMI_BASIC_ARCH_DEF_H_
-#define _JIMI_BASIC_ARCH_DEF_H_
+#ifndef _JIMI_BASIC_ARCHDEF_H_
+#define _JIMI_BASIC_ARCHDEF_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -223,4 +223,4 @@
 #endif  /* Arch: Intel Itanium (IA-64) */
 
 
-#endif  /* _JIMI_BASIC_ARCH_DEF_H_ */
+#endif  /* _JIMI_BASIC_ARCHDEF_H_ */

@@ -6,9 +6,9 @@
 #pragma once
 #endif
 
-#include "jimi/basic/arch_def.h"
-#include "jimi/basic/platform_def.h"
-#include "jimi/basic/compiler_def.h"
+#include "jimi/basic/archdef.h"
+#include "jimi/basic/platform.h"
+#include "jimi/basic/compiler.h"
 
 #if JIMI_IS_WINDOWS
     #include "jimi/basic/targetver.h"

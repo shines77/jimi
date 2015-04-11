@@ -362,7 +362,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\common.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\basic\compiler_def.h">
+    <ClInclude Include="..\..\..\..\src\jimi\basic\compiler.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\basic\declare.h">
@@ -383,7 +383,7 @@
     <ClInclude Include="..\..\..\..\src\jimi\basic\namespace.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\basic\platform_def.h">
+    <ClInclude Include="..\..\..\..\src\jimi\basic\platform.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\basic\stdbool.h">
@@ -404,7 +404,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\basic\common.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\basic\compiler_def.h">
+    <ClInclude Include="..\..\..\..\src\jimic\basic\compiler.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\basic\declare.h">
@@ -419,7 +419,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\basic\jimic.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\basic\platform_def.h">
+    <ClInclude Include="..\..\..\..\src\jimic\basic\platform.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\basic\stdbool.h">
@@ -473,7 +473,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\config\win32\config.h">
       <Filter>src\jimic\config\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimi\basic\arch_def.h">
+    <ClInclude Include="..\..\..\..\src\jimi\basic\archdef.h">
       <Filter>src\jimi\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimi\config\config_arch.h">
@@ -494,7 +494,7 @@
     <ClInclude Include="..\..\..\..\src\jimic\config\config_pre.h">
       <Filter>src\jimic\config</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\jimic\basic\arch_def.h">
+    <ClInclude Include="..\..\..\..\src\jimic\basic\archdef.h">
       <Filter>src\jimic\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\jimic\system\getchar.h">
