@@ -19,10 +19,13 @@
 *.mod
 
 # Ignore Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+# *.lai
+# *.la
+# *.a
+# *.lib
+
+# Ignore project build libraries
+/lib/
 
 # Ignore Executables
 *.exe
