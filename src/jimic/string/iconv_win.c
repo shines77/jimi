@@ -4,6 +4,8 @@
 #include "iconv_win.h"
 //#include "jimic/string/iconv_win.h"
 
+#include <string.h>
+
 #if defined(_WIN32) || defined(_WIN64)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -250,7 +252,7 @@ iconv_t iconv_open(const char *tocode, const char *fromcode)
             cp_to = iconv_get_codepage(tocode);
         else
             cp_to = ICONV_CP_ANSI;
-        
+
         // get the codepage from the 'fromcode' string
         if (fromcode != NULL)
             cp_from = iconv_get_codepage(tocode);
@@ -287,7 +289,7 @@ int iconv_close(iconv_t cd)
         }
         free(cd);
         cd = NULL;
-        
+
     }
     return retval;
 }

@@ -1,6 +1,6 @@
 
-#ifndef _JIMIC_SYSTEM_SYSTIMER_H_
-#define _JIMIC_SYSTEM_SYSTIMER_H_
+#ifndef _JIMIC_SYSTEM_TIMER_H_
+#define _JIMIC_SYSTEM_TIMER_H_
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -8,19 +8,20 @@
 
 #include "jimic/basic/stddef.h"
 #include "jimic/basic/export.h"
+#include "jimic/basic/assert.h"
 
 #ifndef JMC_INLINE
 #ifdef _MSC_VER
-#define JMC_INLINE  __inline
+#define JMC_INLINE  static __inline
 #else
-#define JMC_INLINE  inline
+#define JMC_INLINE  static inline
 #endif // _MSC_VER
 #endif // JMC_INLINE
 
-#if _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
 #include <time.h>
 #include <windows.h>
-#elif __linux__
+#elif defined(__linux__)
   #ifdef __cplusplus
     #include <ctime>
   #else
@@ -65,12 +66,12 @@ jmc_timestamp_t jmc_get_nanosec(void)
 {
     jmc_timestamp_t result;
 
-#if _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
     LARGE_INTEGER qp_cnt, qp_freq;
     QueryPerformanceCounter(&qp_cnt);
     QueryPerformanceFrequency(&qp_freq);
     result = (jmc_timestamp_t)(((double)qp_cnt.QuadPart / (double)qp_freq.QuadPart) * 1000000000.0);
-#elif __linux__
+#elif defined(__linux__)
     struct timespec ts;
 #if JIMIC_USE_ASSERT
     int status =
@@ -97,12 +98,12 @@ jmc_timestamp_t jmc_get_millisec(void)
 {
     jmc_timestamp_t result;
 
-#if _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
     LARGE_INTEGER qp_cnt, qp_freq;
     QueryPerformanceCounter(&qp_cnt);
     QueryPerformanceFrequency(&qp_freq);
     result = (jmc_timestamp_t)(((double)qp_cnt.QuadPart / (double)qp_freq.QuadPart) * 1000.0);
-#elif __linux__
+#elif defined(__linux__)
     struct timespec ts;
 #if JIMIC_USE_ASSERT
     int status =
@@ -132,9 +133,9 @@ jmc_timefloat_t jmc_get_second(void)
     jmc_timestamp_t time_usecs;
     time_usecs = jmc_get_nanosec();
 
-#if _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
     result = (jmc_timefloat_t)time_usecs * 1E-9;
-#elif __linux__
+#elif defined(__linux__)
     result = (jmc_timefloat_t)time_usecs * 1E-9;
 #else  /* generic Unix */
     result = (jmc_timefloat_t)time_usecs * 1E-6;
@@ -152,9 +153,9 @@ jmc_timefloat_t jmc_get_millisecf(void)
     jmc_timestamp_t time_usecs;
     time_usecs = jmc_get_nanosec();
 
-#if _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
     result = (jmc_timefloat_t)time_usecs * 1E-6;
-#elif __linux__
+#elif defined(__linux__)
     result = (jmc_timefloat_t)time_usecs * 1E-6;
 #else  /* generic Unix */
     result = (jmc_timefloat_t)time_usecs * 1E-3;
@@ -169,11 +170,11 @@ jmc_timestamp_t jmc_get_timestamp(void)
 {
     jmc_timestamp_t result;
 
-#if _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
     LARGE_INTEGER qp_cnt;
     QueryPerformanceCounter(&qp_cnt);
     result = (jmc_timestamp_t)qp_cnt.QuadPart;
-#elif __linux__
+#elif defined(__linux__)
     struct timespec ts;
 #if JIMIC_USE_ASSERT
     int status =
@@ -200,7 +201,7 @@ jmc_timestamp_t jmc_get_elapsedtime_ms(jmc_timestamp_t time_start)
 {
     jmc_timestamp_t result, time_end;
 
-#if _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
     LARGE_INTEGER qp_cnt, qp_freq;
     QueryPerformanceCounter(&qp_cnt);
     time_end = (jmc_timestamp_t)qp_cnt.QuadPart;
@@ -208,7 +209,7 @@ jmc_timestamp_t jmc_get_elapsedtime_ms(jmc_timestamp_t time_start)
     QueryPerformanceFrequency(&qp_freq);
     //result = (jmc_timestamp_t)((double)((time_end - time_start) * 1000LL) / (double)qp_freq.QuadPart);
     result = (jmc_timestamp_t)(((double)(time_end - time_start) / (double)qp_freq.QuadPart) * 1000.0);
-#elif __linux__
+#elif defined(__linux__)
     struct timespec ts;
 #if JIMIC_USE_ASSERT
     int status =
@@ -240,7 +241,7 @@ jmc_timefloat_t jmc_get_elapsedtime_msf(jmc_timestamp_t time_start)
     jmc_timefloat_t result;
     jmc_timestamp_t time_end;
 
-#if _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
     LARGE_INTEGER qp_cnt, qp_freq;
     QueryPerformanceCounter(&qp_cnt);
     time_end = (jmc_timestamp_t)qp_cnt.QuadPart;
@@ -248,7 +249,7 @@ jmc_timefloat_t jmc_get_elapsedtime_msf(jmc_timestamp_t time_start)
     QueryPerformanceFrequency(&qp_freq);
     //result = (jmc_timefloat_t)((double)((time_end - time_start) * 1000LL) / (double)qp_freq.QuadPart);
     result = (jmc_timefloat_t)(((double)(time_end - time_start) / (double)qp_freq.QuadPart) * 1000.0);
-#elif __linux__
+#elif defined(__linux__)
     struct timespec ts;
 #if JIMIC_USE_ASSERT
     int status =
@@ -280,14 +281,14 @@ jmc_timefloat_t jmc_get_elapsedtime_sec(jmc_timestamp_t time_start)
     jmc_timefloat_t result;
     jmc_timestamp_t time_end;
 
-#if _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
     LARGE_INTEGER qp_cnt, qp_freq;
     QueryPerformanceCounter(&qp_cnt);
     time_end = (jmc_timestamp_t)qp_cnt.QuadPart;
 
     QueryPerformanceFrequency(&qp_freq);
     result = (jmc_timefloat_t)(((double)(time_end - time_start) / (double)qp_freq.QuadPart));
-#elif __linux__
+#elif defined(__linux__)
     struct timespec ts;
 #if JIMIC_USE_ASSERT
     int status =
@@ -318,11 +319,11 @@ jmc_timestamp_t jmc_get_interval_ms(jmc_timestamp_t time_interval)
 {
     jmc_timestamp_t result;
 
-#if _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
     LARGE_INTEGER qp_freq;
     QueryPerformanceFrequency(&qp_freq);
     result = (jmc_timestamp_t)(((double)time_interval / (double)qp_freq.QuadPart) * 1000.0);
-#elif __linux__
+#elif defined(__linux__)
     result = (jmc_timestamp_t)time_interval / 1000000LL;
 #else  /* generic Unix */
     result = (jmc_timestamp_t)time_interval / 1000LL;
@@ -337,11 +338,11 @@ jmc_timefloat_t jmc_get_interval_msf(jmc_timestamp_t time_interval)
 {
     jmc_timefloat_t result;
 
-#if _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
     LARGE_INTEGER qp_freq;
     QueryPerformanceFrequency(&qp_freq);
     result = (jmc_timefloat_t)(((double)time_interval / (double)qp_freq.QuadPart) * 1000.0);
-#elif __linux__
+#elif defined(__linux__)
     result = (jmc_timefloat_t)time_interval * 1E-6;
 #else  /* generic Unix */
     result = (jmc_timefloat_t)time_interval * 1E-3;
@@ -356,11 +357,11 @@ jmc_timefloat_t jmc_get_interval_sec(jmc_timestamp_t time_interval)
 {
     jmc_timefloat_t result;
 
-#if _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
     LARGE_INTEGER qp_freq;
     QueryPerformanceFrequency(&qp_freq);
     result = (jmc_timefloat_t)(((double)time_interval / (double)qp_freq.QuadPart));
-#elif __linux__
+#elif defined(__linux__)
     result = (jmc_timefloat_t)time_interval * 1E-9;
 #else  /* generic Unix */
     result = (jmc_timefloat_t)time_interval * 1E-6;
@@ -375,4 +376,4 @@ jmc_timefloat_t jmc_get_interval_sec(jmc_timestamp_t time_interval)
 }
 #endif
 
-#endif  /* !_JIMIC_SYSTEM_SYS_TIMER_H_ */
+#endif  /* !_JIMIC_SYSTEM_TIMER_H_ */

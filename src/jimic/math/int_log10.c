@@ -23,7 +23,7 @@ _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
 {
     unsigned char isNonzero;
     jimic_assert(firstBit1Index != NULL);
-#if !defined(__has_builtin_clz)
+#if !defined(__has_builtin_clz) && 0
     __asm__ __volatile__ (
         "bsrl  %2, %%edx    \n\t"
         "movl  %%edx, (%1)  \n\t"

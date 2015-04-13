@@ -2,6 +2,7 @@
 #include "jimi/mt/mutex.h"
 #include "jimi/mt/scoped_lock.h"
 #include "jimi/lang/aligned_space.h"
+#include "jimi/basic/assert.h"
 
 namespace jimi {
 
