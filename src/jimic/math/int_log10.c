@@ -2,16 +2,10 @@
 #include "jimic/math/log10.h"
 
 #include "jimic/config/config.h"
+#include "jimic/basic/assert.h"
 #include "jimic/libc/ieee754.h"
 
 #include <math.h>
-
-#if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
-// for _BitScanReverse()
-#include <intrin.h>
-
-#pragma intrinsic(_BitScanReverse)
-#endif  // _MSC_VER
 
 static const unsigned int s_power10[16] = {
     9, 99, 999, 9999, 99999,
@@ -23,15 +17,13 @@ static const unsigned int s_power10[16] = {
 
 #if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
 // Do nothing!! in MSVC or Intel C++ Compiler
-#elif __has_builtin(__builtin_clz) || (__GNUC__ >= 4)
-static
-JMC_INLINE
+#elif defined(__MINGW32__) || defined(__has_builtin_clz) || (__GNUC__ >= 4)
 JMC_DECLARE_NONSTD(unsigned char)
 _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
 {
     unsigned char isNonzero;
     jimic_assert(firstBit1Index != NULL);
-#if 1
+#if !defined(__has_builtin_clz)
     __asm__ __volatile__ (
         "bsrl  %2, %%edx    \n\t"
         "movl  %%edx, (%1)  \n\t"
@@ -54,8 +46,6 @@ _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
     return isNonzero;
 }
 #else
-static
-JMC_INLINE
 JMC_DECLARE_NONSTD(unsigned char)
 _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
 {
@@ -67,9 +57,7 @@ _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
 
 #if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
 // Do nothing!! in MSVC or Intel C++ Compiler
-#elif defined(_M_X64) && (__has_builtin(__builtin_clzll) || (__GNUC__ >= 4))
-static
-JMC_INLINE
+#elif defined(_M_X64) && (defined(__MINGW32__) || defined(__has_builtin_clzll) || (__GNUC__ >= 4))
 JMC_DECLARE_NONSTD(unsigned char)
 _BitScanReverse64(unsigned long *firstBit1Index, uint64_t scanNum)
 {
@@ -87,7 +75,6 @@ _BitScanReverse64(unsigned long *firstBit1Index, uint64_t scanNum)
     return isNonzero;
 }
 #else
-static
 JMC_INLINE
 JMC_DECLARE_NONSTD(unsigned char)
 _BitScanReverse64(unsigned long *firstBit1Index, unsigned long scanNum)
@@ -131,7 +118,7 @@ jmc_uint_log10(uint32_t val)
     unsigned int exp10;
     unsigned char isNonzero;
 
-#if 1 && (__has_builtin(__builtin_clz) || (__GNUC__ >= 4))
+#if 1 && (defined(__has_builtin_clz) || (__GNUC__ >= 4))
 
 #if 1
     __asm__ __volatile__ (
