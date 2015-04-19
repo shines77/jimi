@@ -38,14 +38,6 @@
 
 #endif  /* JIMI_MSC_VER */
 
-#if (_MSC_VER || __INTEL_COMPILER) && (!defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0))
-#define JMC_NOINLINE(decl)      __declspec(noinline) decl
-#elif defined(__GNUC__) || (defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG != 0))
-#define JMC_NOINLINE(decl)      decl __attribute__ ((noinline))
-#else
-#define JMC_NOINLINE(decl)      decl
-#endif
-
 /**
  * for JMC_DECLARE define
  */
@@ -92,6 +84,17 @@
 
 #endif  /* (!defined(JIMI_IS_WINDOWS)) || defined(JIMI_IS_DOXYGEN) */
 
+#if (defined(_MSC_VER) || defined(__INTEL_COMPILER)) && (!defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG == 0))
+#define JMC_NOINLINE                    __declspec(noinline)
+#define JMC_NOINLINE_DECLARE(decl)      __declspec(noinline) decl
+#elif defined(__GNUC__) || defined(__MINGW32__) || (defined(JIMI_MSVC_CLANG) || (JIMI_MSVC_CLANG != 0))
+#define JMC_NOINLINE                    __attribute__ ((noinline))
+#define JMC_NOINLINE_DECLARE(decl)      decl __attribute__ ((noinline))
+#else
+#define JMC_NOINLINE 
+#define JMC_NOINLINE_DECLARE(decl)      decl
+#endif
+
 /**
  * for thread func define
  */
@@ -114,14 +117,6 @@
 #else
     #define JIMIC_EXPORTED_FUNC
     #define JIMIC_EXPORTED_METHOD
-#endif
-
-#if _MSC_VER || __INTEL_COMPILER
-#define JIMIC_NOINLINE(decl)    __declspec(noinline) decl
-#elif __GNUC__
-#define JIMIC_NOINLINE(decl)    decl __attribute__ ((noinline))
-#else
-#define JIMIC_NOINLINE(decl)    decl
 #endif
 
 #endif  /* _JIMIC_BASIC_DECLARE_H_ */

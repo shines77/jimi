@@ -54,12 +54,15 @@
 
 #endif
 
-#if _MSC_VER || __INTEL_COMPILER
-#define JIMI_NOINLINE(decl)     __declspec(noinline) decl
-#elif __GNUC__
-#define JIMI_NOINLINE(decl)     decl __attribute__ ((noinline))
+#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
+#define JIMI_NOINLINE                   __declspec(noinline)
+#define JIMI_NOINLINE_DECLARE(decl)     __declspec(noinline) decl
+#elif defined(__GNUC__) || defined(__MINGW32__)
+#define JIMI_NOINLINE                   __attribute__ ((noinline))
+#define JIMI_NOINLINE_DECLARE(decl)     decl __attribute__ ((noinline))
 #else
-#define JIMI_NOINLINE(decl)     decl
+#define JIMI_NOINLINE 
+#define JIMI_NOINLINE_DECLARE(decl)     decl
 #endif
 
 /**
