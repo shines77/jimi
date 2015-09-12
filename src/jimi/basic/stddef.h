@@ -20,24 +20,41 @@
 #include "jimi/basic/stdint.h"
 #include "jimi/basic/common.h"
 
-#ifndef __has_feature
-#define __has_feature(X)        (0)
+// __has_feature() marco only works on clang.
+#if !defined(__clang__)
+    #ifndef __has_feature
+        #define __has_feature(xxx)      (0)
+    #endif
 #endif
 
-// Is noexcept supported?
-#if defined(__clang__) && __has_feature(cxx_noexcept) || \
-    defined(__GXX_EXPERIMENTAL_CXX0X__) && (__GNUC__ * 10 + __GNUC_MINOR__ >= 46) || \
-    defined(_MSC_FULL_VER) && (_MSC_FULL_VER >= 180021114 && _MSC_FULL_VER >= 190021114)
-    // support noexcept
-    #define NOEXCEPT        noexcept
-#else  /* ! Is noexcept supported? */
+//
+// How can I properly detect the available C++11 features among GCC versions?
+//
+// See: http://stackoverflow.com/questions/10286447/how-can-i-properly-detect-the-available-c11-features-among-gcc-versions
+//
 
-    #if defined(_MSC_VER)
-      #include <yvals.h>
-      #ifndef NOEXCEPT
+// Is noexcept supported?
+#if (defined(__clang__) && (defined(__has_feature) && __has_feature(cxx_noexcept))) || \
+    (defined(__GXX_EXPERIMENTAL_CXX0X__) && (__GNUC__ * 10 + __GNUC_MINOR__ >= 46)) || \
+    (defined(_MSC_FULL_VER) && _MSC_FULL_VER >= 190021114)  // _MSC_FULL_VER >= 180021114?
+
+    // clang support noexcept if defined "cxx_noexcept",
+    // GCC support noexcept since version 4.6,
+    // MSVC support noexcept since _MSC_FULL_VER >= 190021114.
+    #define NOEXCEPT        noexcept
+
+#elif defined(_MSC_VER)
+
+    // Use throw() in another MSVC version.
+    #include <yvals.h>
+    #ifndef NOEXCEPT
         #define NOEXCEPT    _NOEXCEPT
-      #endif
-    #endif  /* _MSC_VER */
+    #endif
+
+#else  /* Is not noexcept supported. */
+
+    // Don't support noexcept.
+    #define NOEXCEPT
 
 #endif  /* Is noexcept supported? */
 
