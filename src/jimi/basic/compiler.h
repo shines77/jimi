@@ -66,6 +66,8 @@
 #define JIMI_COMPILER_MSVC_100              7
 #define JIMI_COMPILER_MSVC_110              8
 #define JIMI_COMPILER_MSVC_120              9
+#define JIMI_COMPILER_MSVC_130              10
+#define JIMI_COMPILER_MSVC_140              11
 
 #define JIMI_COMPILER_BORLANDC              20
 #define JIMI_COMPILER_BCB                   21
@@ -121,7 +123,7 @@
     #endif
 
     #ifndef JIMI_IS_BCB
-    #define JIMI_IS_BCB                     1
+        #define JIMI_IS_BCB                 1
     #endif
 #endif
 
@@ -133,7 +135,7 @@
     #define JIMI_TARGET_COMPILER            JIMI_COMPILER_ICC
 
     #ifndef JIMI_IS_ICC
-    #define JIMI_IS_ICC                     1
+        #define JIMI_IS_ICC                 1
     #endif
 #endif
 
@@ -145,7 +147,7 @@
     #define JIMI_TARGET_COMPILER            JIMI_COMPILER_CYGWIN
 
     #ifndef JIMI_IS_CYGWIN
-    #define JIMI_IS_CYGWIN                  1
+        #define JIMI_IS_CYGWIN              1
     #endif
 #endif
 
@@ -187,7 +189,7 @@
         #undef  JIMI_TARGET_COMPILER
         #define JIMI_TARGET_COMPILER        JIMI_COMPILER_GCC_LLVM
         #ifndef JIMI_IS_LLVM
-        #define JIMI_IS_LLVM                1
+            #define JIMI_IS_LLVM            1
         #endif
     #else
         #undef  JIMI_TARGET_COMPILER
@@ -195,11 +197,11 @@
     #endif
 
     #ifndef JIMI_IS_GNUC
-    #define JIMI_IS_GNUC                    1
+        #define JIMI_IS_GNUC                1
     #endif
 
     #ifndef JIMI_IS_GCC
-    #define JIMI_IS_GCC                     1
+        #define JIMI_IS_GCC                 1
     #endif
 #endif
 
@@ -211,11 +213,11 @@
     #define JIMI_TARGET_COMPILER            JIMI_COMPILER_GPP
 
     #ifndef JIMI_IS_GNUCPP
-    #define JIMI_IS_GNUCPP                  1
+        #define JIMI_IS_GNUCPP              1
     #endif
 
     #ifndef JIMI_IS_GPP
-    #define JIMI_IS_GPP                     1
+        #define JIMI_IS_GPP                 1
     #endif
 #endif
 
@@ -229,11 +231,11 @@
     #define JIMI_COMPILER_MSC_VER           _MSC_VER
 
     #ifndef JIMI_IS_MSVC
-    #define JIMI_IS_MSVC                    1
+        #define JIMI_IS_MSVC                1
     #endif
 
     #ifndef JIMI_MSC_VER
-    #define JIMI_MSC_VER                    _MSC_VER
+        #define JIMI_MSC_VER                _MSC_VER
     #endif
 #endif
 
