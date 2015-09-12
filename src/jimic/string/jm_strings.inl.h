@@ -252,7 +252,7 @@ JMC_INLINE_NONSTD(unsigned char *) jm_mbsdup(const unsigned char *_Src)
 {
 #if defined(_MSC_VER) && (defined(_DEBUG) || !defined(NDEBUG))
 #ifdef __cplusplus
-    //const char *_Ptr = CONST_CAST_CONST(_Src, unsigned char *, char *);
+    //const char *_Ptr = CHANGE_CONST_CAST(_Src, unsigned char *, char *);
     const char *_Ptr = const_cast<const char *>(reinterpret_cast<char *>
         (const_cast<unsigned char *>(_Src)));
     return reinterpret_cast<unsigned char *>(_strdup(_Ptr));

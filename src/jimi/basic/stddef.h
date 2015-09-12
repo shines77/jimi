@@ -147,14 +147,17 @@ inline value_type jimi_max(value_type a, value_type b)
 
 }  /* namespace jimi */
 
-/**
- * for c++ const_cast
- */
-#define CONST_CAST(_Val, _TypeVal, _TypeNew) \
-    reinterpret_cast<_TypeNew>(const_cast<_TypeVal>(_Val))
+// For c++ const_cast
+#ifndef REMOVE_CONST
+#define REMOVE_CONST(ptr, constType, newType) \
+    reinterpret_cast<newType>(const_cast<constType>(ptr))
+#endif
 
-#define CONST_CAST_CONST(_Val, _TypeVal, _TypeNew) \
-    const_cast<const _TypeNew>(reinterpret_cast<_TypeNew>(const_cast<_TypeVal>(_Val)))
+// Force convert/change a const type?
+#ifndef CHANGE_CONST_CAST
+#define CHANGE_CONST_CAST(ptr, constType, newConstType) \
+    const_cast<const newConstType>(reinterpret_cast<newConstType>(const_cast<constType>(ptr)))
+#endif
 
 /**
  * for precompiled macro to string

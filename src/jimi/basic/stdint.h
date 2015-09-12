@@ -33,7 +33,7 @@
 
 #define INT64_SUPPORTED  // Remove this if the compiler doesn't support 64-bit integers
 
-// For define sizt_t and ssize_t
+// For define size_t and ssize_t
 #include "jimi/basic/stdsize.h"
 
 #endif  /* _JIMI_BASIC_STDINT_H_ */
