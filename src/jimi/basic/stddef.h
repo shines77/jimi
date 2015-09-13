@@ -28,9 +28,17 @@
 #endif
 
 //
-// How can I properly detect the available C++11 features among GCC versions?
+// How to deal with noexcept in Visual Studio
+// See: http://stackoverflow.com/questions/18387640/how-to-deal-with-noexcept-in-visual-studio
 //
+// How can I properly detect the available C++11 features among GCC versions?
 // See: http://stackoverflow.com/questions/10286447/how-can-i-properly-detect-the-available-c11-features-among-gcc-versions
+//
+// When should I really use noexcept?
+// See: http://stackoverflow.com/questions/10787766/when-should-i-really-use-noexcept
+//
+// Allowing Move Constructors to Throw (Rev. 1)
+// http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2010/n3050.html
 //
 
 // Is noexcept supported?
@@ -55,6 +63,32 @@
 
     // Don't support noexcept.
     #define NOEXCEPT
+
+#endif  /* Is noexcept supported? */
+
+#ifndef NO_EXCEPT
+#define NO_EXCEPT NOEXCEPT
+#endif
+
+//
+// C++0x/C++11 Support in GCC
+// See: https://gcc.gnu.org/projects/cxx0x.html
+//
+
+// Is constexpr supported?
+#if (defined(__clang__) && (defined(__has_feature) && __has_feature(cxx_constexpr))) || \
+    (defined(__GXX_EXPERIMENTAL_CXX0X__) && (__GNUC__ * 10 + __GNUC_MINOR__ >= 46)) || \
+    (defined(_MSC_FULL_VER) && _MSC_FULL_VER >= 190021114)
+
+    // clang support constexpr if defined "cxx_constexpr",
+    // GCC support constexpr since version 4.6, (__cpp_constexpr >= 200704)
+    // MSVC support constexpr since _MSC_FULL_VER >= 190021114.
+    #define CONST_EXPR      constexpr
+
+#else  /* Is not constexpr supported. */
+
+    // Don't supported constexpr.
+    #define CONST_EXPR
 
 #endif  /* Is noexcept supported? */
 
