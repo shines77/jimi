@@ -15,14 +15,22 @@
 
 typedef BOOL    _Bool;
 
+#undef __bool_true_false_are_defined
 #define __bool_true_false_are_defined	1
 
 #ifndef __cplusplus
 
+#ifndef bool
 #define bool	_Bool
+#endif
 
+#ifndef false
 #define false	0
+#endif
+
+#ifndef true
 #define true	1
+#endif
 
 #endif  /* !__cplusplus */
 
