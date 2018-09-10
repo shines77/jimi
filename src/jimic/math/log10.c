@@ -5,7 +5,7 @@
 #include <math.h>
 
 //
-// Title: log10使用什么算法实现？
+// Title: log10使锟斤拷什么锟姐法实锟街ｏ拷
 // From URL: http://segmentfault.com/q/1010000000201351
 //
 
@@ -18,7 +18,7 @@ ieee754_log10_x87(double val)
     //
     // FLD1/FLDL2T/FLDL2E/FLDPI/FLDLG2/FLDLN2/FLDZ -- Load Constant
     //
-    // Refrence: http://www.jaist.ac.jp/iscenter-new/mpc/altix/altixdata/opt/intel/vtune/doc/users_guide/mergedProjects/analyzer_ec/mergedProjects/reference_olh/mergedProjects/instructions/instruct32_hh/vc102.htm
+    // Reference: http://www.jaist.ac.jp/iscenter-new/mpc/altix/altixdata/opt/intel/vtune/doc/users_guide/mergedProjects/analyzer_ec/mergedProjects/reference_olh/mergedProjects/instructions/instruct32_hh/vc102.htm
     //
 
     // fldl2t, Push log2(10) onto the FPU register stack.
