@@ -492,13 +492,13 @@ bool WinServiceBase<T>::InstallService()
 
     szPath[0] = _T('\0');
 #if 1
-    if (!::GetModuleFileName(NULL, szPath, nLen)) {
+    if (!::GetModuleFileName(NULL, szPath, (DWORD)nLen)) {
         jmLog.error("Cannot install service (%d).", GetLastError());
         jmLog.error("SERVICE: Can't get service binary filename.");
         return false;
     }
 #else
-    if (!GetModuleFileName(NULL, szPath + 1, nLen - _ATL_QUOTES_SPACE)) {
+    if (!GetModuleFileName(NULL, szPath + 1, (DWORD)nLen - _ATL_QUOTES_SPACE)) {
         jmLog.error("Cannot install service (%d).", GetLastError());
         jmLog.error("SERVICE: Can't get service binary filename.");
         return false;

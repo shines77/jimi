@@ -12,7 +12,7 @@
 #include "jimic/basic/declare.h"
 
 #if !defined(_JIMIC_STRING_JMF_STRINGS_H_)
-#error "This file [jmf_strlen32.h] only can be inline including in <jmf_strings.h> ."
+//#error "This file [jmf_strlen32.h] only can be inline including in <jmf_strings.h> ."
 #endif
 
 #if defined(JIMI_IS_WIN32) && !defined(JIMI_IS_WIN64)

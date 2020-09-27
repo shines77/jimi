@@ -636,13 +636,13 @@ public:
     typename StdStringType::size_type vappend_to(StdStringType & result,
                                                  const value_type * fmt, va_list arglist);
 
-    typename StdStringType::size_type append_to(StdStringType & result, ...);
+    typename StdStringType::size_type append_to(StdStringType * result, ...);
 
     size_type vappend_to(StringType & result, const value_type * fmt, va_list arglist);
 
-    size_type append_to(StringType & result, ...);
+    size_type append_to(StringType * result, ...);
 
-    size_type append_to(value_type *buffer, size_t countOfElements, ...);
+    size_type append_to(value_type * buffer, size_t countOfElements, ...);
 
 #if 0
     StringType append(...);
@@ -2003,13 +2003,13 @@ formatter<StringType, Precision>::vappend_to(StdStringType & result, const value
 
 template <typename StringType, int Precision>
 typename formatter<StringType, Precision>::StdStringType::size_type
-formatter<StringType, Precision>::append_to(StdStringType & result, ...)
+formatter<StringType, Precision>::append_to(StdStringType * result, ...)
 {
     jimi::string result_tmp;
     value_type *fmt = NULL;
     va_list arglist;
     va_start(arglist, result);
-    size = vappend_to(result_tmp, fmt, arglist);
+    size = vappend_to(&result_tmp, fmt, arglist);
     va_end(arglist);
     result.assign(result_tmp.c_str(), result_tmp.size());
     return result.size();
@@ -2017,13 +2017,13 @@ formatter<StringType, Precision>::append_to(StdStringType & result, ...)
 
 template <typename StringType, int Precision>
 typename StringType::size_type
-formatter<StringType, Precision>::append_to(StringType & result, ...)
+formatter<StringType, Precision>::append_to(StringType * result, ...)
 {
     StringType::size_type size;
     value_type *fmt = NULL;
     va_list arglist;
     va_start(arglist, result);
-    size = vappend_to(result, fmt, arglist);
+    size = vappend_to(*result, fmt, arglist);
     va_end(arglist);
     return size;
 }

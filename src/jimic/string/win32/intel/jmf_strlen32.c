@@ -3,7 +3,7 @@
 
 #include "jimic/basic/asm.h"
 
-#if defined(JIMI_IS_WIN32) && !defined(JIMI_IS_WIN64)
+#if defined(JIMI_IS_WIN32)
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -38,6 +38,15 @@
 #define LOCAL_ARG2      dword ptr [esp +  4 + STACK]
 
 ///////////////////////////////////////////////////////////////////////////
+
+#if defined(JIMI_IS_WIN64)
+
+size_t __CDECL jmf_strlen(const char *str)
+{
+    return strlen(str);
+}
+
+#else
 
 __declspec(naked)
 size_t __CDECL jmf_strlen(const char *str)
@@ -138,6 +147,8 @@ strlen_386:
         ret
     }
 }
+
+#endif // JIMI_IS_WIN64
 
 #undef STACK
 #undef ARGS

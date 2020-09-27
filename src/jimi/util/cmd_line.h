@@ -20,8 +20,12 @@
 ////////////////////////////////////////////////////////////////
 
 #if _MSC_VER
+  #ifdef snprintf
     #define snprintf    _snprintf
+  #endif
+  #ifdef snprintf_s
     #define snprintf_s  _snprintf_s
+  #endif
 #if _MSC_VER <= 1400
     #define vsnprintf   _vsnprintf
     #define vsnprintf_s _vsnprintf_s

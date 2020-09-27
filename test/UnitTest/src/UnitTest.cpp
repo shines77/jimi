@@ -127,7 +127,12 @@
 /**
  * for asmlib lib import
  */
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
+#pragma comment(lib, "libacof64.lib")
+#else
 #pragma comment(lib, "libacof32.lib")
+#endif
 
 #else
 
@@ -152,7 +157,12 @@ void * A_memcpy (void * dest, const void * src, size_t count)
 /**
  * for asmlib
  */
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
+#pragma comment(lib, "libacof64.lib")
+#else
 #pragma comment(lib, "libacof32.lib")
+#endif
 
 /**
  * for boost::locale
@@ -197,7 +207,7 @@ void jimi_set_thread_affinity(uint32_t dwCPUMask)
 
     if (dwCPUMask != 0)
         dwAffinityMask = dwCPUMask;
-    bAffResult = GetProcessAffinityMask(hCurrentProcess, &dwProcessAffinity, &dwSystemAffinity);
+    bAffResult = GetProcessAffinityMask(hCurrentProcess, (PDWORD_PTR)&dwProcessAffinity, (PDWORD_PTR)&dwSystemAffinity);
     if (bAffResult) {
         if (dwProcessAffinity != dwSystemAffinity) {
             if (echo) {
@@ -216,12 +226,12 @@ void jimi_set_thread_affinity(uint32_t dwCPUMask)
                     if (echo)
                         printf("SetProcessAffinityMask(): dwAffinityMask = 0x%08X\n", dwAffinityMask);
                     DWORD dwProcessAffinityNew = 0;
-                    bAffResult = GetProcessAffinityMask(hCurrentProcess, &dwProcessAffinityNew, &dwSystemAffinity);
+                    bAffResult = GetProcessAffinityMask(hCurrentProcess, (PDWORD_PTR)&dwProcessAffinityNew, (PDWORD_PTR)&dwSystemAffinity);
                     if (dwProcessAffinityNew == dwAffinityMask) {
                         if (echo) {
                             printf("SetProcessAffinityMask(): Success.\n");
                         }
-                        bAffResult = SetThreadAffinityMask(GetCurrentThread(), dwAffinityMask);
+                        DWORD_PTR dwAffResult = SetThreadAffinityMask(GetCurrentThread(), dwAffinityMask);
                         Sleep(0);
                         break;
                     }
@@ -244,15 +254,15 @@ void String_Copy_On_Write_Test()
     std::string str2 = str1;
 
     printf ("Sharing the memory:\n");
-    printf ("\tstr1's address: %x\n", str1.c_str() );
-    printf ("\tstr2's address: %x\n", str2.c_str() );
+    printf ("\tstr1's address: 0x%p\n", str1.c_str() );
+    printf ("\tstr2's address: 0x%p\n", str2.c_str() );
 
     str1[1] = 'q';
     str2[1] = 'w';
 
     printf ("After Copy-On-Write:\n");
-    printf ("\tstr1's address: %x\n", str1.c_str() );
-    printf ("\tstr2's address: %x\n", str2.c_str() );
+    printf ("\tstr1's address: 0x%p\n", str1.c_str() );
+    printf ("\tstr2's address: 0x%p\n", str2.c_str() );
 
     printf("\n");
 }
@@ -819,7 +829,7 @@ void String_Base_Test()
         sw.restart();
         for (i = 0; i < loop_times; ++i) {
             //delta = formator.append_to(strTest, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
-            delta = formator.append_to(strTest, (unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
+            delta = formator.append_to(&strTest, (unsigned int)num1, ", ", buf1, ", ", (unsigned long)num2, ", ", "{3}, ", buf2);
         }
         sw.stop();
         time = sw.getMillisec();
@@ -832,7 +842,7 @@ void String_Base_Test()
         printf("==============================================================================\n\n");
 
         jimi::String strTest2;
-        delta = formator.append_to(strTest2, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
+        delta = formator.append_to(&strTest2, (unsigned int)111, ", ", "222erer", ", ", (unsigned long)33333, ", ", "{3}, ", "ffffff44");
         delta = strTest2.size();
 
         printf("str.c_str() = %s\n\n", strTest2.c_str());
@@ -2278,7 +2288,7 @@ void malloc_addr_test()
         size = rand();
         p = ::malloc(size);
         list[i] = p;
-        printf("p = 0x%08X, size = %d\n", p, size);
+        printf("p = 0x%p, size = %u\n", p, (uint32_t)size);
     }
 
     for (i = 0; i < 256; ++i) {

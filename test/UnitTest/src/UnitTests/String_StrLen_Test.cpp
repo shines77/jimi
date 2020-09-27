@@ -31,7 +31,12 @@
 /**
  * for asmlib lib import
  */
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
+#pragma comment(lib, "libacof64.lib")
+#else
 #pragma comment(lib, "libacof32.lib")
+#endif
 
 #else
 
@@ -137,6 +142,11 @@ int strlen_my(const char *s) {
 // From: http://www.strchr.com/optimized_strlen_function
 //
 
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
+    //
+#else
+
 int strlen_AgnerFog(const char* s) {
 
 #if !defined(JIMIC_MSVC_CLANG) || (JIMIC_MSVC_CLANG == 0)
@@ -192,6 +202,8 @@ inline int __cdecl __builtin_ctz(int bitmask)
 #endif
 }
 
+#endif // __amd64__
+
 //
 // From: http://www.strchr.com/strcmp_and_strlen_using_sse_4.2
 //
@@ -216,7 +228,16 @@ size_t sse2_strlen(const char* s)
     }
 
     // bsf only takes 1 clock cycle on modern cpus
+#if defined(_MSC_VER)
+    unsigned long index;
+    unsigned char nonZero = _BitScanReverse(&index, bitmask);
+    if (nonZero) {
+        index = 0;
+    }
+    return ((( const char* ) s_aligned ) - s) + index;
+#else
     return ((( const char* ) s_aligned ) - s) + __builtin_ctz(bitmask);
+#endif
 #else
     return 0;
 #endif
@@ -283,7 +304,8 @@ void String_StrLen_Test()
     strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz|ab1");
 
     sw.restart();
-#if 0
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
     for (i = 0; i < LOOP_TIMES; ++i) {
         len1 = strlen(buffer1);
     }
@@ -342,7 +364,8 @@ strlen_loop1_1:
     strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijk1");
 
     sw.restart();
-#if 0
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
     for (i = 0; i < LOOP_TIMES; ++i) {
         len5 = strlen(buffer1);
     }
@@ -417,7 +440,8 @@ strlen_loop1_5:
     strcpy(buffer1, "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs1");
 
     sw.restart();
-#if 0
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
     for (i = 0; i < LOOP_TIMES; ++i) {
         len1 = strlen(buffer1);
     }
@@ -485,7 +509,8 @@ strlen_loop2_1:
                     "abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrstuvwxyz|abcdefghijklmnopqrs1");
 
     sw.restart();
-#if 0
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
     for (i = 0; i < LOOP_TIMES; ++i) {
         len5 = strlen(buffer1);
     }
@@ -567,7 +592,8 @@ strlen_loop2_5:
         );
 
     sw.restart();
-#if 0
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
     for (i = 0; i < LOOP_TIMES; ++i) {
         len5 = strlen(buffer1);
     }
@@ -649,7 +675,8 @@ strlen_loop3_5:
     strcpy(buffer1, jabberwocky);
 
     sw.restart();
-#if 0
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
     for (i = 0; i < LOOP_TIMES; ++i) {
         len5 = strlen(buffer1);
     }
@@ -721,7 +748,8 @@ strlen_loop4_5:
         str1[buf_size - 1] = '\0';
 
         sw.restart();
-#if 0
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
         for (i = 0; i < 1000; ++i) {
             len1 = ::strlen(str1);
         }

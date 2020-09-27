@@ -1,7 +1,10 @@
 
 #include "jimic/string/jmf_strings.h"
 
+#include <string.h>
+
 #include "jimic/basic/asm.h"
+#include "jimic/basic/declare.h"
 
 #if defined(JIMI_IS_WIN64)
 
@@ -48,6 +51,14 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
+//size_t __FASTCALL jmf_strlwr(const char *str)
+size_t jmf_strlwr(char *str)
+{
+    return strlen(str);
+}
+#else
 __declspec(naked)
 //size_t __FASTCALL jmf_strlwr(const char *str)
 size_t jmf_strlwr(char *str)
@@ -158,6 +169,7 @@ strlen_386:
         ret
     }
 }
+#endif // __amd64__
 
 #undef Rscopy
 

@@ -753,7 +753,7 @@ int char_traits<char_type>::utoa_radix10(char_type *buf, unsigned int val)
         *cur++ = static_cast<char_type>(digit_val + '0');
     } while (val != 0);
 
-    num_digits = cur - digits;
+    num_digits = (unsigned int)(cur - digits);
 
 #if 0
     do {
@@ -849,7 +849,7 @@ int char_traits<char_type>::ultoa_radix10(char_type *buf, unsigned long val)
         *cur++ = static_cast<char_type>(digit_val + '0');
     } while (val != 0);
 
-    num_digits = cur - digits;
+    num_digits = (unsigned long)(cur - digits);
 
 #if 0
     do {

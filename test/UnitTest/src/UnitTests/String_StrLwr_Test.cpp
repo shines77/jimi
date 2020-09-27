@@ -448,8 +448,8 @@ void String_StrLwr_Test(int nTestLen)
 #endif
             //std::for_each(strlow.begin(), strlow.end(), std::bind(std::tolower<char>, _1, loc));
             //std::for_each(strlow.begin(), strlow.end(), std::bind(std::toupper<char>, _1, loc));
-            std::for_each(strlow.begin(), strlow.end(), std::tolower);
-            //std::transform(strlow.begin(), strlow.end(), strlow.begin(), ::tolower);
+            //std::for_each(strlow.begin(), strlow.end(), std::tolower);
+            std::transform(strlow.begin(), strlow.end(), strlow.begin(), ::tolower);
         }
         sw.stop();
         time6 = sw.getMillisec();

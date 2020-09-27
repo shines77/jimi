@@ -65,12 +65,12 @@ namespace jimi {
 /* String Null Terminator, 字符串结尾字符. */
 #define STRING_NULL_CHAR        '\0'
 
-enum StringTypeMask
+enum StringTypeMask : size_t
 {
-    STRING_TYPE_SMALL       = (sizeof(size_t) == 4) ? 0x01000000 : 0x0100000000000000,
-    STRING_TYPE_MEDIUM      = (sizeof(size_t) == 4) ? 0x02000000 : 0x0200000000000000,
-    STRING_TYPE_LARGE       = (sizeof(size_t) == 4) ? 0x04000000 : 0x0400000000000000,
-    STRING_TYPE_CONSTANT    = (sizeof(size_t) == 4) ? 0x08000000 : 0x0800000000000000,
+    STRING_TYPE_SMALL       = (sizeof(size_t) == 4) ? 0x01000000ULL : 0x0100000000000000ULL,
+    STRING_TYPE_MEDIUM      = (sizeof(size_t) == 4) ? 0x02000000ULL : 0x0200000000000000ULL,
+    STRING_TYPE_LARGE       = (sizeof(size_t) == 4) ? 0x04000000ULL : 0x0400000000000000ULL,
+    STRING_TYPE_CONSTANT    = (sizeof(size_t) == 4) ? 0x08000000ULL : 0x0800000000000000ULL,
     STRING_TYPE_MASK        = (STRING_TYPE_SMALL
         | STRING_TYPE_MEDIUM | STRING_TYPE_LARGE | STRING_TYPE_CONSTANT),
 };
@@ -418,8 +418,13 @@ protected:
     struct small_t {
         union {
             struct {
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
+                // no dummy
+#else
                 /* (dummy只是占位用, 未使用) */
                 char dummy[(kMaxSmallSizeBytes - sizeof(small_info_t)) / sizeof(char)];
+#endif
 
                 /* size and type */
                 small_info_t info;
@@ -438,16 +443,25 @@ protected:
 
     /* medium 和 large 共享一样的结构 */
     struct medium_large_t {
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
+        union {
+            struct {
+                /* medium_large_t的有效数据 */
+                core_data_t core;
+            };
+        };
+#else
         union {
             struct {
                 /* (dummy只是占位用, 未使用) */
                 char dummy[(kMaxSmallSizeBytes - sizeof(core_data_t)) / sizeof(char)];
-
                 /* medium_large_t的有效数据 */
                 core_data_t core;
             };
             char_type buf[(kMaxSmallSizeBytes - sizeof(core_data_t)) / sizeof(char_type)];
         };
+#endif // __amd64__
     };
 
 private:
@@ -876,7 +890,7 @@ void STRING_CORE::push_back(const char_type c)
     if (type == kIsSmall) {
         size = _small.info.size;
         if (size < kMaxSmallSize - 1) {
-            _small.info.size = size + 1;
+            _small.info.size = (uint8_t)(size + 1);
             _small.buf[size] = c;
             _small.buf[size + 1] = '\0';
             return;
@@ -921,7 +935,7 @@ void STRING_CORE::append(const int n)
             _itoa(n, _small.buf + oldSize, 10);
             len = jm_strlen(_small.buf + oldSize);
 #endif
-            _small.info.size = oldSize + len;
+            _small.info.size = (uint8_t)(oldSize + len);
             jimi_assert(size() == oldSize + len);
             return;
         }
@@ -969,7 +983,7 @@ void STRING_CORE::append(const unsigned int n)
             _itoa(n, _small.buf + oldSize, 10);
             len = jm_strlen(_small.buf + oldSize);
 #endif
-            _small.info.size = oldSize + len;
+            _small.info.size = (uint8_t)(oldSize + len);
             jimi_assert(size() == oldSize + len);
             return;
         }
@@ -1019,7 +1033,7 @@ void STRING_CORE::append(const long n)
             _itoa(n, _small.buf + oldSize, 10);
             len = jm_strlen(_small.buf + oldSize);
 #endif
-            _small.info.size = oldSize + len;
+            _small.info.size = (uint8_t)(oldSize + len);
             jimi_assert(size() == oldSize + len);
             return;
         }
@@ -1117,7 +1131,7 @@ void STRING_CORE::append(const int64_t i64)
             _i64toa(i64, _small.buf + oldSize, 10);
             len = jm_strlen(_small.buf + oldSize);
 #endif
-            _small.info.size = oldSize + len;
+            _small.info.size = (uint8_t)(oldSize + len);
             jimi_assert(size() == oldSize + len);
             return;
         }
@@ -1634,7 +1648,7 @@ void STRING_CORE::expandTo(const size_t newSize)
     else if (type == kIsSmall) {
         //size_type _capacity = kMaxSmallSize - 1;
         if (newSize < kMaxSmallSize) {
-            _small.info.size = newSize;
+            _small.info.size = (uint8_t)newSize;
             //_small.buf[newSize] = kNullChar;
             return;
         }
@@ -1686,7 +1700,7 @@ void STRING_CORE::shrinkTo(const size_t newSize)
     else if (type == kIsSmall) {
         // Check for underflow
         jimi_assert(newSize <= _small.info.size);
-        _small.info.size = newSize;
+        _small.info.size = (uint8_t)newSize;
         writeNull_small();
     }
 }
@@ -1733,7 +1747,7 @@ typename STRING_CORE::char_type *STRING_CORE::expandTo_noinit(const size_type ne
     if (type == kIsSmall) {
         oldSize = _small.info.size;
         if (newSize < kMaxSmallSize) {
-            _small.info.size = newSize;
+            _small.info.size = (uint8_t)newSize;
             writeNull_small();
             return _small.buf + oldSize;
         }
@@ -1765,7 +1779,7 @@ void STRING_CORE::expand_and_copy(const char_type *s, size_type n)
         newSize = oldSize + n;
         if (newSize < kMaxSmallSize) {
             ::memcpy((void *)(_small.buf + oldSize), s, n * sizeof(char_type));
-            _small.info.size = newSize;
+            _small.info.size = (uint8_t)newSize;
             writeNull_small();
             return;
         }

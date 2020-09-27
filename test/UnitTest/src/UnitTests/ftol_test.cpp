@@ -34,6 +34,15 @@ void ftol_test_0()
     testResult = tmp;
 }
 
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
+
+void ftol_test_fpu()
+{
+}
+
+#else
+
 void ftol_test_fpu()
 {
     unsigned short RC_Old;
@@ -76,6 +85,7 @@ EndLoop:
 #endif
 }
 
+#endif // __amd64__
 
 inline long _ftol_ieee(float f)
 { 
@@ -111,6 +121,15 @@ void ftol_test_ieee_M()
     testResult = tmp;
 }
 
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
+
+void ftol_test_sse2()
+{
+}
+
+#else
+
 void ftol_test_sse2()
 {
 
@@ -138,6 +157,8 @@ EndLoop:
 #endif
 }
 
+#endif // __amd64__
+
 void dtol_test_0()
 {
     long tmp = 0;
@@ -146,6 +167,15 @@ void dtol_test_0()
     }
     testResult = tmp;
 }
+
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
+
+void dtol_test_fpu()
+{
+}
+
+#else
 
 void dtol_test_fpu()
 {
@@ -187,6 +217,8 @@ EndLoop:
 
 #endif
 }
+
+#endif // __amd64__
 
 inline int64_t _dtol_ieee(double f)
 { 
@@ -239,6 +271,15 @@ void dtol_test_ieee_MagicNumber2()
     testResult = tmp;
 }
 
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
+
+void dtol_test_sse2()
+{
+}
+
+#else
+
 void dtol_test_sse2()
 {
 
@@ -265,6 +306,8 @@ EndLoop:
 
 #endif
 }
+
+#endif // __amd64__
 
 void ftol_test_main()
 {

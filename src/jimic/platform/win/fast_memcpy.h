@@ -208,7 +208,17 @@ static void *fast_memcpy_stat(void *dest, const void *src, size_t len)
     return fast_memcpy_impl(dest, src, len);
 }
 
-#endif  /* FASTMEMCPY_STATISTICS */
+#endif // FASTMEMCPY_STATISTICS
+
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
+
+static void * __cdecl fast_memcpy_impl(void *dest, const void *src, size_t len)
+{
+    return memcpy(dest, src, len);
+}
+
+#else
 
 __declspec(naked)
 static void * __cdecl fast_memcpy_impl(void *dest, const void *src, size_t len)
@@ -433,8 +443,9 @@ L999_END:
 #endif
         ret
     }
-
 }
+
+#endif // __amd64__
 
 #undef STACK
 #undef ARGS
